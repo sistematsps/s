@@ -102,7 +102,6 @@
 
       const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas') || '{}');
       const despesas = JSON.parse(localStorage.getItem(prefixo + 'despesas') || '[]');
-      // USAR A MESMA CHAVE QUE A PÁGINA RECEITAS USA
       const receitas = JSON.parse(localStorage.getItem('receitas_' + document.getElementById("sistemaSelect").value) || '[]');
       const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
 
@@ -153,9 +152,16 @@
       const saldoFinal = saldoAnterior + apurado - despesasTotais;
       document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
 
-      document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
-      document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
-      document.getElementById('pedro').textContent = formatar(saldoFinal * 0.50);
+      // Partilha dinâmica
+      if (document.getElementById("sistemaSelect").value === "pitimbu") {
+        document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
+        document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
+        document.getElementById('pedro').textContent = formatar(saldoFinal * 0.50);
+      } else {
+        document.getElementById('benedito').textContent = formatar(saldoFinal * 0.10);
+        document.getElementById('jose').textContent = formatar(0);
+        document.getElementById('pedro').textContent = formatar(saldoFinal * 0.90);
+      }
 
       const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
       tbodyDespesas.innerHTML = "";
@@ -218,4 +224,3 @@
   </script>
 </body>
 </html>
-
