@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Caixa - Pitimbu / Timonha da Sorte</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { padding: 20px; background: #f5f5f5; }
+    h1, h2 { color: #b30000; }
+    input, button, select { padding: 8px; margin: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #ffcccc; }
+    .total-box { margin: 20px 0; padding: 15px; background: #fff3f3; border: 1px solid #b30000; }
+    .totais span { display: inline-block; min-width: 150px; margin-right: 20px; font-weight: bold; }
+    hr { margin: 30px 0; border: 1px solid #b30000; }
+  </style>
+</head>
+<body>
+  <h1>Movimento do Caixa</h1>
+
+  <label>
+    Sistema:
+    <select id="sistemaSelect" onchange="carregarCaixa()">
+      <option value="pitimbu">Pitimbu da Sorte</option>
+      <option value="timonha">Timonha da Sorte</option>
+    </select>
+  </label>
+
+  <div class="total-box totais">
+    <span>SALDO ANTERIOR: R$ <span id="saldoAnterior">0.00</span></span>
+    <span>APURADO: R$ <span id="apuradoTotal">0.00</span></span>
+    <span>DESPESAS: R$ <span id="despesasTotal">0.00</span></span>
+    <span>SALDO FINAL: R$ <span id="saldoFinal">0.00</span></span>
+  </div>
+
+  <hr>
+
+  <label>De: <input type="date" id="dataInicio"></label>
+  <label>Até: <input type="date" id="dataFim"></label>
+  <button onclick="filtrarVendas()">Filtrar</button>
+
+  <h2>Resumo de Vendas</h2>
+  <table id="tabelaResumo">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Vendedor</th>
+        <th>Vendeu</th>
+        <th>Apurou</th>
+        <th>Pagou</th>
+        <th>Deve</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Receitas</h2>
+  <table id="tabelaReceitas">
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Despesas</h2>
+  <table id="tabelaDespesas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Partilha de Recursos</h2>
+  <div class="total-box">
+    <p>BENEDITO JUNIOR (25%): R$ <span id="benedito">0.00</span></p>
+    <p>JOSE ROBERTO (25%): R$ <span id="jose">0.00</span></p>
+    <p>PEDRO CARVALHO (50%): R$ <span id="pedro">0.00</span></p>
+  </div>
+
+  <button onclick="gerarPDF()">Exportar em PDF</button>
+
+  <script>
+    function formatar(valor) {
+      return parseFloat(valor).toFixed(2);
+    }
+
+    function getPrefixo() {
+      return document.getElementById("sistemaSelect").value + "_";
+    }
+
+    function carregarCaixa() {
+      const prefixo = getPrefixo();
+
+      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas') || '{}');
+      const despesas = JSON.parse(localStorage.getItem(prefixo + 'despesas') || '[]');
+      // USAR A MESMA CHAVE QUE A PÁGINA RECEITAS USA
+      const receitas = JSON.parse(localStorage.getItem('receitas_' + document.getElementById("sistemaSelect").value) || '[]');
+      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
+
+      const saldoAnterior = receitas.reduce((acc, rec) => acc + parseFloat(rec.valor || 0), 0);
+
+      // Preencher tabela de receitas
+      const tbodyReceitas = document.querySelector("#tabelaReceitas tbody");
+      tbodyReceitas.innerHTML = "";
+      receitas.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.descricao || ''}</td><td>${formatar(r.valor)}</td>`;
+        tbodyReceitas.appendChild(tr);
+      });
+
+      let apurado = 0;
+      const tbody = document.querySelector("#tabelaResumo tbody");
+      tbody.innerHTML = "";
+
+      for (const vendedor in vendas) {
+        const vendedorObj = vendedores.find(v => v.nome === vendedor);
+        const cotacaoVendedor = vendedorObj ? parseFloat(vendedorObj.cotacao) : 1;
+
+        vendas[vendedor].forEach(v => {
+          const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+          const cotacao = v.cotacao !== undefined ? parseFloat(v.cotacao) : cotacaoVendedor || 1;
+          const apurouVenda = vendeu * cotacao;
+          const deve = apurouVenda - parseFloat(v.pagou || 0);
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${v.data || ''}</td>
+            <td>${vendedor}</td>
+            <td>${formatar(vendeu)}</td>
+            <td>${formatar(apurouVenda)}</td>
+            <td>${formatar(v.pagou || 0)}</td>
+            <td>${formatar(deve)}</td>`;
+          tbody.appendChild(tr);
+          apurado += apurouVenda;
+        });
+      }
+
+      document.getElementById('apuradoTotal').textContent = formatar(apurado);
+      document.getElementById('saldoAnterior').textContent = formatar(saldoAnterior);
+
+      const despesasTotais = despesas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
+      document.getElementById('despesasTotal').textContent = formatar(despesasTotais);
+
+      const saldoFinal = saldoAnterior + apurado - despesasTotais;
+      document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
+
+      document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
+      document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
+      document.getElementById('pedro').textContent = formatar(saldoFinal * 0.50);
+
+      const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
+      tbodyDespesas.innerHTML = "";
+      despesas.forEach(d => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${d.data || ''}</td>
+          <td>${d.descricao || ''}</td>
+          <td>${formatar(d.valor)}</td>`;
+        tbodyDespesas.appendChild(tr);
+      });
+    }
+
+    function filtrarVendas() {
+      const inicio = document.getElementById("dataInicio").value;
+      const fim = document.getElementById("dataFim").value;
+      const prefixo = getPrefixo();
+
+      if (!inicio || !fim) return carregarCaixa();
+
+      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas') || '{}');
+      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
+      const tbody = document.querySelector("#tabelaResumo tbody");
+      tbody.innerHTML = "";
+      let apurado = 0;
+
+      for (const vendedor in vendas) {
+        const vendedorObj = vendedores.find(v => v.nome === vendedor);
+        const cotacaoVendedor = vendedorObj ? parseFloat(vendedorObj.cotacao) : 1;
+
+        vendas[vendedor].forEach(v => {
+          if (v.data >= inicio && v.data <= fim) {
+            const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+            const cotacao = v.cotacao !== undefined ? parseFloat(v.cotacao) : cotacaoVendedor || 1;
+            const apurouVenda = vendeu * cotacao;
+            const deve = apurouVenda - parseFloat(v.pagou || 0);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${v.data}</td>
+              <td>${vendedor}</td>
+              <td>${formatar(vendeu)}</td>
+              <td>${formatar(apurouVenda)}</td>
+              <td>${formatar(v.pagou || 0)}</td>
+              <td>${formatar(deve)}</td>`;
+            tbody.appendChild(tr);
+            apurado += apurouVenda;
+          }
+        });
+      }
+
+      document.getElementById("apuradoTotal").textContent = formatar(apurado);
+    }
+
+    function gerarPDF() {
+      window.print();
+    }
+
+    window.onload = carregarCaixa;
+  </script>
+</body>
+</html>

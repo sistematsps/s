@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Relatório Mestre Final - Pitimbu da Sorte</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; color: #333; }
+    h1, h2 { text-align: center; color: #b30000; }
+    select, button { padding: 8px; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #ffcccc; }
+    tfoot td { font-weight: bold; background-color: #ffe6e6; }
+    .section { margin-top: 40px; }
+    #btnExport { background:#b30000; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; margin-top:20px; }
+    #btnExport:hover { background:#900000; }
+  </style>
+</head>
+<body>
+
+  <h1>Relatório Mestre Final</h1>
+
+  <label for="sistemaSelect"><strong>Selecione o Sistema:</strong></label>
+  <select id="sistemaSelect">
+    <option value="pitimbu">Pitimbu da Sorte</option>
+    <option value="timonha">Timonha da Sorte</option>
+  </select>
+  <button id="btnExport" onclick="exportarPDF()">Exportar em PDF</button>
+
+  <!-- VENDAS -->
+  <div class="section" id="vendasSection">
+    <h2>Vendas por Vendedor</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Vendedor</th>
+          <th>Data</th>
+          <th>Recebeu</th>
+          <th>Devolveu</th>
+          <th>Vendeu</th>
+          <th>Apurou (R$)</th>
+          <th>Pagou (R$)</th>
+          <th>Deve (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="vendasBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5">TOTAL</td>
+          <td id="totalApurado">0.00</td>
+          <td id="totalPagou">0.00</td>
+          <td id="totalDeve">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- DÉBITOS -->
+  <div class="section" id="debitoSection">
+    <h2>DÉBITOS / Lançamentos Diretos por Vendedor</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Vendedor</th>
+          <th>Débito Atual (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="debitoBody"></tbody>
+    </table>
+  </div>
+
+  <!-- RECEITAS -->
+  <div class="section" id="receitasSection">
+    <h2>Receitas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Descrição</th>
+          <th>Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="receitasBody"></tbody>
+      <tfoot>
+        <tr>
+          <td>Total Receitas</td>
+          <td id="totalReceitas">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- DESPESAS -->
+  <div class="section" id="despesasSection">
+    <h2>Despesas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Descrição</th>
+          <th>Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="despesasBody"></tbody>
+      <tfoot>
+        <tr>
+          <td>Total Despesas</td>
+          <td id="totalDespesas">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    const sistemaSelect = document.getElementById('sistemaSelect');
+    let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+    sistemaSelect.value = sistemaAtivo;
+
+    sistemaSelect.addEventListener('change', () => {
+      sistemaAtivo = sistemaSelect.value;
+      localStorage.setItem('sistemaAtivo', sistemaAtivo);
+      carregarRelatorio();
+    });
+
+    function formatar(valor) {
+      return parseFloat(valor || 0).toFixed(2);
+    }
+
+    function getChave(chaveBase) {
+      return `${sistemaAtivo}_${chaveBase}`;
+    }
+
+    function carregarRelatorio() {
+      // ===== VENDAS =====
+      const vendas = JSON.parse(localStorage.getItem(getChave('vendas')) || '{}');
+      const tbodyVendas = document.getElementById('vendasBody');
+      tbodyVendas.innerHTML = '';
+      let totalApurado = 0, totalPagou = 0;
+
+      for (const vendedor in vendas) {
+        vendas[vendedor].forEach(v => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${vendedor}</td>
+            <td>${v.data || ''}</td>
+            <td>${formatar(v.recebeu)}</td>
+            <td>${formatar(v.devolveu)}</td>
+            <td>${formatar(v.vendeu)}</td>
+            <td>${formatar(v.apurou)}</td>
+            <td>${formatar(v.pagou)}</td>
+            <td>${formatar(v.deve)}</td>
+          `;
+          tbodyVendas.appendChild(tr);
+          totalApurado += parseFloat(v.apurou);
+          totalPagou += parseFloat(v.pagou);
+        });
+      }
+      document.getElementById('totalApurado').textContent = formatar(totalApurado);
+      document.getElementById('totalPagou').textContent = formatar(totalPagou);
+      document.getElementById('totalDeve').textContent = formatar(totalApurado - totalPagou);
+
+      // ===== DÉBITOS =====
+      const tbodyDebito = document.getElementById('debitoBody');
+      tbodyDebito.innerHTML = '';
+      for (const vendedor in vendas) {
+        let saldo = 0;
+        vendas[vendedor].forEach(v => saldo += (parseFloat(v.apurou) - parseFloat(v.pagou)));
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${vendedor}</td><td>${formatar(saldo)}</td>`;
+        tbodyDebito.appendChild(tr);
+      }
+
+      // ===== RECEITAS =====
+      const receitas = JSON.parse(localStorage.getItem(`receitas_${sistemaAtivo}`) || '[]');
+      const tbodyReceitas = document.getElementById('receitasBody');
+      tbodyReceitas.innerHTML = '';
+      let totalRec = 0;
+      receitas.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.descricao}</td><td>${formatar(r.valor)}</td>`;
+        tbodyReceitas.appendChild(tr);
+        totalRec += parseFloat(r.valor);
+      });
+      document.getElementById('totalReceitas').textContent = formatar(totalRec);
+
+      // ===== DESPESAS =====
+      const despesas = JSON.parse(localStorage.getItem(getChave('despesas')) || '[]');
+      const tbodyDespesas = document.getElementById('despesasBody');
+      tbodyDespesas.innerHTML = '';
+      let totalDes = 0;
+      despesas.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${d.descricao}</td><td>${formatar(d.valor)}</td>`;
+        tbodyDespesas.appendChild(tr);
+        totalDes += parseFloat(d.valor);
+      });
+      document.getElementById('totalDespesas').textContent = formatar(totalDes);
+    }
+
+    function exportarPDF() {
+      window.print();
+    }
+
+    window.onload = carregarRelatorio;
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro de Vendedores</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { padding: 20px; background: #f5f5f5; }
+    h1, h2 { color: #b30000; }
+    input, button, select { padding: 8px; margin: 5px; }
+    button { background: #b30000; color: white; border: none; cursor: pointer; border-radius: 4px; width: 30%;}
+    button:hover { background: #8a0000; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #ffcccc; }
+    .totais span { margin-right: 20px; font-weight: bold; }
+    #painelVendedor { margin-top: 20px; background: #fff; padding: 15px; border: 1px solid #b30000; border-radius: 6px; }
+    .acoes button { margin: 0 2px; }
+    /* Botão salvar vendas verde */
+    #btnSalvarVendas { background: #006400; width: auto; }
+    #btnSalvarVendas:hover { background: #004d00; }
+
+    /* Lista de vendedores em blocos (botões full-width) */
+    #listaVendedores { max-width: 900px; margin-top: 10px; }
+    .vendor-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .vendor-btn {
+      flex: 1;
+      text-align: left;
+      background: #fff;
+      color: #333;
+      border: 1px solid #d0d0d0;
+      padding: 12px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      width: 50%;
+    }
+    .vendor-btn:hover { background:#f3f3f3; }
+    .vendor-meta { font-size: 13px; color: #666; margin-left: 8px; }
+    .vendor-del {
+      background: #cc0000;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .vendor-del:hover { background:#990000; }
+
+    .sistema-wrap {
+      display: flex; gap: 8px; align-items: center; margin: 10px 0 15px 0;
+      background:#fff; border:1px solid #ddd; padding:10px; border-radius:6px; max-width:900px;
+    }
+    .badge-sistema {
+      display:inline-block; padding:6px 10px; border-radius:999px; background:#ffe6e6; color:#b30000; font-weight:bold; font-size:12px;
+    }
+
+    @media (max-width:600px){
+      .vendor-row { flex-direction: column; align-items: stretch; }
+      .vendor-del { width: 100%; }
+      button { width: 100%; }
+      .sistema-wrap { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Cadastro de Vendedores</h1>
+
+  <!-- Seletor de sistema -->
+  <div class="sistema-wrap">
+    <label for="sistemaSelect"><strong>Sistema:</strong></label>
+    <select id="sistemaSelect">
+      <option value="pitimbu">Pitimbu da Sorte</option>
+      <option value="timonha">Timonha da Sorte</option>
+    </select>
+    <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu da Sorte</span>
+  </div>
+
+  <div>
+    <input id="nome" placeholder="Nome do vendedor" />
+    <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0" />
+    <button onclick="salvarVendedor()">Salvar</button>
+    <button onclick="editarVendedor()">Editar</button>
+  </div>
+
+  <div id="listaVendedores"></div>
+
+  <div id="painelVendedor" style="display:none;">
+    <h2 id="tituloVendedor"></h2>
+    <button onclick="voltarCadastro()">Voltar ao cadastro</button>
+
+    <div style="margin-top:15px;">
+      <label>Filtrar por data: <input type="date" id="filtroData" /></label>
+      <button onclick="filtrarPorData()">Filtrar</button>
+      <button onclick="limparFiltro()">Limpar filtro</button>
+      <button onclick="exportarPDF()">Exportar em PDF</button>
+      <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
+    </div>
+
+    <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
+
+    <table id="tabelaVendas">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Recebeu</th>
+          <th>Devolveu</th>
+          <th>Vendeu</th>
+          <th>Apurou</th>
+          <th>Pagou</th>
+          <th>Deve</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="totais" style="margin-top:10px;">
+      <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
+      <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
+      <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
+    </div>
+  </div>
+
+  <script>
+    // ========= CONTEXTO DE SISTEMA (prefixo) =========
+    const selectSistema = document.getElementById('sistemaSelect');
+    const badgeSistema  = document.getElementById('badgeSistema');
+    let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+    selectSistema.value = sistemaAtivo;
+    atualizarBadge();
+
+    selectSistema.addEventListener('change', () => {
+      sistemaAtivo = selectSistema.value;
+      localStorage.setItem('sistemaAtivo', sistemaAtivo);
+      atualizarBadge();
+      loadAll();         // recarrega dados do sistema selecionado
+      voltarCadastro();  // fecha painel se aberto
+    });
+
+    function atualizarBadge() {
+      badgeSistema.textContent = 'Ativo: ' + (sistemaAtivo === 'pitimbu' ? 'Pitimbu da Sorte' : 'Timonha da Sorte');
+    }
+
+    function getChave(chaveBase) {
+      return `${sistemaAtivo}_${chaveBase}`;
+    }
+    function salvarDados(chaveBase, dados) {
+      localStorage.setItem(getChave(chaveBase), JSON.stringify(dados));
+    }
+    function carregarDados(chaveBase) {
+      const dados = localStorage.getItem(getChave(chaveBase));
+      try { return dados ? JSON.parse(dados) : null; } catch { return null; }
+    }
+
+    // ========= DADOS =========
+    let vendedores = [];
+    let vendas = {};
+    let vendedorAtual = null;
+
+    function loadAll() {
+      vendedores = carregarDados('vendedores') || [];
+      vendas = carregarDados('vendas') || {};
+      listarVendedores();
+    }
+
+    // ========= CRUD VENDEDOR =========
+    function salvarVendedor() {
+      const nome = document.getElementById('nome').value.trim();
+      const cotacao = parseFloat(document.getElementById('cotacao').value);
+      if (!nome || isNaN(cotacao) || cotacao <= 0) {
+        alert('Preencha corretamente o nome e cotação maior que zero.');
+        return;
+      }
+      if (vendedores.find(v => v.nome.toLowerCase() === nome.toLowerCase())) {
+        alert('Vendedor já cadastrado.');
+        return;
+      }
+      vendedores.push({ nome, cotacao });
+      salvarDados('vendedores', vendedores);
+      listarVendedores();
+      document.getElementById('nome').value = '';
+      document.getElementById('cotacao').value = '';
+    }
+
+    function editarVendedor() {
+      const nome = document.getElementById('nome').value.trim();
+      const cotacao = parseFloat(document.getElementById('cotacao').value);
+      if (!nome || isNaN(cotacao) || cotacao <= 0) {
+        alert('Preencha corretamente o nome e cotação maior que zero.');
+        return;
+      }
+      const index = vendedores.findIndex(v => v.nome.toLowerCase() === nome.toLowerCase());
+      if (index === -1) {
+        alert('Vendedor não encontrado.');
+        return;
+      }
+      vendedores[index].cotacao = cotacao;
+      salvarDados('vendedores', vendedores);
+      listarVendedores();
+      alert('Cotação atualizada.');
+      if (vendedorAtual === vendedores[index].nome) atualizarTabela(); // reflete cotação no painel
+    }
+
+    function listarVendedores() {
+      const div = document.getElementById('listaVendedores');
+      div.innerHTML = '';
+      vendedores.forEach(v => {
+        const row = document.createElement('div');
+        row.className = 'vendor-row';
+
+        const btn = document.createElement('button');
+        btn.className = 'vendor-btn';
+        btn.innerHTML = `<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)}</span>`;
+        btn.onclick = () => abrirPainel(v.nome);
+
+        const del = document.createElement('button');
+        del.className = 'vendor-del';
+        del.textContent = 'Excluir';
+        del.onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`Confirma a exclusão do vendedor "${v.nome}" e todo o histórico de vendas dele?`)) {
+            excluirVendedor(v.nome);
+          }
+        };
+
+        row.appendChild(btn);
+        row.appendChild(del);
+        div.appendChild(row);
+      });
+    }
+
+    function excluirVendedor(nome) {
+      vendedores = vendedores.filter(v => v.nome !== nome);
+      if (vendas[nome]) delete vendas[nome];
+      salvarDados('vendedores', vendedores);
+      salvarDados('vendas', vendas);
+      if (vendedorAtual === nome) {
+        voltarCadastro();
+      }
+      listarVendedores();
+      alert(`Vendedor "${nome}" excluído.`);
+    }
+
+    // ========= PAINEL & VENDAS =========
+    function abrirPainel(nome) {
+      vendedorAtual = nome;
+      document.getElementById('painelVendedor').style.display = 'block';
+      document.getElementById('tituloVendedor').textContent = nome;
+      atualizarTabela();
+    }
+
+    function adicionarLinha() {
+      const tbody = document.querySelector('#tabelaVendas tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="date"/></td>
+        <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+        <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+        <td><input type="number" readonly/></td>
+        <td><input type="number" readonly/></td>
+        <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+        <td><input type="number" readonly/></td>
+        <td class="acoes">
+          <button onclick="editarLinha(this)">Editar</button>
+          <button onclick="excluirLinha(this)">Excluir</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function editarLinha(btn) {
+      const inputs = btn.parentElement.parentElement.querySelectorAll('input');
+      inputs.forEach(input => input.readOnly = false);
+    }
+
+    function excluirLinha(btn) {
+      const linha = btn.parentElement.parentElement;
+      linha.remove();
+      salvarVendas();
+    }
+
+    function calcularLinha(elem) {
+      const tr = elem.closest('tr');
+      const inputs = tr.querySelectorAll('input');
+      const recebeu = parseFloat(inputs[1].value) || 0;
+      const devolveu = parseFloat(inputs[2].value) || 0;
+      const pagou = parseFloat(inputs[5].value) || 0;
+      const vendeu = recebeu - devolveu;
+      const cotacao = vendedores.find(v => v.nome === vendedorAtual)?.cotacao || 1;
+      const apurou = vendeu * cotacao;
+      const deve = apurou - pagou;
+
+      inputs[3].value = vendeu;
+      inputs[4].value = apurou.toFixed(2);
+      inputs[6].value = deve.toFixed(2);
+      atualizarTotais();
+    }
+
+    function salvarVendas() {
+      if (!vendedorAtual) return;
+      const linhas = document.querySelectorAll('#tabelaVendas tbody tr');
+      vendas[vendedorAtual] = [];
+      const cotacao = vendedores.find(v => v.nome === vendedorAtual)?.cotacao || 1;
+
+      linhas.forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        vendas[vendedorAtual].push({
+          data: inputs[0].value,
+          recebeu: parseFloat(inputs[1].value) || 0,
+          devolveu: parseFloat(inputs[2].value) || 0,
+          vendeu: parseFloat(inputs[3].value) || 0,
+          apurou: parseFloat(inputs[4].value) || 0,
+          pagou: parseFloat(inputs[5].value) || 0,
+          deve: parseFloat(inputs[6].value) || 0,
+          cotacao: cotacao
+        });
+      });
+      salvarDados('vendas', vendas);
+      atualizarTotais();
+      alert('Vendas salvas com sucesso.');
+    }
+
+    function atualizarTabela(filtrarData = '') {
+      const tbody = document.querySelector('#tabelaVendas tbody');
+      tbody.innerHTML = '';
+      (vendas[vendedorAtual] || []).forEach(v => {
+        if (filtrarData && v.data !== filtrarData) return;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="date" value="${v.data || ''}"/></td>
+          <td><input type="number" value="${v.recebeu ?? 0}" onchange="calcularLinha(this)" min="0"/></td>
+          <td><input type="number" value="${v.devolveu ?? 0}" onchange="calcularLinha(this)" min="0"/></td>
+          <td><input type="number" value="${v.vendeu ?? 0}" readonly /></td>
+          <td><input type="number" value="${v.apurou ?? 0}" readonly /></td>
+          <td><input type="number" value="${v.pagou ?? 0}" onchange="calcularLinha(this)" min="0"/></td>
+          <td><input type="number" value="${v.deve ?? 0}" readonly /></td>
+          <td class="acoes">
+            <button onclick="editarLinha(this)">Editar</button>
+            <button onclick="excluirLinha(this)">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      atualizarTotais();
+    }
+
+    function atualizarTotais() {
+      const lista = vendas[vendedorAtual] || [];
+      let apurado = 0, pagou = 0;
+      lista.forEach(v => {
+        apurado += Number(v.apurou) || 0;
+        pagou += Number(v.pagou) || 0;
+      });
+      document.getElementById('totalApurado').textContent = apurado.toFixed(2);
+      document.getElementById('totalPagou').textContent = pagou.toFixed(2);
+      document.getElementById('totalDeve').textContent = (apurado - pagou).toFixed(2);
+    }
+
+    function filtrarPorData() {
+      const data = document.getElementById('filtroData').value;
+      atualizarTabela(data);
+    }
+
+    function limparFiltro() {
+      document.getElementById('filtroData').value = '';
+      atualizarTabela();
+    }
+
+    function exportarPDF() {
+      window.print();
+    }
+
+    function voltarCadastro() {
+      document.getElementById('painelVendedor').style.display = 'none';
+      vendedorAtual = null;
+      // limpa tabela e totais para evitar confusão ao trocar sistema
+      document.querySelector('#tabelaVendas tbody').innerHTML = '';
+      document.getElementById('totalApurado').textContent = '0.00';
+      document.getElementById('totalPagou').textContent = '0.00';
+      document.getElementById('totalDeve').textContent = '0.00';
+    }
+
+    // inicializa dados
+    loadAll();
+  </script>
+</body>
+</html>

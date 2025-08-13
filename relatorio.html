@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Relatório de Vendas</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+  h1 { text-align: center; }
+  .filtros { margin: 20px 0; text-align: center; }
+  button { padding: 6px 12px; margin: 5px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+  th { background-color: #ccc; }
+  hr { margin: 30px 0; }
+  #totalDia { font-weight: bold; color: #b30000; margin-top: 20px; }
+</style>
+</head>
+<body>
+  <h1>RELATÓRIO DE VENDAS</h1>
+
+  <div class="filtros">
+    <label for="sistemaSelect">Sistema:</label>
+    <select id="sistemaSelect" onchange="gerarRelatorio()">
+      <option value="pitimbu">Pitimbu da Sorte</option>
+      <option value="timonha">Timonha da Sorte</option>
+    </select>
+    <br/>
+    <label for="filtroData">Filtrar por data:</label>
+    <input type="date" id="filtroData" />
+    <button onclick="gerarRelatorio()">Consultar</button>
+    <button onclick="gerarPDF()">Exportar PDF</button>
+  </div>
+
+  <div id="relatorioContainer"></div>
+  <div id="totalDia"></div>
+
+  <!-- jsPDF + html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    function getPrefixo() {
+      return document.getElementById('sistemaSelect').value + '_';
+    }
+
+    function gerarRelatorio() {
+      const container = document.getElementById('relatorioContainer');
+      const totalDiaDiv = document.getElementById('totalDia');
+      container.innerHTML = '';
+      totalDiaDiv.innerHTML = '';
+      const filtroData = document.getElementById('filtroData').value;
+      const prefixo = getPrefixo();
+
+      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores')) || [];
+      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas')) || {};
+
+      let algumResultado = false;
+
+      vendedores.forEach(vendedor => {
+        const nome = vendedor.nome;
+        const cotacao = parseFloat(vendedor.cotacao) || 1;
+        const historico = vendas[nome] || [];
+
+        const vendasFiltradas = historico.filter(v => {
+          if (!filtroData) return true;
+          return v.data === filtroData;
+        });
+
+        if (vendasFiltradas.length === 0) return;
+
+        algumResultado = true;
+
+        let html = `
+          <h3>${nome.toUpperCase()}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Recebeu</th>
+                <th>Devolveu</th>
+                <th>Vendeu</th>
+                <th>Apurou</th>
+                <th>Pagou</th>
+                <th>Deve</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        vendasFiltradas.forEach(v => {
+          const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+          const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * cotacao;
+          const pagou = v.pagou || 0;
+          const deve = apurou - pagou;
+
+          html += `
+            <tr>
+              <td>${v.data || ''}</td>
+              <td>${v.recebeu || 0}</td>
+              <td>${v.devolveu || 0}</td>
+              <td>${vendeu}</td>
+              <td>R$ ${apurou.toFixed(2)}</td>
+              <td>R$ ${pagou.toFixed(2)}</td>
+              <td>R$ ${deve.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+
+        html += '</tbody></table><hr>';
+        container.innerHTML += html;
+      });
+
+      if (!algumResultado) {
+        container.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+        return;
+      }
+
+      if (filtroData) {
+        let totalApuradoDia = 0;
+        let detalhesVendedores = [];
+
+        vendedores.forEach(vendedor => {
+          const nome = vendedor.nome;
+          const vendasDoVendedor = vendas[nome] || [];
+          const vendasNoDia = vendasDoVendedor.filter(v => v.data === filtroData);
+
+          if (vendasNoDia.length > 0) {
+            let somaApuradoVendedor = 0;
+            vendasNoDia.forEach(v => {
+              const cotacao = parseFloat(vendedor.cotacao) || 1;
+              const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+              const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * cotacao;
+              somaApuradoVendedor += apurou;
+            });
+            if (somaApuradoVendedor > 0) {
+              detalhesVendedores.push({ nome, valor: somaApuradoVendedor });
+              totalApuradoDia += somaApuradoVendedor;
+            }
+          }
+        });
+
+        if (detalhesVendedores.length > 0) {
+          let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+          htmlResumo += '<ul>';
+          detalhesVendedores.forEach(v => {
+            htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`;
+          });
+          htmlResumo += '</ul>';
+          totalDiaDiv.innerHTML = htmlResumo;
+        }
+      }
+    }
+
+    async function gerarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      const container = document.getElementById('relatorioContainer');
+      const totalDia = document.getElementById('totalDia');
+
+      const cloneContainer = container.cloneNode(true);
+      const cloneTotal = totalDia.cloneNode(true);
+
+      const tempDiv = document.createElement('div');
+      tempDiv.style.padding = '10px';
+      tempDiv.appendChild(cloneContainer);
+      tempDiv.appendChild(cloneTotal);
+      document.body.appendChild(tempDiv);
+
+      await doc.html(tempDiv, {
+        callback: function(pdf) {
+          pdf.save('relatorio_vendas.pdf');
+          document.body.removeChild(tempDiv);
+        },
+        x: 10,
+        y: 10,
+        html2canvas: { scale: 0.8 }
+      });
+    }
+
+    window.onload = gerarRelatorio;
+  </script>
+</body>
+</html>

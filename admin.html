@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Sistema</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    color: #b30000;
+    margin-bottom: 30px;
+  }
+  .botao-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+  }
+  .botao-container button {
+    padding: 15px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .botao-container button:hover {
+    opacity: 0.8;
+  }
+  .caixa { background-color: #4CAF50; }
+  .relatorio { background-color: #2196F3; }
+  .backup { background-color: #FF9800; }
+  .relatoriofinal { background-color: #9C27B0; }
+  .sair { background-color: #f44336; }
+</style>
+</head>
+<body>
+
+<h1>Painel Administrativo</h1>
+
+<div class="botao-container">
+  <button class="caixa" onclick="abrirPagina('caixa.html')">Caixa</button>
+  <button class="relatorio" onclick="abrirPagina('relatorio.html')">Relatório</button>
+  <button class="backup" onclick="abrirPagina('backup.html')">Backup</button>
+  <button class="relatoriofinal" onclick="abrirPagina('relatoriofinal.html')">Relatório Final</button>
+  <button class="sair" onclick="sair()">Sair</button>
+</div>
+
+<script>
+function abrirPagina(pagina) {
+  window.location.href = pagina;
+}
+
+function sair() {
+  window.location.href = 'login.html';
+}
+</script>
+
+</body>
+</html>

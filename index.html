@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Sistema</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .login-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 300px;
+  }
+  h1 {
+    text-align: center;
+    color: #b30000;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #b30000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #900000;
+  }
+  #msg {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h1>Login</h1>
+  <label for="usuario">Usuário:</label>
+  <input type="text" id="usuario" placeholder="Digite o usuário">
+
+  <label for="senha">Senha:</label>
+  <input type="password" id="senha" placeholder="Digite a senha">
+
+  <button onclick="fazerLogin()">Entrar</button>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+function fazerLogin() {
+  const usuario = document.getElementById('usuario').value.trim().toLowerCase();
+  const senha = document.getElementById('senha').value.trim();
+
+  if (senha !== '1552') {
+    document.getElementById('msg').textContent = 'Senha incorreta!';
+    return;
+  }
+
+  if (usuario === 'benedito') {
+    window.location.href = 'painel.html';
+  } else if (usuario === 'admin') {
+    window.location.href = 'admin.html';
+  } else {
+    document.getElementById('msg').textContent = 'Usuário inválido!';
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repasses - Extrato Bancário</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 20px; }
+  h1 { text-align: center; color: #b30000; margin-bottom: 20px; }
+  label { display: block; margin: 10px 0 5px; font-weight: bold; }
+  input[type="text"], input[type="number"], input[type="date"], select {
+    width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;
+  }
+  button {
+    padding: 10px 15px; margin-right: 5px; border: none; border-radius: 4px; cursor: pointer;
+    background-color: #b30000; color: white;
+  }
+  button:hover { background-color: #900000; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background-color: #ffcccc; }
+  tfoot td { font-weight: bold; background-color: #ffe6e6; }
+  #btnExport { background:#006400; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Repasses - Extrato Bancário</h1>
+
+<label for="sistemaSelect">Sistema:</label>
+<select id="sistemaSelect">
+  <option value="pitimbu">Pitimbu da Sorte</option>
+  <option value="timonha">Timonha da Sorte</option>
+</select>
+
+<div>
+  <label>Valor do Repasse (R$):</label>
+  <input type="number" id="valorRepasse" min="0" step="0.01" />
+  
+  <label>Descrição:</label>
+  <input type="text" id="descricaoRepasse" />
+  
+  <label>Data:</label>
+  <input type="date" id="dataRepasse" />
+  
+  <label>Recebedor:</label>
+  <input type="text" id="recebedorRepasse" />
+
+  <button onclick="salvarRepasse()">Salvar</button>
+  <button onclick="editarRepasse()">Editar</button>
+</div>
+
+<table id="tabelaRepasses">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Recebedor</th>
+      <th>Descrição</th>
+      <th>Valor (R$)</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3">Total</td>
+      <td id="totalRepasses">0.00</td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+
+<button id="btnExport" onclick="exportarExtrato()">Exportar Extrato (JPG)</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const sistemaSelect = document.getElementById('sistemaSelect');
+  let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+  sistemaSelect.value = sistemaAtivo;
+
+  let repasses = JSON.parse(localStorage.getItem(getChave('repasses')) || '[]');
+  let editarIndex = -1;
+
+  sistemaSelect.addEventListener('change', () => {
+    sistemaAtivo = sistemaSelect.value;
+    localStorage.setItem('sistemaAtivo', sistemaAtivo);
+    editarIndex = -1;
+    limparFormulario();
+    carregarRepasses();
+  });
+
+  function getChave(base) {
+    return `${sistemaAtivo}_${base}`;
+  }
+
+  function carregarRepasses() {
+    repasses = JSON.parse(localStorage.getItem(getChave('repasses')) || '[]');
+    const tbody = document.querySelector('#tabelaRepasses tbody');
+    tbody.innerHTML = '';
+    let total = 0;
+
+    repasses.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.data}</td>
+        <td>${r.recebedor}</td>
+        <td>${r.descricao}</td>
+        <td>${parseFloat(r.valor).toFixed(2)}</td>
+        <td>
+          <button onclick="editarLinha(${i})" style="background:#ffa500;">Editar</button>
+          <button onclick="excluirLinha(${i})" style="background:#900000;">Excluir</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      total += parseFloat(r.valor);
+    });
+    document.getElementById('totalRepasses').textContent = total.toFixed(2);
+  }
+
+  function salvarRepasse() {
+    const valor = parseFloat(document.getElementById('valorRepasse').value);
+    const descricao = document.getElementById('descricaoRepasse').value.trim();
+    const data = document.getElementById('dataRepasse').value;
+    const recebedor = document.getElementById('recebedorRepasse').value.trim();
+
+    if (isNaN(valor) || valor <= 0 || !descricao || !data || !recebedor) {
+      alert('Preencha todos os campos corretamente.');
+      return;
+    }
+
+    if (editarIndex >= 0) {
+      repasses[editarIndex] = { valor, descricao, data, recebedor };
+      editarIndex = -1;
+    } else {
+      repasses.push({ valor, descricao, data, recebedor });
+    }
+
+    localStorage.setItem(getChave('repasses'), JSON.stringify(repasses));
+    limparFormulario();
+    carregarRepasses();
+  }
+
+  function editarLinha(index) {
+    editarIndex = index;
+    document.getElementById('valorRepasse').value = repasses[index].valor;
+    document.getElementById('descricaoRepasse').value = repasses[index].descricao;
+    document.getElementById('dataRepasse').value = repasses[index].data;
+    document.getElementById('recebedorRepasse').value = repasses[index].recebedor;
+  }
+
+  function excluirLinha(index) {
+    if (!confirm('Deseja realmente excluir este repasse?')) return;
+    repasses.splice(index, 1);
+    localStorage.setItem(getChave('repasses'), JSON.stringify(repasses));
+    carregarRepasses();
+    limparFormulario();
+    editarIndex = -1;
+  }
+
+  function limparFormulario() {
+    document.getElementById('valorRepasse').value = '';
+    document.getElementById('descricaoRepasse').value = '';
+    document.getElementById('dataRepasse').value = '';
+    document.getElementById('recebedorRepasse').value = '';
+  }
+
+  function exportarExtrato() {
+    const elemento = document.body;
+    html2canvas(elemento).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `extrato_repasses_${sistemaAtivo}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.click();
+    });
+  }
+
+  window.onload = carregarRepasses;
+</script>
+
+</body>
+</html>

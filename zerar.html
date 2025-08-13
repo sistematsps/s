@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prestar Contas - Pitimbu / Timonha da Sorte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #b30000;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    select {
+      padding: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 25px;
+      background-color: #b30000;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #8a0000;
+    }
+    #mensagem {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Prestar Contas</h1>
+  <label for="sistemaSelect">Escolha o Sistema:</label>
+  <select id="sistemaSelect">
+    <option value="pitimbu">Pitimbu da Sorte</option>
+    <option value="timonha">Timonha da Sorte</option>
+  </select>
+
+  <p>Aqui você pode zerar todo o sistema selecionado, exceto os vendedores cadastrados.</p>
+
+  <button onclick="resetarSistema()">Zerar Tudo (Protegido)</button>
+
+  <div id="mensagem"></div>
+
+  <script>
+    function getPrefixo() {
+      return document.getElementById('sistemaSelect').value + "_";
+    }
+
+    function resetarSistema() {
+      const senha = prompt("Digite a senha para confirmar o reset do sistema:");
+
+      if (senha === null) {
+        mostrarMensagem("Ação cancelada.", false);
+        return;
+      }
+
+      const senhaCorreta = "admin1234"; // altere para sua senha
+
+      if (senha === senhaCorreta) {
+        const prefixo = getPrefixo();
+
+        // Guardar vendedores do sistema selecionado
+        const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
+
+        // Apagar todos os dados do sistema selecionado, incluindo receitas
+        ['vendas', 'despesas', 'receitas'].forEach(tipo => {
+          localStorage.removeItem(prefixo + tipo);
+        });
+
+        // Regravar vendedores
+        localStorage.setItem(prefixo + 'vendedores', JSON.stringify(vendedores));
+
+        mostrarMensagem(`Sistema "${document.getElementById('sistemaSelect').value}" zerado com sucesso, vendedores mantidos.`, true);
+      } else {
+        mostrarMensagem("Senha incorreta. Ação não realizada.", false);
+      }
+    }
+
+    function mostrarMensagem(texto, sucesso) {
+      const div = document.getElementById("mensagem");
+      div.textContent = texto;
+      div.style.color = sucesso ? "green" : "red";
+    }
+  </script>
+
+</body>
+</html>
