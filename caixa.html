@@ -14,7 +14,7 @@
     th { background: #ffcccc; }
     .total-box { margin: 20px 0; padding: 15px; background: #fff3f3; border: 1px solid #b30000; }
     .totais span { display: inline-block; min-width: 150px; margin-right: 20px; font-weight: bold; }
-    hr { margin: 30px 0; border: 1px solid geen; }
+    hr { margin: 30px 0; border: 1px solid #b30000; }
   </style>
 </head>
 <body>
@@ -82,7 +82,7 @@
   <h2>Partilha de Recursos</h2>
   <div class="total-box">
     <p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
-    <p>JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
+    <p id="linhaJose">JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
     <p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
   </div>
 
@@ -152,14 +152,15 @@
       const saldoFinal = saldoAnterior + apurado - despesasTotais;
       document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
 
-      // Partilha dinâmica
+      // Partilha dinâmica + ocultar José
       if (document.getElementById("sistemaSelect").value === "pitimbu") {
+        document.getElementById('linhaJose').style.display = "block";
         document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
         document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
         document.getElementById('pedro').textContent = formatar(saldoFinal * 0.50);
       } else {
+        document.getElementById('linhaJose').style.display = "none";
         document.getElementById('benedito').textContent = formatar(saldoFinal * 0.10);
-        document.getElementById('jose').textContent = formatar(0);
         document.getElementById('pedro').textContent = formatar(saldoFinal * 0.90);
       }
 
@@ -224,4 +225,3 @@
   </script>
 </body>
 </html>
-
