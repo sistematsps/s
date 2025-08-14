@@ -1,42 +1,30 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-
-
-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Despesas - Pitimbu da Sorte</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body { padding: 20px; background: #f5f5f5; }
 h1 { color: green; }
 label { display: block; margin: 10px 0 5px; font-weight: bold; }
-input[type="text"], input[type="number"], input[type="date"], 
-
-select {
-  width: 100%; padding: 8px; margin-bottom: 10px; border: 1px 
-
-solid #ccc; border-radius: 4px;
+input[type="text"], input[type="number"], input[type="date"], select {
+  width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;
 }
 button {
-  background-color: green; color: white; padding: 10px 20px; 
-
-border: none;
+  background-color: green; color: white; padding: 10px 20px; border: none;
   border-radius: 4px; cursor: pointer; margin-top: 10px;
 }
 button:hover { background-color: #900000; }
 table {
-  width: 100%; border-collapse: collapse; margin-top: 20px; 
-
-background: #fff;
+  width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff;
 }
 th, td {
   border: 1px solid #ccc; padding: 8px; text-align: center;
 }
 th { background: #ffcccc; }
-.acoes button { margin: 0 3px; padding: 5px 10px; font-size: 
-
-14px; }
+.acoes button { margin: 0 3px; padding: 5px 10px; font-size: 14px; }
 @media (max-width: 600px) {
   button { width: 100%; margin-bottom: 8px; }
   .acoes button { width: 48%; margin-bottom: 5px; }
@@ -79,21 +67,11 @@ th { background: #ffcccc; }
 <tbody></tbody>
 </table>
 
-<button id="btnExportar" style="margin-top:20px;">Exportar 
-
-Despesas</button>
+<button id="btnExportar" style="margin-top:20px;">Exportar Despesas</button>
 
 <script type="module">
-import { initializeApp } from 
-
-"https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, 
-
-deleteDoc, doc } from 
-
-"https://www.gstatic.com/firebasejs/10.4.0/firebase-
-
-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 // Config Firebase
 const firebaseConfig = {
@@ -138,9 +116,7 @@ function listarDespesas(){
   tbody.innerHTML = '';
   despesas.forEach((d,i)=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${d.data||''}</td><td>
-
-${d.descricao||''}</td><td>${Number(d.valor).toFixed(2)}</td>
+    tr.innerHTML = `<td>${d.data||''}</td><td>${d.descricao||''}</td><td>${Number(d.valor).toFixed(2)}</td>
     <td class="acoes">
       <button onclick="editarDespesa(${i})">Editar</button>
       <button onclick="excluirDespesa(${i})">Excluir</button>
@@ -149,22 +125,14 @@ ${d.descricao||''}</td><td>${Number(d.valor).toFixed(2)}</td>
   });
 }
 
-document.getElementById('btnSalvar').addEventListener('click', 
-
-salvarDespesa);
+document.getElementById('btnSalvar').addEventListener('click', salvarDespesa);
 
 async function salvarDespesa(){
-  const valor = parseFloat(document.getElementById
-
-('valorDespesa').value);
-  const descricao = document.getElementById
-
-('descricaoDespesa').value.trim();
+  const valor = parseFloat(document.getElementById('valorDespesa').value);
+  const descricao = document.getElementById('descricaoDespesa').value.trim();
   const data = document.getElementById('dataDespesa').value;
 
-  if(isNaN(valor)||valor<=0){ alert('Informe um valor válido.'); 
-
-return; }
+  if(isNaN(valor)||valor<=0){ alert('Informe um valor válido.'); return; }
   if(!descricao){ alert('Informe a descrição.'); return; }
   if(!data){ alert('Informe a data.'); return; }
 
@@ -172,9 +140,7 @@ return; }
 
   if(editarIndex !== null){
     // Atualizar Firestore
-    await updateDoc(doc(db,getColecao().path,editarId), 
-
-despesa);
+    await updateDoc(doc(db,getColecao().path,editarId), despesa);
     editarIndex = null; editarId = null;
   } else {
     const docRef = await addDoc(getColecao(), despesa);
@@ -188,9 +154,7 @@ despesa);
 window.editarDespesa = function(i){
   const d = despesas[i];
   document.getElementById('valorDespesa').value = d.valor;
-  document.getElementById('descricaoDespesa').value = 
-
-d.descricao;
+  document.getElementById('descricaoDespesa').value = d.descricao;
   document.getElementById('dataDespesa').value = d.data;
   editarIndex = i;
   editarId = d.id;
@@ -212,13 +176,9 @@ function limparFormulario(){
   editarIndex = null; editarId = null;
 }
 
-document.getElementById('btnExportar').addEventListener
+document.getElementById('btnExportar').addEventListener('click',()=>window.print());
 
-('click',()=>window.print());
-
-window.onload = () => { carregarDespesas(); sistemaAtivo = 
-
-sistemaSelect.value; }
+window.onload = () => { carregarDespesas(); sistemaAtivo = sistemaSelect.value; }
 </script>
 
 </body>

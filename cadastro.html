@@ -1,56 +1,28 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-
-
-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Cadastro de Vendedores - Pitimbu/Timonha da Sorte</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body { padding: 20px; background: #f5f5f5; }
 h1, h2 { color: green; }
 input, button, select { padding: 8px; margin: 5px; }
-button { background: green; color: white; border: none; cursor: 
-
-pointer; border-radius: 4px; width: 30%; }
+button { background: green; color: white; border: none; cursor: pointer; border-radius: 4px; width: 30%; }
 button:hover { background: blue; }
-table { width: 100%; border-collapse: collapse; margin-top: 
-
-10px; background: #fff; }
-th, td { border: 1px solid #ccc; padding: 8px; text-align: 
-
-center; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 th { background: white; }
-.vendor-row { display:flex; gap:8px; margin-bottom:8px; align-
-
-items:center; }
-.vendor-btn { flex:1; text-align:left; background: yellow; 
-
-color:#333; border:1px solid #d0d0d0; padding:12px 14px; font-
-
-size:16px; border-radius:6px; cursor:pointer; }
+.vendor-row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+.vendor-btn { flex:1; text-align:left; background: yellow; color:#333; border:1px solid #d0d0d0; padding:12px 14px; font-size:16px; border-radius:6px; cursor:pointer; }
 .vendor-btn:hover { background:#f3f3f3; }
 .vendor-meta { font-size:16px; color:#666; margin-left:8px; }
-.vendor-del { background:black; color:white; border:none; 
-
-padding:8px 12px; border-radius:6px; cursor:pointer; }
+.vendor-del { background:black; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 .vendor-del:hover { background:#990000; }
-#painelVendedor { margin-top:20px; background:#fff; 
-
-padding:15px; border:1px solid #b30000; border-radius:6px; 
-
-display:none; }
-.sistema-wrap { display:flex; gap:8px; align-items:center; 
-
-margin:10px 0; background:#fff; border:1px solid #ddd; 
-
-padding:10px; border-radius:6px; max-width:700px; }
-.badge-sistema { display:inline-block; padding:6px 10px; 
-
-border-radius:999px; background:#ffe6e6; color:#b30000; font-
-
-weight:bold; font-size:12px; }
+#painelVendedor { margin-top:20px; background:#fff; padding:15px; border:1px solid #b30000; border-radius:6px; display:none; }
+.sistema-wrap { display:flex; gap:8px; align-items:center; margin:10px 0; background:#fff; border:1px solid #ddd; padding:10px; border-radius:6px; max-width:700px; }
+.badge-sistema { display:inline-block; padding:6px 10px; border-radius:999px; background:#ffe6e6; color:#b30000; font-weight:bold; font-size:12px; }
 .totais span { margin-right:20px; font-weight:bold; }
 </style>
 </head>
@@ -64,16 +36,12 @@ weight:bold; font-size:12px; }
     <option value="pitimbu">Pitimbu da Sorte</option>
     <option value="timonha">Timonha da Sorte</option>
   </select>
-  <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu 
-
-da Sorte</span>
+  <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu da Sorte</span>
 </div>
 
 <div>
   <input id="nome" placeholder="Nome do vendedor"/>
-  <input id="cotacao" placeholder="Cotação" type="number" 
-
-step="0.01" min="0"/>
+  <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0"/>
   <button onclick="salvarVendedor()">Salvar</button>
   <button onclick="editarVendedor()">Editar</button>
 </div>
@@ -85,20 +53,14 @@ step="0.01" min="0"/>
   <button onclick="voltarCadastro()">Voltar ao cadastro</button>
   
   <div style="margin-top:15px;">
-    <label>Filtrar por data: <input type="date" 
-
-id="filtroData"/></label>
+    <label>Filtrar por data: <input type="date" id="filtroData"/></label>
     <button onclick="filtrarPorData()">Filtrar</button>
     <button onclick="limparFiltro()">Limpar filtro</button>
     <button onclick="exportarPDF()">Exportar em PDF</button>
-    <button id="btnSalvarVendas" onclick="salvarVendas()" 
-
-style="margin-left:10px;">Salvar Vendas</button>
+    <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
   </div>
   
-  <button style="margin-top:15px;" onclick="adicionarLinha
-
-()">Adicionar venda</button>
+  <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
   
   <table id="tabelaVendas">
     <thead>
@@ -117,27 +79,15 @@ style="margin-left:10px;">Salvar Vendas</button>
   </table>
 
   <div class="totais" style="margin-top:10px;">
-    <span>Total Apurado: R$ <span 
-
-id="totalApurado">0.00</span></span>
-    <span>Total Pagou: R$ <span 
-
-id="totalPagou">0.00</span></span>
+    <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
+    <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
     <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
   </div>
 </div>
 
 <script type="module">
-import { initializeApp } from 
-
-"https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, setDoc, doc, getDocs, 
-
-deleteDoc } from 
-
-"https://www.gstatic.com/firebasejs/10.13.1/firebase-
-
-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, setDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
@@ -154,9 +104,7 @@ const db = getFirestore(app);
 
 const selectSistema = document.getElementById('sistemaSelect');
 const badgeSistema  = document.getElementById('badgeSistema');
-let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 
-
-'pitimbu';
+let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
 selectSistema.value = sistemaAtivo;
 atualizarBadge();
 
@@ -169,50 +117,30 @@ selectSistema.addEventListener('change', () => {
 });
 
 function atualizarBadge() {
-  badgeSistema.textContent = 'Ativo: ' + 
-
-(sistemaAtivo==='pitimbu'?'Pitimbu da Sorte':'Timonha da 
-
-Sorte');
+  badgeSistema.textContent = 'Ativo: ' + (sistemaAtivo==='pitimbu'?'Pitimbu da Sorte':'Timonha da Sorte');
 }
 
-function getChave(chaveBase) { return `${sistemaAtivo}_
-
-${chaveBase}`; }
-function salvarDados(chaveBase, dados) { localStorage.setItem
-
-(getChave(chaveBase), JSON.stringify(dados)); }
-function carregarDados(chaveBase) { const 
-
-d=localStorage.getItem(getChave(chaveBase)); try{return d?
-
-JSON.parse(d):null}catch{return null;} }
+function getChave(chaveBase) { return `${sistemaAtivo}_${chaveBase}`; }
+function salvarDados(chaveBase, dados) { localStorage.setItem(getChave(chaveBase), JSON.stringify(dados)); }
+function carregarDados(chaveBase) { const d=localStorage.getItem(getChave(chaveBase)); try{return d?JSON.parse(d):null}catch{return null;} }
 
 let vendedores = [];
 let vendas = {};
 let vendedorAtual = null;
 
 // ===== Firestore CRUD =====
-async function salvarVendedoresFirestore(sistema, lista){ for
-
-(let vend of lista){ await setDoc(doc(db, `${sistema}
-
-_vendedores`, vend.nome), vend); } }
+async function salvarVendedoresFirestore(sistema, lista){ for(let vend of lista){ await setDoc(doc(db, `${sistema}_vendedores`, vend.nome), vend); } }
 async function excluirVendedorFirestore(sistema, nome){
   await deleteDoc(doc(db, `${sistema}_vendedores`, nome));
   const colPath = `${sistema}_vendas_${nome}`;
   const snap = await getDocs(collection(db,colPath));
-  const del=[]; snap.forEach(d=>del.push(deleteDoc(doc
-
-(db,colPath,d.id))));
+  const del=[]; snap.forEach(d=>del.push(deleteDoc(doc(db,colPath,d.id))));
   await Promise.all(del);
 }
 async function salvarVendasFirestore(sistema,vendedor,lista){
   const colPath=`${sistema}_vendas_${vendedor}`;
   const existing = await getDocs(collection(db,colPath));
-  const del=[]; existing.forEach(d=>del.push(deleteDoc(doc
-
-(db,colPath,d.id)))); await Promise.all(del);
+  const del=[]; existing.forEach(d=>del.push(deleteDoc(doc(db,colPath,d.id)))); await Promise.all(del);
   for(let i=0;i<lista.length;i++){
     const v=lista[i];
     const base=v.data?v.data.replaceAll('-',''):'semdata';
@@ -220,34 +148,16 @@ async function salvarVendasFirestore(sistema,vendedor,lista){
     await setDoc(doc(db,colPath,idDoc),v);
   }
 }
-async function carregarVendedoresFirestore(sistema){ const 
-
-snap=await getDocs(collection(db,`${sistema}_vendedores`)); let 
-
-arr=[]; snap.forEach(d=>arr.push(d.data())); return arr; }
-async function carregarVendasFirestore(sistema,vendedor){ const 
-
-snap=await getDocs(collection(db,`${sistema}_vendas_${vendedor}
-
-`)); let arr=[]; snap.forEach(d=>arr.push(d.data())); return 
-
-arr; }
+async function carregarVendedoresFirestore(sistema){ const snap=await getDocs(collection(db,`${sistema}_vendedores`)); let arr=[]; snap.forEach(d=>arr.push(d.data())); return arr; }
+async function carregarVendasFirestore(sistema,vendedor){ const snap=await getDocs(collection(db,`${sistema}_vendas_${vendedor}`)); let arr=[]; snap.forEach(d=>arr.push(d.data())); return arr; }
 
 // ===== Carregamento inicial =====
 async function loadAll(){
-  try{ vendedores=await carregarVendedoresFirestore
-
-(sistemaAtivo); } catch{ vendedores=carregarDados
-
-('vendedores')||[]; }
+  try{ vendedores=await carregarVendedoresFirestore(sistemaAtivo); } catch{ vendedores=carregarDados('vendedores')||[]; }
   vendas={};
   for(let vend of vendedores){
     let vendasVend=[];
-    try{ vendasVend = await carregarVendasFirestore
-
-(sistemaAtivo,vend.nome); } catch{ vendasVend = (carregarDados
-
-('vendas')||{})[vend.nome]||[]; }
+    try{ vendasVend = await carregarVendasFirestore(sistemaAtivo,vend.nome); } catch{ vendasVend = (carregarDados('vendas')||{})[vend.nome]||[]; }
     vendas[vend.nome]=vendasVend;
   }
   listarVendedores();
@@ -256,267 +166,85 @@ async function loadAll(){
 // ===== CRUD Vendedor =====
 async function salvarVendedor(){
   const nome=document.getElementById('nome').value.trim();
-  const cotacao=parseFloat(document.getElementById
-
-('cotacao').value);
-  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha 
-
-corretamente o nome e cotação maior que zero.'); return; }
-  if(vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase
-
-())){ alert('Vendedor já cadastrado.'); return; }
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
+  if(vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase())){ alert('Vendedor já cadastrado.'); return; }
   vendedores.push({nome,cotacao});
   salvarDados('vendedores',vendedores);
-  try{ await salvarVendedoresFirestore(sistemaAtivo,vendedores); 
-
-} catch{}
-  listarVendedores(); document.getElementById('nome').value=''; 
-
-document.getElementById('cotacao').value='';
+  try{ await salvarVendedoresFirestore(sistemaAtivo,vendedores); } catch{}
+  listarVendedores(); document.getElementById('nome').value=''; document.getElementById('cotacao').value='';
 }
 async function editarVendedor(){
   const nome=document.getElementById('nome').value.trim();
-  const cotacao=parseFloat(document.getElementById
-
-('cotacao').value);
-  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha 
-
-corretamente o nome e cotação maior que zero.'); return; }
-  const index=vendedores.findIndex(v=>v.nome.toLowerCase()
-
-===nome.toLowerCase());
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
+  const index=vendedores.findIndex(v=>v.nome.toLowerCase()===nome.toLowerCase());
   if(index===-1){ alert('Vendedor não encontrado.'); return; }
   vendedores[index].cotacao=cotacao;
   salvarDados('vendedores',vendedores);
-  try{ await salvarVendedoresFirestore(sistemaAtivo,vendedores); 
-
-} catch{}
+  try{ await salvarVendedoresFirestore(sistemaAtivo,vendedores); } catch{}
   listarVendedores(); alert('Cotação atualizada.');
   if(vendedorAtual===vendedores[index].nome) atualizarTabela();
 }
 
 function listarVendedores(){
-  const div=document.getElementById('listaVendedores'); 
-
-div.innerHTML='';
+  const div=document.getElementById('listaVendedores'); div.innerHTML='';
   vendedores.forEach(v=>{
-    const row=document.createElement('div'); 
-
-row.className='vendor-row';
-    const btn=document.createElement('button'); 
-
-btn.className='vendor-btn';
-    btn.innerHTML=`<strong>${v.nome}</strong> <span 
-
-class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)}
-
-</span>`; btn.onclick=()=>abrirPainel(v.nome);
-    const del=document.createElement('button'); 
-
-del.className='vendor-del'; del.textContent='Excluir';
-    del.onclick=async e=>{ e.stopPropagation(); if(confirm
-
-(`Confirma a exclusão do vendedor "${v.nome}" e todo histórico?
-
-`)){
-      vendedores=vendedores.filter(x=>x.nome!==v.nome); if
-
-(vendas[v.nome]) delete vendas[v.nome]; salvarDados
-
-('vendedores',vendedores); salvarDados('vendas',vendas);
-      try{ await excluirVendedorFirestore(sistemaAtivo,v.nome); 
-
-} catch{}
+    const row=document.createElement('div'); row.className='vendor-row';
+    const btn=document.createElement('button'); btn.className='vendor-btn';
+    btn.innerHTML=`<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)}</span>`; btn.onclick=()=>abrirPainel(v.nome);
+    const del=document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
+    del.onclick=async e=>{ e.stopPropagation(); if(confirm(`Confirma a exclusão do vendedor "${v.nome}" e todo histórico?`)){
+      vendedores=vendedores.filter(x=>x.nome!==v.nome); if(vendas[v.nome]) delete vendas[v.nome]; salvarDados('vendedores',vendedores); salvarDados('vendas',vendas);
+      try{ await excluirVendedorFirestore(sistemaAtivo,v.nome); } catch{}
       if(vendedorAtual===v.nome) voltarCadastro();
-      listarVendedores(); alert(`Vendedor "${v.nome}" 
-
-excluído.`); } };
-    row.appendChild(btn); row.appendChild(del); div.appendChild
-
-(row);
+      listarVendedores(); alert(`Vendedor "${v.nome}" excluído.`); } };
+    row.appendChild(btn); row.appendChild(del); div.appendChild(row);
   });
 }
 
 // ===== Painel & Vendas =====
-function abrirPainel(nome){ vendedorAtual=nome; 
-
-document.getElementById('painelVendedor').style.display='block'; 
-
-document.getElementById('tituloVendedor').textContent=nome; 
-
-atualizarTabela(); }
-function adicionarLinha(){ const tbody=document.querySelector
-
-('#tabelaVendas tbody'); const tr=document.createElement('tr'); 
-
-tr.innerHTML=`
+function abrirPainel(nome){ vendedorAtual=nome; document.getElementById('painelVendedor').style.display='block'; document.getElementById('tituloVendedor').textContent=nome; atualizarTabela(); }
+function adicionarLinha(){ const tbody=document.querySelector('#tabelaVendas tbody'); const tr=document.createElement('tr'); tr.innerHTML=`
 <td><input type="date"/></td>
-<td><input type="number" onchange="calcularLinha(this)" 
-
-min="0"/></td>
-<td><input type="number" onchange="calcularLinha(this)" 
-
-min="0"/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
 <td><input type="number" readonly/></td>
 <td><input type="number" readonly/></td>
-<td><input type="number" onchange="calcularLinha(this)" 
-
-min="0"/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
 <td><input type="number" readonly/></td>
 <td class="acoes">
 <button onclick="editarLinha(this)">Editar</button>
 <button onclick="excluirLinha(this)">Excluir</button>
 </td>
 `; tbody.appendChild(tr); }
-function editarLinha(btn){ const 
+function editarLinha(btn){ const inputs=btn.parentElement.parentElement.querySelectorAll('input'); inputs.forEach(i=>i.readOnly=false); }
+function excluirLinha(btn){ btn.parentElement.parentElement.remove(); salvarVendas(); }
+function calcularLinha(elem){ const tr=elem.closest('tr'); const inputs=tr.querySelectorAll('input'); const recebeu=parseFloat(inputs[1].value)||0; const devolveu=parseFloat(inputs[2].value)||0; const pagou=parseFloat(inputs[5].value)||0; const vendeu=recebeu-devolveu; const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1; const apurou=vendeu*cotacao; const deve=apurou-pagou; inputs[3].value=vendeu; inputs[4].value=apurou.toFixed(2); inputs[6].value=deve.toFixed(2); atualizarTotais(); }
 
-inputs=btn.parentElement.parentElement.querySelectorAll
+async function salvarVendas(){ if(!vendedorAtual) return; const linhas=document.querySelectorAll('#tabelaVendas tbody tr'); vendas[vendedorAtual]=[]; const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1;
+linhas.forEach(tr=>{ const inputs=tr.querySelectorAll('input'); vendas[vendedorAtual].push({data:inputs[0].value,recebeu:parseFloat(inputs[1].value)||0,devolveu:parseFloat(inputs[2].value)||0,vendeu:parseFloat(inputs[3].value)||0,apurou:parseFloat(inputs[4].value)||0,pagou:parseFloat(inputs[5].value)||0,deve:parseFloat(inputs[6].value)||0,cotacao:cotacao}); });
+salvarDados('vendas',vendas); try{ await salvarVendasFirestore(sistemaAtivo,vendedorAtual,vendas[vendedorAtual]); } catch{} atualizarTotais(); alert('Vendas salvas com sucesso.'); }
 
-('input'); inputs.forEach(i=>i.readOnly=false); }
-function excluirLinha(btn){ 
-
-btn.parentElement.parentElement.remove(); salvarVendas(); }
-function calcularLinha(elem){ const tr=elem.closest('tr'); const 
-
-inputs=tr.querySelectorAll('input'); const recebeu=parseFloat
-
-(inputs[1].value)||0; const devolveu=parseFloat(inputs
-
-[2].value)||0; const pagou=parseFloat(inputs[5].value)||0; const 
-
-vendeu=recebeu-devolveu; const cotacao=vendedores.find
-
-(v=>v.nome===vendedorAtual)?.cotacao||1; const 
-
-apurou=vendeu*cotacao; const deve=apurou-pagou; inputs
-
-[3].value=vendeu; inputs[4].value=apurou.toFixed(2); inputs
-
-[6].value=deve.toFixed(2); atualizarTotais(); }
-
-async function salvarVendas(){ if(!vendedorAtual) return; const 
-
-linhas=document.querySelectorAll('#tabelaVendas tbody tr'); 
-
-vendas[vendedorAtual]=[]; const cotacao=vendedores.find
-
-(v=>v.nome===vendedorAtual)?.cotacao||1;
-linhas.forEach(tr=>{ const inputs=tr.querySelectorAll('input'); 
-
-vendas[vendedorAtual].push({data:inputs
-
-[0].value,recebeu:parseFloat(inputs[1].value)||
-
-0,devolveu:parseFloat(inputs[2].value)||0,vendeu:parseFloat
-
-(inputs[3].value)||0,apurou:parseFloat(inputs[4].value)||
-
-0,pagou:parseFloat(inputs[5].value)||0,deve:parseFloat(inputs
-
-[6].value)||0,cotacao:cotacao}); });
-salvarDados('vendas',vendas); try{ await salvarVendasFirestore
-
-(sistemaAtivo,vendedorAtual,vendas[vendedorAtual]); } catch{} 
-
-atualizarTotais(); alert('Vendas salvas com sucesso.'); }
-
-function atualizarTabela(filtrarData=''){ const 
-
-tbody=document.querySelector('#tabelaVendas tbody'); 
-
-tbody.innerHTML=''; (vendas[vendedorAtual]||[]).forEach(v=>{ if
-
-(filtrarData && v.data!==filtrarData) return; const 
-
-tr=document.createElement('tr'); tr.innerHTML=`
+function atualizarTabela(filtrarData=''){ const tbody=document.querySelector('#tabelaVendas tbody'); tbody.innerHTML=''; (vendas[vendedorAtual]||[]).forEach(v=>{ if(filtrarData && v.data!==filtrarData) return; const tr=document.createElement('tr'); tr.innerHTML=`
 <td><input type="date" value="${v.data||''}"/></td>
-<td><input type="number" value="${v.recebeu??0}" 
-
-onchange="calcularLinha(this)" min="0"/></td>
-<td><input type="number" value="${v.devolveu??0}" 
-
-onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.recebeu??0}" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.devolveu??0}" onchange="calcularLinha(this)" min="0"/></td>
 <td><input type="number" value="${v.vendeu??0}" readonly/></td>
 <td><input type="number" value="${v.apurou??0}" readonly/></td>
-<td><input type="number" value="${v.pagou??0}" 
-
-onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.pagou??0}" onchange="calcularLinha(this)" min="0"/></td>
 <td><input type="number" value="${v.deve??0}" readonly/></td>
-<td class="acoes"><button onclick="editarLinha
-
-(this)">Editar</button><button onclick="excluirLinha
-
-(this)">Excluir</button></td>`; tbody.appendChild(tr); });
+<td class="acoes"><button onclick="editarLinha(this)">Editar</button><button onclick="excluirLinha(this)">Excluir</button></td>`; tbody.appendChild(tr); });
 atualizarTotais(); }
 
-function atualizarTotais(){ const 
-
-linhas=document.querySelectorAll('#tabelaVendas tbody tr'); let 
-
-apurado=0, pagou=0; linhas.forEach(tr=>{ const 
-
-inputs=tr.querySelectorAll('input'); apurado+=parseFloat(inputs
-
-[4].value)||0; pagou+=parseFloat(inputs[5].value)||0; }); 
-
-document.getElementById
-
-('totalApurado').textContent=apurado.toFixed(2); 
-
-document.getElementById('totalPagou').textContent=pagou.toFixed
-
-(2); document.getElementById('totalDeve').textContent=(apurado-
-
-pagou).toFixed(2); }
-function filtrarPorData(){ atualizarTabela
-
-(document.getElementById('filtroData').value); }
-function limparFiltro(){ document.getElementById
-
-('filtroData').value=''; atualizarTabela(); }
+function atualizarTotais(){ const linhas=document.querySelectorAll('#tabelaVendas tbody tr'); let apurado=0, pagou=0; linhas.forEach(tr=>{ const inputs=tr.querySelectorAll('input'); apurado+=parseFloat(inputs[4].value)||0; pagou+=parseFloat(inputs[5].value)||0; }); document.getElementById('totalApurado').textContent=apurado.toFixed(2); document.getElementById('totalPagou').textContent=pagou.toFixed(2); document.getElementById('totalDeve').textContent=(apurado-pagou).toFixed(2); }
+function filtrarPorData(){ atualizarTabela(document.getElementById('filtroData').value); }
+function limparFiltro(){ document.getElementById('filtroData').value=''; atualizarTabela(); }
 function exportarPDF(){ window.print(); }
-function voltarCadastro(){ document.getElementById
-
-('painelVendedor').style.display='none'; vendedorAtual=null; 
-
-document.querySelector('#tabelaVendas tbody').innerHTML=''; 
-
-document.getElementById('totalApurado').textContent='0.00'; 
-
-document.getElementById('totalPagou').textContent='0.00'; 
-
-document.getElementById('totalDeve').textContent='0.00'; }
+function voltarCadastro(){ document.getElementById('painelVendedor').style.display='none'; vendedorAtual=null; document.querySelector('#tabelaVendas tbody').innerHTML=''; document.getElementById('totalApurado').textContent='0.00'; document.getElementById('totalPagou').textContent='0.00'; document.getElementById('totalDeve').textContent='0.00'; }
 
 // Expor funções globais
-window.salvarVendedor=salvarVendedor; 
-
-window.editarVendedor=editarVendedor; 
-
-window.listarVendedores=listarVendedores; 
-
-window.abrirPainel=abrirPainel; 
-
-window.adicionarLinha=adicionarLinha; 
-
-window.editarLinha=editarLinha; 
-
-window.excluirLinha=excluirLinha; 
-
-window.calcularLinha=calcularLinha; 
-
-window.salvarVendas=salvarVendas; 
-
-window.atualizarTabela=atualizarTabela; 
-
-window.atualizarTotais=atualizarTotais; 
-
-window.filtrarPorData=filtrarPorData; 
-
-window.limparFiltro=limparFiltro; 
-
-window.exportarPDF=exportarPDF; 
-
-window.voltarCadastro=voltarCadastro;
+window.salvarVendedor=salvarVendedor; window.editarVendedor=editarVendedor; window.listarVendedores=listarVendedores; window.abrirPainel=abrirPainel; window.adicionarLinha=adicionarLinha; window.editarLinha=editarLinha; window.excluirLinha=excluirLinha; window.calcularLinha=calcularLinha; window.salvarVendas=salvarVendas; window.atualizarTabela=atualizarTabela; window.atualizarTotais=atualizarTotais; window.filtrarPorData=filtrarPorData; window.limparFiltro=limparFiltro; window.exportarPDF=exportarPDF; window.voltarCadastro=voltarCadastro;
 
 loadAll();
 </script>

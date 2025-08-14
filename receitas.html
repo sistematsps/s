@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -13,7 +13,7 @@
       width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;
     }
     button {
-      background-color: green0; color: white; padding: 10px 20px; border: none;
+      background-color: green; color: white; padding: 10px 20px; border: none;
       border-radius: 4px; cursor: pointer; margin-top: 10px;
     }
     button:hover { background-color: #900000; }
@@ -38,7 +38,7 @@
   <h1>Receitas</h1>
 
   <label for="sistemaSelect">Selecione o Sistema:</label>
-  <select id="sistemaSelect" onchange="carregarReceitas()">
+  <select id="sistemaSelect">
     <option value="pitimbu">Pitimbu da Sorte</option>
     <option value="timonha">Timonha da Sorte</option>
   </select>
@@ -53,8 +53,8 @@
   <label for="descricaoReceita">Descrição da Receita:</label>
   <input type="text" id="descricaoReceita" />
 
-  <button onclick="salvarReceita()">Salvar Receita</button>
-  <button onclick="apagarReceitas()">Apagar Receitas</button>
+  <button id="btnSalvar">Salvar Receita</button>
+  <button id="btnApagar">Apagar Receitas</button>
 
   <table id="tabelaReceitas">
     <thead>
@@ -66,78 +66,89 @@
     <tbody></tbody>
   </table>
 
-  <button onclick="exportarPDF()">Exportar Receitas</button>
+  <button onclick="window.print()">Exportar Receitas</button>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+      authDomain: "meuappweb-65522.firebaseapp.com",
+      projectId: "meuappweb-65522",
+      storageBucket: "meuappweb-65522.appspot.com",
+      messagingSenderId: "305368794616",
+      appId: "1:305368794616:web:d987589863479e576ac20d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const sistemaSelect = document.getElementById('sistemaSelect');
+    const btnSalvar = document.getElementById('btnSalvar');
+    const btnApagar = document.getElementById('btnApagar');
+    const tbody = document.querySelector('#tabelaReceitas tbody');
+    let unsubscribe = null; // Para cancelar o listener anterior
+
     function formatar(valor) {
-      return parseFloat(valor).toFixed(2);
+      return parseFloat(valor || 0).toFixed(2);
     }
 
-    function getChaveReceitas() {
-      const sistema = document.getElementById('sistemaSelect').value;
-      return `receitas_${sistema}`;
-    }
+    function iniciarListener() {
+      if (unsubscribe) unsubscribe(); // cancela listener antigo se existir
+      const sistema = sistemaSelect.value;
+      const colRef = collection(db, `${sistema}_receitas`);
 
-    function carregarReceitas() {
-      const chave = getChaveReceitas();
-      const receitas = JSON.parse(localStorage.getItem(chave) || '[]');
-      const tbody = document.querySelector('#tabelaReceitas tbody');
-      tbody.innerHTML = '';
-
-      let total = 0;
-      receitas.forEach(r => {
-        total += parseFloat(r.valor || 0);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${r.descricao || ''}</td>
-          <td>${formatar(r.valor)}</td>
-        `;
-        tbody.appendChild(tr);
+      unsubscribe = onSnapshot(colRef, snapshot => {
+        tbody.innerHTML = '';
+        let total = 0;
+        snapshot.forEach(docSnap => {
+          const r = docSnap.data();
+          total += parseFloat(r.valor || 0);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${r.descricao || ''}</td><td>${formatar(r.valor)}</td>`;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('totalReceitas').textContent = formatar(total);
       });
-
-      document.getElementById('totalReceitas').textContent = formatar(total);
     }
 
-    function salvarReceita() {
+    async function salvarReceita() {
       const valor = parseFloat(document.getElementById('valorReceita').value);
       const descricao = document.getElementById('descricaoReceita').value.trim();
-      const chave = getChaveReceitas();
+      const sistema = sistemaSelect.value;
 
-      if (isNaN(valor) || valor <= 0) {
-        alert('Informe um valor válido para a receita.');
-        return;
-      }
-      if (!descricao) {
-        alert('Informe a descrição da receita.');
-        return;
-      }
+      if (isNaN(valor) || valor <= 0) { alert('Informe um valor válido.'); return; }
+      if (!descricao) { alert('Informe a descrição.'); return; }
 
-      const receitas = JSON.parse(localStorage.getItem(chave) || '[]');
-      receitas.push({ valor, descricao });
-      localStorage.setItem(chave, JSON.stringify(receitas));
-
-      document.getElementById('valorReceita').value = '';
-      document.getElementById('descricaoReceita').value = '';
-
-      carregarReceitas();
-      alert('Receita salva com sucesso!');
-    }
-
-    function apagarReceitas() {
-      if (confirm("Deseja realmente apagar todas as receitas deste sistema?")) {
-        const chave = getChaveReceitas();
-        localStorage.removeItem(chave); // remove todas as receitas do sistema
-        carregarReceitas();
-        alert("Receitas apagadas com sucesso!");
+      try {
+        await addDoc(collection(db, `${sistema}_receitas`), { descricao, valor });
+        document.getElementById('valorReceita').value = '';
+        document.getElementById('descricaoReceita').value = '';
+      } catch(err) {
+        console.error(err);
+        alert('Erro ao salvar a receita no Firestore.');
       }
     }
 
-    function exportarPDF() {
-      window.print();
+    async function apagarReceitas() {
+      if (!confirm("Deseja realmente apagar todas as receitas deste sistema?")) return;
+      const sistema = sistemaSelect.value;
+      const colRef = collection(db, `${sistema}_receitas`);
+      const snapshot = await colRef.get();
+      const docs = await colRef.getDocs ? await colRef.getDocs() : [];
+      const promises = [];
+      const snap = await colRef.getDocs ? await colRef.getDocs() : await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js").then(module => module.getDocs(colRef));
+      snap.forEach(d => promises.push(deleteDoc(doc(db, `${sistema}_receitas`, d.id))));
+      await Promise.all(promises);
+      alert("Receitas apagadas com sucesso!");
     }
 
-    window.onload = carregarReceitas;
+    btnSalvar.addEventListener('click', salvarReceita);
+    btnApagar.addEventListener('click', apagarReceitas);
+    sistemaSelect.addEventListener('change', iniciarListener);
+
+    window.onload = iniciarListener;
   </script>
 </body>
 </html>
-

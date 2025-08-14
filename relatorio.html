@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Relatório de Vendas</title>
+<title>Relatório de Vendas - Firestore</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
   h1 { text-align: center; }
@@ -17,169 +17,154 @@
 </style>
 </head>
 <body>
-  <h1>RELATÓRIO DE VENDAS</h1>
+<h1>RELATÓRIO DE VENDAS</h1>
 
-  <div class="filtros">
-    <label for="sistemaSelect">Sistema:</label>
-    <select id="sistemaSelect" onchange="gerarRelatorio()">
-      <option value="pitimbu">Pitimbu da Sorte</option>
-      <option value="timonha">Timonha da Sorte</option>
-    </select>
-    <br/>
-    <label for="filtroData">Filtrar por data:</label>
-    <input type="date" id="filtroData" />
-    <button onclick="gerarRelatorio()">Consultar</button>
-    <button onclick="gerarPDF()">Exportar PDF</button>
-  </div>
+<div class="filtros">
+  <label for="sistemaSelect">Sistema:</label>
+  <select id="sistemaSelect">
+    <option value="pitimbu">Pitimbu da Sorte</option>
+    <option value="timonha">Timonha da Sorte</option>
+  </select>
+  <br/>
+  <label for="filtroData">Filtrar por data:</label>
+  <input type="date" id="filtroData" />
+  <button onclick="gerarRelatorio()">Consultar</button>
+  <button onclick="gerarPDF()">Exportar PDF</button>
+</div>
 
-  <div id="relatorioContainer"></div>
-  <div id="totalDia"></div>
+<div id="relatorioContainer"></div>
+<div id="totalDia"></div>
 
-  <!-- jsPDF + html2canvas -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-  <script>
-    function getPrefixo() {
-      return document.getElementById('sistemaSelect').value + '_';
-    }
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.firebasestorage.app",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
 
-    function gerarRelatorio() {
-      const container = document.getElementById('relatorioContainer');
-      const totalDiaDiv = document.getElementById('totalDia');
-      container.innerHTML = '';
-      totalDiaDiv.innerHTML = '';
-      const filtroData = document.getElementById('filtroData').value;
-      const prefixo = getPrefixo();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores')) || [];
-      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas')) || {};
+async function gerarRelatorio() {
+  const sistema = document.getElementById('sistemaSelect').value;
+  const filtroData = document.getElementById('filtroData').value;
+  const relatorioContainer = document.getElementById('relatorioContainer');
+  const totalDiaDiv = document.getElementById('totalDia');
+  relatorioContainer.innerHTML = '';
+  totalDiaDiv.innerHTML = '';
 
-      let algumResultado = false;
+  // Buscar vendedores do sistema
+  const vendedoresSnap = await getDocs(collection(db, `${sistema}_vendedores`));
+  const vendedores = [];
+  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
 
-      vendedores.forEach(vendedor => {
-        const nome = vendedor.nome;
-        const cotacao = parseFloat(vendedor.cotacao) || 1;
-        const historico = vendas[nome] || [];
+  let algumResultado = false;
+  let totalApuradoDia = 0;
+  const detalhesVendedores = [];
 
-        const vendasFiltradas = historico.filter(v => {
-          if (!filtroData) return true;
-          return v.data === filtroData;
-        });
+  for (const vendedor of vendedores) {
+    const vendasSnap = await getDocs(collection(db, `${sistema}_vendas_${vendedor.nome}`));
+    const vendas = [];
+    vendasSnap.forEach(doc => {
+      const data = doc.data();
+      if (!filtroData || data.data === filtroData) vendas.push(data);
+    });
 
-        if (vendasFiltradas.length === 0) return;
+    if (vendas.length === 0) continue;
+    algumResultado = true;
 
-        algumResultado = true;
+    let html = `<h3>${vendedor.nome.toUpperCase()}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Recebeu</th>
+                      <th>Devolveu</th>
+                      <th>Vendeu</th>
+                      <th>Apurou</th>
+                      <th>Pagou</th>
+                      <th>Deve</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
 
-        let html = `
-          <h3>${nome.toUpperCase()}</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Recebeu</th>
-                <th>Devolveu</th>
-                <th>Vendeu</th>
-                <th>Apurou</th>
-                <th>Pagou</th>
-                <th>Deve</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
+    let somaVendedor = 0;
+    vendas.forEach(v => {
+      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+      const pagou = v.pagou || 0;
+      const deve = apurou - pagou;
+      somaVendedor += apurou;
+      html += `<tr>
+                 <td>${v.data || ''}</td>
+                 <td>${v.recebeu || 0}</td>
+                 <td>${v.devolveu || 0}</td>
+                 <td>${vendeu}</td>
+                 <td>R$ ${apurou.toFixed(2)}</td>
+                 <td>R$ ${pagou.toFixed(2)}</td>
+                 <td>R$ ${deve.toFixed(2)}</td>
+               </tr>`;
+    });
 
-        vendasFiltradas.forEach(v => {
-          const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-          const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * cotacao;
-          const pagou = v.pagou || 0;
-          const deve = apurou - pagou;
+    html += '</tbody></table><hr>';
+    relatorioContainer.innerHTML += html;
 
-          html += `
-            <tr>
-              <td>${v.data || ''}</td>
-              <td>${v.recebeu || 0}</td>
-              <td>${v.devolveu || 0}</td>
-              <td>${vendeu}</td>
-              <td>R$ ${apurou.toFixed(2)}</td>
-              <td>R$ ${pagou.toFixed(2)}</td>
-              <td>R$ ${deve.toFixed(2)}</td>
-            </tr>
-          `;
-        });
+    totalApuradoDia += somaVendedor;
+    detalhesVendedores.push({ nome: vendedor.nome, valor: somaVendedor });
+  }
 
-        html += '</tbody></table><hr>';
-        container.innerHTML += html;
-      });
+  if (!algumResultado) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    return;
+  }
 
-      if (!algumResultado) {
-        container.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
-        return;
-      }
+  if (filtroData && detalhesVendedores.length > 0) {
+    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+    htmlResumo += '<ul>';
+    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+    htmlResumo += '</ul>';
+    totalDiaDiv.innerHTML = htmlResumo;
+  }
+}
 
-      if (filtroData) {
-        let totalApuradoDia = 0;
-        let detalhesVendedores = [];
+// ===== Exportar PDF =====
+async function gerarPDF() {
+  const { jsPDF } = await import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  const container = document.getElementById('relatorioContainer');
+  const totalDia = document.getElementById('totalDia');
+  const doc = new jsPDF('p', 'pt', 'a4');
 
-        vendedores.forEach(vendedor => {
-          const nome = vendedor.nome;
-          const vendasDoVendedor = vendas[nome] || [];
-          const vendasNoDia = vendasDoVendedor.filter(v => v.data === filtroData);
+  const cloneContainer = container.cloneNode(true);
+  const cloneTotal = totalDia.cloneNode(true);
 
-          if (vendasNoDia.length > 0) {
-            let somaApuradoVendedor = 0;
-            vendasNoDia.forEach(v => {
-              const cotacao = parseFloat(vendedor.cotacao) || 1;
-              const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-              const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * cotacao;
-              somaApuradoVendedor += apurou;
-            });
-            if (somaApuradoVendedor > 0) {
-              detalhesVendedores.push({ nome, valor: somaApuradoVendedor });
-              totalApuradoDia += somaApuradoVendedor;
-            }
-          }
-        });
+  const tempDiv = document.createElement('div');
+  tempDiv.style.padding = '10px';
+  tempDiv.appendChild(cloneContainer);
+  tempDiv.appendChild(cloneTotal);
+  document.body.appendChild(tempDiv);
 
-        if (detalhesVendedores.length > 0) {
-          let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-          htmlResumo += '<ul>';
-          detalhesVendedores.forEach(v => {
-            htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`;
-          });
-          htmlResumo += '</ul>';
-          totalDiaDiv.innerHTML = htmlResumo;
-        }
-      }
-    }
+  await doc.html(tempDiv, {
+    callback: function(pdf) {
+      pdf.save('relatorio_vendas.pdf');
+      document.body.removeChild(tempDiv);
+    },
+    x: 10,
+    y: 10,
+    html2canvas: { scale: 0.8 }
+  });
+}
 
-    async function gerarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('p', 'pt', 'a4');
-      const container = document.getElementById('relatorioContainer');
-      const totalDia = document.getElementById('totalDia');
+window.onload = gerarRelatorio;
+</script>
 
-      const cloneContainer = container.cloneNode(true);
-      const cloneTotal = totalDia.cloneNode(true);
-
-      const tempDiv = document.createElement('div');
-      tempDiv.style.padding = '10px';
-      tempDiv.appendChild(cloneContainer);
-      tempDiv.appendChild(cloneTotal);
-      document.body.appendChild(tempDiv);
-
-      await doc.html(tempDiv, {
-        callback: function(pdf) {
-          pdf.save('relatorio_vendas.pdf');
-          document.body.removeChild(tempDiv);
-        },
-        x: 10,
-        y: 10,
-        html2canvas: { scale: 0.8 }
-      });
-    }
-
-    window.onload = gerarRelatorio;
-  </script>
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
-
