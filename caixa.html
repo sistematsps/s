@@ -1,227 +1,354 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1,0" />
-  <title>Caixa - Pitimbu / Timonha da Sorte</title>
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { padding: 20px; background: #f5f5f5; }
-    h1, h2 { color: green; }
-    input, button, select { padding: 8px; margin: 5px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #ffcccc; }
-    .total-box { margin: 20px 0; padding: 15px; background: #fff3f3; border: 1px solid #b30000; }
-    .totais span { display: inline-block; min-width: 150px; margin-right: 20px; font-weight: bold; }
-    hr { margin: 30px 0; border: 1px solid #b30000; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-
+
+scale=1.0"/>
+<title>Caixa - Pitimbu / Timonha da Sorte</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1, h2 { color: green; }
+input, button, select { padding: 8px; margin: 5px; }
+table { width: 100%; border-collapse: collapse; margin-top: 
+
+10px; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: 
+
+center; }
+th { background: #ffcccc; }
+.total-box { margin: 20px 0; padding: 15px; background: #fff3f3; 
+
+border: 1px solid #b30000; }
+.totais span { display: inline-block; min-width: 150px; margin-
+
+right: 20px; font-weight: bold; }
+hr { margin: 30px 0; border: 1px solid #b30000; }
+</style>
 </head>
 <body>
-  <h1>Movimento do Caixa</h1>
 
-  <label>
-    Sistema:
-    <select id="sistemaSelect" onchange="carregarCaixa()">
-      <option value="pitimbu">Pitimbu da Sorte</option>
-      <option value="timonha">Timonha da Sorte</option>
-    </select>
-  </label>
+<h1>Movimento do Caixa</h1>
 
-  <div class="total-box totais">
-    <span>SALDO ANTERIOR: R$ <span id="saldoAnterior">0.00</span></span>
-    <span>APURADO: R$ <span id="apuradoTotal">0.00</span></span>
-    <span>DESPESAS: R$ <span id="despesasTotal">0.00</span></span>
-    <span>SALDO FINAL: R$ <span id="saldoFinal">0.00</span></span>
-  </div>
+<label>
+Sistema:
+<select id="sistemaSelect">
+  <option value="pitimbu">Pitimbu da Sorte</option>
+  <option value="timonha">Timonha da Sorte</option>
+</select>
+</label>
 
-  <hr>
+<div class="total-box totais">
+  <span>SALDO ANTERIOR: R$ <span 
 
-  <label>De: <input type="date" id="dataInicio"></label>
-  <label>Até: <input type="date" id="dataFim"></label>
-  <button onclick="filtrarVendas()">Filtrar</button>
+id="saldoAnterior">0.00</span></span>
+  <span>APURADO: R$ <span id="apuradoTotal">0.00</span></span>
+  <span>DESPESAS: R$ <span id="despesasTotal">0.00</span></span>
+  <span>SALDO FINAL: R$ <span id="saldoFinal">0.00</span></span>
+</div>
 
-  <h2>Resumo de Vendas</h2>
-  <table id="tabelaResumo">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Vendedor</th>
-        <th>Vendeu</th>
-        <th>Apurou</th>
-        <th>Pagou</th>
-        <th>Deve</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<hr>
 
-  <h2>Receitas</h2>
-  <table id="tabelaReceitas">
-    <thead>
-      <tr>
-        <th>Descrição</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<label>De: <input type="date" id="dataInicio"></label>
+<label>Até: <input type="date" id="dataFim"></label>
+<button id="btnFiltrar">Filtrar</button>
 
-  <h2>Despesas</h2>
-  <table id="tabelaDespesas">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Descrição</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h2>Resumo de Vendas</h2>
+<table id="tabelaResumo">
+<thead>
+<tr>
+<th>Data</th>
+<th>Vendedor</th>
+<th>Vendeu</th>
+<th>Apurou</th>
+<th>Pagou</th>
+<th>Deve</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-  <h2>Partilha de Recursos</h2>
-  <div class="total-box">
-    <p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
-    <p id="linhaJose">JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
-    <p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
-  </div>
+<h2>Receitas</h2>
 
-  <button onclick="gerarPDF()">Exportar em PDF</button>
+<!-- Formulário para adicionar receitas -->
+<div style="margin-bottom: 20px;">
+  <label>Data: <input type="date" id="dataReceita" /></label>
+  <label>Valor: <input type="number" id="valorReceita" 
 
-  <script>
-    function formatar(valor) {
-      return parseFloat(valor).toFixed(2);
-    }
+step="0.01" min="0"/></label>
+  <label>Descrição: <input type="text" 
 
-    function getPrefixo() {
-      return document.getElementById("sistemaSelect").value + "_";
-    }
+id="descricaoReceita"/></label>
+  <button id="btnSalvarReceita">Adicionar Receita</button>
+</div>
 
-    function carregarCaixa() {
-      const prefixo = getPrefixo();
+<table id="tabelaReceitas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Valor</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas') || '{}');
-      const despesas = JSON.parse(localStorage.getItem(prefixo + 'despesas') || '[]');
-      const receitas = JSON.parse(localStorage.getItem('receitas_' + document.getElementById("sistemaSelect").value) || '[]');
-      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
+<h2>Despesas</h2>
+<table id="tabelaDespesas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Descrição</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-      const saldoAnterior = receitas.reduce((acc, rec) => acc + parseFloat(rec.valor || 0), 0);
+<h2>Partilha de Recursos</h2>
+<div class="total-box">
+<p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
+<p id="linhaJose">JOSE ROBERTO: R$ <span 
 
-      // Preencher tabela de receitas
-      const tbodyReceitas = document.querySelector("#tabelaReceitas tbody");
-      tbodyReceitas.innerHTML = "";
-      receitas.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${r.descricao || ''}</td><td>${formatar(r.valor)}</td>`;
-        tbodyReceitas.appendChild(tr);
-      });
+id="jose">0.00</span></p>
+<p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
+</div>
 
-      let apurado = 0;
-      const tbody = document.querySelector("#tabelaResumo tbody");
-      tbody.innerHTML = "";
+<button id="btnExportar">Exportar em PDF</button>
 
-      for (const vendedor in vendas) {
-        const vendedorObj = vendedores.find(v => v.nome === vendedor);
-        const cotacaoVendedor = vendedorObj ? parseFloat(vendedorObj.cotacao) : 1;
+<script type="module">
+import { initializeApp } from 
 
-        vendas[vendedor].forEach(v => {
-          const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-          const cotacao = v.cotacao !== undefined ? parseFloat(v.cotacao) : cotacaoVendedor || 1;
-          const apurouVenda = vendeu * cotacao;
-          const deve = apurouVenda - parseFloat(v.pagou || 0);
+"https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc } from 
 
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${v.data || ''}</td>
-            <td>${vendedor}</td>
-            <td>${formatar(vendeu)}</td>
-            <td>${formatar(apurouVenda)}</td>
-            <td>${formatar(v.pagou || 0)}</td>
-            <td>${formatar(deve)}</td>`;
-          tbody.appendChild(tr);
-          apurado += apurouVenda;
-        });
-      }
+"https://www.gstatic.com/firebasejs/10.13.1/firebase-
 
-      document.getElementById('apuradoTotal').textContent = formatar(apurado);
-      document.getElementById('saldoAnterior').textContent = formatar(saldoAnterior);
+firestore.js";
 
-      const despesasTotais = despesas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
-      document.getElementById('despesasTotal').textContent = formatar(despesasTotais);
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.appspot.com",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
 
-      const saldoFinal = saldoAnterior + apurado - despesasTotais;
-      document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-      // Partilha dinâmica + ocultar José
-      if (document.getElementById("sistemaSelect").value === "pitimbu") {
-        document.getElementById('linhaJose').style.display = "block";
-        document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
-        document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
-        document.getElementById('pedro').textContent = formatar(saldoFinal * 0.50);
-      } else {
-        document.getElementById('linhaJose').style.display = "none";
-        document.getElementById('benedito').textContent = formatar(saldoFinal * 0.10);
-        document.getElementById('pedro').textContent = formatar(saldoFinal * 0.90);
-      }
+const sistemaSelect = document.getElementById("sistemaSelect");
+let sistemaAtivo = "pitimbu";
+sistemaSelect.value = sistemaAtivo;
+sistemaSelect.addEventListener("change", () => { 
+  sistemaAtivo = sistemaSelect.value; 
+  carregarCaixa(); 
+});
 
-      const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
-      tbodyDespesas.innerHTML = "";
-      despesas.forEach(d => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.data || ''}</td>
-          <td>${d.descricao || ''}</td>
-          <td>${formatar(d.valor)}</td>`;
-        tbodyDespesas.appendChild(tr);
-      });
-    }
+function formatar(valor){ return parseFloat(valor||0).toFixed
 
-    function filtrarVendas() {
-      const inicio = document.getElementById("dataInicio").value;
-      const fim = document.getElementById("dataFim").value;
-      const prefixo = getPrefixo();
+(2); }
 
-      if (!inicio || !fim) return carregarCaixa();
+async function carregarCaixa(inicio='0000-00-00', fim='9999-12-
 
-      const vendas = JSON.parse(localStorage.getItem(prefixo + 'vendas') || '{}');
-      const vendedores = JSON.parse(localStorage.getItem(prefixo + 'vendedores') || '[]');
-      const tbody = document.querySelector("#tabelaResumo tbody");
-      tbody.innerHTML = "";
-      let apurado = 0;
+31') {
+  // ===== Vendedores e Vendas =====
+  const vendedoresSnap = await getDocs(collection(db, `
 
-      for (const vendedor in vendas) {
-        const vendedorObj = vendedores.find(v => v.nome === vendedor);
-        const cotacaoVendedor = vendedorObj ? parseFloat(vendedorObj.cotacao) : 1;
+${sistemaAtivo}_vendedores`));
+  const vendedores = [];
+  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
 
-        vendas[vendedor].forEach(v => {
-          if (v.data >= inicio && v.data <= fim) {
-            const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-            const cotacao = v.cotacao !== undefined ? parseFloat(v.cotacao) : cotacaoVendedor || 1;
-            const apurouVenda = vendeu * cotacao;
-            const deve = apurouVenda - parseFloat(v.pagou || 0);
+  const vendas = {};
+  for(const vend of vendedores){
+    const vendasSnap = await getDocs(collection(db, `
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${v.data}</td>
-              <td>${vendedor}</td>
-              <td>${formatar(vendeu)}</td>
-              <td>${formatar(apurouVenda)}</td>
-              <td>${formatar(v.pagou || 0)}</td>
-              <td>${formatar(deve)}</td>`;
-            tbody.appendChild(tr);
-            apurado += apurouVenda;
-          }
-        });
-      }
+${sistemaAtivo}_vendas_${vend.nome}`));
+    vendas[vend.nome] = [];
+    vendasSnap.forEach(doc => {
+      const data = doc.data();
+      if(data.data >= inicio && data.data <= fim) vendas
 
-      document.getElementById("apuradoTotal").textContent = formatar(apurado);
-    }
+[vend.nome].push(data);
+    });
+  }
 
-    function gerarPDF() {
-      window.print();
-    }
+  // ===== Despesas =====
+  const despesasSnap = await getDocs(collection(db, `
 
-    window.onload = carregarCaixa;
-  </script>
+${sistemaAtivo}_despesas`));
+  const despesas = [];
+  despesasSnap.forEach(doc => {
+    const d = doc.data();
+    if(d.data >= inicio && d.data <= fim) despesas.push(d);
+  });
+
+  // ===== Receitas =====
+  const receitasSnap = await getDocs(collection(db, `
+
+${sistemaAtivo}_receitas`));
+  const receitas = [];
+  let saldoAnterior = 0;
+  receitasSnap.forEach(doc => {
+    const r = doc.data();
+    if(r.data < inicio) saldoAnterior += parseFloat(r.valor||0);
+    if(r.data >= inicio && r.data <= fim) receitas.push(r);
+  });
+
+  // ===== Preencher tabela vendas =====
+  let apurado = 0;
+  const tbodyResumo = document.querySelector("#tabelaResumo 
+
+tbody");
+  tbodyResumo.innerHTML = "";
+  for(const vendedor in vendas){
+    const cotacao = vendedores.find
+
+(v=>v.nome===vendedor)?.cotacao || 1;
+    vendas[vendedor].forEach(v=>{
+      const vendeu = (v.recebeu||0) - (v.devolveu||0);
+      const apurouVenda = vendeu * (v.cotacao ?? cotacao);
+      const deve = apurouVenda - (v.pagou||0);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${v.data||''}</td><td>${vendedor}
+
+</td><td>${formatar(vendeu)}</td><td>${formatar(apurouVenda)}
+
+</td><td>${formatar(v.pagou||0)}</td><td>${formatar(deve)}
+
+</td>`;
+      tbodyResumo.appendChild(tr);
+      apurado += apurouVenda;
+    });
+  }
+
+  // ===== Preencher tabela receitas =====
+  const tbodyReceitas = document.querySelector("#tabelaReceitas 
+
+tbody");
+  tbodyReceitas.innerHTML = "";
+  let totalReceitas = 0;
+  receitas.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.data||''}</td><td>${formatar
+
+(r.valor)}</td><td>${r.descricao||''}</td>`;
+    tbodyReceitas.appendChild(tr);
+    totalReceitas += parseFloat(r.valor||0);
+  });
+
+  // ===== Preencher tabela despesas =====
+  const despesasTotais = despesas.reduce((acc,d)=>acc
+
++parseFloat(d.valor||0),0);
+  const tbodyDespesas=document.querySelector("#tabelaDespesas 
+
+tbody"); 
+  tbodyDespesas.innerHTML="";
+  despesas.forEach(d=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.data||''}</td><td>${d.descricao||''}
+
+</td><td>${formatar(d.valor)}</td>`;
+    tbodyDespesas.appendChild(tr);
+  });
+
+  // ===== Totais e saldo final =====
+  const saldoFinal = saldoAnterior + apurado + totalReceitas - 
+
+despesasTotais;
+  document.getElementById('saldoAnterior').textContent = 
+
+formatar(saldoAnterior);
+  document.getElementById('apuradoTotal').textContent = 
+
+formatar(apurado + totalReceitas);
+  document.getElementById('despesasTotal').textContent = 
+
+formatar(despesasTotais);
+  document.getElementById('saldoFinal').textContent = formatar
+
+(saldoFinal);
+
+  // ===== Partilha =====
+  if(sistemaAtivo==='pitimbu'){
+    document.getElementById('linhaJose').style.display="block";
+    document.getElementById('benedito').textContent=formatar
+
+(saldoFinal*0.25);
+    document.getElementById('jose').textContent=formatar
+
+(saldoFinal*0.25);
+    document.getElementById('pedro').textContent=formatar
+
+(saldoFinal*0.5);
+  } else {
+    document.getElementById('linhaJose').style.display="none";
+    document.getElementById('benedito').textContent=formatar
+
+(saldoFinal*0.1);
+    document.getElementById('pedro').textContent=formatar
+
+(saldoFinal*0.9);
+  }
+}
+
+// ===== Adicionar nova receita =====
+document.getElementById("btnSalvarReceita").addEventListener
+
+("click", async ()=>{
+  const data = document.getElementById("dataReceita").value;
+  const valor = parseFloat(document.getElementById
+
+("valorReceita").value);
+  const descricao = document.getElementById
+
+("descricaoReceita").value.trim();
+
+  if(!data){ alert("Informe a data da receita."); return; }
+  if(isNaN(valor) || valor<=0){ alert("Informe um valor 
+
+válido."); return; }
+  if(!descricao){ alert("Informe a descrição."); return; }
+
+  try {
+    await addDoc(collection(db, `${sistemaAtivo}_receitas`), { 
+
+data, valor, descricao });
+    document.getElementById("dataReceita").value = '';
+    document.getElementById("valorReceita").value = '';
+    document.getElementById("descricaoReceita").value = '';
+    await carregarCaixa();
+    alert("Receita adicionada com sucesso!");
+  } catch(err) {
+    console.error(err);
+    alert("Erro ao salvar a receita.");
+  }
+});
+
+// ===== Filtrar =====
+document.getElementById("btnFiltrar").addEventListener("click", 
+
+()=>{
+  const inicio = document.getElementById("dataInicio").value || 
+
+'0000-00-00';
+  const fim = document.getElementById("dataFim").value || '9999
+
+-12-31';
+  carregarCaixa(inicio,fim);
+});
+
+// ===== Exportar PDF =====
+document.getElementById("btnExportar").addEventListener
+
+("click",()=>window.print());
+
+window.onload = ()=>{ carregarCaixa(); }
+</script>
+
 </body>
 </html>
