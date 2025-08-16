@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -29,7 +29,6 @@
   <option value="timonha">Timonha da Sorte</option>
 </select>
 
-<!-- Formulário de lançamentos -->
 <h2>Lançamentos</h2>
 <label>Vendedor:</label><input type="text" id="vendedorLanc" />
 <label>Data:</label><input type="date" id="dataLanc" />
@@ -59,7 +58,6 @@
 
 <hr>
 
-<!-- Formulário para valores pagos -->
 <h2>Valores Pagos</h2>
 <label>Data:</label><input type="date" id="dataPago" />
 <label>Vendedor:</label><input type="text" id="vendedorPago" />
@@ -81,7 +79,6 @@
 
 <hr>
 
-<!-- Formulário de repasses -->
 <h2>Repasses</h2>
 <label>Vendedor:</label><input type="text" id="vendedorRepasse" />
 <label>Descrição:</label><input type="text" id="descRepasse" />
@@ -101,163 +98,155 @@
 
 <button id="btnExport" onclick="exportarRelatorio()">Exportar Relatório (JPG)</button>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
-const sistemaSelect = document.getElementById('sistemaSelect');
-let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
-sistemaSelect.value = sistemaAtivo;
+  // ====== CONFIGURAÇÃO FIREBASE ======
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_ID",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-let lancamentos = JSON.parse(localStorage.getItem(getChave('lancamentos')) || '[]');
-let valoresPagos = JSON.parse(localStorage.getItem(getChave('valoresPagos')) || '[]');
-let repasses = JSON.parse(localStorage.getItem(getChave('repasses')) || '[]');
-let editarIndexLanc = -1;
+  const sistemaSelect = document.getElementById('sistemaSelect');
+  let sistemaAtivo = sistemaSelect.value;
+  let editarIndexLanc = null;
 
-sistemaSelect.addEventListener('change', () => {
-  sistemaAtivo = sistemaSelect.value;
-  localStorage.setItem('sistemaAtivo', sistemaAtivo);
-  carregarDados();
-});
-
-function getChave(base){ return `${sistemaAtivo}_${base}`; }
-
-// ======= Lançamentos =======
-function carregarLancamentos(){
-  const tbody = document.querySelector('#tabelaLancamentos tbody');
-  tbody.innerHTML='';
-  let totalRec=0;
-  lancamentos.forEach((l,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${l.data}</td><td>${l.vendedor}</td><td>${l.ref}</td><td>${parseFloat(l.valor).toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-    totalRec+=parseFloat(l.valor);
+  sistemaSelect.addEventListener('change', ()=>{
+    sistemaAtivo = sistemaSelect.value;
+    carregarDados();
   });
-  document.getElementById('totalRecebido').textContent=totalRec.toFixed(2);
-  atualizarSaldo();
-}
 
-function salvarLancamento(){
-  const vendedor=document.getElementById('vendedorLanc').value.trim();
-  const data=document.getElementById('dataLanc').value;
-  const valor=parseFloat(document.getElementById('valorLanc').value);
-  const ref=document.getElementById('refLanc').value.trim();
-  if(!vendedor||!data||isNaN(valor)||valor<=0||!ref){ alert('Preencha todos os campos'); return;}
-  if(editarIndexLanc>=0){ lancamentos[editarIndexLanc]={vendedor,data,valor,ref}; editarIndexLanc=-1;}
-  else{ lancamentos.push({vendedor,data,valor,ref}); }
-  localStorage.setItem(getChave('lancamentos'),JSON.stringify(lancamentos));
-  limparFormularioLanc();
-  carregarLancamentos();
-}
+  // ====== Lançamentos ======
+  function carregarLancamentos(){
+    const tbody = document.querySelector('#tabelaLancamentos tbody');
+    tbody.innerHTML='';
+    let totalRec=0;
+    db.collection(`lancamentos_${sistemaAtivo}`).orderBy('data','asc')
+      .get().then(snapshot=>{
+        snapshot.forEach(doc=>{
+          const l = doc.data();
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td>${l.data}</td><td>${l.vendedor}</td><td>${l.ref}</td><td>${parseFloat(l.valor).toFixed(2)}</td>`;
+          tbody.appendChild(tr);
+          totalRec+=parseFloat(l.valor);
+        });
+        document.getElementById('totalRecebido').textContent=totalRec.toFixed(2);
+        atualizarSaldo();
+      });
+  }
 
-function editarLancamento(){
-  const vendedor=document.getElementById('vendedorLanc').value.trim();
-  const data=document.getElementById('dataLanc').value;
-  const valor=parseFloat(document.getElementById('valorLanc').value);
-  const ref=document.getElementById('refLanc').value.trim();
-  editarIndexLanc=lancamentos.findIndex(l=>l.vendedor===vendedor&&l.data===data&&l.valor===valor&&l.ref===ref);
-  if(editarIndexLanc===-1){ alert('Lançamento não encontrado para editar'); return;}
-  document.getElementById('vendedorLanc').value=lancamentos[editarIndexLanc].vendedor;
-  document.getElementById('dataLanc').value=lancamentos[editarIndexLanc].data;
-  document.getElementById('valorLanc').value=lancamentos[editarIndexLanc].valor;
-  document.getElementById('refLanc').value=lancamentos[editarIndexLanc].ref;
-}
+  function salvarLancamento(){
+    const vendedor=document.getElementById('vendedorLanc').value.trim();
+    const data=document.getElementById('dataLanc').value;
+    const valor=parseFloat(document.getElementById('valorLanc').value);
+    const ref=document.getElementById('refLanc').value.trim();
+    if(!vendedor||!data||isNaN(valor)||valor<=0||!ref){ alert('Preencha todos os campos'); return;}
+    db.collection(`lancamentos_${sistemaAtivo}`).add({vendedor,data,valor,ref})
+      .then(()=>{ limparFormularioLanc(); carregarLancamentos(); });
+  }
 
-function excluirLancamento(){
-  if(editarIndexLanc===-1){ alert('Use Editar para selecionar o lançamento'); return;}
-  lancamentos.splice(editarIndexLanc,1); editarIndexLanc=-1;
-  localStorage.setItem(getChave('lancamentos'),JSON.stringify(lancamentos));
-  limparFormularioLanc();
-  carregarLancamentos();
-}
+  function limparFormularioLanc(){
+    document.getElementById('vendedorLanc').value='';
+    document.getElementById('dataLanc').value='';
+    document.getElementById('valorLanc').value='';
+    document.getElementById('refLanc').value='';
+  }
 
-function limparFormularioLanc(){
-  document.getElementById('vendedorLanc').value='';
-  document.getElementById('dataLanc').value='';
-  document.getElementById('valorLanc').value='';
-  document.getElementById('refLanc').value='';
-}
+  // ====== Valores Pagos ======
+  function carregarPagos(){
+    const tbody=document.querySelector('#tabelaPagos tbody'); tbody.innerHTML='';
+    let totalPago=0;
+    db.collection(`valoresPagos_${sistemaAtivo}`).orderBy('data','asc')
+      .get().then(snapshot=>{
+        snapshot.forEach(doc=>{
+          const v=doc.data();
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td>${v.data}</td><td>${v.vendedor}</td><td>${parseFloat(v.valor).toFixed(2)}</td><td>${v.quemPagou}</td>`;
+          tbody.appendChild(tr);
+          totalPago+=parseFloat(v.valor);
+        });
+        document.getElementById('totalPago').textContent=totalPago.toFixed(2);
+        atualizarSaldo();
+      });
+  }
 
-// ======= Valores Pagos =======
-function carregarPagos(){
-  const tbody=document.querySelector('#tabelaPagos tbody'); tbody.innerHTML='';
-  let totalPago=0;
-  valoresPagos.forEach((v,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${v.data}</td><td>${v.vendedor}</td><td>${parseFloat(v.valor).toFixed(2)}</td><td>${v.quemPagou}</td>`;
-    tbody.appendChild(tr);
-    totalPago+=parseFloat(v.valor);
-  });
-  document.getElementById('totalPago').textContent=totalPago.toFixed(2);
-  atualizarSaldo();
-}
+  function salvarValorPago(){
+    const data=document.getElementById('dataPago').value;
+    const vendedor=document.getElementById('vendedorPago').value.trim();
+    const valor=parseFloat(document.getElementById('valorPago').value);
+    const quemPagou=document.getElementById('quemPagou').value.trim();
+    if(!data||!vendedor||isNaN(valor)||valor<=0||!quemPagou){ alert('Preencha todos os campos'); return;}
+    db.collection(`valoresPagos_${sistemaAtivo}`).add({data,vendedor,valor,quemPagou})
+      .then(()=>{ limparFormularioPagos(); carregarPagos(); });
+  }
 
-function salvarValorPago(){
-  const data=document.getElementById('dataPago').value;
-  const vendedor=document.getElementById('vendedorPago').value.trim();
-  const valor=parseFloat(document.getElementById('valorPago').value);
-  const quemPagou=document.getElementById('quemPagou').value.trim();
-  if(!data||!vendedor||isNaN(valor)||valor<=0||!quemPagou){ alert('Preencha todos os campos'); return;}
-  valoresPagos.push({data,vendedor,valor,quemPagou});
-  localStorage.setItem(getChave('valoresPagos'),JSON.stringify(valoresPagos));
-  limparFormularioPagos();
-  carregarPagos();
-}
+  function limparFormularioPagos(){
+    document.getElementById('dataPago').value='';
+    document.getElementById('vendedorPago').value='';
+    document.getElementById('valorPago').value='';
+    document.getElementById('quemPagou').value='';
+  }
 
-function limparFormularioPagos(){
-  document.getElementById('dataPago').value='';
-  document.getElementById('vendedorPago').value='';
-  document.getElementById('valorPago').value='';
-  document.getElementById('quemPagou').value='';
-}
+  function atualizarSaldo(){
+    const rec=parseFloat(document.getElementById('totalRecebido').textContent)||0;
+    const pag=parseFloat(document.getElementById('totalPago').textContent)||0;
+    document.getElementById('saldo').textContent=(rec-pag).toFixed(2);
+  }
 
-function atualizarSaldo(){
-  const rec=parseFloat(document.getElementById('totalRecebido').textContent)||0;
-  const pag=parseFloat(document.getElementById('totalPago').textContent)||0;
-  document.getElementById('saldo').textContent=(rec-pag).toFixed(2);
-}
+  // ====== Repasses ======
+  function carregarRepasses(){
+    const tbody=document.querySelector('#tabelaRepasses tbody'); tbody.innerHTML='';
+    db.collection(`repasses_${sistemaAtivo}`).get().then(snapshot=>{
+      snapshot.forEach(doc=>{
+        const r=doc.data();
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${r.vendedor}</td><td>${r.descricao}</td><td>${parseFloat(r.valor).toFixed(2)}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  }
 
-// ======= Repasses =======
-function carregarRepasses(){
-  const tbody=document.querySelector('#tabelaRepasses tbody'); tbody.innerHTML='';
-  repasses.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${r.vendedor}</td><td>${r.descricao}</td><td>${parseFloat(r.valor).toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-  });
-}
+  function salvarRepasse(){
+    const vendedor=document.getElementById('vendedorRepasse').value.trim();
+    const descricao=document.getElementById('descRepasse').value.trim();
+    const valor=parseFloat(document.getElementById('valorRepasse').value);
+    if(!vendedor||!descricao||isNaN(valor)||valor<=0){ alert('Preencha todos os campos'); return;}
+    db.collection(`repasses_${sistemaAtivo}`).add({vendedor,descricao,valor})
+      .then(()=>{ 
+        document.getElementById('vendedorRepasse').value='';
+        document.getElementById('descRepasse').value='';
+        document.getElementById('valorRepasse').value='';
+        carregarRepasses();
+      });
+  }
 
-function salvarRepasse(){
-  const vendedor=document.getElementById('vendedorRepasse').value.trim();
-  const descricao=document.getElementById('descRepasse').value.trim();
-  const valor=parseFloat(document.getElementById('valorRepasse').value);
-  if(!vendedor||!descricao||isNaN(valor)||valor<=0){ alert('Preencha todos os campos'); return;}
-  repasses.push({vendedor,descricao,valor});
-  localStorage.setItem(getChave('repasses'),JSON.stringify(repasses));
-  document.getElementById('vendedorRepasse').value='';
-  document.getElementById('descRepasse').value='';
-  document.getElementById('valorRepasse').value='';
-  carregarRepasses();
-}
+  // ====== Exportar Relatório ======
+  function exportarRelatorio(){
+    html2canvas(document.body).then(canvas=>{
+      const link=document.createElement('a');
+      link.download=`relatorio_${sistemaAtivo}.jpg`;
+      link.href=canvas.toDataURL('image/jpeg',0.9);
+      link.click();
+    });
+  }
 
-// ======= Exportar Relatório =======
-function exportarRelatorio(){
-  html2canvas(document.body).then(canvas=>{
-    const link=document.createElement('a');
-    link.download=`relatorio_${sistemaAtivo}.jpg`;
-    link.href=canvas.toDataURL('image/jpeg',0.9);
-    link.click();
-  });
-}
+  // ====== Inicialização ======
+  function carregarDados(){
+    carregarLancamentos();
+    carregarPagos();
+    carregarRepasses();
+  }
 
-// ======= Inicialização =======
-function carregarDados(){
-  lancamentos=JSON.parse(localStorage.getItem(getChave('lancamentos'))||'[]');
-  valoresPagos=JSON.parse(localStorage.getItem(getChave('valoresPagos'))||'[]');
-  repasses=JSON.parse(localStorage.getItem(getChave('repasses'))||'[]');
-  carregarLancamentos(); carregarPagos(); carregarRepasses();
-}
-
-window.onload=carregarDados;
+  window.onload=carregarDados;
 </script>
-
 </body>
 </html>
