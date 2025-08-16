@@ -1,13 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Relatório Mestre Final - Firestore</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; color: #333; }
   h1, h2 { text-align: center; color: green; }
-  select, button { padding: 8px; margin-bottom: 20px; }
+  select, button, input { padding: 8px; margin-bottom: 20px; }
   table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
   th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
   th { background-color: #ffcccc; }
@@ -26,9 +26,16 @@
   <option value="pitimbu">Pitimbu da Sorte</option>
   <option value="timonha">Timonha da Sorte</option>
 </select>
+
+<br>
+
+<label><strong>Data Início:</strong></label>
+<input type="date" id="dataInicio">
+<label><strong>Data Fim:</strong></label>
+<input type="date" id="dataFim">
+<button id="btnConsultar">Consultar</button>
 <button id="btnExport" onclick="exportarPDF()">Exportar em PDF</button>
 
-<!-- VENDAS -->
 <div class="section" id="vendasSection">
   <h2>Vendas por Vendedor</h2>
   <table>
@@ -56,7 +63,6 @@
   </table>
 </div>
 
-<!-- DÉBITOS -->
 <div class="section" id="debitoSection">
   <h2>DÉBITOS / Lançamentos Diretos por Vendedor</h2>
   <table>
@@ -70,119 +76,88 @@
   </table>
 </div>
 
-<!-- RECEITAS -->
 <div class="section" id="receitasSection">
   <h2>Receitas</h2>
   <table>
-    <thead>
-      <tr>
-        <th>Descrição</th>
-        <th>Valor (R$)</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Descrição</th><th>Valor (R$)</th></tr></thead>
     <tbody id="receitasBody"></tbody>
-    <tfoot>
-      <tr>
-        <td>Total Receitas</td>
-        <td id="totalReceitas">0.00</td>
-      </tr>
-    </tfoot>
+    <tfoot><tr><td>Total Receitas</td><td id="totalReceitas">0.00</td></tr></tfoot>
   </table>
 </div>
 
-<!-- DESPESAS -->
 <div class="section" id="despesasSection">
   <h2>Despesas</h2>
   <table>
-    <thead>
-      <tr>
-        <th>Descrição</th>
-        <th>Valor (R$)</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Descrição</th><th>Valor (R$)</th></tr></thead>
     <tbody id="despesasBody"></tbody>
-    <tfoot>
-      <tr>
-        <td>Total Despesas</td>
-        <td id="totalDespesas">0.00</td>
-      </tr>
-    </tfoot>
+    <tfoot><tr><td>Total Despesas</td><td id="totalDespesas">0.00</td></tr></tfoot>
   </table>
 </div>
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // ===== CONFIGURAÇÃO FIREBASE =====
-  const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.firebasestorage.app",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+auth.signInAnonymously().catch(err=>console.error("Erro login anônimo:",err));
 
-  const sistemaSelect = document.getElementById('sistemaSelect');
-  let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
-  sistemaSelect.value = sistemaAtivo;
+const sistemaSelect = document.getElementById('sistemaSelect');
+const dataInicio = document.getElementById('dataInicio');
+const dataFim = document.getElementById('dataFim');
 
-  sistemaSelect.addEventListener('change', () => {
-    sistemaAtivo = sistemaSelect.value;
-    localStorage.setItem('sistemaAtivo', sistemaAtivo);
-    carregarRelatorio();
-  });
+function formatar(valor){ return parseFloat(valor||0).toFixed(2); }
 
-  function formatar(valor) {
-    return parseFloat(valor || 0).toFixed(2);
-  }
+async function carregarRelatorio() {
+  const sistemaAtivo = sistemaSelect.value;
+  const startDate = dataInicio.value;
+  const endDate = dataFim.value;
 
-  async function carregarRelatorio() {
-    // Limpar tabelas
-    document.getElementById('vendasBody').innerHTML = '';
-    document.getElementById('debitoBody').innerHTML = '';
-    document.getElementById('receitasBody').innerHTML = '';
-    document.getElementById('despesasBody').innerHTML = '';
-    document.getElementById('totalApurado').textContent = '0.00';
-    document.getElementById('totalPagou').textContent = '0.00';
-    document.getElementById('totalDeve').textContent = '0.00';
-    document.getElementById('totalReceitas').textContent = '0.00';
-    document.getElementById('totalDespesas').textContent = '0.00';
+  ["vendasBody","debitoBody","receitasBody","despesasBody"].forEach(id => document.getElementById(id).innerHTML='');
+  ["totalApurado","totalPagou","totalDeve","totalReceitas","totalDespesas"].forEach(id => document.getElementById(id).textContent='0.00');
 
-    let totalApurado = 0, totalPagou = 0;
+  let totalApurado = 0, totalPagou = 0;
 
-    // ===== VENDAS & DÉBITOS =====
-    const vendedoresSnap = await db.collection(sistemaAtivo + '_vendedores').get();
-    for (const doc of vendedoresSnap.docs) {
+  try{
+    const vendedoresSnap = await db.collection(sistemaAtivo+'_vendedores').get();
+    if(vendedoresSnap.empty){
+      document.getElementById('vendasBody').innerHTML = '<tr><td colspan="8">Nenhum vendedor encontrado</td></tr>';
+    }
+
+    for(const doc of vendedoresSnap.docs){
       const vendedor = doc.data();
       const nome = vendedor.nome;
-
-      const vendasSnap = await db.collection(sistemaAtivo + '_vendas').doc(nome).collection('historico').get();
       let saldoDebito = 0;
 
-      vendasSnap.forEach(vendaDoc => {
-        const v = vendaDoc.data();
-        const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-        const apurou = v.apurou !== undefined ? v.apurou : vendeu * (vendedor.cotacao || 1);
-        const pagou = v.pagou || 0;
+      // VENDAS filtradas por data
+      let vendasQuery = db.collection(sistemaAtivo+'_vendas').doc(nome).collection('historico');
+      if(startDate) vendasQuery = vendasQuery.where('data','>=',startDate);
+      if(endDate) vendasQuery = vendasQuery.where('data','<=',endDate);
+      const vendasSnap = await vendasQuery.get();
+
+      vendasSnap.forEach(v=>{
+        const dataV=v.data();
+        const vendeu = (dataV.recebeu||0)-(dataV.devolveu||0);
+        const apurou = dataV.apurou!==undefined ? dataV.apurou : vendeu*(vendedor.cotacao||1);
+        const pagou = dataV.pagou||0;
         const deve = apurou - pagou;
 
-        // tabela vendas
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${nome}</td>
-          <td>${v.data || ''}</td>
-          <td>${formatar(v.recebeu)}</td>
-          <td>${formatar(v.devolveu)}</td>
-          <td>${formatar(vendeu)}</td>
-          <td>${formatar(apurou)}</td>
-          <td>${formatar(pagou)}</td>
-          <td>${formatar(deve)}</td>
-        `;
+        tr.innerHTML = `<td>${nome}</td><td>${dataV.data||''}</td><td>${formatar(dataV.recebeu)}</td>
+                        <td>${formatar(dataV.devolveu)}</td><td>${formatar(vendeu)}</td><td>${formatar(apurou)}</td>
+                        <td>${formatar(pagou)}</td><td>${formatar(deve)}</td>`;
         document.getElementById('vendasBody').appendChild(tr);
 
         totalApurado += apurou;
@@ -190,7 +165,6 @@
         saldoDebito += deve;
       });
 
-      // tabela débitos
       const trDebito = document.createElement('tr');
       trDebito.innerHTML = `<td>${nome}</td><td>${formatar(saldoDebito)}</td>`;
       document.getElementById('debitoBody').appendChild(trDebito);
@@ -198,38 +172,49 @@
 
     document.getElementById('totalApurado').textContent = formatar(totalApurado);
     document.getElementById('totalPagou').textContent = formatar(totalPagou);
-    document.getElementById('totalDeve').textContent = formatar(totalApurado - totalPagou);
+    document.getElementById('totalDeve').textContent = formatar(totalApurado-totalPagou);
 
-    // ===== RECEITAS =====
-    const receitasSnap = await db.collection(sistemaAtivo + '_receitas').get();
-    let totalRec = 0;
-    receitasSnap.forEach(r => {
-      const data = r.data();
+    // RECEITAS filtradas por data
+    let totalRec=0;
+    let receitasQuery = db.collection(sistemaAtivo+'_receitas');
+    if(startDate) receitasQuery = receitasQuery.where('data','>=',startDate);
+    if(endDate) receitasQuery = receitasQuery.where('data','<=',endDate);
+    const receitasSnap = await receitasQuery.get();
+    receitasSnap.forEach(r=>{
+      const dataR = r.data();
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${data.descricao}</td><td>${formatar(data.valor)}</td>`;
+      tr.innerHTML=`<td>${dataR.descricao}</td><td>${formatar(dataR.valor)}</td>`;
       document.getElementById('receitasBody').appendChild(tr);
-      totalRec += data.valor || 0;
+      totalRec+=dataR.valor||0;
     });
-    document.getElementById('totalReceitas').textContent = formatar(totalRec);
+    document.getElementById('totalReceitas').textContent=formatar(totalRec);
 
-    // ===== DESPESAS =====
-    const despesasSnap = await db.collection(sistemaAtivo + '_despesas').get();
-    let totalDes = 0;
-    despesasSnap.forEach(d => {
-      const data = d.data();
+    // DESPESAS filtradas por data
+    let totalDes=0;
+    let despesasQuery = db.collection(sistemaAtivo+'_despesas');
+    if(startDate) despesasQuery = despesasQuery.where('data','>=',startDate);
+    if(endDate) despesasQuery = despesasQuery.where('data','<=',endDate);
+    const despesasSnap = await despesasQuery.get();
+    despesasSnap.forEach(d=>{
+      const dataD=d.data();
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${data.descricao}</td><td>${formatar(data.valor)}</td>`;
+      tr.innerHTML=`<td>${dataD.descricao}</td><td>${formatar(dataD.valor)}</td>`;
       document.getElementById('despesasBody').appendChild(tr);
-      totalDes += data.valor || 0;
+      totalDes+=dataD.valor||0;
     });
-    document.getElementById('totalDespesas').textContent = formatar(totalDes);
-  }
+    document.getElementById('totalDespesas').textContent=formatar(totalDes);
 
-  function exportarPDF() {
-    window.print();
+  }catch(e){
+    console.error(e);
+    alert('Erro ao carregar relatório: '+e.message);
   }
+}
 
-  window.onload = carregarRelatorio;
+function exportarPDF(){ window.print(); }
+
+document.getElementById('btnConsultar').addEventListener('click',carregarRelatorio);
+sistemaSelect.addEventListener('change', carregarRelatorio);
+window.onload = carregarRelatorio;
 </script>
 
 </body>

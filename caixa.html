@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -58,8 +58,6 @@ Sistema:
 </table>
 
 <h2>Receitas</h2>
-
-<!-- Formulário para adicionar receitas -->
 <div style="margin-bottom: 20px;">
   <label>Data: <input type="date" id="dataReceita" /></label>
   <label>Valor: <input type="number" id="valorReceita" step="0.01" min="0"/></label>
@@ -152,12 +150,12 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
 
   // ===== Receitas =====
   const receitasSnap = await getDocs(collection(db, `${sistemaAtivo}_receitas`));
-  const receitas = [];
+  const receitasPeriodo = [];
   let saldoAnterior = 0;
   receitasSnap.forEach(doc => {
     const r = doc.data();
     if(r.data < inicio) saldoAnterior += parseFloat(r.valor||0);
-    if(r.data >= inicio && r.data <= fim) receitas.push(r);
+    if(r.data >= inicio && r.data <= fim) receitasPeriodo.push(r);
   });
 
   // ===== Preencher tabela vendas =====
@@ -180,12 +178,12 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
   // ===== Preencher tabela receitas =====
   const tbodyReceitas = document.querySelector("#tabelaReceitas tbody");
   tbodyReceitas.innerHTML = "";
-  let totalReceitas = 0;
-  receitas.forEach(r=>{
+  let totalReceitasPeriodo = 0;
+  receitasPeriodo.forEach(r=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${r.data||''}</td><td>${formatar(r.valor)}</td><td>${r.descricao||''}</td>`;
     tbodyReceitas.appendChild(tr);
-    totalReceitas += parseFloat(r.valor||0);
+    totalReceitasPeriodo += parseFloat(r.valor||0);
   });
 
   // ===== Preencher tabela despesas =====
@@ -199,9 +197,9 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
   });
 
   // ===== Totais e saldo final =====
-  const saldoFinal = saldoAnterior + apurado + totalReceitas - despesasTotais;
+  const saldoFinal = saldoAnterior + apurado + totalReceitasPeriodo - despesasTotais;
   document.getElementById('saldoAnterior').textContent = formatar(saldoAnterior);
-  document.getElementById('apuradoTotal').textContent = formatar(apurado + totalReceitas);
+  document.getElementById('apuradoTotal').textContent = formatar(apurado + totalReceitasPeriodo);
   document.getElementById('despesasTotal').textContent = formatar(despesasTotais);
   document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
 
