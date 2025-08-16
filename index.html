@@ -88,10 +88,10 @@
         return;
       }
 
-      if (usuario === 'pedro' || usuario === 'chaguinha') {
-        window.location.href = 'usuario.html';
-      } else if (usuario === 'benedito') {
+      if (usuario === 'pedro' || usuario === 'admin') {
         window.location.href = 'admin.html';
+      } else if (usuario === 'benedito') {
+        window.location.href = 'painel.html';
       } else {
         erro.textContent = "Usuário não reconhecido.";
       }
@@ -99,3 +99,4 @@
   </script>
 </body>
 </html>
+
