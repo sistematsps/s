@@ -1,133 +1,101 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Sistema</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .login-container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
-  }
-  h1 {
-    text-align: center;
-    color: #b30000;
-    margin-bottom: 20px;
-  }
-  label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: bold;
-  }
-  input[type="email"], input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #b30000;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #900000;
-  }
-  #msg {
-    color: red;
-    text-align: center;
-    margin-top: 10px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login do Sistema</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background: #135ba1;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="text" id="usuario" placeholder="Usuário" />
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="fazerLogin()">Entrar</button>
+    <div class="error" id="mensagemErro"></div>
+  </div>
 
-<div class="login-container">
-  <h1>Login</h1>
-  <label for="email">Email:</label>
-  <input type="email" id="email" placeholder="Digite seu email">
+  <script>
+    function fazerLogin() {
+      const usuario = document.getElementById('usuario').value.trim().toLowerCase();
+      const senha = document.getElementById('senha').value.trim();
+      const erro = document.getElementById('mensagemErro');
 
-  <label for="senha">Senha:</label>
-  <input type="password" id="senha" placeholder="Digite sua senha">
+      if (senha !== '12345') {
+        erro.textContent = "Senha incorreta.";
+        return;
+      }
 
-  <button onclick="fazerLogin()">Entrar</button>
-
-  <div id="msg"></div>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
-<script>
-  // Configuração do seu Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-    authDomain: "meuappweb-65522.firebaseapp.com",
-    projectId: "meuappweb-65522",
-    storageBucket: "meuappweb-65522.firebasestorage.app",
-    messagingSenderId: "305368794616",
-    appId: "1:305368794616:web:d987589863479e576ac20d",
-    measurementId: "G-L0VWMGJ003"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  async function fazerLogin() {
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('senha').value.trim();
-    const msg = document.getElementById('msg');
-    msg.textContent = '';
-
-    if (!email || !senha) {
-      msg.textContent = 'Preencha email e senha.';
-      return;
-    }
-
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, senha);
-      const user = userCredential.user;
-
-      // Verifica se é admin ou benedito pelo email
-      if (email.toLowerCase() === 'benedito@example.com') {
-        window.location.href = 'painel.html';
-      } else if (email.toLowerCase() === 'admin@example.com') {
+      if (usuario === 'pedro' || usuario === 'chaguinha') {
+        window.location.href = 'usuario.html';
+      } else if (usuario === 'benedito') {
         window.location.href = 'admin.html';
       } else {
-        msg.textContent = 'Usuário sem permissão!';
+        erro.textContent = "Usuário não reconhecido.";
       }
-    } catch (error) {
-      msg.textContent = error.message;
     }
-  }
-
-  // Mantém usuário logado
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      const email = user.email.toLowerCase();
-      if (email === 'timonhadasorte@gmail.com') window.location.href = 'painel.html';
-      if (email === 'admin@example.com') window.location.href = 'admin.html';
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
