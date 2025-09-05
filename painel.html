@@ -1,58 +1,82 @@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Controle</title>
+<title>Painel Administrativo</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; text-align: center; }
-  h1 { color: #b30000; margin-bottom: 30px; }
-  .btn {
-    display: block;
-    width: 250px;
-    margin: 10px auto;
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
-  }
-  .btn:hover { opacity: 0.9; }
-  .cadastro { background: #007bff; }
-  .caixa { background: #28a745; }
-  .despesas { background: #ffc107; color: #000; }
-  .dezenas { background: #17a2b8; }
-  .lancamentos { background: #6f42c1; }
-  .receitas { background: #fd7e14; }
-  .relatorio { background: #20c997; }
-  .relatoriofinal { background: #6610f2; }
-  .repasses { background: #e83e8c; }
-  .backup { background: #343a40; }
-  .zerar { background: #dc3545; }
-  .sair { background: #6c757d; }
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+  .slide { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+  .active { display: block; }
+  h1, h2 { text-align: center; margin-bottom: 20px; }
+  .buttons, .cards { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+  button, .card { padding: 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; transition: 0.2s; text-align: center; }
+  button { background-color: #2196f3; color: white; }
+  button:hover, .card:hover { background-color: #0b7dda; color: #fff; }
+  .card { background-color: #fff; color: #333; width: 150px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 </style>
 </head>
 <body>
 
-<h1>Painel de Controle</h1>
+<!-- Slide 0: Painel Inicial -->
+<div id="slide0" class="slide active">
+  <h1>Painel Administrativo</h1>
+  <div class="buttons">
+    <button onclick="goToSlide(1)">PITIMBU DA SORTE</button>
+    <button onclick="goToSlide(2)">TIMONHA DA SORTE</button>
+    <button onclick="goToSlide(3)">DEZENA DA SORTE</button>
+  </div>
+</div>
 
-<a class="btn cadastro" href="cadastro.html">Cadastro de Vendedores</a>
-<a class="btn caixa" href="caixa.html">Caixa</a>
-<a class="btn despesas" href="despesas.html">Despesas</a>
-<a class="btn dezenas" href="dezenas.html">Dezenas</a>
-<a class="btn lancamentos" href="lancamentos.html">Lançamentos</a>
-<a class="btn receitas" href="receitas.html">Receitas</a>
-<a class="btn relatorio" href="relatorio.html">Relatório</a>
-<a class="btn relatoriofinal" href="relatoriofinal.html">Relatório Final</a>
-<a class="btn repasses" href="repasses.html">Repasses</a>
-<a class="btn backup" href="backup.html">Backup</a>
-<a class="btn zerar" href="zerar.html">Zerar Sistema</a>
-<a class="btn despesas" href="cadusuario.html">cadastro</a>
-<a class="btn sair" href="index.html">Sair</a>
+<!-- Slide 1: PITIMBU DA SORTE -->
+<div id="slide1" class="slide">
+  <h2>PITIMBU DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 2: TIMONHA DA SORTE -->
+<div id="slide2" class="slide">
+  <h2>TIMONHA DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 3: DEZENA DA SORTE -->
+<div id="slide3" class="slide">
+  <h2>DEZENA DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<script>
+function goToSlide(n) {
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach(s => s.classList.remove('active'));
+  document.getElementById('slide' + n).classList.add('active');
+}
+</script>
 
 </body>
 </html>
