@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursos Disponíveis</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+    authDomain: "meuappweb-65522.firebaseapp.com",
+    projectId: "meuappweb-65522",
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+    messagingSenderId: "305368794616",
+    appId: "1:305368794616:web:d987589863479e576ac20d",
+    measurementId: "G-L0VWMGJ003"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let uidUsuario = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      uidUsuario = user.uid;
+      carregarCursos();
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+
+  async function carregarCursos() {
+    const container = document.getElementById("cursosContainer");
+    container.innerHTML = "<p>Carregando cursos...</p>";
+
+    const cursosSnap = await getDocs(collection(db, "cursos"));
+    container.innerHTML = "";
+
+    cursosSnap.forEach(async (cursoDoc) => {
+      const curso = cursoDoc.data();
+      const idCurso = cursoDoc.id;
+
+      const matriculaRef = doc(db, "alunos", uidUsuario, "cursos", idCurso);
+      const matriculaSnap = await getDoc(matriculaRef);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${curso.nome}</h3>
+        <p>${curso.descricao}</p>
+        <p><strong>Carga Horária:</strong> ${curso.cargaHoraria}h</p>
+        <a href="${curso.url}" target="_blank" class="linkCurso">Acessar Curso</a><br>
+        ${
+          matriculaSnap.exists()
+            ? `<button disabled>Já Matriculado</button>`
+            : `<button onclick="matricular('${idCurso}', '${curso.nome}')">Matricular-se</button>`
+        }
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  window.matricular = async function matricular(idCurso, nomeCurso) {
+    if (!uidUsuario) return;
+    const matriculaRef = doc(db, "alunos", uidUsuario, "cursos", idCurso);
+    const matriculaSnap = await getDoc(matriculaRef);
+    if (matriculaSnap.exists()) {
+      alert("Você já está matriculado neste curso!");
+      return;
+    }
+
+    await setDoc(matriculaRef, {
+      nome: nomeCurso,
+      progresso: 0,
+      notaFinal: null,
+      dataMatricula: new Date().toLocaleDateString("pt-BR")
+    });
+
+    alert(`Matrícula realizada com sucesso no curso "${nomeCurso}"!`);
+    carregarCursos();
+  };
+
+  window.voltarPainel = function voltarPainel() {
+    window.location.href = "painel.html";
+  };
+
+  window.sair = async function sair() {
+    await signOut(auth);
+    window.location.href = "login.html";
+  };
+</script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+  }
+
+  header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 15px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .card h3 {
+    color: #007bff;
+  }
+
+  .card p {
+    color: #555;
+  }
+
+  .linkCurso {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .linkCurso:hover {
+    text-decoration: underline;
+  }
+
+  button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  .acoes {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+  }
+
+  #btnVoltar { background-color: #28a745; }
+  #btnVoltar:hover { background-color: #218838; }
+
+  #btnSair { background-color: #dc3545; }
+  #btnSair:hover { background-color: #c82333; }
+</style>
+</head>
+
+<body>
+  <header><h1>Cursos Disponíveis</h1></header>
+
+  <div class="container">
+    <div id="cursosContainer" class="cards"></div>
+
+    <div class="acoes">
+      <button id="btnVoltar" onclick="voltarPainel()">Voltar ao Painel</button>
+      <button id="btnSair" onclick="sair()">Sair</button>
+    </div>
+  </div>
+</body>
+  </html>

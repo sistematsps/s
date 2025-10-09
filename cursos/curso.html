@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso Interativo - 20 Aulas</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f8fa;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  .slide {
+    display: none;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+  .ativo {
+    display: block;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  .logout {
+    background-color: #dc3545;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 0 - Descrição do Curso -->
+<div id="slide0" class="slide ativo">
+  <h2>Bem-vindo ao Curso Interativo</h2>
+  <p>Este curso possui 20 aulas. Avance após concluir cada uma delas para gerar seu relatório final.</p>
+  <button onclick="mostrarSlide(1)">Acessar Curso</button>
+</div>
+
+<!-- SLIDE 1 - Login -->
+<div id="slide1" class="slide">
+  <h2>Login do Aluno</h2>
+  <input type="text" id="nomeAluno" placeholder="Digite seu nome"><br><br>
+  <button onclick="fazerLogin()">Entrar</button>
+</div>
+
+<!-- SLIDE 2 - Lista de Aulas -->
+<div id="slide2" class="slide">
+  <h2>Suas Aulas</h2>
+  <div id="listaAulas"></div>
+  <button class="logout" onclick="mostrarSlide(0)">Sair</button>
+</div>
+
+<!-- SLIDES 3 a 19 - Aulas -->
+<script>
+  for(let i=3; i<=19; i++){
+    document.write(`
+      <div id="slide${i}" class="slide">
+        <h2>Aula ${i-2}</h2>
+        <p>Conteúdo da aula ${i-2}.</p>
+        <button onclick="concluirAula(${i})">Concluir Aula</button>
+        <button class="logout" onclick="mostrarSlide(0)">Sair</button>
+      </div>
+    `);
+  }
+</script>
+
+<!-- SLIDE 20 - Relatório Final -->
+<div id="slide20" class="slide">
+  <h2>Relatório Final</h2>
+  <p id="relatorio"></p>
+  <button class="logout" onclick="mostrarSlide(0)">Sair</button>
+</div>
+
+<script>
+  let aluno = "";
+  let progresso = 1;
+  let totalAulas = 18; // do slide 3 ao 20
+
+  function mostrarSlide(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('ativo'));
+    document.getElementById('slide' + n).classList.add('ativo');
+  }
+
+  function fazerLogin() {
+    const nome = document.getElementById('nomeAluno').value.trim();
+    if (!nome) {
+      alert("Por favor, digite seu nome.");
+      return;
+    }
+    aluno = nome;
+    progresso = 1;
+    gerarListaAulas();
+    mostrarSlide(2);
+  }
+
+  function gerarListaAulas() {
+    const lista = document.getElementById('listaAulas');
+    lista.innerHTML = "";
+    for (let i = 1; i <= totalAulas; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = "Aula " + i;
+      btn.disabled = i > progresso;
+      btn.onclick = () => mostrarSlide(i + 2);
+      lista.appendChild(btn);
+    }
+  }
+
+  function concluirAula(n) {
+    if (progresso < n - 2) progresso = n - 2;
+    if (progresso < totalAulas) {
+      progresso++;
+      gerarListaAulas();
+      alert("Aula concluída! Próxima aula desbloqueada.");
+      mostrarSlide(2);
+    } else {
+      gerarRelatorio();
+      mostrarSlide(20);
+    }
+  }
+
+  function gerarRelatorio() {
+    const data = new Date().toLocaleDateString('pt-BR');
+    const nota = (Math.random() * 3 + 7).toFixed(1); // nota entre 7.0 e 10.0
+    document.getElementById('relatorio').innerHTML =
+      `<b>Nome:</b> ${aluno}<br>
+       <b>Data de Conclusão:</b> ${data}<br>
+       <b>Nota Final:</b> ${nota}<br>
+       <br>Parabéns pela conclusão do curso!`;
+  }
+</script>
+</body>
+</html>

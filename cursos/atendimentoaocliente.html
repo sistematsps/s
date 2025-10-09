@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso - Exemplo</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+  }
+  .slide {
+    display: none;
+    padding: 20px;
+    text-align: center;
+    background: white;
+    border-radius: 10px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .ativo {
+    display: block;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 - APRESENTAÇÃO -->
+<div class="slide ativo" id="slide1">
+  <h2>Apresentação do Curso</h2>
+  <p>Bem-vindo(a) ao curso! Aqui você vai aprender conteúdos importantes.</p>
+  <button onclick="irParaSlide(2)">Acessar Curso</button>
+</div>
+
+<!-- SLIDE 2 - IDENTIFICAÇÃO DO ALUNO -->
+<div class="slide" id="slide2">
+  <h2>Identificação do Aluno</h2>
+  <p id="alunoInfo">Carregando informações...</p>
+  <button onclick="irParaSlide(3)">Continuar</button>
+</div>
+
+<!-- SLIDE 3 - LISTA DE AULAS -->
+<div class="slide" id="slide3">
+  <h2>Lista de Aulas</h2>
+  <ul id="listaAulas">
+    <li><button id="btnAula1" onclick="irParaSlide(4)">Aula 1</button></li>
+    <li><button id="btnAula2" disabled>Aula 2</button></li>
+    <li><button id="btnAula3" disabled>Aula 3</button></li>
+    <li><button id="btnAula4" disabled>Aula 4</button></li>
+    <li><button id="btnAula5" disabled>Aula 5</button></li>
+    <li><button id="btnAula6" disabled>Aula 6</button></li>
+    <li><button id="btnAula7" disabled>Aula 7</button></li>
+    <li><button id="btnAula8" disabled>Aula 8</button></li>
+    <li><button id="btnAula9" disabled>Aula 9</button></li>
+    <li><button id="btnAula10" disabled>Aula 10</button></li>
+  </ul>
+</div>
+
+<!-- SLIDES 4 a 20 -->
+<div class="slide" id="slide4">
+  <h2>Aula 1</h2>
+  <div class="conteudo">Conteúdo da Aula 1</div>
+  <button onclick="finalizarAula(1)">Finalizar Aula 1</button>
+</div>
+
+<div class="slide" id="slide5">
+  <h2>Aula 2</h2>
+  <div class="conteudo">Conteúdo da Aula 2</div>
+  <button onclick="finalizarAula(2)">Finalizar Aula 2</button>
+</div>
+
+<div class="slide" id="slide6">
+  <div class="conteudo"></div>
+  <button onclick="finalizarAula(3)">Finalizar Aula 3</button>
+
+</div>
+<div class="slide" id="slide7"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 4</button></div>
+<div class="slide" id="slide8"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 5</button></div>
+<div class="slide" id="slide9"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 6</button></div>
+<div class="slide" id="slide10"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 7</button></div>
+<div class="slide" id="slide11"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 8</button></div>
+<div class="slide" id="slide12"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 9</button></div>
+<div class="slide" id="slide13"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 10</button></div>
+<div class="slide" id="slide14"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 11</button></div>
+<div class="slide" id="slide15"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 12</button></div>
+<div class="slide" id="slide16"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 13</button></div>
+<div class="slide" id="slide17"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 14</button></div></div>
+<div class="slide" id="slide18"><div class="conteudo"></div><<button onclick="finalizarAula(3)">Finalizar Aula 15</button></div>/div>
+<div class="slide" id="slide19"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 16</button></div></div>
+<div class="slide" id="slide20"><div class="conteudo"></div><button onclick="finalizarAula(3)">Finalizar Aula 17</button></div></div>
+
+<script>
+let slideAtual = 1;
+
+function irParaSlide(num) {
+  document.getElementById(`slide${slideAtual}`).classList.remove("ativo");
+  slideAtual = num;
+  document.getElementById(`slide${slideAtual}`).classList.add("ativo");
+}
+
+// Função de finalização de aula
+function finalizarAula(num) {
+  alert(`Aula ${num} concluída!`);
+
+  if (num === 1) {
+    const btnAula2 = document.getElementById("btnAula2");
+    btnAula2.disabled = false;
+    btnAula2.onclick = () => irParaSlide(5); // ativa a próxima aula
+    alert("Aula 2 desbloqueada!");
+  }
+
+  if (num === 2) {
+    const btnAula3 = document.getElementById("btnAula3");
+    btnAula3.disabled = false;
+    btnAula3.onclick = () => irParaSlide(6); // ativa a próxima aula
+    alert("Aula 3 desbloqueada!");
+  }
+
+   if (num === 3) {
+    const btnAula4 = document.getElementById("btnAula4");
+    btnAula4.disabled = false;
+    btnAula4.onclick = () => irParaSlide(7); // ativa a próxima aula
+    alert("Aula 4 desbloqueada!");
+  }
+
+   if (num === 4) {
+    const btnAula5 = document.getElementById("btnAula5");
+    btnAula5.disabled = false;
+    btnAula5.onclick = () => irParaSlide(8); // ativa a próxima aula
+    alert("Aula 5 desbloqueada!");
+  }
+
+   if (num === 5) {
+    const btnAula6 = document.getElementById("btnAula6");
+    btnAula6.disabled = false;
+    btnAula6.onclick = () => irParaSlide(9); // ativa a próxima aula
+    alert("Aula 6 desbloqueada!");
+  }
+
+   if (num === 6) {
+    const btnAula7 = document.getElementById("btnAula7");
+    btnAula7.disabled = false;
+    btnAula7.onclick = () => irParaSlide(10); // ativa a próxima aula
+    alert("Aula 7 desbloqueada!");
+  }
+
+   if (num === 7) {
+    const btnAula8 = document.getElementById("btnAula8");
+    btnAula8.disabled = false;
+    btnAula8.onclick = () => irParaSlide(11); // ativa a próxima aula
+    alert("Aula 8 desbloqueada!");
+  }
+
+   if (num === 8) {
+    const btnAula9 = document.getElementById("btnAula9");
+    btnAula9.disabled = false;
+    btnAula9.onclick = () => irParaSlide(12); // ativa a próxima aula
+    alert("Aula 9 desbloqueada!");
+  }
+
+   if (num === 9) {
+    const btnAula10 = document.getElementById("btnAula10");
+    btnAula10.disabled = false;
+    btnAula10.onclick = () => irParaSlide(13); // ativa a próxima aula
+    alert("Aula 10 desbloqueada!");
+  }
+
+  
+  irParaSlide(3); // retorna à lista de aulas
+}
+
+// Exemplo: dados do aluno via login
+document.getElementById("alunoInfo").innerText = "Aluno logado: João da Silva";
+</script>
+
+</body>
+</html>

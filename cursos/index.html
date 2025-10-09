@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login do Aluno</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // 🔧 Configuração do Firebase (mesma usada no cadastro)
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+    authDomain: "meuappweb-65522.firebaseapp.com",
+    projectId: "meuappweb-65522",
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+    messagingSenderId: "305368794616",
+    appId: "1:305368794616:web:d987589863479e576ac20d",
+    measurementId: "G-L0VWMGJ003"
+  };
+
+  // Inicializa Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // 🔹 Função de login
+  window.loginAluno = async function loginAluno() {
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
+
+    if (!email || !senha) {
+      alert("Por favor, preencha todos os campos!");
+      return;
+    }
+
+    try {
+      // Faz login via Authentication
+      const credenciais = await signInWithEmailAndPassword(auth, email, senha);
+      const user = credenciais.user;
+
+      // Busca dados do Firestore (opcional)
+      const docRef = doc(db, "alunos", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const aluno = docSnap.data();
+        console.log("Bem-vindo,", aluno.nome);
+      }
+
+      // Salva UID no localStorage para o painel
+      localStorage.setItem("alunoUID", user.uid);
+
+      alert("Login realizado com sucesso!");
+      window.location.href = "painel.html";
+    } catch (erro) {
+      console.error(erro);
+      if (erro.code === "auth/invalid-credential" || erro.code === "auth/wrong-password") {
+        alert("E-mail ou senha incorretos.");
+      } else if (erro.code === "auth/user-not-found") {
+        alert("Usuário não encontrado.");
+      } else {
+        alert("Erro ao fazer login: " + erro.message);
+      }
+    }
+  };
+</script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    width: 320px;
+  }
+  h2 {
+    text-align: center;
+    color: #007bff;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  p {
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>ÁREA RESTRITA</h2>
+    <input type="email" id="email" placeholder="E-mail" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <button onclick="loginAluno()">Entrar</button>
+    <p>Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+  </div>
+</body>
+</html>
