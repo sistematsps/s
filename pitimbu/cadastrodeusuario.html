@@ -1,0 +1,86 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Usuário</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #ffe6e6, #ffcccc);
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  .container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  h2 { margin-bottom: 20px; color: #b30000; }
+  input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; }
+  button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #b30000; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  button:hover { background: #900000; }
+  .mensagem { margin-top: 10px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Cadastrar Usuário</h2>
+  <input type="text" id="usuarioCadastro" placeholder="Usuário">
+  <input type="password" id="senhaCadastro" placeholder="Senha">
+  <select id="papelCadastro">
+    <option value="admin">Administrador</option>
+    <option value="gerente">Gerente</option>
+  </select>
+  <button onclick="cadastrarUsuario()">Cadastrar</button>
+  <p id="mensagemCadastro" class="mensagem"></p>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCc3XpTCx9bNhOPng8WJwHp4NMTVSFqT0w",
+  authDomain: "gerenciador-77f3d.firebaseapp.com",
+  projectId: "gerenciador-77f3d",
+  storageBucket: "gerenciador-77f3d.appspot.com",
+  messagingSenderId: "850976780997",
+  appId: "1:850976780997:web:4ef37c71147a3c411c36ac",
+  measurementId: "G-93N1ZBCP97"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Função de cadastro
+async function cadastrarUsuario() {
+  const usuario = document.getElementById("usuarioCadastro").value.trim();
+  const senha = document.getElementById("senhaCadastro").value.trim();
+  const papel = document.getElementById("papelCadastro").value;
+  const msg = document.getElementById("mensagemCadastro");
+
+  if(!usuario || !senha){ msg.textContent = "Preencha todos os campos"; msg.style.color="red"; return; }
+
+  try {
+    await db.collection("usuarios").doc(usuario).set({ senha: senha, papel: papel });
+    msg.textContent = "Usuário cadastrado com sucesso!";
+    msg.style.color = "green";
+    document.getElementById("usuarioCadastro").value="";
+    document.getElementById("senhaCadastro").value="";
+  } catch(error) {
+    msg.textContent = "Erro: " + error.message;
+    msg.style.color = "red";
+  }
+}
+</script>
+
+</body>
+</html>

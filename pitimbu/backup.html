@@ -1,0 +1,97 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup e Restauração - Sistema</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f8f8f8; }
+  h1 { text-align: center; color: #b30000; margin-bottom: 20px; }
+  button {
+    padding: 10px 15px; margin: 10px 5px 20px 0; border: none; border-radius: 5px; cursor: pointer;
+    background-color: #b30000; color: white;
+  }
+  button:hover { background-color: #900000; }
+  textarea { width: 100%; height: 200px; margin-bottom: 20px; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-family: monospace; }
+  label { font-weight: bold; display: block; margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<h1>Backup e Restauração do Sistema</h1>
+
+<!-- Exportação -->
+<div>
+  <button onclick="exportarBackup()">Exportar Backup</button>
+  <label for="backupExport">Dados do Sistema (JSON):</label>
+  <textarea id="backupExport" readonly></textarea>
+</div>
+
+<hr>
+
+<!-- Importação -->
+<div>
+  <label for="arquivoBackup">Restaurar Backup (Selecione o arquivo JSON):</label>
+  <input type="file" id="arquivoBackup" accept=".json" />
+  <button onclick="restaurarBackup()">Restaurar Backup</button>
+</div>
+
+<script>
+  const chavesSistema = [
+    'pitimbu_vendedores', 'timonha_vendedores',
+    'pitimbu_vendas', 'timonha_vendas',
+    'pitimbu_receitas', 'timonha_receitas',
+    'pitimbu_repasses', 'timonha_repasses',
+    'sistemaAtivo'
+  ];
+
+  // Exportar backup
+  function exportarBackup() {
+    const backup = {};
+    chavesSistema.forEach(chave => {
+      backup[chave] = localStorage.getItem(chave);
+    });
+    const jsonBackup = JSON.stringify(backup, null, 2);
+    document.getElementById('backupExport').value = jsonBackup;
+
+    const blob = new Blob([jsonBackup], { type: "application/json" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_sistema_${new Date().toISOString().slice(0,10)}.json`;
+    link.click();
+  }
+
+  // Restaurar backup a partir de arquivo
+  function restaurarBackup() {
+    const fileInput = document.getElementById('arquivoBackup');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('Selecione um arquivo JSON para restaurar.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const dados = JSON.parse(e.target.result);
+        Object.keys(dados).forEach(chave => {
+          if (dados[chave] !== null) {
+            localStorage.setItem(chave, dados[chave]);
+          }
+        });
+        alert('Backup restaurado com sucesso!');
+        location.reload();
+      } catch (err) {
+        alert('Erro ao restaurar backup: JSON inválido.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  window.onload = exportarBackup;
+</script>
+
+</body>
+</html>

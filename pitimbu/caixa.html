@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Caixa - Pitimbu da Sorte</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1, h2 { color: red; }
+input, button, select { padding: 8px; margin: 5px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: #ffcccc; }
+.total-box { margin: 20px 0; padding: 15px; background: #fff3f3; border: 1px solid #b30000; }
+.totais span { display: inline-block; min-width: 150px; margin-right: 20px; font-weight: bold; }
+hr { margin: 30px 0; border: 1px solid #b30000; }
+button { cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1>PITIMBU DA SORTE</h1>
+
+<div class="total-box totais">
+  <span>SALDO ANTERIOR: R$ <span id="saldoAnterior">0.00</span></span>
+  <span>APURADO: R$ <span id="apuradoTotal">0.00</span></span>
+  <span>DESPESAS: R$ <span id="despesasTotal">0.00</span></span>
+  <span>SALDO FINAL: R$ <span id="saldoFinal">0.00</span></span>
+</div>
+
+<hr>
+
+<label>De: <input type="date" id="dataInicio"></label>
+<label>Até: <input type="date" id="dataFim"></label>
+<button id="btnFiltrar">Filtrar</button>
+
+<h2>Resumo de Vendas</h2>
+<table id="tabelaResumo">
+<thead>
+<tr>
+<th>Data</th>
+<th>Vendedor</th>
+<th>Vendeu</th>
+<th>Apurou</th>
+<th>Pagou</th>
+<th>Deve</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Receitas (adicionadas manualmente)</h2>
+<div style="margin-bottom: 20px;">
+  <label>Data: <input type="date" id="dataReceita" /></label>
+  <label>Valor: <input type="number" id="valorReceita" step="0.01" min="0"/></label>
+  <label>Descrição: <input type="text" id="descricaoReceita"/></label>
+  <button id="btnSalvarReceita">Adicionar Receita</button>
+</div>
+
+<table id="tabelaReceitas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Valor</th>
+<th>Descrição</th>
+<th>Ações</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Despesas</h2>
+<table id="tabelaDespesas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Descrição</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Partilha de Recursos</h2>
+<div class="total-box">
+<p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
+<p>JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
+<p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
+</div>
+
+<button id="btnExportar">Exportar em PDF</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function formatar(valor){ return parseFloat(valor||0).toFixed(2); }
+
+async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
+  // ===== Vendedores e Vendas =====
+  const vendedoresSnap = await getDocs(collection(db, `vendedores`));
+  const vendedores = [];
+  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
+
+  const vendas = {};
+  for(const vend of vendedores){
+    const vendasSnap = await getDocs(collection(db, `vendas_${vend.nome}`));
+    vendas[vend.nome] = [];
+    vendasSnap.forEach(doc => {
+      const data = doc.data();
+      if(data.data >= inicio && data.data <= fim) vendas[vend.nome].push(data);
+    });
+  }
+
+  // ===== Despesas =====
+  const despesasSnap = await getDocs(collection(db, `despesas`));
+  const despesas = [];
+  despesasSnap.forEach(doc => {
+    const d = doc.data();
+    if(d.data >= inicio && d.data <= fim) despesas.push(d);
+  });
+
+  // ===== Receitas =====
+  const receitasSnap = await getDocs(collection(db, `receitas`));
+  const receitasPeriodo = [];
+  let saldoAnterior = 0;
+  receitasSnap.forEach(rdoc => {
+    const r = rdoc.data();
+    saldoAnterior += parseFloat(r.valor||0); // só para saldo anterior
+    if(r.data >= inicio && r.data <= fim){
+      receitasPeriodo.push({ id: rdoc.id, ...r });
+    }
+  });
+
+  // ===== Preencher tabela vendas =====
+  let apurado = 0;
+  const tbodyResumo = document.querySelector("#tabelaResumo tbody");
+  tbodyResumo.innerHTML = "";
+  for(const vendedor in vendas){
+    const cotacao = vendedores.find(v=>v.nome===vendedor)?.cotacao || 1;
+    vendas[vendedor].forEach(v=>{
+      const vendeu = (v.recebeu||0) - (v.devolveu||0);
+      const apurouVenda = vendeu * (v.cotacao ?? cotacao);
+      const deve = apurouVenda - (v.pagou||0);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${v.data||''}</td><td>${vendedor}</td><td>${formatar(vendeu)}</td><td>${formatar(apurouVenda)}</td><td>${formatar(v.pagou||0)}</td><td>${formatar(deve)}</td>`;
+      tbodyResumo.appendChild(tr);
+      apurado += apurouVenda;
+    });
+  }
+
+  // ===== Preencher tabela receitas =====
+  const tbodyReceitas = document.querySelector("#tabelaReceitas tbody");
+  tbodyReceitas.innerHTML = "";
+  receitasPeriodo.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.data||''}</td>
+      <td>${formatar(r.valor)}</td>
+      <td>${r.descricao||''}</td>
+      <td><button data-id="${r.id}" class="btnExcluirReceita">Excluir</button></td>
+    `;
+    tbodyReceitas.appendChild(tr);
+  });
+
+  // ===== Preencher tabela despesas =====
+  const despesasTotais = despesas.reduce((acc,d)=>acc+parseFloat(d.valor||0),0);
+  const tbodyDespesas=document.querySelector("#tabelaDespesas tbody"); 
+  tbodyDespesas.innerHTML="";
+  despesas.forEach(d=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.data||''}</td><td>${d.descricao||''}</td><td>${formatar(d.valor)}</td>`;
+    tbodyDespesas.appendChild(tr);
+  });
+
+  // ===== Totais e saldo final =====
+  const saldoFinal = saldoAnterior + apurado - despesasTotais;
+  document.getElementById('saldoAnterior').textContent = formatar(saldoAnterior);
+  document.getElementById('apuradoTotal').textContent = formatar(apurado);
+  document.getElementById('despesasTotal').textContent = formatar(despesasTotais);
+  document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
+
+  // ===== Partilha =====
+  document.getElementById('benedito').textContent=formatar(saldoFinal*0.25);
+  document.getElementById('jose').textContent=formatar(saldoFinal*0.25);
+  document.getElementById('pedro').textContent=formatar(saldoFinal*0.5);
+}
+
+// ===== Adicionar nova receita =====
+document.getElementById("btnSalvarReceita").addEventListener("click", async ()=>{
+  const data = document.getElementById("dataReceita").value;
+  const valor = parseFloat(document.getElementById("valorReceita").value);
+  const descricao = document.getElementById("descricaoReceita").value.trim();
+
+  if(!data){ alert("Informe a data da receita."); return; }
+  if(isNaN(valor) || valor<=0){ alert("Informe um valor válido."); return; }
+  if(!descricao){ alert("Informe a descrição."); return; }
+
+  try {
+    await addDoc(collection(db, `receitas`), { data, valor, descricao });
+    document.getElementById("dataReceita").value = '';
+    document.getElementById("valorReceita").value = '';
+    document.getElementById("descricaoReceita").value = '';
+    await carregarCaixa();
+    alert("Receita adicionada com sucesso!");
+  } catch(err) {
+    console.error(err);
+    alert("Erro ao salvar a receita.");
+  }
+});
+
+// ===== Excluir receita =====
+document.getElementById("tabelaReceitas").addEventListener("click", async (e)=>{
+  if(e.target.classList.contains("btnExcluirReceita")){
+    const id = e.target.getAttribute("data-id");
+    if(confirm("Deseja realmente excluir esta receita?")){
+      try {
+        await deleteDoc(doc(db, "receitas", id));
+        await carregarCaixa();
+        alert("Receita excluída!");
+      } catch(err){
+        console.error(err);
+        alert("Erro ao excluir a receita.");
+      }
+    }
+  }
+});
+
+// ===== Filtrar =====
+document.getElementById("btnFiltrar").addEventListener("click", ()=>{
+  const inicio = document.getElementById("dataInicio").value || '0000-00-00';
+  const fim = document.getElementById("dataFim").value || '9999-12-31';
+  carregarCaixa(inicio,fim);
+});
+
+// ===== Exportar PDF =====
+document.getElementById("btnExportar").addEventListener("click",()=>window.print());
+
+window.onload = ()=>{ carregarCaixa(); }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+

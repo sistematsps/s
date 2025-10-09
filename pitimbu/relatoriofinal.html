@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relatório Final</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .clock { font-weight: bold; }
+  h2, h3 { text-align: center; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #eee; }
+  hr { margin: 20px 0; }
+  button { display: inline-block; margin: 10px 6px; padding: 10px 16px; background-color: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  button:hover { background-color: #0b7dda; }
+  .totais { text-align: center; font-weight: bold; margin-top: 15px; }
+  .filtro-dados { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin: 10px 0 15px; }
+  .filtro-dados input, .filtro-dados select { padding:6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>Usuário logado: <strong id="usuarioLogado">---</strong></div>
+  <div class="clock" id="relogio"></div>
+</div>
+
+<div class="filtro-dados">
+  <label>Início:</label><input type="date" id="dataInicioFiltro">
+  <label>Fim:</label><input type="date" id="dataFimFiltro">
+  <label>Vendedor:</label>
+  <select id="vendedorFiltro">
+    <option value="">Todos</option>
+  </select>
+  <button id="btnAplicar">Aplicar Filtro</button>
+  <button id="btnLimpar" type="button">Limpar</button>
+</div>
+
+<hr>
+<h2>RELATÓRIO FINAL PITIMBU DA SORTE</h2>
+<hr>
+
+<table id="tabelaVendas">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Data</th>
+      <th>Recebeu</th>
+      <th>Devolveu</th>
+      <th>Vendeu</th>
+      <th>Apurou</th>
+      <th>Pagou</th>
+      <th>Deve</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL APURADO: <span id="totalApurado">R$ 0,00</span>
+</div>
+
+<hr>
+<h3>RELATÓRIO DE DESPESAS PITIMBU DA SORTE</h3>
+<hr>
+
+<table id="tabelaDespesas">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Valor</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL DAS DESPESAS: <span id="totalDespesas">R$ 0,00</span>
+</div>
+
+<hr>
+<div class="totais">
+  TOTAL DAS RECEITAS: <span id="totalReceitas">R$ 0,00</span><br>
+  TOTAL DAS DESPESAS: <span id="totalGastos">R$ 0,00</span><br>
+  TOTAL FINAL: <span id="totalFinal">R$ 0,00</span>
+</div>
+
+<div style="text-align:center; margin-top:10px;">
+  <button onclick="imprimirRelatorio()">Imprimir Relatório</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// UI refs
+const vendedorSelectFiltro = document.getElementById('vendedorFiltro');
+const dataInicioEl = document.getElementById('dataInicioFiltro');
+const dataFimEl = document.getElementById('dataFimFiltro');
+
+document.getElementById("usuarioLogado").textContent = localStorage.getItem("usuarioLogado") || "Desconhecido";
+
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById('relogio').textContent = agora.toLocaleDateString() + ' ' + agora.toLocaleTimeString();
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+// ---- Estado em memória ----
+let vendedores = [];
+let vendasPorVendedor = new Map();
+let despesas = [];
+
+// Subscrições
+let unsubVendedores = null;
+let unsubDespesas = null;
+let unsubPorVendedor = [];
+
+// ---- Helpers ----
+function toISODate(anyDate) {
+  if (!anyDate) return '';
+  if (typeof anyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(anyDate)) return anyDate;
+  const d = new Date(anyDate);
+  if (!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+  return '';
+}
+function passaFiltroData(iso, ini, fim) {
+  if (ini && iso < ini) return false;
+  if (fim && iso > fim) return false;
+  return true;
+}
+function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
+
+// ---- Renderizações ----
+function renderVendas() {
+  const tbody = document.querySelector("#tabelaVendas tbody");
+  tbody.innerHTML = '';
+  let totalApurado = 0;
+
+  const ini = dataInicioEl.value || '';
+  const fim = dataFimEl.value || '';
+  const filtroVend = vendedorSelectFiltro.value || '';
+
+  const todas = [];
+  vendasPorVendedor.forEach(arr => todas.push(...arr));
+  todas.sort((a,b) => (toISODate(a.data)||'').localeCompare(toISODate(b.data)||''));
+
+  for (const venda of todas) {
+    const iso = toISODate(venda.data);
+    if (!passaFiltroData(iso, ini, fim)) continue;
+    if (filtroVend && venda._vendedor?.nome !== filtroVend) continue;
+
+    const v = venda._vendedor || { nome: venda.vendedor || '—', cotacao: venda.cotacao || 1 };
+    const recebeu = parseFloat(venda.recebeu || 0);
+    const devolveu = parseFloat(venda.devolveu || 0);
+    const pagou = parseFloat(venda.pagou || 0);
+    const vendeu = recebeu - devolveu;
+    const apurou = vendeu * Number(v.cotacao || 1);
+    const deve = apurou - pagou;
+    totalApurado += apurou;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${v.nome}</td>
+      <td>${iso}</td>
+      <td>${recebeu}</td>
+      <td>${devolveu}</td>
+      <td>${vendeu}</td>
+      <td>${moeda(apurou)}</td>
+      <td>${moeda(pagou)}</td>
+      <td>${moeda(deve)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("totalApurado").textContent = moeda(totalApurado);
+  document.getElementById("totalReceitas").textContent = moeda(totalApurado);
+  renderTotaisFinais();
+}
+
+function renderDespesas() {
+  const tbody = document.querySelector("#tabelaDespesas tbody");
+  tbody.innerHTML = '';
+  let totalDespesas = 0;
+
+  const ini = dataInicioEl.value || '';
+  const fim = dataFimEl.value || '';
+
+  const arr = [...despesas].sort((a,b)=> (toISODate(a.data)||'').localeCompare(toISODate(b.data)||'') );
+
+  for (const d of arr) {
+    const iso = toISODate(d.data);
+    if (!passaFiltroData(iso, ini, fim)) continue;
+    const valor = parseFloat(d.valor || 0);
+    totalDespesas += valor;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${iso}</td>
+      <td>${moeda(valor)}</td>
+      <td>${d.descricao || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
+  document.getElementById("totalGastos").textContent = moeda(totalDespesas);
+  renderTotaisFinais();
+}
+
+function renderTotaisFinais() {
+  const receitas = parseFloat((document.getElementById("totalReceitas").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
+  const gastos = parseFloat((document.getElementById("totalGastos").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
+  document.getElementById("totalFinal").textContent = moeda(receitas - gastos);
+}
+
+// ---- Subscrições ----
+function limparSubscricoesVendas() {
+  unsubPorVendedor.forEach(u => { try{u();}catch{} });
+  unsubPorVendedor = [];
+  vendasPorVendedor.clear();
+}
+
+function iniciarSubscricoes() {
+  if (unsubVendedores) { try{unsubVendedores();}catch{} unsubVendedores=null; }
+  if (unsubDespesas) { try{unsubDespesas();}catch{} unsubDespesas=null; }
+  limparSubscricoesVendas();
+
+  // Vendedores
+  unsubVendedores = onSnapshot(collection(db, `vendedores`), snap => {
+    vendedores = snap.docs.map(d => d.data());
+    vendedorSelectFiltro.innerHTML = '<option value="">Todos</option>';
+    vendedores.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.nome;
+      opt.textContent = v.nome;
+      vendedorSelectFiltro.appendChild(opt);
+    });
+
+    limparSubscricoesVendas();
+    vendedores.forEach(v => {
+      const unsub = onSnapshot(collection(db, `vendas_${v.nome}`), snapV => {
+        const arr = snapV.docs.map(doc => ({ ...doc.data(), _vendedor: { nome: v.nome, cotacao: Number(v.cotacao||1) } }));
+        vendasPorVendedor.set(v.nome, arr);
+        renderVendas();
+      });
+      unsubPorVendedor.push(unsub);
+    });
+  });
+
+  // Despesas
+  unsubDespesas = onSnapshot(collection(db, `despesas`), snap => {
+    despesas = snap.docs.map(d => d.data());
+    renderDespesas();
+  });
+}
+
+// ---- Eventos UI ----
+document.getElementById('btnAplicar').addEventListener('click', () => { renderVendas(); renderDespesas(); });
+document.getElementById('btnLimpar').addEventListener('click', () => {
+  dataInicioEl.value = '';
+  dataFimEl.value = '';
+  vendedorSelectFiltro.value = '';
+  renderVendas();
+  renderDespesas();
+});
+[dataInicioEl, dataFimEl, vendedorSelectFiltro].forEach(el => el.addEventListener('change', () => { renderVendas(); renderDespesas(); }));
+
+window.imprimirRelatorio = function imprimirRelatorio() { window.print(); };
+
+// ---- Start ----
+iniciarSubscricoes();
+</script>
+
+</body>
+</html>
+
+
