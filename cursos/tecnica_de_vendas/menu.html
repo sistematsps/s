@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MENU DE ACESSO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+    hr {
+      margin: 10px auto;
+      width: 80%;
+    }
+    button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      transition: 0.2s;
+      background-color: #2196f3;
+      color: white;
+    }
+    button:hover {
+      background-color: #0b7dda;
+    }
+    button:disabled {
+      background-color: #b0c4de;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>CURSO DE:</h2>
+  <hr>
+
+  <button onclick="window.location.href='leitura.html'">LEITURA DO CURSO</button>
+  <hr>
+
+  <button onclick="window.location.href='prova.html'">REALIZAR A PROVA</button>
+  <hr>
+
+  <!-- Botão de certificado com ID para controle -->
+  <button id="btnCertificado" onclick="window.location.href='certificado.html'">
+    SOLICITAR CERTIFICADO
+  </button>
+  <hr>
+
+  <button onclick="window.location.href='detalhes.html'">SOBRE O CURSO</button>
+  <hr>
+
+  <button onclick="window.location.href='https://sistematsps.github.io/s/cursos/painel.html'">
+    SAIR
+  </button>
+  <hr>
+
+  <script>
+    // ====== BLOQUEIO DO BOTÃO DE CERTIFICADO ======
+    // Recupera a nota salva (exemplo: localStorage.setItem('notaFinal', 7.5))
+    const nota = parseFloat(localStorage.getItem('notaFinal')) || 0;
+    const botaoCertificado = document.getElementById('btnCertificado');
+
+    // Verifica se o aluno foi aprovado
+    if (nota >= 6) {
+      botaoCertificado.disabled = false;
+      botaoCertificado.style.opacity = "1";
+    } else {
+      botaoCertificado.disabled = true;
+      botaoCertificado.style.opacity = "0.7";
+      botaoCertificado.title = "Conclua a prova com nota 6,0 ou mais para liberar este botão.";
+    }
+  </script>
+</body>
+</html>
