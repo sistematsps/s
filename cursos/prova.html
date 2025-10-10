@@ -11,6 +11,12 @@
       padding: 0;
       background: #f4f4f4;
     }
+    header {
+      background-color: #2196f3;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
     h2 {
       text-align: center;
       margin-top: 20px;
@@ -57,9 +63,14 @@
   </style>
 </head>
 <body>
-  <h2>AVALIAÇÃO FINAL</h2>
+  <header>
+    <h3>Prova do Curso</h3>
+    <div id="usuarioInfo">Carregando...</div>
+  </header>
 
   <form id="formProva">
+    <h2>AVALIAÇÃO FINAL</h2>
+
     <div class="pergunta">
       <p>1️⃣ O que significa HTML?</p>
       <label><input type="radio" name="q1" value="1"> Linguagem de marcação de hipertexto</label>
@@ -101,6 +112,19 @@
   <div id="resultado"></div>
 
   <script>
+    // ====== EXIBE USUÁRIO LOGADO ======
+    const nomeUsuario = localStorage.getItem('usuarioLogado');
+    const cpfUsuario = localStorage.getItem('cpf');
+    const info = document.getElementById('usuarioInfo');
+
+    if (nomeUsuario) {
+      info.innerHTML = `👤 ${nomeUsuario} <br>🪪 CPF: ${cpfUsuario}`;
+    } else {
+      info.innerHTML = "Usuário não identificado. Redirecionando...";
+      setTimeout(() => window.location.href = 'https://sistematsps.github.io/s/cursos/painel.html', 2000);
+    }
+
+    // ====== AVALIAÇÃO ======
     document.getElementById('formProva').addEventListener('submit', function(event) {
       event.preventDefault();
 
@@ -114,16 +138,15 @@
         }
       }
 
-      // Calcula nota (de 0 a 10)
       let notaFinal = (pontuacao / totalQuestoes) * 10;
-      localStorage.setItem('notaFinal', notaFinal.toFixed(1)); // salva a nota
-      const resultado = document.getElementById('resultado');
+      localStorage.setItem('notaFinal', notaFinal.toFixed(1));
 
+      const resultado = document.getElementById('resultado');
       if (notaFinal >= 6) {
-        resultado.innerHTML = `✅ Parabéns! Você foi APROVADO com nota <strong>${notaFinal.toFixed(1)}</strong>.<br>O botão de certificado será liberado no menu.`;
+        resultado.innerHTML = `✅ Parabéns, ${nomeUsuario}!<br>Sua nota foi <strong>${notaFinal.toFixed(1)}</strong>.<br>O botão de certificado será liberado no menu.`;
         resultado.style.color = "green";
       } else {
-        resultado.innerHTML = `❌ Você foi REPROVADO com nota <strong>${notaFinal.toFixed(1)}</strong>.<br>É necessário tirar 6,0 ou mais.`;
+        resultado.innerHTML = `❌ ${nomeUsuario}, você foi reprovado com nota <strong>${notaFinal.toFixed(1)}</strong>.<br>É necessário tirar 6,0 ou mais.`;
         resultado.style.color = "red";
       }
     });
