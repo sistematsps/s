@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Despesas</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#d32f2f; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:700px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#d32f2f; color:#fff; }
+button.salvar:hover { background:#b71c1c; }
+button.excluir { background:#757575; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#424242; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.despesa-item { border-bottom:1px solid #eee; padding:10px 0; }
+.despesa-item:last-child { border-bottom:none; }
+.total { margin-top:15px; font-weight:bold; color:#d32f2f; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Despesas</header>
+
+<main>
+  <form id="form-despesa">
+    <label>Descrição</label>
+    <input type="text" id="descricaoDespesa" required>
+
+    <label>Valor (R$)</label>
+    <input type="number" id="valorDespesa" required step="0.01">
+
+    <label>Data</label>
+    <input type="date" id="dataDespesa" required>
+
+    <button type="submit" class="salvar">Salvar Despesa</button>
+  </form>
+
+  <div class="lista" id="listaDespesas">
+    <h3>Despesas Cadastradas</h3>
+    <div id="despesasContainer"></div>
+    <p class="total" id="totalDespesas"></p>
+  </div>
+</main>
+
+<script>
+function carregarDespesas() {
+    let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+    const container = document.getElementById("despesasContainer");
+    const totalEl = document.getElementById("totalDespesas");
+    container.innerHTML = "";
+
+    if(despesas.length === 0){
+        container.innerHTML = "<p>Nenhuma despesa cadastrada.</p>";
+        totalEl.innerText = "";
+        return;
+    }
+
+    let total = 0;
+    despesas.forEach((despesa, index) => {
+        total += despesa.valor;
+        let div = document.createElement("div");
+        div.classList.add("despesa-item");
+        div.innerHTML = `
+            <strong>${despesa.descricao}</strong> — R$ ${despesa.valor.toFixed(2)} <br>
+            Data: ${despesa.data}<br>
+            <button class="excluir" onclick="excluirDespesa(${index})">Excluir</button>
+        `;
+        container.appendChild(div);
+    });
+
+    totalEl.innerText = "Total de Despesas: R$ " + total.toFixed(2);
+}
+
+function excluirDespesa(index){
+    let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+    despesas.splice(index,1);
+    localStorage.setItem("despesas", JSON.stringify(despesas));
+    carregarDespesas();
+}
+
+document.getElementById("form-despesa").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const despesa = {
+        descricao: document.getElementById("descricaoDespesa").value,
+        valor: parseFloat(document.getElementById("valorDespesa").value),
+        data: document.getElementById("dataDespesa").value
+    };
+
+    let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+    despesas.push(despesa);
+    localStorage.setItem("despesas", JSON.stringify(despesas));
+
+    this.reset();
+    carregarDespesas();
+});
+
+// Carregar ao abrir
+carregarDespesas();
+</script>
+
+</body>
+</html>

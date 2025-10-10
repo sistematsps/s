@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Colaboradores</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#6a1b9a; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:800px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#6a1b9a; color:#fff; }
+button.salvar:hover { background:#4a148c; }
+button.excluir { background:#d32f2f; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#b71c1c; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.colab-item { border-bottom:1px solid #eee; padding:10px 0; }
+.colab-item:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Colaboradores</header>
+
+<main>
+  <form id="form-colaborador">
+    <label>Nome</label>
+    <input type="text" id="nomeColab" required>
+
+    <label>Senha</label>
+    <input type="password" id="senhaColab" required>
+
+    <label>Banca</label>
+    <select id="bancaColab" required></select>
+
+    <button type="submit" class="salvar">Salvar Colaborador</button>
+  </form>
+
+  <div class="lista" id="listaColabs">
+    <h3>Colaboradores Cadastrados</h3>
+    <div id="colabsContainer"></div>
+  </div>
+</main>
+
+<script>
+function carregarBancas(){
+  let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+  const select = document.getElementById("bancaColab");
+  select.innerHTML = "";
+
+  if(bancas.length === 0){
+    let option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Nenhuma banca cadastrada";
+    select.appendChild(option);
+    return;
+  }
+
+  bancas.forEach(b => {
+    let option = document.createElement("option");
+    option.value = b.nome;
+    option.textContent = b.nome;
+    select.appendChild(option);
+  });
+}
+
+function carregarColaboradores(){
+  let colabs = JSON.parse(localStorage.getItem("colaboradores")) || [];
+  const container = document.getElementById("colabsContainer");
+  container.innerHTML = "";
+
+  if(colabs.length === 0){
+    container.innerHTML = "<p>Nenhum colaborador cadastrado.</p>";
+    return;
+  }
+
+  colabs.forEach((c, index) => {
+    let div = document.createElement("div");
+    div.classList.add("colab-item");
+    div.innerHTML = `
+      <strong>${c.nome}</strong> — Banca: ${c.banca}<br>
+      <button class="excluir" onclick="excluirColab(${index})">Excluir</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function excluirColab(index){
+  let colabs = JSON.parse(localStorage.getItem("colaboradores")) || [];
+  colabs.splice(index,1);
+  localStorage.setItem("colaboradores", JSON.stringify(colabs));
+  carregarColaboradores();
+}
+
+document.getElementById("form-colaborador").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const colaborador = {
+    nome: document.getElementById("nomeColab").value,
+    senha: document.getElementById("senhaColab").value,
+    banca: document.getElementById("bancaColab").value
+  };
+
+  let colabs = JSON.parse(localStorage.getItem("colaboradores")) || [];
+  colabs.push(colaborador);
+  localStorage.setItem("colaboradores", JSON.stringify(colabs));
+
+  this.reset();
+  carregarColaboradores();
+});
+
+// carregar ao abrir
+carregarBancas();
+carregarColaboradores();
+</script>
+
+</body>
+</html>

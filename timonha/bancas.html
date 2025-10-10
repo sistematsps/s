@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastrar Bancas</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#1976d2; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:700px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#1976d2; color:#fff; }
+button.salvar:hover { background:#1565c0; }
+button.excluir { background:#e53935; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#c62828; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.banca-item { border-bottom:1px solid #eee; padding:10px 0; }
+.banca-item:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>Cadastrar Bancas</header>
+
+<main>
+  <form id="form-banca">
+    <label>Nome da Banca</label>
+    <input type="text" id="nomeBanca" required>
+
+    <label>Valor do Bilhete</label>
+    <input type="number" id="valorBilhete" required>
+
+    <label>Comissão Gerente Minoritário (%)</label>
+    <input type="number" id="comissaoGerente1" required>
+
+    <label>Comissão Segundo Gerente (%)</label>
+    <input type="number" id="comissaoGerente2" required>
+
+    <label>Comissão Banca (%)</label>
+    <input type="number" id="comissaoBanca" required>
+
+    <label>Nome do Gerente 1</label>
+    <input type="text" id="nomeGerente1" required>
+
+    <label>Nome do Gerente 2</label>
+    <input type="text" id="nomeGerente2">
+
+    <button type="submit" class="salvar">Salvar Banca</button>
+  </form>
+
+  <div class="lista" id="listaBancas">
+    <h3>Bancas Cadastradas</h3>
+    <div id="bancasContainer"></div>
+  </div>
+</main>
+
+<script>
+function carregarBancas() {
+    let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+    const container = document.getElementById("bancasContainer");
+    container.innerHTML = "";
+
+    if(bancas.length === 0){
+        container.innerHTML = "<p>Nenhuma banca cadastrada.</p>";
+        return;
+    }
+
+    bancas.forEach((banca, index) => {
+        let div = document.createElement("div");
+        div.classList.add("banca-item");
+        div.innerHTML = `
+            <strong>${banca.nome}</strong><br>
+            Bilhete: R$ ${banca.valorBilhete}<br>
+            Gerente Minoritário: ${banca.nomeGerente1} (${banca.comissaoGerente1}%)<br>
+            Segundo Gerente: ${banca.nomeGerente2 || "-"} (${banca.comissaoGerente2}%)<br>
+            Comissão Banca: ${banca.comissaoBanca}%<br>
+            <button class="excluir" onclick="excluirBanca(${index})">Excluir</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function excluirBanca(index){
+    let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+    bancas.splice(index,1);
+    localStorage.setItem("bancas", JSON.stringify(bancas));
+    carregarBancas();
+}
+
+document.getElementById("form-banca").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const banca = {
+        nome: document.getElementById("nomeBanca").value,
+        valorBilhete: parseFloat(document.getElementById("valorBilhete").value),
+        comissaoGerente1: parseFloat(document.getElementById("comissaoGerente1").value),
+        comissaoGerente2: parseFloat(document.getElementById("comissaoGerente2").value),
+        comissaoBanca: parseFloat(document.getElementById("comissaoBanca").value),
+        nomeGerente1: document.getElementById("nomeGerente1").value,
+        nomeGerente2: document.getElementById("nomeGerente2").value
+    };
+
+    let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+    bancas.push(banca);
+    localStorage.setItem("bancas", JSON.stringify(bancas));
+
+    this.reset();
+    carregarBancas();
+});
+
+// Carregar ao abrir
+carregarBancas();
+</script>
+
+</body>
+</html>

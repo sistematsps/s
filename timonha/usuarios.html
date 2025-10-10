@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastrar Usuários</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#1976d2; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:700px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#1976d2; color:#fff; }
+button.salvar:hover { background:#1565c0; }
+button.excluir { background:#e53935; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#c62828; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.usuario-item { border-bottom:1px solid #eee; padding:10px 0; }
+.usuario-item:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>Cadastrar Usuários</header>
+
+<main>
+  <form id="form-usuario">
+    <label>Função</label>
+    <select id="funcao" required onchange="atualizarCampos()">
+      <option value="">Selecione...</option>
+      <option value="master">Master</option>
+      <option value="gerente">Gerente</option>
+      <option value="colaborador">Colaborador</option>
+      <option value="administrador">Administrador</option>
+      <option value="vendedor">Vendedor</option>
+    </select>
+
+    <label>Nome</label>
+    <input type="text" id="nomeUsuario" required>
+
+    <label>Senha</label>
+    <input type="password" id="senhaUsuario" required>
+
+    <div id="extraCampos"></div>
+
+    <button type="submit" class="salvar">Salvar Usuário</button>
+  </form>
+
+  <div class="lista" id="listaUsuarios">
+    <h3>Usuários Cadastrados</h3>
+    <div id="usuariosContainer"></div>
+  </div>
+</main>
+
+<script>
+// Função para puxar bancas do localStorage
+function getBancas(){
+    return JSON.parse(localStorage.getItem("bancas")) || [];
+}
+
+// Atualiza os campos extras dependendo da função escolhida
+function atualizarCampos(){
+    const funcao = document.getElementById("funcao").value;
+    const extra = document.getElementById("extraCampos");
+    extra.innerHTML = "";
+
+    if(funcao === "gerente"){
+        let bancas = getBancas();
+        let options = bancas.map(b => `<option value="${b.nome}">${b.nome}</option>`).join("");
+        extra.innerHTML = `
+          <label>Banca</label>
+          <select id="bancaUsuario">${options}</select>
+          <label>Cotação</label>
+          <input type="number" id="cotacaoUsuario" required>
+        `;
+    }
+    if(funcao === "colaborador" || funcao === "vendedor"){
+        let bancas = getBancas();
+        let options = bancas.map(b => `<option value="${b.nome}">${b.nome}</option>`).join("");
+        extra.innerHTML = `
+          <label>Banca</label>
+          <select id="bancaUsuario">${options}</select>
+        `;
+    }
+}
+
+// Carrega usuários
+function carregarUsuarios() {
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const container = document.getElementById("usuariosContainer");
+    container.innerHTML = "";
+
+    if(usuarios.length === 0){
+        container.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
+        return;
+    }
+
+    usuarios.forEach((usuario, index) => {
+        let div = document.createElement("div");
+        div.classList.add("usuario-item");
+        div.innerHTML = `
+            <strong>${usuario.nome}</strong> — ${usuario.funcao} <br>
+            ${usuario.banca ? "Banca: " + usuario.banca + "<br>" : ""}
+            ${usuario.cotacao ? "Cotação: " + usuario.cotacao + "<br>" : ""}
+            <button class="excluir" onclick="excluirUsuario(${index})">Excluir</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function excluirUsuario(index){
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios.splice(index,1);
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+    carregarUsuarios();
+}
+
+// Salvar novo usuário
+document.getElementById("form-usuario").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const funcao = document.getElementById("funcao").value;
+    const nome = document.getElementById("nomeUsuario").value;
+    const senha = document.getElementById("senhaUsuario").value;
+
+    const usuario = { funcao, nome, senha };
+
+    if(funcao === "gerente"){
+        usuario.banca = document.getElementById("bancaUsuario").value;
+        usuario.cotacao = parseFloat(document.getElementById("cotacaoUsuario").value);
+    }
+    if(funcao === "colaborador" || funcao === "vendedor"){
+        usuario.banca = document.getElementById("bancaUsuario").value;
+    }
+
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios.push(usuario);
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    this.reset();
+    document.getElementById("extraCampos").innerHTML = "";
+    carregarUsuarios();
+});
+
+// Carregar ao abrir
+carregarUsuarios();
+</script>
+
+</body>
+</html>

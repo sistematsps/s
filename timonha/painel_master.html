@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Master</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#1976d2; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:900px; margin:0 auto; }
+.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-top:20px; }
+.card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); text-align:center; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+.card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+.card h3 { margin:0; font-size:16px; color:#1976d2; }
+</style>
+</head>
+<body>
+
+<header>Painel Master — Sistema</header>
+
+<main>
+  <h2 style="text-align:center;">Menu Principal</h2>
+  <div class="menu">
+    <div class="card" onclick="window.location.href='bancas.html'">
+      <h3>Cadastrar Bancas</h3>
+    </div>
+    <div class="card" onclick="window.location.href='usuarios.html'">
+      <h3>Cadastrar Usuários</h3>
+    </div>
+    <div class="card" onclick="window.location.href='receitas.html'">
+      <h3>Receitas</h3>
+    </div>
+    <div class="card" onclick="window.location.href='despesas.html'">
+      <h3>Despesas</h3>
+    </div>
+    <div class="card" onclick="window.location.href='caixa.html'">
+      <h3>Caixa Geral</h3>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

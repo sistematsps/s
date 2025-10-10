@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Administradores</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#ff9800; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:800px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#ff9800; color:#fff; }
+button.salvar:hover { background:#e68900; }
+button.excluir { background:#d32f2f; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#b71c1c; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.adm-item { border-bottom:1px solid #eee; padding:10px 0; }
+.adm-item:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Administradores</header>
+
+<main>
+  <form id="form-adm">
+    <label>Nome</label>
+    <input type="text" id="nomeAdm" required>
+
+    <label>Senha</label>
+    <input type="password" id="senhaAdm" required>
+
+    <button type="submit" class="salvar">Salvar Administrador</button>
+  </form>
+
+  <div class="lista" id="listaAdms">
+    <h3>Administradores Cadastrados</h3>
+    <div id="admsContainer"></div>
+  </div>
+</main>
+
+<script>
+function carregarAdministradores(){
+  let adms = JSON.parse(localStorage.getItem("administradores")) || [];
+  const container = document.getElementById("admsContainer");
+  container.innerHTML = "";
+
+  if(adms.length === 0){
+    container.innerHTML = "<p>Nenhum administrador cadastrado.</p>";
+    return;
+  }
+
+  adms.forEach((a, index) => {
+    let div = document.createElement("div");
+    div.classList.add("adm-item");
+    div.innerHTML = `
+      <strong>${a.nome}</strong><br>
+      <button class="excluir" onclick="excluirAdm(${index})">Excluir</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function excluirAdm(index){
+  let adms = JSON.parse(localStorage.getItem("administradores")) || [];
+  adms.splice(index,1);
+  localStorage.setItem("administradores", JSON.stringify(adms));
+  carregarAdministradores();
+}
+
+document.getElementById("form-adm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const adm = {
+    nome: document.getElementById("nomeAdm").value,
+    senha: document.getElementById("senhaAdm").value
+  };
+
+  let adms = JSON.parse(localStorage.getItem("administradores")) || [];
+  adms.push(adm);
+  localStorage.setItem("administradores", JSON.stringify(adms));
+
+  this.reset();
+  carregarAdministradores();
+});
+
+// carregar ao abrir
+carregarAdministradores();
+</script>
+
+</body>
+</html>

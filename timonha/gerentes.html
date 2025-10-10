@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Gerentes</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#1976d2; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:800px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#1976d2; color:#fff; }
+button.salvar:hover { background:#0d47a1; }
+button.excluir { background:#d32f2f; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#b71c1c; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.gerente-item { border-bottom:1px solid #eee; padding:10px 0; }
+.gerente-item:last-child { border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Gerentes</header>
+
+<main>
+  <form id="form-gerente">
+    <label>Nome</label>
+    <input type="text" id="nomeGerente" required>
+
+    <label>Senha</label>
+    <input type="password" id="senhaGerente" required>
+
+    <label>Banca</label>
+    <select id="bancaGerente" required></select>
+
+    <label>Cotação</label>
+    <input type="number" id="cotacaoGerente" step="0.01" required>
+
+    <label>Caixa a Repassar</label>
+    <input type="number" id="caixaGerente" step="0.01" value="0" required>
+
+    <button type="submit" class="salvar">Salvar Gerente</button>
+  </form>
+
+  <div class="lista" id="listaGerentes">
+    <h3>Gerentes Cadastrados</h3>
+    <div id="gerentesContainer"></div>
+  </div>
+</main>
+
+<script>
+function carregarBancas(){
+  let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+  const select = document.getElementById("bancaGerente");
+  select.innerHTML = "";
+
+  if(bancas.length === 0){
+    let option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Nenhuma banca cadastrada";
+    select.appendChild(option);
+    return;
+  }
+
+  bancas.forEach(b => {
+    let option = document.createElement("option");
+    option.value = b.nome;
+    option.textContent = b.nome;
+    select.appendChild(option);
+  });
+}
+
+function carregarGerentes(){
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  const container = document.getElementById("gerentesContainer");
+  container.innerHTML = "";
+
+  if(gerentes.length === 0){
+    container.innerHTML = "<p>Nenhum gerente cadastrado.</p>";
+    return;
+  }
+
+  gerentes.forEach((g, index) => {
+    let div = document.createElement("div");
+    div.classList.add("gerente-item");
+    div.innerHTML = `
+      <strong>${g.nome}</strong> — Banca: ${g.banca}<br>
+      Cotação: ${g.cotacao} | Caixa a Repassar: R$ ${g.caixaRepassar.toFixed(2)}<br>
+      <button class="excluir" onclick="excluirGerente(${index})">Excluir</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function excluirGerente(index){
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  gerentes.splice(index,1);
+  localStorage.setItem("gerentes", JSON.stringify(gerentes));
+  carregarGerentes();
+}
+
+document.getElementById("form-gerente").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const gerente = {
+    nome: document.getElementById("nomeGerente").value,
+    senha: document.getElementById("senhaGerente").value,
+    banca: document.getElementById("bancaGerente").value,
+    cotacao: parseFloat(document.getElementById("cotacaoGerente").value),
+    caixaRepassar: parseFloat(document.getElementById("caixaGerente").value)
+  };
+
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  gerentes.push(gerente);
+  localStorage.setItem("gerentes", JSON.stringify(gerentes));
+
+  this.reset();
+  carregarGerentes();
+});
+
+// carregar ao abrir
+carregarBancas();
+carregarGerentes();
+</script>
+
+</body>
+</html>

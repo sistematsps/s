@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Vendedores</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#4caf50; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:1100px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:2px; }
+button.salvar { background:#4caf50; color:#fff; }
+button.excluir { background:#d32f2f; color:#fff; }
+button.venda { background:#2196f3; color:#fff; }
+button:hover { opacity:0.9; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+.vendedor-item { border-bottom:2px solid #ddd; padding:10px 0; margin-bottom:10px; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:center; font-size:14px; }
+th { background:#f0f0f0; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Vendedores</header>
+
+<main>
+  <form id="form-vendedor">
+    <label>Nome</label>
+    <input type="text" id="nomeVend" required>
+
+    <label>Cotação</label>
+    <input type="number" id="cotacaoVend" step="0.01" placeholder="Ex: 1.5" required>
+
+    <label>Banca</label>
+    <select id="bancaVend" required></select>
+
+    <label>Gerente</label>
+    <select id="gerenteVend" required></select>
+
+    <button type="submit" class="salvar">Salvar Vendedor</button>
+  </form>
+
+  <div class="lista" id="listaVendedores">
+    <h3>Vendedores Cadastrados</h3>
+    <div id="vendedoresContainer"></div>
+  </div>
+</main>
+
+<script>
+// Simulação de login: definir usuário atual
+// Para teste, altere "funcao" entre "master", "gerente" ou "vendedor"
+if(!localStorage.getItem("usuarioAtual")){
+  localStorage.setItem("usuarioAtual", JSON.stringify({nome:"João", funcao:"gerente"}));
+}
+const usuarioAtual = JSON.parse(localStorage.getItem("usuarioAtual"));
+
+// Carregar selects de bancas e gerentes
+function carregarSelects(){
+  let bancas = JSON.parse(localStorage.getItem("bancas")) || [];
+  const selBanca = document.getElementById("bancaVend");
+  selBanca.innerHTML = "<option value=''>Selecione a banca</option>";
+  bancas.forEach(b => {
+    let opt = document.createElement("option");
+    opt.value = b.nome;
+    opt.textContent = b.nome;
+    selBanca.appendChild(opt);
+  });
+
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  const selGerente = document.getElementById("gerenteVend");
+  selGerente.innerHTML = "<option value=''>Selecione o gerente</option>";
+  gerentes.forEach(g => {
+    let opt = document.createElement("option");
+    opt.value = g.nome;
+    opt.textContent = g.nome;
+    selGerente.appendChild(opt);
+  });
+}
+
+// Carregar vendedores e histórico
+function carregarVendedores(){
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  const container = document.getElementById("vendedoresContainer");
+  container.innerHTML = "";
+
+  if(vendedores.length === 0){
+    container.innerHTML = "<p>Nenhum vendedor cadastrado.</p>";
+    return;
+  }
+
+  vendedores.forEach((v, index) => {
+    let div = document.createElement("div");
+    div.classList.add("vendedor-item");
+
+    let vendasHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Recebeu</th>
+            <th>Devolveu</th>
+            <th>Vendeu</th>
+            <th>Apurado</th>
+            <th>Pago</th>
+            <th>Devendo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    if(v.vendas && v.vendas.length > 0){
+      v.vendas.forEach((ven, idx) => {
+        let vendeu = ven.recebeu - ven.devolveu;
+        let apurado = vendeu * v.cotacao;
+        let devendo = apurado - ven.pago;
+
+        vendasHTML += `
+          <tr>
+            <td>${ven.data}</td>
+            <td>${ven.recebeu}</td>
+            <td><input type="number" value="${ven.devolveu}" ${usuarioAtual.funcao==="vendedor"||usuarioAtual.funcao==="gerente"||usuarioAtual.funcao==="master" ? "" : "readonly"} onchange="atualizarDevolucao(${index},${idx}, this.value)"></td>
+            <td>${vendeu}</td>
+            <td>${apurado.toFixed(2)}</td>
+            <td>${ven.pago}</td>
+            <td>${devendo.toFixed(2)}</td>
+            <td>
+              ${usuarioAtual.funcao==="gerente"||usuarioAtual.funcao==="master"?`<button class="excluir" onclick="excluirVenda(${index},${idx})">Excluir</button>`:""}
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      vendasHTML += `<tr><td colspan="8">Sem vendas registradas</td></tr>`;
+    }
+
+    vendasHTML += "</tbody></table>";
+
+    div.innerHTML = `
+      <strong>${v.nome}</strong> - Cotação: ${v.cotacao}<br>
+      Banca: ${v.banca} | Gerente: ${v.gerente}<br><br>
+      ${usuarioAtual.funcao==="gerente"||usuarioAtual.funcao==="master"?`<button class="venda" onclick="adicionarVenda(${index})">Adicionar Venda</button>`:""}
+      ${usuarioAtual.funcao==="gerente"||usuarioAtual.funcao==="master"?`<button class="excluir" onclick="excluirVendedor(${index})">Excluir Vendedor</button>`:""}
+      ${vendasHTML}
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+// Funções CRUD
+function excluirVendedor(index){
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  vendedores.splice(index,1);
+  localStorage.setItem("vendedores", JSON.stringify(vendedores));
+  carregarVendedores();
+}
+
+function adicionarVenda(index){
+  if(usuarioAtual.funcao!=="gerente" && usuarioAtual.funcao!=="master") return alert("Sem permissão!");
+  let data = prompt("Data da venda (DD/MM/AAAA):", new Date().toLocaleDateString("pt-BR"));
+  let recebeu = parseFloat(prompt("Valor recebido:"));
+  let devolveu = 0;
+  let pago = parseFloat(prompt("Valor pago:")) || 0;
+  if(isNaN(recebeu)) return;
+
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  if(!vendedores[index].vendas) vendedores[index].vendas = [];
+  vendedores[index].vendas.push({ data, recebeu, devolveu, pago });
+  localStorage.setItem("vendedores", JSON.stringify(vendedores));
+  carregarVendedores();
+}
+
+function excluirVenda(vIndex, vendaIndex){
+  if(usuarioAtual.funcao!=="gerente" && usuarioAtual.funcao!=="master") return alert("Sem permissão!");
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  vendedores[vIndex].vendas.splice(vendaIndex,1);
+  localStorage.setItem("vendedores", JSON.stringify(vendedores));
+  carregarVendedores();
+}
+
+function atualizarDevolucao(vIndex, vendaIndex, valor){
+  if(usuarioAtual.funcao!=="vendedor" && usuarioAtual.funcao!=="gerente" && usuarioAtual.funcao!=="master") return alert("Sem permissão!");
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  vendedores[vIndex].vendas[vendaIndex].devolveu = parseFloat(valor) || 0;
+  localStorage.setItem("vendedores", JSON.stringify(vendedores));
+  carregarVendedores();
+}
+
+// Salvar vendedor
+document.getElementById("form-vendedor").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const vend = {
+    nome: document.getElementById("nomeVend").value,
+    cotacao: parseFloat(document.getElementById("cotacaoVend").value),
+    banca: document.getElementById("bancaVend").value,
+    gerente: document.getElementById("gerenteVend").value,
+    vendas: []
+  };
+
+  let vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  vendedores.push(vend);
+  localStorage.setItem("vendedores", JSON.stringify(vendedores));
+
+  this.reset();
+  carregarVendedores();
+  carregarSelects();
+});
+
+// Inicializar
+carregarSelects();
+carregarVendedores();
+</script>
+
+</body>
+</html>

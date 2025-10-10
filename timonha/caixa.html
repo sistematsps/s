@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caixa Geral</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#2e7d32; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:800px; margin:0 auto; }
+.caixa { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+h2 { margin-top:0; color:#2e7d32; }
+p { margin:6px 0; font-size:16px; }
+.valor { font-weight:bold; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-right:10px; }
+.fechar { background:#2e7d32; color:#fff; }
+.fechar:hover { background:#1b5e20; }
+.zerar { background:#d32f2f; color:#fff; }
+.zerar:hover { background:#b71c1c; }
+</style>
+</head>
+<body>
+
+<header>Caixa Geral</header>
+
+<main>
+  <div class="caixa">
+    <h2>Resumo do Caixa</h2>
+    <p>Saldo Anterior (Receitas): <span class="valor" id="saldoAnterior">R$ 0,00</span></p>
+    <p>Apurado Total (Gerentes): <span class="valor" id="apuradoTotal">R$ 0,00</span></p>
+    <p>Despesas: <span class="valor" id="totalDespesas">R$ 0,00</span></p>
+    <hr>
+    <p>Saldo Final: <span class="valor" id="saldoFinal">R$ 0,00</span></p>
+    <br>
+    <button class="fechar" onclick="fecharCaixa()">Fechar Caixa</button>
+    <button class="zerar" onclick="zerarCaixa()">Zerar Caixa</button>
+  </div>
+</main>
+
+<script>
+function formatarValor(valor){
+  return "R$ " + valor.toFixed(2).replace(".",",");
+}
+
+function carregarCaixa(){
+  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+  let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+
+  // saldo anterior = somatória das receitas cadastradas
+  let saldoAnterior = receitas.reduce((acc,r)=> acc + r.valor,0);
+
+  // apurado total = somatória de caixa a repassar dos gerentes
+  let apuradoTotal = gerentes.reduce((acc,g)=> acc + (g.caixaRepassar || 0),0);
+
+  // despesas total
+  let totalDespesas = despesas.reduce((acc,d)=> acc + d.valor,0);
+
+  // saldo final
+  let saldoFinal = saldoAnterior + apuradoTotal - totalDespesas;
+
+  // atualizar na tela
+  document.getElementById("saldoAnterior").innerText = formatarValor(saldoAnterior);
+  document.getElementById("apuradoTotal").innerText = formatarValor(apuradoTotal);
+  document.getElementById("totalDespesas").innerText = formatarValor(totalDespesas);
+  document.getElementById("saldoFinal").innerText = formatarValor(saldoFinal);
+
+  // salvar valores atuais para manipular depois
+  localStorage.setItem("caixaAtual", JSON.stringify({
+    saldoAnterior, apuradoTotal, totalDespesas, saldoFinal
+  }));
+}
+
+function fecharCaixa(){
+  let caixa = JSON.parse(localStorage.getItem("caixaAtual")) || { saldoFinal:0 };
+  let novoSaldoAnterior = caixa.saldoFinal;
+
+  // guardar como nova receita (saldo anterior)
+  localStorage.setItem("receitas", JSON.stringify([{ descricao:"Saldo Anterior", valor:novoSaldoAnterior }]));
+
+  // zerar despesas e apurados
+  localStorage.setItem("despesas", JSON.stringify([]));
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  gerentes = gerentes.map(g => ({...g, caixaRepassar:0}));
+  localStorage.setItem("gerentes", JSON.stringify(gerentes));
+
+  alert("Caixa fechado! Novo saldo anterior: " + formatarValor(novoSaldoAnterior));
+  carregarCaixa();
+}
+
+function zerarCaixa(){
+  localStorage.setItem("receitas", JSON.stringify([]));
+  localStorage.setItem("despesas", JSON.stringify([]));
+  let gerentes = JSON.parse(localStorage.getItem("gerentes")) || [];
+  gerentes = gerentes.map(g => ({...g, caixaRepassar:0}));
+  localStorage.setItem("gerentes", JSON.stringify(gerentes));
+
+  alert("Caixa zerado!");
+  carregarCaixa();
+}
+
+carregarCaixa();
+</script>
+
+</body>
+</html>

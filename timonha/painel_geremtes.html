@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Gerente / Master</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#4caf50; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:1100px; margin:0 auto; }
+input, select { width:100%; padding:10px; margin:6px 0 12px; border-radius:6px; border:1px solid #ccc; font-size:14px; }
+button { padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:10px; background:#2196f3; color:#fff; }
+button:hover { opacity:0.9; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+th { background:#f0f0f0; }
+.total { font-weight:bold; margin-top:12px; }
+form { background:#fff; padding:16px; border-radius:12px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+</style>
+</head>
+<body>
+
+<header>Painel de Gerente / Master</header>
+
+<main>
+  <div id="loginDiv">
+    <input type="text" id="nomeLogin" placeholder="Nome de usuário">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <p id="msgLogin" style="color:red;"></p>
+  </div>
+
+  <div id="painel" style="display:none;">
+    <h3 id="painelTitulo"></h3>
+
+    <!-- Cadastro de Vendedores -->
+    <form id="formVendedor" style="display:none;">
+      <h4>Cadastrar Vendedor</h4>
+      <input type="text" id="nomeVend" placeholder="Nome" required>
+      <input type="number" id="cotacaoVend" step="0.01" placeholder="Cotação" required>
+      <input type="text" id="bancaVend" placeholder="Banca" required>
+      <button type="submit">Salvar Vendedor</button>
+    </form>
+
+    <!-- Lista de Vendas -->
+    <div id="conteudoPainel"></div>
+    <button onclick="logout()">Sair</button>
+  </div>
+</main>
+
+<script>
+// Inicializa usuários de teste
+if(!localStorage.getItem("usuarios")){
+  const usuariosTeste = [
+    {nome:"Master", funcao:"master", senha:"155200"},
+    {nome:"Gerente1", funcao:"gerente", senha:"123"},
+    {nome:"Vendedor1", funcao:"vendedor", senha:"abc", gerente:"Gerente1", banca:"Banca1", cotacao:1.5, vendas:[]},
+  ];
+  localStorage.setItem("usuarios", JSON.stringify(usuariosTeste));
+}
+
+// Login
+function login(){
+  const nome = document.getElementById("nomeLogin").value.trim();
+  const senha = document.getElementById("senhaLogin").value.trim();
+  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+  const user = usuarios.find(u => u.nome.toLowerCase() === nome.toLowerCase() && u.senha === senha);
+
+  if(!user){
+    document.getElementById("msgLogin").textContent = "Usuário ou senha incorretos!";
+    return;
+  }
+
+  localStorage.setItem("usuarioAtual", JSON.stringify(user));
+  mostrarPainel(user);
+}
+
+// Logout
+function logout(){
+  localStorage.removeItem("usuarioAtual");
+  document.getElementById("painel").style.display = "none";
+  document.getElementById("loginDiv").style.display = "block";
+}
+
+// Mostrar painel baseado na função
+function mostrarPainel(user){
+  document.getElementById("loginDiv").style.display = "none";
+  document.getElementById("painel").style.display = "block";
+  document.getElementById("painelTitulo").textContent = `Bem-vindo, ${user.nome} (${user.funcao})`;
+
+  // Exibe o formulário de cadastro apenas para master ou gerente
+  document.getElementById("formVendedor").style.display = (user.funcao==="master" || user.funcao==="gerente") ? "block" : "none";
+
+  carregarVendasGerente(user);
+}
+
+// Cadastro de vendedor
+document.getElementById("formVendedor").addEventListener("submit", function(e){
+  e.preventDefault();
+  const nome = document.getElementById("nomeVend").value.trim();
+  const cotacao = parseFloat(document.getElementById("cotacaoVend").value);
+  const banca = document.getElementById("bancaVend").value.trim();
+  const usuarioAtual = JSON.parse(localStorage.getItem("usuarioAtual"));
+
+  if(!nome || !banca || isNaN(cotacao)) return alert("Preencha todos os campos!");
+
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  usuarios.push({nome, funcao:"vendedor", senha:"123", gerente:usuarioAtual.nome, banca, cotacao, vendas:[]});
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+  document.getElementById("formVendedor").reset();
+  carregarVendasGerente(usuarioAtual);
+});
+
+// Carrega vendas do gerente
+function carregarVendasGerente(user){
+  const container = document.getElementById("conteudoPainel");
+  const vendedores = JSON.parse(localStorage.getItem("usuarios") || "[]")
+      .filter(u => u.funcao==="vendedor" && u.gerente.toLowerCase()===user.nome.toLowerCase());
+
+  if(vendedores.length===0){
+    container.innerHTML = "<p>Não há vendedores vinculados.</p>";
+    return;
+  }
+
+  let html = `<table>
+                <thead>
+                  <tr>
+                    <th>Vendedor</th><th>Data</th><th>Recebeu</th><th>Devolveu</th>
+                    <th>Vendeu</th><th>Apurado</th>
+                  </tr>
+                </thead><tbody>`;
+
+  let totalApurado = 0;
+  let totalRepassar = 0;
+
+  vendedores.forEach(v => {
+    if(!v.vendas) v.vendas = [];
+    v.vendas.forEach(ven => {
+      const vendeu = ven.recebeu - ven.devolveu;
+      const apurado = vendeu * v.cotacao;
+      totalApurado += apurado;
+      totalRepassar += vendeu * v.cotacao;
+
+      html += `<tr>
+                 <td>${v.nome}</td>
+                 <td>${ven.data}</td>
+                 <td>${ven.recebeu}</td>
+                 <td>${ven.devolveu}</td>
+                 <td>${vendeu}</td>
+                 <td>${apurado.toFixed(2)}</td>
+               </tr>`;
+    });
+  });
+
+  html += `</tbody></table>
+           <div class="total">
+            <p>Total Apurado: R$ <span id="totalApurado">${totalApurado.toFixed(2)}</span></p>
+            <p>Total a Repassar: R$ <span id="totalRepassar">${totalRepassar.toFixed(2)}</span></p>
+           </div>
+           <button onclick="fecharCaixaGerente()">Fechar Caixa</button>`;
+
+  container.innerHTML = html;
+}
+
+// Fechar caixa do gerente
+function fecharCaixaGerente(){
+  if(!confirm("Deseja fechar o caixa?")) return;
+  document.getElementById("totalApurado").textContent = "0.00";
+  document.getElementById("totalRepassar").textContent = "0.00";
+  alert("Caixa fechado. Totais zerados.");
+}
+
+// Ao carregar a página, verifica se já há usuário logado
+const usuarioAtual = JSON.parse(localStorage.getItem("usuarioAtual") || "null");
+if(usuarioAtual) mostrarPainel(usuarioAtual);
+</script>
+
+</body>
+</html>

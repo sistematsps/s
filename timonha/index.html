@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Master</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+.container { background:#fff; padding:30px 40px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:320px; }
+h2 { text-align:center; margin-bottom:24px; color:#1976d2; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input { width:100%; padding:10px; margin-bottom:16px; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box; }
+button { width:100%; padding:12px; background:#1976d2; color:#fff; font-weight:600; border:none; border-radius:6px; cursor:pointer; font-size:15px; }
+button:hover { background:#1565c0; }
+p.error { color:#e53935; font-size:13px; text-align:center; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Login Master</h2>
+  <label for="usuario">Usuário</label>
+  <input type="text" id="usuario" placeholder="Digite o usuário" />
+  <label for="senha">Senha</label>
+  <input type="password" id="senha" placeholder="Digite a senha" />
+  <button id="btn-login">Entrar</button>
+  <p class="error" id="erro-login"></p>
+</div>
+
+<script>
+document.getElementById("btn-login").addEventListener("click", function(){
+    const usuario = document.getElementById("usuario").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+
+    // Login master: usuário vazio ou qualquer, senha 155200
+    if(senha === "155200"){
+        // Redireciona para painel master
+        window.location.href = "painel_master.html";
+    } else {
+        document.getElementById("erro-login").innerText = "Usuário ou senha incorretos!";
+    }
+});
+
+// Permite pressionar Enter para logar
+document.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        document.getElementById("btn-login").click();
+    }
+});
+</script>
+
+</body>
+</html>

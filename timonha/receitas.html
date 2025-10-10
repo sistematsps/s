@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receitas</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#388e3c; color:#fff; padding:16px; text-align:center; font-size:18px; }
+main { padding:20px; max-width:700px; margin:0 auto; }
+form { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:20px; }
+label { display:block; margin:10px 0 4px; font-size:14px; }
+input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px; font-size:14px; }
+button { padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+button.salvar { background:#388e3c; color:#fff; }
+button.salvar:hover { background:#2e7d32; }
+button.excluir { background:#e53935; color:#fff; margin-top:6px; }
+button.excluir:hover { background:#c62828; }
+.lista { background:#fff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+.receita-item { border-bottom:1px solid #eee; padding:10px 0; }
+.receita-item:last-child { border-bottom:none; }
+.total { margin-top:15px; font-weight:bold; color:#388e3c; }
+</style>
+</head>
+<body>
+
+<header>Cadastro de Receitas</header>
+
+<main>
+  <form id="form-receita">
+    <label>Descrição</label>
+    <input type="text" id="descricaoReceita" required>
+
+    <label>Valor (R$)</label>
+    <input type="number" id="valorReceita" required step="0.01">
+
+    <button type="submit" class="salvar">Salvar Receita</button>
+  </form>
+
+  <div class="lista" id="listaReceitas">
+    <h3>Receitas Cadastradas</h3>
+    <div id="receitasContainer"></div>
+    <p class="total" id="totalReceitas"></p>
+  </div>
+</main>
+
+<script>
+function carregarReceitas() {
+    let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+    const container = document.getElementById("receitasContainer");
+    const totalEl = document.getElementById("totalReceitas");
+    container.innerHTML = "";
+
+    if(receitas.length === 0){
+        container.innerHTML = "<p>Nenhuma receita cadastrada.</p>";
+        totalEl.innerText = "";
+        return;
+    }
+
+    let total = 0;
+    receitas.forEach((receita, index) => {
+        total += receita.valor;
+        let div = document.createElement("div");
+        div.classList.add("receita-item");
+        div.innerHTML = `
+            <strong>${receita.descricao}</strong> — R$ ${receita.valor.toFixed(2)}<br>
+            <button class="excluir" onclick="excluirReceita(${index})">Excluir</button>
+        `;
+        container.appendChild(div);
+    });
+
+    totalEl.innerText = "Total de Receitas: R$ " + total.toFixed(2);
+}
+
+function excluirReceita(index){
+    let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+    receitas.splice(index,1);
+    localStorage.setItem("receitas", JSON.stringify(receitas));
+    carregarReceitas();
+}
+
+document.getElementById("form-receita").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const receita = {
+        descricao: document.getElementById("descricaoReceita").value,
+        valor: parseFloat(document.getElementById("valorReceita").value)
+    };
+
+    let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+    receitas.push(receita);
+    localStorage.setItem("receitas", JSON.stringify(receitas));
+
+    this.reset();
+    carregarReceitas();
+});
+
+// Carregar ao abrir
+carregarReceitas();
+</script>
+
+</body>
+</html>
