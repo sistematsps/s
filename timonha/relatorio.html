@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Vendas - Firestore</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+  h1 { text-align: center; }
+  .filtros { margin: 20px 0; text-align: center; }
+  button { padding: 6px 12px; margin: 5px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+  th { background-color: #ccc; }
+  hr { margin: 30px 0; }
+  #totalDia { font-weight: bold; color: green; margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>RELATÓRIO DE VENDAS TIMONHA DA SORTE</h1>
+
+<div class="filtros">
+  <label for="filtroData">Filtrar por data:</label>
+  <input type="date" id="filtroData" />
+  <button id="btnGerar">Consultar</button>
+  <button id="btnExportarDOC">Exportar Word</button>
+  <button id="btnPrint">Print da Tela</button>
+</div>
+
+<div id="relatorioContainer"></div>
+<div id="totalDia"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD91WcNkb6Y4bZIVJdA75m4HlpId7HwbAk",
+  authDomain: "pitimbu-da-sorte.firebaseapp.com",
+  projectId: "pitimbu-da-sorte",
+  storageBucket: "pitimbu-da-sorte.firebasestorage.app",
+  messagingSenderId: "689037113918",
+  appId: "1:689037113918:web:334207c5b44f37bb992f6f",
+  measurementId: "G-3WKL6THK72"
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let relatorioHTML = ''; // Guarda o HTML gerado para exportação
+
+async function gerarRelatorio() {
+  const filtroData = document.getElementById('filtroData').value;
+  const relatorioContainer = document.getElementById('relatorioContainer');
+  const totalDiaDiv = document.getElementById('totalDia');
+  relatorioContainer.innerHTML = '';
+  totalDiaDiv.innerHTML = '';
+  relatorioHTML = '';
+
+  // Buscar vendedores
+  const vendedoresSnap = await getDocs(collection(db, `vendedores`));
+  const vendedores = [];
+  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
+
+  let algumResultado = false;
+  let totalApuradoDia = 0;
+  const detalhesVendedores = [];
+
+  for (const vendedor of vendedores) {
+    const vendasSnap = await getDocs(collection(db, `vendas_${vendedor.nome}`));
+    const vendas = [];
+    vendasSnap.forEach(doc => {
+      const data = doc.data();
+      if (!filtroData || data.data === filtroData) vendas.push(data);
+    });
+
+    if (vendas.length === 0) continue;
+    algumResultado = true;
+
+    let html = `<h3>${vendedor.nome.toUpperCase()}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Recebeu</th>
+                      <th>Devolveu</th>
+                      <th>Vendeu</th>
+                      <th>Apurou</th>
+                      <th>Pagou</th>
+                      <th>Deve</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+
+    let somaVendedor = 0;
+    vendas.forEach(v => {
+      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+      const pagou = v.pagou || 0;
+      const deve = apurou - pagou;
+      somaVendedor += apurou;
+      html += `<tr>
+                 <td>${v.data || ''}</td>
+                 <td>${v.recebeu || 0}</td>
+                 <td>${v.devolveu || 0}</td>
+                 <td>${vendeu}</td>
+                 <td>R$ ${apurou.toFixed(2)}</td>
+                 <td>R$ ${pagou.toFixed(2)}</td>
+                 <td>R$ ${deve.toFixed(2)}</td>
+               </tr>`;
+    });
+
+    html += '</tbody></table><hr>';
+    relatorioContainer.innerHTML += html;
+    relatorioHTML += html;
+
+    totalApuradoDia += somaVendedor;
+    detalhesVendedores.push({ nome: vendedor.nome, valor: somaVendedor });
+  }
+
+  if (!algumResultado) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    return;
+  }
+
+  if (filtroData && detalhesVendedores.length > 0) {
+    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+    htmlResumo += '<ul>';
+    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+    htmlResumo += '</ul>';
+    totalDiaDiv.innerHTML = htmlResumo;
+    relatorioHTML += htmlResumo;
+  }
+}
+
+// ===== Botão Consultar =====
+document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+
+// ===== Exportar Word (.docx) =====
+document.getElementById('btnExportarDOC').addEventListener('click', () => {
+  if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
+
+  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                 "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
+                 "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
+  const footer = "</body></html>";
+
+  const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'relatorio_vendas.doc';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+// ===== Print da tela =====
+document.getElementById('btnPrint').addEventListener('click', () => {
+  window.print();
+});
+
+window.onload = gerarRelatorio;
+</script>
+</body>
+</html>
+
+
