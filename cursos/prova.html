@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova do Curso</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+    }
+    form {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .pergunta {
+      margin-bottom: 20px;
+    }
+    .pergunta p {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background-color: #0b7dda;
+    }
+    #resultado {
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>AVALIAÇÃO FINAL</h2>
+
+  <form id="formProva">
+    <div class="pergunta">
+      <p>1️⃣ O que significa HTML?</p>
+      <label><input type="radio" name="q1" value="1"> Linguagem de marcação de hipertexto</label>
+      <label><input type="radio" name="q1" value="0"> Linguagem de programação</label>
+      <label><input type="radio" name="q1" value="0"> Um banco de dados</label>
+    </div>
+
+    <div class="pergunta">
+      <p>2️⃣ Qual é a função do CSS?</p>
+      <label><input type="radio" name="q2" value="1"> Estilizar páginas HTML</label>
+      <label><input type="radio" name="q2" value="0"> Criar lógica de sistemas</label>
+      <label><input type="radio" name="q2" value="0"> Armazenar dados</label>
+    </div>
+
+    <div class="pergunta">
+      <p>3️⃣ O que o JavaScript faz?</p>
+      <label><input type="radio" name="q3" value="1"> Adiciona interatividade ao site</label>
+      <label><input type="radio" name="q3" value="0"> Controla o servidor</label>
+      <label><input type="radio" name="q3" value="0"> Define o layout da página</label>
+    </div>
+
+    <div class="pergunta">
+      <p>4️⃣ Qual tag define um link em HTML?</p>
+      <label><input type="radio" name="q4" value="1">&lt;a&gt;</label>
+      <label><input type="radio" name="q4" value="0">&lt;link&gt;</label>
+      <label><input type="radio" name="q4" value="0">&lt;href&gt;</label>
+    </div>
+
+    <div class="pergunta">
+      <p>5️⃣ Qual comando exibe uma mensagem no console em JavaScript?</p>
+      <label><input type="radio" name="q5" value="1">console.log()</label>
+      <label><input type="radio" name="q5" value="0">print()</label>
+      <label><input type="radio" name="q5" value="0">alerta()</label>
+    </div>
+
+    <button type="submit">ENVIAR PROVA</button>
+  </form>
+
+  <div id="resultado"></div>
+
+  <script>
+    document.getElementById('formProva').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      let totalQuestoes = 5;
+      let pontuacao = 0;
+
+      for (let i = 1; i <= totalQuestoes; i++) {
+        let resposta = document.querySelector(`input[name="q${i}"]:checked`);
+        if (resposta) {
+          pontuacao += parseInt(resposta.value);
+        }
+      }
+
+      // Calcula nota (de 0 a 10)
+      let notaFinal = (pontuacao / totalQuestoes) * 10;
+      localStorage.setItem('notaFinal', notaFinal.toFixed(1)); // salva a nota
+      const resultado = document.getElementById('resultado');
+
+      if (notaFinal >= 6) {
+        resultado.innerHTML = `✅ Parabéns! Você foi APROVADO com nota <strong>${notaFinal.toFixed(1)}</strong>.<br>O botão de certificado será liberado no menu.`;
+        resultado.style.color = "green";
+      } else {
+        resultado.innerHTML = `❌ Você foi REPROVADO com nota <strong>${notaFinal.toFixed(1)}</strong>.<br>É necessário tirar 6,0 ou mais.`;
+        resultado.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
