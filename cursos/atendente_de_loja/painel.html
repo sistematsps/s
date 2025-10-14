@@ -3,26 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Controle</title>
+<title>Painel do Sistema</title>
+
 <style>
-  body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-  header { background: #007bff; color: white; padding: 15px; text-align: center; border-radius: 8px; }
-  #conteudo { margin-top: 20px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-  th { background: #007bff; color: white; }
-  button { cursor: pointer; border-radius: 6px; padding: 6px 10px; margin: 2px; }
-  #logout { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 6px; background: #dc3545; color: white; cursor: pointer; }
-  #logout:hover { background: #b02a37; }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+  }
+  header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 15px;
+  }
+  .container { max-width: 900px; margin: 30px auto; padding: 20px; }
+  .dados-box, .card, .item-usuario {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card h3 { color: #007bff; }
+  button { padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; margin: 3px; }
+  .btnSair { background-color: #dc3545; color: white; }
+  .btnSair:hover { background-color: #c82333; }
+  .btnVoltar { background-color: #17a2b8; color: white; }
+  .btnVoltar:hover { background-color: #138496; }
+  .item-usuario { cursor: pointer; transition: 0.2s; padding: 10px; }
+  .item-usuario:hover { background: #e9f2ff; }
 </style>
+
 </head>
 <body>
 <header>
-  <h2>Painel de Controle</h2>
+  <h1>Painel do Sistema</h1>
   <p id="usuarioLogado">Carregando usuário...</p>
 </header>
-<div id="conteudo"></div>
-<button id="logout">Sair</button>
+
+<div class="container">
+  <!-- Conteúdo Dinâmico -->
+  <div id="conteudo"></div>
+  <div class="acoes">
+    <button class="btnSair" id="logout">Sair</button>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
@@ -48,135 +75,120 @@ const conteudo = document.getElementById("conteudo");
 const logoutBtn = document.getElementById("logout");
 
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
+  if (!user) return window.location.href = "login.html";
 
-    if (!querySnapshot.empty) {
-      const docSnap = querySnapshot.docs[0];
-      const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
-      usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
+  const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
+  const querySnapshot = await getDocs(q);
 
-      if (usuarioLogado.funcao === "master") {
-        mostrarTodosUsuarios();
-      } else if (usuarioLogado.funcao === "gerente") {
-        mostrarVendedores(usuarioLogado.id);
-      } else if (usuarioLogado.funcao === "vendedor") {
-        mostrarPainelVendedor(usuarioLogado);
-      }
+  if (!querySnapshot.empty) {
+    const docSnap = querySnapshot.docs[0];
+    const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
+    usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
 
-    } else {
-      usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
-    }
+    if (usuarioLogado.funcao === "master") mostrarTodosUsuarios();
+    else if (usuarioLogado.funcao === "gerente") mostrarVendedores(usuarioLogado.id);
+    else if (usuarioLogado.funcao === "vendedor") mostrarPainelVendedor(usuarioLogado);
+
   } else {
-    window.location.href = "login.html";
+    usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
   }
 });
 
-// Funções Master e Gerente
+// Master
 async function mostrarTodosUsuarios() {
   const usuariosSnap = await getDocs(collection(db, "usuarios"));
-  let html = "<h3>Todos os usuários:</h3><table><tr><th>Nome</th><th>Função</th><th>Localidade</th></tr>";
+  conteudo.innerHTML = "<h2>Todos os usuários</h2>";
   usuariosSnap.forEach(doc => {
     const u = doc.data();
-    html += `<tr>
-      <td><button class="btnUsuario" data-id="${doc.id}">${u.nome}</button></td>
-      <td>${u.funcao}</td>
-      <td>${u.localidade}</td>
-    </tr>`;
+    const div = document.createElement("div");
+    div.className = "item-usuario";
+    div.innerHTML = `<strong>${u.nome}</strong> (${u.funcao})`;
+    div.onclick = () => abrirEdicaoUsuario(doc.id);
+    conteudo.appendChild(div);
   });
-  html += "</table>";
-  conteudo.innerHTML = html;
 }
 
+// Gerente
 async function mostrarVendedores(gerenteId) {
   const q = query(collection(db, "usuarios"), where("gerenteId", "==", gerenteId));
   const snapshot = await getDocs(q);
+
+  conteudo.innerHTML = "<h2>Seus Vendedores</h2>";
   if (snapshot.empty) {
-    conteudo.innerHTML = "<p>Você não possui vendedores cadastrados.</p>";
-  } else {
-    let html = "<h3>Seus vendedores:</h3><table><tr><th>Nome</th><th>Cotação</th><th>Localidade</th></tr>";
-    snapshot.forEach(doc => {
-      const v = doc.data();
-      html += `<tr>
-        <td><button class="btnUsuario" data-id="${doc.id}">${v.nome}</button></td>
-        <td>${v.cotacao}</td>
-        <td>${v.localidade}</td>
-      </tr>`;
-    });
-    html += "</table>";
-    conteudo.innerHTML = html;
+    conteudo.innerHTML += "<p>Sem vendedores cadastrados.</p>";
+    return;
   }
+
+  snapshot.forEach(doc => {
+    const v = doc.data();
+    const div = document.createElement("div");
+    div.className = "item-usuario";
+    div.innerHTML = `<strong>${v.nome}</strong> - Cotação: ${v.cotacao}`;
+    div.onclick = () => abrirEdicaoUsuario(doc.id);
+    conteudo.appendChild(div);
+  });
 }
 
-// Painel do Vendedor
+// Vendedor
 function mostrarPainelVendedor(usuarioLogado) {
-  conteudo.innerHTML = `
-    <h3>Bem-vindo, ${usuarioLogado.nome}</h3>
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <h3>${usuarioLogado.nome}</h3>
     <p>Banca: ${usuarioLogado.localidade}</p>
     <button id="adicionarVenda">Adicionar Venda</button>
     <button id="verHistorico">Ver Histórico</button>
   `;
+  conteudo.appendChild(card);
 
   document.getElementById("adicionarVenda").addEventListener("click", () => {
-    alert("Abrir formulário de nova venda (implementação futura)");
+    alert("Abrir formulário de venda (futuro)");
   });
-
   document.getElementById("verHistorico").addEventListener("click", () => {
-    alert("Mostrar histórico de vendas (implementação futura)");
+    alert("Mostrar histórico de vendas (futuro)");
   });
 }
 
 // Edição de usuários
-document.addEventListener("click", async (e) => {
-  if (e.target.classList.contains("btnUsuario")) {
-    const usuarioId = e.target.dataset.id;
-    abrirEdicaoUsuario(usuarioId);
-  }
-});
-
 async function abrirEdicaoUsuario(usuarioId) {
   const docRef = doc(db, "usuarios", usuarioId);
-  const docSnap = await getDoc(docRef); // CORRETO: getDoc com ID do documento
+  const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    const u = docSnap.data();
-    conteudo.innerHTML = `
-      <h3>Editando ${u.nome}</h3>
+  if (!docSnap.exists()) return alert("Usuário não encontrado");
+
+  const u = docSnap.data();
+  conteudo.innerHTML = `
+    <div class="dados-box">
+      <h2>Editando ${u.nome}</h2>
       <label>Nome: <input id="nomeEdit" value="${u.nome}"></label><br>
       <label>Localidade: <input id="localEdit" value="${u.localidade}"></label><br>
       <label>Cotação: <input id="cotacaoEdit" value="${u.cotacao}"></label><br>
-      <label>Função: 
+      <label>Função:
         <select id="funcaoEdit">
           <option value="vendedor" ${u.funcao==='vendedor'?'selected':''}>Vendedor</option>
           <option value="gerente" ${u.funcao==='gerente'?'selected':''}>Gerente</option>
           <option value="master" ${u.funcao==='master'?'selected':''}>Master</option>
         </select>
       </label><br>
-      <button id="salvarEdicao">Salvar</button>
-      <button id="voltarPainel">Voltar</button>
-    `;
+      <button class="btnVoltar" id="salvarEdicao">Salvar</button>
+      <button class="btnVoltar" id="voltarPainel">Voltar</button>
+    </div>
+  `;
 
-    document.getElementById("salvarEdicao").addEventListener("click", async () => {
-      await setDoc(docRef, {
-        nome: document.getElementById("nomeEdit").value,
-        localidade: document.getElementById("localEdit").value,
-        cotacao: document.getElementById("cotacaoEdit").value,
-        funcao: document.getElementById("funcaoEdit").value,
-        uid: u.uid,
-        gerenteId: u.gerenteId || null
-      });
-      alert("Usuário atualizado!");
-      location.reload();
+  document.getElementById("salvarEdicao").addEventListener("click", async () => {
+    await setDoc(docRef, {
+      nome: document.getElementById("nomeEdit").value,
+      localidade: document.getElementById("localEdit").value,
+      cotacao: document.getElementById("cotacaoEdit").value,
+      funcao: document.getElementById("funcaoEdit").value,
+      uid: u.uid,
+      gerenteId: u.gerenteId || null
     });
+    alert("Usuário atualizado!");
+    location.reload();
+  });
 
-    document.getElementById("voltarPainel").addEventListener("click", () => {
-      location.reload();
-    });
-
-  } else {
-    alert("Usuário não encontrado para edição.");
-  }
+  document.getElementById("voltarPainel").addEventListener("click", () => location.reload());
 }
 
 // Logout
