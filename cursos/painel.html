@@ -42,7 +42,7 @@
     }
 
     const aluno = alunoSnap.data();
-    tipoUsuario = aluno.tipoUsuario || "aluno" aluno.tipoUsuario || "master";
+    tipoUsuario = aluno.tipoUsuario || "aluno";
 
     if (tipoUsuario === "admin" || tipoUsuario === "master") {
       document.getElementById("painelAluno").style.display = "block";
