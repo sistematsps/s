@@ -1,117 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Controle</title>
-  <style>
-    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-    header { background: #007bff; color: white; padding: 15px; text-align: center; border-radius: 8px; }
-    #conteudo { margin-top: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #007bff; color: white; }
-    #logout { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 6px; background: #dc3545; color: white; cursor: pointer; }
-    #logout:hover { background: #b02a37; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Controle</title>
+<style>
+  body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+  header { background: #007bff; color: white; padding: 15px; text-align: center; border-radius: 8px; }
+  #conteudo { margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background: #007bff; color: white; }
+  button { cursor: pointer; border-radius: 6px; padding: 6px 10px; margin: 2px; }
+  #logout { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 6px; background: #dc3545; color: white; cursor: pointer; }
+  #logout:hover { background: #b02a37; }
+</style>
 </head>
 <body>
-  <header>
-    <h2>Painel de Controle</h2>
-    <p id="usuarioLogado">Carregando usuário...</p>
-  </header>
-  <div id="conteudo"></div>
-  <button id="logout">Sair</button>
+<header>
+  <h2>Painel de Controle</h2>
+  <p id="usuarioLogado">Carregando usuário...</p>
+</header>
+<div id="conteudo"></div>
+<button id="logout">Sair</button>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
-      authDomain: "dasorte-66ec5.firebaseapp.com",
-      projectId: "dasorte-66ec5",
-      storageBucket: "dasorte-66ec5.firebasestorage.app",
-      messagingSenderId: "606389335961",
-      appId: "1:606389335961:web:4986562c4ab1b133684508"
-    };
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5",
+  storageBucket: "dasorte-66ec5.firebasestorage.app",
+  messagingSenderId: "606389335961",
+  appId: "1:606389335961:web:4986562c4ab1b133684508"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const usuarioLogadoElem = document.getElementById("usuarioLogado");
-    const conteudo = document.getElementById("conteudo");
-    const logoutBtn = document.getElementById("logout");
+const usuarioLogadoElem = document.getElementById("usuarioLogado");
+const conteudo = document.getElementById("conteudo");
+const logoutBtn = document.getElementById("logout");
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Busca usuário pelo campo uid
-        const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
-        const querySnapshot = await getDocs(q);
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Busca usuário pelo UID
+    const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          const docSnap = querySnapshot.docs[0];
-          const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
+    if (!querySnapshot.empty) {
+      const docSnap = querySnapshot.docs[0];
+      const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
+      usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
 
-          usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
-
-          // Exibir conteúdo conforme função
-          if (usuarioLogado.funcao === "master") {
-            await mostrarTodosUsuarios();
-          } else if (usuarioLogado.funcao === "gerente") {
-            await mostrarVendedores(usuarioLogado.id);
-          } else if (usuarioLogado.funcao === "vendedor") {
-            await mostrarSuasVendas(usuarioLogado.id);
-          }
-
-        } else {
-          usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
-        }
-
-      } else {
-        window.location.href = "login.html";
+      // Mostrar conteúdo conforme função
+      if (usuarioLogado.funcao === "master") {
+        mostrarTodosUsuarios(usuarioLogado);
+      } else if (usuarioLogado.funcao === "gerente") {
+        mostrarVendedores(usuarioLogado.id);
+      } else if (usuarioLogado.funcao === "vendedor") {
+        mostrarPainelVendedor(usuarioLogado);
       }
-    });
 
-    // Funções de exibição
-    async function mostrarTodosUsuarios() {
-      const usuariosSnap = await getDocs(collection(db, "usuarios"));
-      let html = "<h3>Todos os usuários:</h3><table><tr><th>Nome</th><th>Função</th><th>Localidade</th></tr>";
-      usuariosSnap.forEach(doc => {
-        const u = doc.data();
-        html += `<tr><td>${u.nome}</td><td>${u.funcao}</td><td>${u.localidade}</td></tr>`;
+    } else {
+      usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
+    }
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+// Funções para Master e Gerente
+async function mostrarTodosUsuarios(usuarioLogado) {
+  const usuariosSnap = await getDocs(collection(db, "usuarios"));
+  let html = "<h3>Todos os usuários:</h3><table><tr><th>Nome</th><th>Função</th><th>Localidade</th></tr>";
+  usuariosSnap.forEach(doc => {
+    const u = doc.data();
+    html += `<tr>
+      <td><button class="btnUsuario" data-id="${doc.id}">${u.nome}</button></td>
+      <td>${u.funcao}</td>
+      <td>${u.localidade}</td>
+    </tr>`;
+  });
+  html += "</table>";
+  conteudo.innerHTML = html;
+}
+
+async function mostrarVendedores(gerenteId) {
+  const q = query(collection(db, "usuarios"), where("gerenteId", "==", gerenteId));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) {
+    conteudo.innerHTML = "<p>Você não possui vendedores cadastrados.</p>";
+  } else {
+    let html = "<h3>Seus vendedores:</h3><table><tr><th>Nome</th><th>Cotação</th><th>Localidade</th></tr>";
+    snapshot.forEach(doc => {
+      const v = doc.data();
+      html += `<tr>
+        <td><button class="btnUsuario" data-id="${doc.id}">${v.nome}</button></td>
+        <td>${v.cotacao}</td>
+        <td>${v.localidade}</td>
+      </tr>`;
+    });
+    html += "</table>";
+    conteudo.innerHTML = html;
+  }
+}
+
+// Função para Vendedor
+function mostrarPainelVendedor(usuarioLogado) {
+  conteudo.innerHTML = `
+    <h3>Bem-vindo, ${usuarioLogado.nome}</h3>
+    <p>Banca: ${usuarioLogado.localidade}</p>
+    <button id="adicionarVenda">Adicionar Venda</button>
+    <button id="verHistorico">Ver Histórico</button>
+  `;
+
+  document.getElementById("adicionarVenda").addEventListener("click", () => {
+    alert("Abrir formulário de nova venda (implementação futura)");
+  });
+
+  document.getElementById("verHistorico").addEventListener("click", () => {
+    alert("Mostrar histórico de vendas (implementação futura)");
+  });
+}
+
+// Listener global para edição de usuários
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("btnUsuario")) {
+    const usuarioId = e.target.dataset.id;
+    abrirEdicaoUsuario(usuarioId);
+  }
+});
+
+async function abrirEdicaoUsuario(usuarioId) {
+  const docRef = doc(db, "usuarios", usuarioId);
+  const docSnap = await getDocs(query(collection(db, "usuarios"), where("id", "==", usuarioId)));
+
+  if (!docSnap.empty) {
+    const u = docSnap.docs[0].data();
+
+    conteudo.innerHTML = `
+      <h3>Editando ${u.nome}</h3>
+      <label>Nome: <input id="nomeEdit" value="${u.nome}"></label><br>
+      <label>Localidade: <input id="localEdit" value="${u.localidade}"></label><br>
+      <label>Cotação: <input id="cotacaoEdit" value="${u.cotacao}"></label><br>
+      <label>Função: 
+        <select id="funcaoEdit">
+          <option value="vendedor" ${u.funcao==='vendedor'?'selected':''}>Vendedor</option>
+          <option value="gerente" ${u.funcao==='gerente'?'selected':''}>Gerente</option>
+          <option value="master" ${u.funcao==='master'?'selected':''}>Master</option>
+        </select>
+      </label><br>
+      <button id="salvarEdicao">Salvar</button>
+      <button id="voltarPainel">Voltar</button>
+    `;
+
+    document.getElementById("salvarEdicao").addEventListener("click", async () => {
+      await setDoc(doc(db, "usuarios", usuarioId), {
+        nome: document.getElementById("nomeEdit").value,
+        localidade: document.getElementById("localEdit").value,
+        cotacao: document.getElementById("cotacaoEdit").value,
+        funcao: document.getElementById("funcaoEdit").value,
+        uid: u.uid,
+        gerenteId: u.gerenteId || null
       });
-      html += "</table>";
-      conteudo.innerHTML = html;
-    }
-
-    async function mostrarVendedores(gerenteId) {
-      const q = query(collection(db, "usuarios"), where("gerenteId", "==", gerenteId));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        conteudo.innerHTML = "<p>Você não possui vendedores cadastrados.</p>";
-      } else {
-        let html = "<h3>Seus vendedores:</h3><table><tr><th>Nome</th><th>Cotação</th><th>Localidade</th></tr>";
-        snapshot.forEach(doc => {
-          const v = doc.data();
-          html += `<tr><td>${v.nome}</td><td>${v.cotacao}</td><td>${v.localidade}</td></tr>`;
-        });
-        html += "</table>";
-        conteudo.innerHTML = html;
-      }
-    }
-
-    async function mostrarSuasVendas(vendedorId) {
-      // Futuramente conectar à coleção "vendas"
-      conteudo.innerHTML = "<h3>Suas vendas:</h3><p>Em breve listagem das vendas do vendedor...</p>";
-    }
-
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
+      alert("Usuário atualizado!");
+      location.reload();
     });
-  </script>
+
+    document.getElementById("voltarPainel").addEventListener("click", () => {
+      location.reload();
+    });
+
+  } else {
+    alert("Usuário não encontrado para edição.");
+  }
+}
+
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+</script>
 </body>
   </html>
