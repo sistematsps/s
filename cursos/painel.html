@@ -46,7 +46,7 @@
 
     if (tipoUsuario === "admin" || tipoUsuario === "master") {
       document.getElementById("painelAluno").style.display = "none";
-      document.getElementById("painelAdmin").style.display = "none";
+      document.getElementById("painelAdmin").style.display = "block";
       await carregarListaUsuarios();
     } else {
       document.getElementById("painelAluno").style.display = "block";
