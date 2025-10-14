@@ -9,9 +9,8 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // 🔧 Configuração Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
     authDomain: "meuappweb-65522.firebaseapp.com",
@@ -27,60 +26,71 @@
   const db = getFirestore(app);
 
   let uidUsuario = null;
+  let tipoUsuario = "aluno";
 
-  // 🔹 Verifica se o aluno está logado
   onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      uidUsuario = user.uid;
-      document.getElementById("alunoEmail").textContent = user.email;
-      await carregarDadosAluno();
-      await carregarCursosMatriculados();
-    } else {
-      window.location.href = "index.html";
-    }
-  });
+    if (!user) return (window.location.href = "index.html");
+    uidUsuario = user.uid;
+    document.getElementById("alunoEmail").textContent = user.email;
 
-  // 🔹 Carregar dados pessoais do aluno
-  async function carregarDadosAluno() {
     const alunoRef = doc(db, "alunos", uidUsuario);
     const alunoSnap = await getDoc(alunoRef);
 
-    if (alunoSnap.exists()) {
-      const aluno = alunoSnap.data();
-      document.getElementById("dadosAluno").innerHTML = `
-        <p><strong>Nome:</strong> ${aluno.nome || "—"}</p>
-        <p><strong>CPF:</strong> ${aluno.cpf || "—"}</p>
-        <p><strong>Data de Nascimento:</strong> ${aluno.dataNascimento || "—"}</p>
-        <p><strong>Nome do Pai:</strong> ${aluno.nomePai || "—"}</p>
-        <p><strong>Nome da Mãe:</strong> ${aluno.nomeMae || "—"}</p>
-      `;
-    } else {
-      document.getElementById("dadosAluno").innerHTML = "<p>Dados do aluno não encontrados.</p>";
+    if (!alunoSnap.exists()) {
+      document.body.innerHTML = "<h3>Usuário não encontrado no sistema.</h3>";
+      return;
     }
+
+    const aluno = alunoSnap.data();
+    tipoUsuario = aluno.tipoUsuario || "aluno";
+
+    if (tipoUsuario === "admin" || tipoUsuario === "master") {
+      document.getElementById("painelAluno").style.display = "none";
+      document.getElementById("painelAdmin").style.display = "block";
+      await carregarListaUsuarios();
+    } else {
+      document.getElementById("painelAluno").style.display = "block";
+      document.getElementById("painelAdmin").style.display = "none";
+      await carregarDadosAluno(uidUsuario);
+      await carregarCursosMatriculados(uidUsuario);
+    }
+  });
+
+  // 🔹 Dados do aluno
+  async function carregarDadosAluno(uid) {
+    const alunoRef = doc(db, "alunos", uid);
+    const alunoSnap = await getDoc(alunoRef);
+    const container = document.getElementById("dadosAluno");
+    if (!alunoSnap.exists()) return (container.innerHTML = "<p>Dados não encontrados.</p>");
+
+    const aluno = alunoSnap.data();
+    container.innerHTML = `
+      <p><strong>Nome:</strong> ${aluno.nome || "—"}</p>
+      <p><strong>CPF:</strong> ${aluno.cpf || "—"}</p>
+      <p><strong>Data de Nascimento:</strong> ${aluno.dataNascimento || "—"}</p>
+      <p><strong>Nome do Pai:</strong> ${aluno.nomePai || "—"}</p>
+      <p><strong>Nome da Mãe:</strong> ${aluno.nomeMae || "—"}</p>
+    `;
   }
 
-  // 🔹 Carregar cursos matriculados pelo aluno
-  async function carregarCursosMatriculados() {
+  // 🔹 Cursos do aluno
+  async function carregarCursosMatriculados(uid) {
     const container = document.getElementById("cursosMatriculados");
-    container.innerHTML = "<p>Carregando seus cursos...</p>";
+    container.innerHTML = "<p>Carregando cursos...</p>";
 
-    const cursosSnap = await getDocs(collection(db, "alunos", uidUsuario, "cursos"));
+    const cursosSnap = await getDocs(collection(db, "alunos", uid, "cursos"));
     container.innerHTML = "";
 
     if (cursosSnap.empty) {
-      container.innerHTML = "<p>Você ainda não está matriculado em nenhum curso.</p>";
+      container.innerHTML = "<p>Sem cursos matriculados.</p>";
       return;
     }
 
     for (const cursoDoc of cursosSnap.docs) {
       const curso = cursoDoc.data();
       const cursoId = cursoDoc.id;
-
-      // Buscar curso original (para pegar URL e descrição)
-      const cursoOriginalRef = doc(db, "cursos", cursoId);
-      const cursoOriginalSnap = await getDoc(cursoOriginalRef);
+      const cursoOriginalSnap = await getDoc(doc(db, "cursos", cursoId));
       const cursoOriginal = cursoOriginalSnap.exists() ? cursoOriginalSnap.data() : {};
-
       const progresso = curso.progresso || 0;
 
       const card = document.createElement("div");
@@ -89,31 +99,58 @@
         <h3>${curso.nome}</h3>
         <p><strong>Carga horária:</strong> ${cursoOriginal.cargaHoraria || "N/A"}h</p>
         <p><strong>Data de matrícula:</strong> ${curso.dataMatricula || "—"}</p>
-
-        <div class="barra-progresso">
-          <div class="progresso" style="width: ${progresso}%;"></div>
-        </div>
+        <div class="barra-progresso"><div class="progresso" style="width:${progresso}%;"></div></div>
         <p class="percentual">${progresso}% concluído</p>
-
         ${
           cursoOriginal.url
             ? `<a href="${cursoOriginal.url}" target="_blank"><button>Acessar Curso</button></a>`
-            : `<button disabled>Curso sem link disponível</button>`
+            : `<button disabled>Sem link</button>`
         }
       `;
       container.appendChild(card);
     }
   }
 
-  // 🔹 Botão Sair
+  // 🔹 Painel do administrador: lista todos os alunos
+  async function carregarListaUsuarios() {
+    const lista = document.getElementById("listaUsuarios");
+    lista.innerHTML = "<p>Carregando lista de alunos...</p>";
+
+    const snap = await getDocs(collection(db, "alunos"));
+    lista.innerHTML = "";
+
+    snap.forEach((docSnap) => {
+      const aluno = docSnap.data();
+      if (aluno.tipoUsuario === "admin" || aluno.tipoUsuario === "master") return; // Oculta admins
+      const item = document.createElement("div");
+      item.className = "item-usuario";
+      item.innerHTML = `
+        <strong>${aluno.nome || "Sem nome"}</strong><br>
+        <span>${aluno.email || ""}</span>
+      `;
+      item.onclick = () => abrirPainelAlunoAdmin(docSnap.id);
+      lista.appendChild(item);
+    });
+  }
+
+  // 🔹 Admin clicou em um aluno
+  async function abrirPainelAlunoAdmin(uid) {
+    document.getElementById("listaUsuarios").style.display = "none";
+    document.getElementById("painelAlunoSelecionado").style.display = "block";
+    await carregarDadosAluno(uid);
+    await carregarCursosMatriculados(uid);
+  }
+
+  // 🔹 Voltar para lista de alunos
+  window.voltarLista = function voltarLista() {
+    document.getElementById("painelAlunoSelecionado").style.display = "none";
+    document.getElementById("listaUsuarios").style.display = "block";
+  };
+
+  // 🔹 Sair
   window.sair = async function sair() {
     await signOut(auth);
     window.location.href = "index.html";
-  };
-
-  // 🔹 Botão Voltar
-  window.voltarCursos = function voltarCursos() {
-    window.location.href = "cursos.html";
   };
 </script>
 
@@ -123,106 +160,34 @@
     background-color: #f4f6f9;
     margin: 0;
   }
-
   header {
     background-color: #007bff;
     color: white;
     text-align: center;
     padding: 15px;
   }
-
-  .container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 20px;
-  }
-
-  h2 {
-    color: #007bff;
-    text-align: center;
-  }
-
-  .dados-box {
+  .container { max-width: 900px; margin: 30px auto; padding: 20px; }
+  .dados-box, .card, .item-usuario {
     background: white;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
   }
-
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-  }
-
-  .card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-
-  .card h3 {
-    color: #007bff;
-  }
-
-  .card p {
-    color: #555;
-  }
-
-  .barra-progresso {
-    width: 100%;
-    height: 10px;
-    background-color: #e9ecef;
-    border-radius: 5px;
-    margin: 10px 0;
-  }
-
-  .progresso {
-    height: 10px;
-    background-color: #28a745;
-    border-radius: 5px;
-  }
-
-  .percentual {
-    font-size: 14px;
-    color: #666;
-  }
-
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card h3 { color: #007bff; }
+  .barra-progresso { width: 100%; height: 10px; background: #e9ecef; border-radius: 5px; margin: 10px 0; }
+  .progresso { height: 10px; background: #28a745; border-radius: 5px; }
+  .acoes { display: flex; justify-content: space-between; margin-top: 25px; }
   button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 8px;
-    background-color: #28a745;
-    color: white;
-    margin-top: 10px;
-    cursor: pointer;
+    padding: 8px 15px; border: none; border-radius: 8px; color: white; cursor: pointer;
   }
-
-  button:hover {
-    background-color: #218838;
-  }
-
-  .acoes {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-  }
-
-  #btnVoltar { background-color: #17a2b8; }
-  #btnVoltar:hover { background-color: #138496; }
-
   #btnSair { background-color: #dc3545; }
   #btnSair:hover { background-color: #c82333; }
-
-  #infoAluno {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #666;
-  }
+  #btnVoltar { background-color: #17a2b8; }
+  #btnVoltar:hover { background-color: #138496; }
+  .item-usuario { cursor: pointer; transition: 0.2s; }
+  .item-usuario:hover { background: #e9f2ff; }
 </style>
 </head>
 
@@ -230,22 +195,44 @@
   <header><h1>Painel do Aluno</h1></header>
 
   <div class="container">
-    <div id="infoAluno">
-      Logado como: <span id="alunoEmail"></span>
+    <div id="infoAluno">Logado como: <span id="alunoEmail"></span></div>
+
+    <!-- Painel do ALUNO -->
+    <div id="painelAluno" style="display:none;">
+      <div class="dados-box">
+        <h2>Meus Dados Pessoais</h2>
+        <div id="dadosAluno"></div>
+      </div>
+
+      <h2>Meus Cursos</h2>
+      <div id="cursosMatriculados" class="cards"></div>
+
+      <div class="acoes">
+        <button id="btnVoltar" onclick="window.location.href='cursos.html'">Ver outros cursos</button>
+        <button id="btnSair" onclick="sair()">Sair</button>
+      </div>
     </div>
 
-    <div class="dados-box">
-      <h2>Meus Dados Pessoais</h2>
-      <div id="dadosAluno"></div>
-    </div>
+    <!-- Painel do ADMIN -->
+    <div id="painelAdmin" style="display:none;">
+      <h2>Lista de Alunos</h2>
+      <div id="listaUsuarios"></div>
 
-    <h2>Meus Cursos</h2>
-    <div id="cursosMatriculados" class="cards"></div>
+      <div id="painelAlunoSelecionado" style="display:none;">
+        <button id="btnVoltar" onclick="voltarLista()">← Voltar para lista</button>
+        <div class="dados-box">
+          <h2>Dados do Aluno</h2>
+          <div id="dadosAluno"></div>
+        </div>
 
-    <div class="acoes">
-      <button id="btnVoltar" onclick="voltarCursos()">Ver outros cursos</button>
-      <button id="btnSair" onclick="sair()">Sair</button>
+        <h2>Cursos do Aluno</h2>
+        <div id="cursosMatriculados" class="cards"></div>
+      </div>
+
+      <div class="acoes">
+        <button id="btnSair" onclick="sair()">Sair</button>
+      </div>
     </div>
   </div>
 </body>
-</html>
+  </html>
