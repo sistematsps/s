@@ -46,7 +46,7 @@
 
     if (tipoUsuario === "admin" || tipoUsuario === "master") {
       document.getElementById("painelAluno").style.display = "none";
-      document.getElementById("painelAdmin").style.display = "block";
+      document.getElementById("painelAdmin").style.display = "none";
       await carregarListaUsuarios();
     } else {
       document.getElementById("painelAluno").style.display = "block";
@@ -136,7 +136,7 @@
   // 🔹 Admin clicou em um aluno
   async function abrirPainelAlunoAdmin(uid) {
     document.getElementById("listaUsuarios").style.display = "none";
-    document.getElementById("painelAlunoSelecionado").style.display = "block";
+    document.getElementById("painelAlunoSelecionado").style.display = "none";
     await carregarDadosAluno(uid);
     await carregarCursosMatriculados(uid);
   }
