@@ -3,26 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Sistema</title>
+  <title>Painel de Controle</title>
   <style>
     body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-    h1 { color: #333; }
-    #dados { background: #fff; padding: 20px; border-radius: 10px; }
-    .item { margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-    button { padding: 10px 20px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; }
-    button:hover { background: #0056b3; }
+    header { background: #007bff; color: white; padding: 15px; text-align: center; border-radius: 8px; }
+    #conteudo { margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #007bff; color: white; }
+    #logout { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 6px; background: #dc3545; color: white; cursor: pointer; }
+    #logout:hover { background: #b02a37; }
   </style>
 </head>
 <body>
-  <h1>Painel de Controle</h1>
-  <p id="usuarioLogado"></p>
-  <div id="dados"></div>
-  <button id="sair">Sair</button>
+  <header>
+    <h2>Painel de Controle</h2>
+    <p id="usuarioLogado">Carregando usuário...</p>
+  </header>
+  <div id="conteudo"></div>
+  <button id="logout">Sair</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
@@ -37,69 +41,76 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const dadosDiv = document.getElementById('dados');
-    const usuarioLogado = document.getElementById('usuarioLogado');
-    const btnSair = document.getElementById('sair');
+    const usuarioLogadoElem = document.getElementById("usuarioLogado");
+    const conteudo = document.getElementById("conteudo");
+    const logoutBtn = document.getElementById("logout");
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userRef = doc(db, "usuarios", user.uid);
-        const userSnap = await getDoc(userRef);
+        // Busca usuário pelo campo uid
+        const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
 
-        if (userSnap.exists()) {
-          const dados = userSnap.data();
-          usuarioLogado.innerText = `Bem-vindo, ${dados.nome} (${dados.funcao})`;
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
+          const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
 
-          if (dados.funcao === "master") {
-            await carregarTodosUsuarios();
-          } else if (dados.funcao === "gerente") {
-            await carregarSeusVendedores(user.uid);
-          } else if (dados.funcao === "vendedor") {
-            await carregarSuasVendas(user.uid);
+          usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
+
+          // Exibir conteúdo conforme função
+          if (usuarioLogado.funcao === "master") {
+            await mostrarTodosUsuarios();
+          } else if (usuarioLogado.funcao === "gerente") {
+            await mostrarVendedores(usuarioLogado.id);
+          } else if (usuarioLogado.funcao === "vendedor") {
+            await mostrarSuasVendas(usuarioLogado.id);
           }
 
         } else {
-          usuarioLogado.innerText = "Usuário não encontrado!";
+          usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
         }
+
       } else {
         window.location.href = "login.html";
       }
     });
 
-    // 🔹 Master: vê todos
-    async function carregarTodosUsuarios() {
-      dadosDiv.innerHTML = "<h3>Todos os usuários cadastrados:</h3>";
-      const q = await getDocs(collection(db, "usuarios"));
-      q.forEach(doc => {
+    // Funções de exibição
+    async function mostrarTodosUsuarios() {
+      const usuariosSnap = await getDocs(collection(db, "usuarios"));
+      let html = "<h3>Todos os usuários:</h3><table><tr><th>Nome</th><th>Função</th><th>Localidade</th></tr>";
+      usuariosSnap.forEach(doc => {
         const u = doc.data();
-        dadosDiv.innerHTML += `<div class="item"><b>${u.nome}</b> — ${u.funcao} (${u.localidade})</div>`;
+        html += `<tr><td>${u.nome}</td><td>${u.funcao}</td><td>${u.localidade}</td></tr>`;
       });
+      html += "</table>";
+      conteudo.innerHTML = html;
     }
 
-    // 🔹 Gerente: vê apenas seus vendedores
-    async function carregarSeusVendedores(gerenteId) {
-      dadosDiv.innerHTML = "<h3>Seus vendedores:</h3>";
+    async function mostrarVendedores(gerenteId) {
       const q = query(collection(db, "usuarios"), where("gerenteId", "==", gerenteId));
       const snapshot = await getDocs(q);
       if (snapshot.empty) {
-        dadosDiv.innerHTML += "<p>Nenhum vendedor vinculado a você.</p>";
+        conteudo.innerHTML = "<p>Você não possui vendedores cadastrados.</p>";
       } else {
+        let html = "<h3>Seus vendedores:</h3><table><tr><th>Nome</th><th>Cotação</th><th>Localidade</th></tr>";
         snapshot.forEach(doc => {
           const v = doc.data();
-          dadosDiv.innerHTML += `<div class="item"><b>${v.nome}</b> — Cotação: ${v.cotacao}</div>`;
+          html += `<tr><td>${v.nome}</td><td>${v.cotacao}</td><td>${v.localidade}</td></tr>`;
         });
+        html += "</table>";
+        conteudo.innerHTML = html;
       }
     }
 
-    // 🔹 Vendedor: vê suas próprias vendas (futuramente ligadas à coleção 'vendas')
-    async function carregarSuasVendas(vendedorId) {
-      dadosDiv.innerHTML = "<h3>Suas vendas:</h3>";
-      // Aqui depois colocaremos a consulta da coleção "vendas"
-      dadosDiv.innerHTML += "<p>Em breve listagem das vendas...</p>";
+    async function mostrarSuasVendas(vendedorId) {
+      // Futuramente conectar à coleção "vendas"
+      conteudo.innerHTML = "<h3>Suas vendas:</h3><p>Em breve listagem das vendas do vendedor...</p>";
     }
 
-    btnSair.addEventListener('click', () => {
-      signOut(auth).then(() => window.location.href = "login.html");
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
     });
   </script>
 </body>
