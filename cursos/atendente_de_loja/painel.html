@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle - Da Sorte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    main {
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    #logout {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #logout:hover {
+      background: #b02a37;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Painel de Controle</h2>
+    <button id="logout">Sair</button>
+  </header>
+  <main>
+    <h3 id="boasVindas">Carregando usuário...</h3>
+    <div id="painelConteudo"></div>
+  </main>
+
+  <script type="module">
+    // Importações Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+      authDomain: "dasorte-66ec5.firebaseapp.com",
+      projectId: "dasorte-66ec5",
+      storageBucket: "dasorte-66ec5.firebasestorage.app",
+      messagingSenderId: "606389335961",
+      appId: "1:606389335961:web:4986562c4ab1b133684508"
+    };
+
+    // Inicialização Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const painelConteudo = document.getElementById("painelConteudo");
+    const boasVindas = document.getElementById("boasVindas");
+
+    // Função para montar a tabela
+    function gerarTabela(dados, titulo) {
+      let html = `<h3>${titulo}</h3><table><tr>`;
+      const chaves = Object.keys(dados[0]);
+      chaves.forEach(c => html += `<th>${c}</th>`);
+      html += "</tr>";
+      dados.forEach(item => {
+        html += "<tr>";
+        chaves.forEach(c => html += `<td>${item[c]}</td>`);
+        html += "</tr>";
+      });
+      html += "</table>";
+      painelConteudo.innerHTML = html;
+    }
+
+    // Verifica o login
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Buscar dados do usuário logado
+        const usuariosSnap = await getDocs(collection(db, "usuarios"));
+        let usuarioLogado = null;
+        usuariosSnap.forEach(doc => {
+          if (doc.data().uid === user.uid) {
+            usuarioLogado = { id: doc.id, ...doc.data() };
+          }
+        });
+
+        if (!usuarioLogado) {
+          boasVindas.textContent = "Usuário não encontrado no banco de dados.";
+          return;
+        }
+
+        boasVindas.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
+
+        // MASTER → vê tudo
+        if (usuarioLogado.funcao === "master") {
+          const allUsers = [];
+          usuariosSnap.forEach(doc => {
+            allUsers.push(doc.data());
+          });
+          gerarTabela(allUsers, "Todos os Usuários Cadastrados");
+        }
+
+        // GERENTE → vê apenas seus vendedores
+        if (usuarioLogado.funcao === "gerente") {
+          const vendedores = [];
+          usuariosSnap.forEach(doc => {
+            const data = doc.data();
+            if (data.funcao === "vendedor" && data.gerenteId === usuarioLogado.id) {
+              vendedores.push(data);
+            }
+          });
+
+          if (vendedores.length > 0) {
+            gerarTabela(vendedores, "Seus Vendedores");
+          } else {
+            painelConteudo.innerHTML = "<p>Você ainda não possui vendedores cadastrados.</p>";
+          }
+        }
+
+        // VENDEDOR → vê suas vendas
+        if (usuarioLogado.funcao === "vendedor") {
+          // Aqui você pode depois buscar na coleção “vendas”
+          painelConteudo.innerHTML = `
+            <p>Aqui serão mostradas suas vendas registradas.</p>
+            <p>(Em breve conectaremos com a coleção "vendas")</p>
+          `;
+        }
+
+      } else {
+        window.location.href = "login.html"; // se não estiver logado
+      }
+    });
+
+    // Logout
+    document.getElementById("logout").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+      </html>
