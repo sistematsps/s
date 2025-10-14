@@ -77,7 +77,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
     // Configuração Firebase
     const firebaseConfig = {
@@ -111,27 +111,31 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
 
-        // Buscar função do usuário no Firestore
-        const userRef = doc(db, "usuarios", user.uid);
-        const userSnap = await getDoc(userRef);
+        // Busca no Firestore pelo campo 'uid'
+        const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
 
-        if (userSnap.exists()) {
-          const dados = userSnap.data();
+        if (!querySnapshot.empty) {
+          const usuarioLogado = querySnapshot.docs[0].data();
+
           mensagem.style.color = "green";
           mensagem.textContent = "Login realizado com sucesso!";
-          
-          // Redireciona para o painel
+
+          // Redireciona para painel após 1s
           setTimeout(() => {
             window.location.href = "painel.html";
           }, 1000);
+
         } else {
+          mensagem.style.color = "red";
           mensagem.textContent = "Usuário sem dados no Firestore.";
         }
 
       } catch (error) {
+        mensagem.style.color = "red";
         mensagem.textContent = "Erro ao fazer login: " + error.message;
       }
     });
   </script>
 </body>
-</html>
+  </html>
