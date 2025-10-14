@@ -132,20 +132,7 @@
       lista.appendChild(item);
     });
       async function carregarDadosAluno(uid) {
-    const alunoRef = doc(db, "alunos", uid);
-    const alunoSnap = await getDoc(alunoRef);
-    const container = document.getElementById("dadosAluno");
-    if (!alunoSnap.exists()) return (container.innerHTML = "<p>Dados não encontrados.</p>");
-
-    const aluno = alunoSnap.data();
-    container.innerHTML = `
-      <p><strong>Nome:</strong> ${aluno.nome || "—"}</p>
-      <p><strong>CPF:</strong> ${aluno.cpf || "—"}</p>
-      <p><strong>Data de Nascimento:</strong> ${aluno.dataNascimento || "—"}</p>
-      <p><strong>Nome do Pai:</strong> ${aluno.nomePai || "—"}</p>
-      <p><strong>Nome da Mãe:</strong> ${aluno.nomeMae || "—"}</p>
-    `;
-  
+    co
   }
 
   // 🔹 Admin clicou em um aluno
