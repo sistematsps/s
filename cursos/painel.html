@@ -45,7 +45,7 @@
     tipoUsuario = aluno.tipoUsuario || "aluno";
 
     if (tipoUsuario === "admin" || tipoUsuario === "master") {
-      document.getElementById("painelAluno").style.display = "none";
+      document.getElementById("painelAluno").style.display = "block";
       document.getElementById("painelAdmin").style.display = "block";
       await carregarListaUsuarios();
     } else {
