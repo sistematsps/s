@@ -3,36 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Da Sorte</title>
+  <title>Painel do Sistema</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; }
-    header { background: #2b579a; color: #fff; padding: 15px; text-align: center; position: relative; }
-    #logoutBtn { position: absolute; right: 15px; top: 15px; background: #ff3b3b; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-    #painelContainer { display: none; padding: 20px; }
-    .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #222;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+    nav {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-top: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #2563eb;
+      color: white;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h2>Painel Da Sorte</h2>
-    <button id="logoutBtn">Sair</button>
+    <h1>Painel do Sistema</h1>
+    <nav id="menuMaster">
+      <button onclick="mostrarSecao('caixa')">Caixa</button>
+      <button onclick="mostrarSecao('receitas')">Receitas</button>
+      <button onclick="mostrarSecao('gerenciar')">Gerenciar</button>
+      <button onclick="mostrarSecao('despesas')">Despesas</button>
+      <button onclick="mostrarSecao('lancamentos')">Lançamentos</button>
+      <button onclick="mostrarSecao('vendas')">Vendas</button>
+      <button onclick="window.location.href='cadastro.html'">Cadastro</button>
+    </nav>
   </header>
 
-  <div id="painelContainer">
-    <h3>Usuários Cadastrados</h3>
-    <div id="usuariosContainer">Carregando...</div>
-  </div>
+  <main>
+    <section id="caixa">
+      <h2>Resumo do Caixa</h2>
+      <table>
+        <tr>
+          <th>Saldo Anterior</th>
+          <th>Apurado</th>
+          <th>Despesas</th>
+          <th>Saldo Final</th>
+        </tr>
+        <tr>
+          <td id="saldoAnterior">0</td>
+          <td id="apurado">0</td>
+          <td id="despesas">0</td>
+          <td id="saldoFinal">0</td>
+        </tr>
+      </table>
+
+      <h3>Partilha</h3>
+      <table>
+        <tr><th>Gerente 1</th><th>Gerente 2</th><th>Banca</th></tr>
+        <tr>
+          <td id="partGerente1">0</td>
+          <td id="partGerente2">0</td>
+          <td id="partBanca">0</td>
+        </tr>
+      </table>
+    </section>
+
+    <section id="receitas">
+      <h2>Cadastro de Receita</h2>
+      <input type="text" id="descricaoReceita" placeholder="Descrição"><br><br>
+      <input type="number" id="valorReceita" placeholder="Valor"><br><br>
+      <input type="date" id="dataReceita"><br><br>
+      <button id="salvarReceita">Salvar Receita</button>
+    </section>
+
+    <section id="gerenciar">
+      <h2>Gerenciar Equipe</h2>
+      <p>Aqui o master pode editar os gerentes e vendedores vinculados.</p>
+    </section>
+
+    <section id="despesas">
+      <h2>Cadastro de Despesa</h2>
+      <input type="text" id="descricaoDespesa" placeholder="Descrição"><br><br>
+      <input type="number" id="valorDespesa" placeholder="Valor"><br><br>
+      <input type="date" id="dataDespesa"><br><br>
+      <button id="salvarDespesa">Salvar Despesa</button>
+    </section>
+
+    <section id="lancamentos">
+      <h2>Lançamentos dos Gerentes</h2>
+      <p>Aqui será exibida a lista de débitos dos gerentes.</p>
+    </section>
+
+    <section id="vendas">
+      <h2>Vendas</h2>
+      <p>Aqui será exibida a lista de vendedores e histórico de vendas.</p>
+    </section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
       authDomain: "dasorte-66ec5.firebaseapp.com",
       projectId: "dasorte-66ec5",
-      storageBucket: "dasorte-66ec5.appspot.com",
+      storageBucket: "dasorte-66ec5.firebasestorage.app",
       messagingSenderId: "606389335961",
       appId: "1:606389335961:web:4986562c4ab1b133684508"
     };
@@ -41,46 +160,85 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const usuariosContainer = document.getElementById('usuariosContainer');
-    const painelContainer = document.getElementById('painelContainer');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const secoes = document.querySelectorAll('section');
+    const menuMaster = document.getElementById('menuMaster');
+    const saldoAnteriorEl = document.getElementById('saldoAnterior');
+    const apuradoEl = document.getElementById('apurado');
+    const despesasEl = document.getElementById('despesas');
+    const saldoFinalEl = document.getElementById('saldoFinal');
+    const partGerente1El = document.getElementById('partGerente1');
+    const partGerente2El = document.getElementById('partGerente2');
+    const partBancaEl = document.getElementById('partBanca');
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        painelContainer.style.display = 'block';
-        carregarUsuarios();
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    async function carregarUsuarios() {
-      try {
-        const snap = await getDocs(collection(db, "usuarios"));
-        if (snap.empty) {
-          usuariosContainer.innerHTML = "<p>Nenhum usuário encontrado.</p>";
-          return;
-        }
-        usuariosContainer.innerHTML = "";
-        snap.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `<strong>${data.nome || "(sem nome)"}</strong><br>Função: ${data.funcao || "-"}<br><button onclick="editarUsuario('${doc.id}')">Editar</button>`;
-          usuariosContainer.appendChild(div);
-        });
-      } catch (e) {
-        console.error(e);
-        usuariosContainer.innerHTML = "<p>Erro ao carregar usuários.</p>";
-      }
+    function mostrarSecao(id) {
+      secoes.forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
     }
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
+    async function carregarCaixa() {
+      const receitasSnap = await getDocs(collection(db, "receitas"));
+      const despesasSnap = await getDocs(collection(db, "despesas"));
+
+      let totalReceitas = 0;
+      receitasSnap.forEach(doc => totalReceitas += parseFloat(doc.data().valor));
+
+      let totalDespesas = 0;
+      despesasSnap.forEach(doc => totalDespesas += parseFloat(doc.data().valor));
+
+      const apurado = 0; // Futuramente virá dos lançamentos dos gerentes
+      const saldoFinal = totalReceitas + apurado - totalDespesas;
+
+      saldoAnteriorEl.textContent = totalReceitas.toFixed(2);
+      apuradoEl.textContent = apurado.toFixed(2);
+      despesasEl.textContent = totalDespesas.toFixed(2);
+      saldoFinalEl.textContent = saldoFinal.toFixed(2);
+
+      partGerente1El.textContent = (saldoFinal * 0.25).toFixed(2);
+      partGerente2El.textContent = (saldoFinal * 0.25).toFixed(2);
+      partBancaEl.textContent = (saldoFinal * 0.5).toFixed(2);
+    }
+
+    document.getElementById('salvarReceita').addEventListener('click', async () => {
+      const descricao = document.getElementById('descricaoReceita').value;
+      const valor = parseFloat(document.getElementById('valorReceita').value);
+      const data = document.getElementById('dataReceita').value;
+
+      if (!descricao || !valor || !data) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      await addDoc(collection(db, "receitas"), { descricao, valor, data });
+      alert("Receita salva com sucesso!");
+      carregarCaixa();
     });
 
-    window.editarUsuario = (id) => alert("Editar usuário ID: " + id);
+    document.getElementById('salvarDespesa').addEventListener('click', async () => {
+      const descricao = document.getElementById('descricaoDespesa').value;
+      const valor = parseFloat(document.getElementById('valorDespesa').value);
+      const data = document.getElementById('dataDespesa').value;
+
+      if (!descricao || !valor || !data) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      await addDoc(collection(db, "despesas"), { descricao, valor, data });
+      alert("Despesa salva com sucesso!");
+      carregarCaixa();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Mostra o painel master (por enquanto fixo)
+      menuMaster.style.display = "flex";
+      mostrarSecao("caixa");
+      carregarCaixa();
+    });
   </script>
 </body>
-</html>
+                        </html>
