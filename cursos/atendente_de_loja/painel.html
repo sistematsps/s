@@ -1,244 +1,217 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Sistema</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #222;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      font-size: 20px;
-      margin: 0;
-    }
-    nav {
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
-    main {
-      padding: 20px;
-    }
-    section {
-      display: none;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      margin-top: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background: #2563eb;
-      color: white;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Dasorte</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+header { background:#4caf50; color:#fff; padding:12px; text-align:center; font-size:20px; }
+nav { display:flex; gap:8px; padding:10px; background:#333; }
+nav button { padding:8px 12px; color:#fff; border:none; cursor:pointer; border-radius:4px; }
+nav button:hover { background:#555; }
+section { display:none; padding:20px; }
+table { width:100%; border-collapse:collapse; margin-top:10px; background:#fff; }
+th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+th { background:#eee; }
+input, select { padding:6px; margin:4px; }
+button { cursor:pointer; border-radius:4px; }
+.card { background:#fff; padding:12px; margin:8px 0; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Painel do Sistema</h1>
-    <nav id="menuMaster">
-      <button onclick="mostrarSecao('caixa')">Caixa</button>
-      <button onclick="mostrarSecao('receitas')">Receitas</button>
-      <button onclick="mostrarSecao('gerenciar')">Gerenciar</button>
-      <button onclick="mostrarSecao('despesas')">Despesas</button>
-      <button onclick="mostrarSecao('lancamentos')">Lançamentos</button>
-      <button onclick="mostrarSecao('vendas')">Vendas</button>
-      <button onclick="window.location.href='cadastro.html'">Cadastro</button>
-    </nav>
-  </header>
 
-  <main>
-    <section id="caixa">
-      <h2>Resumo do Caixa</h2>
-      <table>
-        <tr>
-          <th>Saldo Anterior</th>
-          <th>Apurado</th>
-          <th>Despesas</th>
-          <th>Saldo Final</th>
-        </tr>
-        <tr>
-          <td id="saldoAnterior">0</td>
-          <td id="apurado">0</td>
-          <td id="despesas">0</td>
-          <td id="saldoFinal">0</td>
-        </tr>
-      </table>
+<header>Painel Dasorte</header>
 
-      <h3>Partilha</h3>
-      <table>
-        <tr><th>Gerente 1</th><th>Gerente 2</th><th>Banca</th></tr>
-        <tr>
-          <td id="partGerente1">0</td>
-          <td id="partGerente2">0</td>
-          <td id="partBanca">0</td>
-        </tr>
-      </table>
-    </section>
+<nav id="menuMaster">
+  <button onclick="mostrarSecao('caixa')">Caixa</button>
+  <button onclick="mostrarSecao('receitas')">Receitas</button>
+  <button onclick="mostrarSecao('gerenciar')">Gerenciar</button>
+  <button onclick="mostrarSecao('despesas')">Despesas</button>
+  <button onclick="mostrarSecao('lancamentos')">Lançamentos</button>
+  <button onclick="mostrarSecao('vendas')">Vendas</button>
+  <button onclick="mostrarSecao('cadastro')">Cadastro</button>
+</nav>
 
-    <section id="receitas">
-      <h2>Cadastro de Receita</h2>
-      <input type="text" id="descricaoReceita" placeholder="Descrição"><br><br>
-      <input type="number" id="valorReceita" placeholder="Valor"><br><br>
-      <input type="date" id="dataReceita"><br><br>
-      <button id="salvarReceita">Salvar Receita</button>
-    </section>
+<!-- Caixa -->
+<section id="caixa">
+  <h2>Caixa</h2>
+  <table>
+    <tr><td>Saldo Anterior</td><td id="saldoAnterior">0</td></tr>
+    <tr><td>Apurado Total</td><td id="apuradoTotal">0</td></tr>
+    <tr><td>Despesas</td><td id="despesasTotal">0</td></tr>
+    <tr><td>Saldo Final</td><td id="saldoFinal">0</td></tr>
+  </table>
+  <h3>Partilha</h3>
+  <div class="card">Gerente 1: <span id="partGer1">0</span></div>
+  <div class="card">Gerente 2: <span id="partGer2">0</span></div>
+  <div class="card">Banca: <span id="partBanca">0</span></div>
+</section>
 
-    <section id="gerenciar">
-      <h2>Gerenciar Equipe</h2>
-      <p>Aqui o master pode editar os gerentes e vendedores vinculados.</p>
-    </section>
+<!-- Receitas -->
+<section id="receitas">
+  <h2>Receitas</h2>
+  <input type="text" id="descricaoReceita" placeholder="Descrição">
+  <input type="number" id="valorReceita" placeholder="Valor" step="0.01">
+  <input type="date" id="dataReceita">
+  <button onclick="adicionarReceita()">Salvar Receita</button>
+  <div id="listaReceitas"></div>
+</section>
 
-    <section id="despesas">
-      <h2>Cadastro de Despesa</h2>
-      <input type="text" id="descricaoDespesa" placeholder="Descrição"><br><br>
-      <input type="number" id="valorDespesa" placeholder="Valor"><br><br>
-      <input type="date" id="dataDespesa"><br><br>
-      <button id="salvarDespesa">Salvar Despesa</button>
-    </section>
+<!-- Gerenciar -->
+<section id="gerenciar">
+  <h2>Gerenciar Gerentes e Vendedores</h2>
+  <input type="text" id="novoGerenteNome" placeholder="Nome do Gerente">
+  <button onclick="adicionarGerente()">Adicionar Gerente</button>
+  <div id="listaGerentes"></div>
+  <div id="vendedoresGerente" style="display:none;">
+    <h3 id="tituloVendedores"></h3>
+    <input type="text" id="novoVendedorNome" placeholder="Nome do Vendedor">
+    <input type="number" id="novoVendedorCotacao" placeholder="Cotação" step="0.01">
+    <button onclick="adicionarVendedor()">Adicionar Vendedor</button>
+    <div id="listaVendedoresGerente"></div>
+  </div>
+</section>
 
-    <section id="lancamentos">
-      <h2>Lançamentos dos Gerentes</h2>
-      <p>Aqui será exibida a lista de débitos dos gerentes.</p>
-    </section>
+<!-- Despesas -->
+<section id="despesas">
+  <h2>Despesas</h2>
+  <input type="text" id="descDespesa" placeholder="Descrição">
+  <input type="number" id="valorDespesa" placeholder="Valor" step="0.01">
+  <input type="date" id="dataDespesa">
+  <button onclick="adicionarDespesa()">Salvar Despesa</button>
+  <div id="listaDespesas"></div>
+</section>
 
-    <section id="vendas">
-      <h2>Vendas</h2>
-      <p>Aqui será exibida a lista de vendedores e histórico de vendas.</p>
-    </section>
-  </main>
+<!-- Lançamentos -->
+<section id="lancamentos">
+  <h2>Lançamentos de Débitos</h2>
+  <div id="listaLancamentos"></div>
+</section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { 
-      getFirestore, collection, addDoc, getDocs 
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+<!-- Vendas -->
+<section id="vendas">
+  <h2>Vendas</h2>
+  <div id="listaVendedores"></div>
+  <div id="painelVendas"></div>
+</section>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
-      authDomain: "dasorte-66ec5.firebaseapp.com",
-      projectId: "dasorte-66ec5",
-      storageBucket: "dasorte-66ec5.firebasestorage.app",
-      messagingSenderId: "606389335961",
-      appId: "1:606389335961:web:4986562c4ab1b133684508"
-    };
+<!-- Cadastro -->
+<section id="cadastro">
+  <h2>Cadastro</h2>
+  <p>Aqui poderia levar a página de cadastro...</p>
+</section>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    const secoes = document.querySelectorAll('section');
-    const menuMaster = document.getElementById('menuMaster');
-    const saldoAnteriorEl = document.getElementById('saldoAnterior');
-    const apuradoEl = document.getElementById('apurado');
-    const despesasEl = document.getElementById('despesas');
-    const saldoFinalEl = document.getElementById('saldoFinal');
-    const partGerente1El = document.getElementById('partGerente1');
-    const partGerente2El = document.getElementById('partGerente2');
-    const partBancaEl = document.getElementById('partBanca');
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5",
+  storageBucket: "dasorte-66ec5.firebasestorage.app",
+  messagingSenderId: "606389335961",
+  appId: "1:606389335961:web:4986562c4ab1b133684508"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-    function mostrarSecao(id) {
-      secoes.forEach(sec => sec.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
+let gerenteAtual = null;
 
-    async function carregarCaixa() {
-      const receitasSnap = await getDocs(collection(db, "receitas"));
-      const despesasSnap = await getDocs(collection(db, "despesas"));
+// Mostrar seção
+function mostrarSecao(id){
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+}
 
-      let totalReceitas = 0;
-      receitasSnap.forEach(doc => totalReceitas += parseFloat(doc.data().valor));
+// ==== Caixa ====
+async function atualizarCaixa(){
+  // Exemplo, substituir por cálculos reais do Firestore
+  const saldoAnterior=1000, apuradoTotal=500, despesas=200;
+  const saldoFinal = saldoAnterior + apuradoTotal - despesas;
+  document.getElementById('saldoAnterior').textContent = saldoAnterior.toFixed(2);
+  document.getElementById('apuradoTotal').textContent = apuradoTotal.toFixed(2);
+  document.getElementById('despesasTotal').textContent = despesas.toFixed(2);
+  document.getElementById('saldoFinal').textContent = saldoFinal.toFixed(2);
+  document.getElementById('partGer1').textContent = (saldoFinal*0.25).toFixed(2);
+  document.getElementById('partGer2').textContent = (saldoFinal*0.25).toFixed(2);
+  document.getElementById('partBanca').textContent = (saldoFinal*0.5).toFixed(2);
+}
 
-      let totalDespesas = 0;
-      despesasSnap.forEach(doc => totalDespesas += parseFloat(doc.data().valor));
+// ==== Receitas ====
+async function adicionarReceita(){
+  const descricao = document.getElementById('descricaoReceita').value;
+  const valor = parseFloat(document.getElementById('valorReceita').value);
+  const data = document.getElementById('dataReceita').value;
+  if(!descricao || isNaN(valor) || !data) return alert('Preencha todos os campos');
+  await addDoc(collection(db,'receitas'), {descricao, valor, data});
+  document.getElementById('descricaoReceita').value='';
+  document.getElementById('valorReceita').value='';
+  document.getElementById('dataReceita').value='';
+  alert('Receita salva!');
+}
 
-      const apurado = 0; // Futuramente virá dos lançamentos dos gerentes
-      const saldoFinal = totalReceitas + apurado - totalDespesas;
+// ==== Gerentes ====
+async function carregarGerentes() {
+  const snap = await getDocs(collection(db, "gerentes"));
+  const listaGerentesEl = document.getElementById('listaGerentes');
+  listaGerentesEl.innerHTML='';
+  snap.forEach(docSnap=>{
+    const ger = docSnap.data();
+    const btn = document.createElement('button');
+    btn.textContent = ger.nome;
+    btn.onclick = ()=>selecionarGerente(docSnap.id, ger.nome);
+    listaGerentesEl.appendChild(btn);
+  });
+}
 
-      saldoAnteriorEl.textContent = totalReceitas.toFixed(2);
-      apuradoEl.textContent = apurado.toFixed(2);
-      despesasEl.textContent = totalDespesas.toFixed(2);
-      saldoFinalEl.textContent = saldoFinal.toFixed(2);
+async function adicionarGerente(){
+  const nome = document.getElementById('novoGerenteNome').value.trim();
+  if(!nome) return alert('Digite o nome do gerente!');
+  await addDoc(collection(db,'gerentes'), {nome});
+  document.getElementById('novoGerenteNome').value='';
+  carregarGerentes();
+}
 
-      partGerente1El.textContent = (saldoFinal * 0.25).toFixed(2);
-      partGerente2El.textContent = (saldoFinal * 0.25).toFixed(2);
-      partBancaEl.textContent = (saldoFinal * 0.5).toFixed(2);
-    }
+async function selecionarGerente(id, nome){
+  gerenteAtual = id;
+  document.getElementById('tituloVendedores').textContent = `Vendedores de ${nome}`;
+  document.getElementById('vendedoresGerente').style.display='block';
+  carregarVendedoresGerente();
+}
 
-    document.getElementById('salvarReceita').addEventListener('click', async () => {
-      const descricao = document.getElementById('descricaoReceita').value;
-      const valor = parseFloat(document.getElementById('valorReceita').value);
-      const data = document.getElementById('dataReceita').value;
+async function carregarVendedoresGerente(){
+  if(!gerenteAtual) return;
+  const snap = await getDocs(collection(db, `gerentes/${gerenteAtual}/vendedores`));
+  const lista = document.getElementById('listaVendedoresGerente');
+  lista.innerHTML='';
+  snap.forEach(docSnap=>{
+    const v = docSnap.data();
+    const div = document.createElement('div');
+    div.className='card';
+    div.textContent = `${v.nome} - Cotação: R$${v.cotacao.toFixed(2)}`;
+    lista.appendChild(div);
+  });
+}
 
-      if (!descricao || !valor || !data) {
-        alert("Preencha todos os campos!");
-        return;
-      }
+async function adicionarVendedor(){
+  if(!gerenteAtual) return alert('Selecione um gerente');
+  const nome = document.getElementById('novoVendedorNome').value.trim();
+  const cotacao = parseFloat(document.getElementById('novoVendedorCotacao').value);
+  if(!nome || isNaN(cotacao)) return alert('Preencha corretamente nome e cotação');
+  await addDoc(collection(db, `gerentes/${gerenteAtual}/vendedores`), {nome, cotacao});
+  document.getElementById('novoVendedorNome').value='';
+  document.getElementById('novoVendedorCotacao').value='';
+  carregarVendedoresGerente();
+}
 
-      await addDoc(collection(db, "receitas"), { descricao, valor, data });
-      alert("Receita salva com sucesso!");
-      carregarCaixa();
-    });
-
-    document.getElementById('salvarDespesa').addEventListener('click', async () => {
-      const descricao = document.getElementById('descricaoDespesa').value;
-      const valor = parseFloat(document.getElementById('valorDespesa').value);
-      const data = document.getElementById('dataDespesa').value;
-
-      if (!descricao || !valor || !data) {
-        alert("Preencha todos os campos!");
-        return;
-      }
-
-      await addDoc(collection(db, "despesas"), { descricao, valor, data });
-      alert("Despesa salva com sucesso!");
-      carregarCaixa();
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      // Mostra o painel master (por enquanto fixo)
-      menuMaster.style.display = "flex";
-      mostrarSecao("caixa");
-      carregarCaixa();
-    });
-  </script>
+// ==== Inicialização ====
+carregarGerentes();
+atualizarCaixa();
+</script>
 </body>
-                        </html>
+  </html>
