@@ -1,201 +1,219 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel do Sistema</title>
-
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-  }
-  header {
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-    padding: 15px;
-  }
-  .container { max-width: 900px; margin: 30px auto; padding: 20px; }
-  .dados-box, .card, .item-usuario {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-  }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-  .card h3 { color: #007bff; }
-  button { padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; margin: 3px; }
-  .btnSair { background-color: #dc3545; color: white; }
-  .btnSair:hover { background-color: #c82333; }
-  .btnVoltar { background-color: #17a2b8; color: white; }
-  .btnVoltar:hover { background-color: #138496; }
-  .item-usuario { cursor: pointer; transition: 0.2s; padding: 10px; }
-  .item-usuario:hover { background: #e9f2ff; }
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1e88e5;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    main {
+      padding: 20px;
+    }
+    .section {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card {
+      background: #e8f0fe;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .card:hover {
+      background: #d2e3fc;
+    }
+    .hidden {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      text-align: center;
+      padding: 8px;
+    }
+    .logout {
+      display: block;
+      text-align: center;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .logout:hover {
+      background: #c62828;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Painel do Sistema</h1>
-  <p id="usuarioLogado">Carregando usuário...</p>
-</header>
 
-<div class="container">
-  <!-- Conteúdo Dinâmico -->
-  <div id="conteudo"></div>
-  <div class="acoes">
-    <button class="btnSair" id="logout">Sair</button>
-  </div>
-</div>
+  <header>Painel de Controle</header>
+  <main>
+    
+    <!-- Seção MASTER -->
+    <div id="masterSection" class="section hidden">
+      <h2>Master</h2>
+      <p><b>Nome do Master:</b> <span id="masterNome"></span></p>
+      <p><b>Banca:</b> <span id="masterBanca"></span></p>
+      <p><b>HR:</b> <span id="masterHR"></span></p>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+      <h3>Caixa Detalhado</h3>
+      <p>Saldo Anterior: <span id="saldoAnterior"></span></p>
+      <p>Apurado Total: <span id="apuradoTotal"></span></p>
+      <p>Despesas: <span id="despesas"></span></p>
+      <p><b>Saldo Final:</b> <span id="saldoFinal"></span></p>
 
-// Config Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
-  authDomain: "dasorte-66ec5.firebaseapp.com",
-  projectId: "dasorte-66ec5",
-  storageBucket: "dasorte-66ec5.firebasestorage.app",
-  messagingSenderId: "606389335961",
-  appId: "1:606389335961:web:4986562c4ab1b133684508"
-};
+      <hr>
+      <h3>Gerências</h3>
+      <div id="listaGerentes"></div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+      <div id="infoGerente" class="hidden section">
+        <h4>Informações do Gerente Selecionado</h4>
+        <p><b>Banca:</b> <span id="gerenteBanca"></span></p>
+        <p><b>Gerente:</b> <span id="gerenteNome"></span></p>
+        <p>Caixa Detalhado: <span id="gerenteCaixa"></span></p>
+        <p>Apurado Total: <span id="gerenteApurado"></span></p>
+        <p>Total Repassado: <span id="gerenteRepassado"></span></p>
+        <p>Total a Repassar: <span id="gerenteARepassar"></span></p>
 
-const usuarioLogadoElem = document.getElementById("usuarioLogado");
-const conteudo = document.getElementById("conteudo");
-const logoutBtn = document.getElementById("logout");
+        <h4>Vendedores</h4>
+        <div id="listaVendedores"></div>
+      </div>
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "login.html";
-
-  const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
-  const querySnapshot = await getDocs(q);
-
-  if (!querySnapshot.empty) {
-    const docSnap = querySnapshot.docs[0];
-    const usuarioLogado = { id: docSnap.id, ...docSnap.data() };
-    usuarioLogadoElem.textContent = `Bem-vindo, ${usuarioLogado.nome} (${usuarioLogado.funcao})`;
-
-    if (usuarioLogado.funcao === "master") mostrarTodosUsuarios();
-    else if (usuarioLogado.funcao === "gerente") mostrarVendedores(usuarioLogado.id);
-    else if (usuarioLogado.funcao === "vendedor") mostrarPainelVendedor(usuarioLogado);
-
-  } else {
-    usuarioLogadoElem.textContent = "Usuário não encontrado no Firestore";
-  }
-});
-
-// Master
-async function mostrarTodosUsuarios() {
-  const usuariosSnap = await getDocs(collection(db, "usuarios"));
-  conteudo.innerHTML = "<h2>Todos os usuários</h2>";
-  usuariosSnap.forEach(doc => {
-    const u = doc.data();
-    const div = document.createElement("div");
-    div.className = "item-usuario";
-    div.innerHTML = `<strong>${u.nome}</strong> (${u.funcao})`;
-    div.onclick = () => abrirEdicaoUsuario(doc.id);
-    conteudo.appendChild(div);
-  });
-}
-
-// Gerente
-async function mostrarVendedores(gerenteId) {
-  const q = query(collection(db, "usuarios"), where("gerenteId", "==", gerenteId));
-  const snapshot = await getDocs(q);
-
-  conteudo.innerHTML = "<h2>Seus Vendedores</h2>";
-  if (snapshot.empty) {
-    conteudo.innerHTML += "<p>Sem vendedores cadastrados.</p>";
-    return;
-  }
-
-  snapshot.forEach(doc => {
-    const v = doc.data();
-    const div = document.createElement("div");
-    div.className = "item-usuario";
-    div.innerHTML = `<strong>${v.nome}</strong> - Cotação: ${v.cotacao}`;
-    div.onclick = () => abrirEdicaoUsuario(doc.id);
-    conteudo.appendChild(div);
-  });
-}
-
-// Vendedor
-function mostrarPainelVendedor(usuarioLogado) {
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <h3>${usuarioLogado.nome}</h3>
-    <p>Banca: ${usuarioLogado.localidade}</p>
-    <button id="adicionarVenda">Adicionar Venda</button>
-    <button id="verHistorico">Ver Histórico</button>
-  `;
-  conteudo.appendChild(card);
-
-  document.getElementById("adicionarVenda").addEventListener("click", () => {
-    alert("Abrir formulário de venda (futuro)");
-  });
-  document.getElementById("verHistorico").addEventListener("click", () => {
-    alert("Mostrar histórico de vendas (futuro)");
-  });
-}
-
-// Edição de usuários
-async function abrirEdicaoUsuario(usuarioId) {
-  const docRef = doc(db, "usuarios", usuarioId);
-  const docSnap = await getDoc(docRef);
-
-  if (!docSnap.exists()) return alert("Usuário não encontrado");
-
-  const u = docSnap.data();
-  conteudo.innerHTML = `
-    <div class="dados-box">
-      <h2>Editando ${u.nome}</h2>
-      <label>Nome: <input id="nomeEdit" value="${u.nome}"></label><br>
-      <label>Localidade: <input id="localEdit" value="${u.localidade}"></label><br>
-      <label>Cotação: <input id="cotacaoEdit" value="${u.cotacao}"></label><br>
-      <label>Função:
-        <select id="funcaoEdit">
-          <option value="vendedor" ${u.funcao==='vendedor'?'selected':''}>Vendedor</option>
-          <option value="gerente" ${u.funcao==='gerente'?'selected':''}>Gerente</option>
-          <option value="master" ${u.funcao==='master'?'selected':''}>Master</option>
-        </select>
-      </label><br>
-      <button class="btnVoltar" id="salvarEdicao">Salvar</button>
-      <button class="btnVoltar" id="voltarPainel">Voltar</button>
+      <div id="infoVendedor" class="hidden section">
+        <h4>Informações do Vendedor</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Recebeu</th>
+              <th>Devolveu</th>
+              <th>Vendeu</th>
+              <th>Apurou</th>
+              <th>Pagou</th>
+              <th>Deve</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaVendas"></tbody>
+        </table>
+      </div>
     </div>
-  `;
 
-  document.getElementById("salvarEdicao").addEventListener("click", async () => {
-    await setDoc(docRef, {
-      nome: document.getElementById("nomeEdit").value,
-      localidade: document.getElementById("localEdit").value,
-      cotacao: document.getElementById("cotacaoEdit").value,
-      funcao: document.getElementById("funcaoEdit").value,
-      uid: u.uid,
-      gerenteId: u.gerenteId || null
+    <!-- Seção GERENTE -->
+    <div id="gerenteSection" class="section hidden">
+      <h2>Gerente</h2>
+      <p><b>Nome:</b> <span id="gerenteNomeSec"></span></p>
+      <p><b>Banca:</b> <span id="gerenteBancaSec"></span></p>
+
+      <h3>Caixa Detalhado</h3>
+      <p>Apurado: <span id="gerenteApuradoSec"></span></p>
+      <p>Repassado: <span id="gerenteRepassadoSec"></span></p>
+      <p>A Repassar: <span id="gerenteARepassarSec"></span></p>
+
+      <h4>Seus Vendedores</h4>
+      <div id="vendedoresGerente"></div>
+    </div>
+
+    <!-- Seção VENDEDOR -->
+    <div id="vendedorSection" class="section hidden">
+      <h2>Vendedor</h2>
+      <p><b>Nome:</b> <span id="vendedorNome"></span></p>
+      <p><b>Banca:</b> <span id="vendedorBanca"></span></p>
+      <p><b>Gerente:</b> <span id="vendedorGerente"></span></p>
+
+      <h3>Caixa Detalhado</h3>
+      <p>Apurado: <span id="apuradoVend"></span></p>
+      <p>Repassado: <span id="repassadoVend"></span></p>
+      <p>A Repassar: <span id="aRepassarVend"></span></p>
+
+      <h4>Relatório de Vendas</h4>
+      <div id="relatorioVendas"></div>
+    </div>
+
+    <button class="logout" onclick="logout()">Sair</button>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      // suas credenciais Firebase aqui
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Controle de autenticação
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const uid = user.uid;
+      const userRef = doc(db, "usuarios", uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        alert("Usuário não encontrado!");
+        return;
+      }
+
+      const dados = userSnap.data();
+      const tipo = dados.tipo; // 'master', 'gerente', 'vendedor'
+
+      if (tipo === "master") {
+        document.getElementById("masterSection").classList.remove("hidden");
+        document.getElementById("masterNome").textContent = dados.nome;
+        document.getElementById("masterBanca").textContent = dados.banca;
+      } 
+      else if (tipo === "gerente") {
+        document.getElementById("gerenteSection").classList.remove("hidden");
+        document.getElementById("gerenteNomeSec").textContent = dados.nome;
+        document.getElementById("gerenteBancaSec").textContent = dados.banca;
+      } 
+      else if (tipo === "vendedor") {
+        document.getElementById("vendedorSection").classList.remove("hidden");
+        document.getElementById("vendedorNome").textContent = dados.nome;
+        document.getElementById("vendedorBanca").textContent = dados.banca;
+        document.getElementById("vendedorGerente").textContent = dados.gerente;
+      }
     });
-    alert("Usuário atualizado!");
-    location.reload();
-  });
 
-  document.getElementById("voltarPainel").addEventListener("click", () => location.reload());
-}
-
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
-</script>
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    }
+  </script>
 </body>
 </html>
