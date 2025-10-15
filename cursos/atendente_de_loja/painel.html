@@ -3,91 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel da Sorte</title>
+  <title>Painel Da Sorte</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #2b579a;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-    #painelContainer {
-      display: none;
-      padding: 20px;
-    }
-    #logoutBtn {
-      float: right;
-      background: #ff3b3b;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      padding: 15px;
-      margin-bottom: 10px;
-    }
-    select, button {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-    }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; }
+    header { background: #2b579a; color: #fff; padding: 15px; text-align: center; position: relative; }
+    #logoutBtn { position: absolute; right: 15px; top: 15px; background: #ff3b3b; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+    #painelContainer { display: none; padding: 20px; }
+    .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 10px; }
   </style>
 </head>
 <body>
-
   <header>
-    <h2>Painel da Sorte</h2>
+    <h2>Painel Da Sorte</h2>
     <button id="logoutBtn">Sair</button>
   </header>
 
   <div id="painelContainer">
-    <h3>Gerenciamento de Usuários</h3>
-
-    <div>
-      <label for="funcao">Função:</label>
-      <select id="funcao">
-        <option value="">Selecione...</option>
-        <option value="master">Master</option>
-        <option value="gerente">Gerente</option>
-        <option value="vendedor">Vendedor</option>
-      </select>
-    </div>
-
-    <div id="gerenteContainer" style="display:none;">
-      <label for="gerenteSelect">Selecione o gerente:</label>
-      <select id="gerenteSelect"></select>
-    </div>
-
-    <div id="usuariosContainer"></div>
+    <h3>Usuários Cadastrados</h3>
+    <div id="usuariosContainer">Carregando...</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { 
-      getFirestore, collection, getDocs 
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-    import { 
-      getAuth, onAuthStateChanged, signOut 
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    // Configuração Firebase - Da Sorte
     const firebaseConfig = {
       apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
       authDomain: "dasorte-66ec5.firebaseapp.com",
       projectId: "dasorte-66ec5",
-      storageBucket: "dasorte-66ec5.firebasestorage.app",
+      storageBucket: "dasorte-66ec5.appspot.com",
       messagingSenderId: "606389335961",
       appId: "1:606389335961:web:4986562c4ab1b133684508"
     };
@@ -96,14 +41,10 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const funcaoSelect = document.getElementById('funcao');
-    const gerenteContainer = document.getElementById('gerenteContainer');
-    const gerenteSelect = document.getElementById('gerenteSelect');
     const usuariosContainer = document.getElementById('usuariosContainer');
     const painelContainer = document.getElementById('painelContainer');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // 🔒 Verifica se o usuário está logado
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         painelContainer.style.display = 'block';
@@ -113,46 +54,33 @@
       }
     });
 
-    // 🚪 Logout
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
-
-    // 🔄 Carrega usuários cadastrados
     async function carregarUsuarios() {
-      usuariosContainer.innerHTML = "<p>Carregando usuários...</p>";
       try {
         const snap = await getDocs(collection(db, "usuarios"));
         if (snap.empty) {
-          usuariosContainer.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
+          usuariosContainer.innerHTML = "<p>Nenhum usuário encontrado.</p>";
           return;
         }
-
         usuariosContainer.innerHTML = "";
         snap.forEach(doc => {
           const data = doc.data();
           const div = document.createElement("div");
-          div.classList.add("card");
-          div.innerHTML = `
-            <strong>${data.nome || "Sem nome"}</strong><br>
-            Função: ${data.funcao || "Não definida"}<br>
-            Gerente: ${data.gerente || "-"}<br>
-            <button onclick="editarUsuario('${doc.id}')">Editar</button>
-          `;
+          div.className = "card";
+          div.innerHTML = `<strong>${data.nome || "(sem nome)"}</strong><br>Função: ${data.funcao || "-"}<br><button onclick="editarUsuario('${doc.id}')">Editar</button>`;
           usuariosContainer.appendChild(div);
         });
       } catch (e) {
-        console.error("Erro ao buscar usuários:", e);
+        console.error(e);
         usuariosContainer.innerHTML = "<p>Erro ao carregar usuários.</p>";
       }
     }
 
-    // ⚙️ Função chamada ao clicar no botão "Editar"
-    window.editarUsuario = (id) => {
-      alert("Abrir tela de edição do usuário ID: " + id);
-      // Aqui futuramente abriremos o painel de edição
-    };
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    window.editarUsuario = (id) => alert("Editar usuário ID: " + id);
   </script>
 </body>
 </html>
