@@ -3,111 +3,104 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Dasorte</title>
+<title>Painel de Controle - Da Sorte</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-header { background:#4caf50; color:#fff; padding:12px; text-align:center; font-size:20px; }
-nav { display:flex; gap:8px; padding:10px; background:#333; }
-nav button { padding:8px 12px; color:#fff; border:none; cursor:pointer; border-radius:4px; }
-nav button:hover { background:#555; }
-section { display:none; padding:20px; }
-table { width:100%; border-collapse:collapse; margin-top:10px; background:#fff; }
-th, td { border:1px solid #ccc; padding:6px; text-align:center; }
-th { background:#eee; }
-input, select { padding:6px; margin:4px; }
-button { cursor:pointer; border-radius:4px; }
-.card { background:#fff; padding:12px; margin:8px 0; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+  body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f5f5f5; }
+  header { background:#b30000; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; font-size:24px; }
+  nav button { margin:0 5px; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; background:#ff4d4d; color:white; }
+  nav button:hover { background:#660000; }
+  section { display:none; padding:20px; background:#fff; margin:10px; border-radius:6px; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th,td { border:1px solid #ccc; padding:8px; text-align:center; }
+  th { background:#eee; }
+  input { padding:5px; width:90%; }
 </style>
 </head>
 <body>
 
-<header>Painel Dasorte</header>
+<header>
+  <h1>Painel Da Sorte</h1>
+  <nav id="menu"></nav>
+  <button onclick="logout()">Sair</button>
+</header>
 
-<nav id="menuMaster">
-  <button onclick="mostrarSecao('caixa')">Caixa</button>
-  <button onclick="mostrarSecao('receitas')">Receitas</button>
-  <button onclick="mostrarSecao('gerenciar')">Gerenciar</button>
-  <button onclick="mostrarSecao('despesas')">Despesas</button>
-  <button onclick="mostrarSecao('lancamentos')">Lançamentos</button>
-  <button onclick="mostrarSecao('vendas')">Vendas</button>
-  <button onclick="mostrarSecao('cadastro')">Cadastro</button>
-</nav>
-
-<!-- Caixa -->
+<!-- Seções do painel -->
 <section id="caixa">
   <h2>Caixa</h2>
   <table>
-    <tr><td>Saldo Anterior</td><td id="saldoAnterior">0</td></tr>
-    <tr><td>Apurado Total</td><td id="apuradoTotal">0</td></tr>
-    <tr><td>Despesas</td><td id="despesasTotal">0</td></tr>
-    <tr><td>Saldo Final</td><td id="saldoFinal">0</td></tr>
+    <tr><th>Saldo Anterior</th><th>Apurado Total</th><th>Despesas</th><th>Saldo Final</th></tr>
+    <tr>
+      <td id="saldoAnterior">0.00</td>
+      <td id="apuradoTotal">0.00</td>
+      <td id="despesasTotal">0.00</td>
+      <td id="saldoFinal">0.00</td>
+    </tr>
   </table>
   <h3>Partilha</h3>
-  <div class="card">Gerente 1: <span id="partGer1">0</span></div>
-  <div class="card">Gerente 2: <span id="partGer2">0</span></div>
-  <div class="card">Banca: <span id="partBanca">0</span></div>
+  <div>GERENTE 1: <span id="partilhaGerente1">0.00</span></div>
+  <div>GERENTE 2: <span id="partilhaGerente2">0.00</span></div>
+  <div>BANCA: <span id="partilhaBanca">0.00</span></div>
 </section>
 
-<!-- Receitas -->
 <section id="receitas">
   <h2>Receitas</h2>
-  <input type="text" id="descricaoReceita" placeholder="Descrição">
-  <input type="number" id="valorReceita" placeholder="Valor" step="0.01">
-  <input type="date" id="dataReceita">
-  <button onclick="adicionarReceita()">Salvar Receita</button>
-  <div id="listaReceitas"></div>
+  <input id="valorReceita" type="number" placeholder="Valor"> 
+  <input id="descricaoReceita" placeholder="Descrição"> 
+  <input id="dataReceita" type="date"> 
+  <button onclick="salvarReceita()">Salvar Receita</button>
 </section>
 
-<!-- Gerenciar -->
 <section id="gerenciar">
-  <h2>Gerenciar Gerentes e Vendedores</h2>
-  <input type="text" id="novoGerenteNome" placeholder="Nome do Gerente">
-  <button onclick="adicionarGerente()">Adicionar Gerente</button>
+  <h2>Gerenciar</h2>
   <div id="listaGerentes"></div>
-  <div id="vendedoresGerente" style="display:none;">
-    <h3 id="tituloVendedores"></h3>
-    <input type="text" id="novoVendedorNome" placeholder="Nome do Vendedor">
-    <input type="number" id="novoVendedorCotacao" placeholder="Cotação" step="0.01">
-    <button onclick="adicionarVendedor()">Adicionar Vendedor</button>
-    <div id="listaVendedoresGerente"></div>
-  </div>
 </section>
 
-<!-- Despesas -->
 <section id="despesas">
   <h2>Despesas</h2>
-  <input type="text" id="descDespesa" placeholder="Descrição">
-  <input type="number" id="valorDespesa" placeholder="Valor" step="0.01">
+  <input type="number" id="valorDespesa" placeholder="Valor">
+  <input type="text" id="descricaoDespesa" placeholder="Descrição">
   <input type="date" id="dataDespesa">
-  <button onclick="adicionarDespesa()">Salvar Despesa</button>
-  <div id="listaDespesas"></div>
+  <button onclick="salvarDespesa()">Salvar Despesa</button>
 </section>
 
-<!-- Lançamentos -->
 <section id="lancamentos">
-  <h2>Lançamentos de Débitos</h2>
+  <h2>Lançamentos</h2>
   <div id="listaLancamentos"></div>
 </section>
 
-<!-- Vendas -->
 <section id="vendas">
   <h2>Vendas</h2>
   <div id="listaVendedores"></div>
-  <div id="painelVendas"></div>
+  <div id="painelVendas">
+    <h3 id="tituloVendedorSelecionado"></h3>
+    <button onclick="voltarListaVendedores()">Voltar</button>
+    <button onclick="adicionarLinhaVenda()">Adicionar Linha</button>
+    <table id="tabelaVendas">
+      <thead>
+        <tr><th>Data</th><th>Recebeu</th><th>Devolveu</th><th>Vendeu</th><th>Apurado</th><th>Pagou</th><th>Deve</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div style="margin-top:10px;">
+      <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
+      <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
+      <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
+      <button onclick="salvarVendas()">Salvar Vendas</button>
+    </div>
+  </div>
 </section>
 
-<!-- Cadastro -->
 <section id="cadastro">
   <h2>Cadastro</h2>
-  <p>Aqui poderia levar a página de cadastro...</p>
+  <button onclick="window.location.href='cadastro.html'">Ir para Cadastro</button>
 </section>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
   authDomain: "dasorte-66ec5.firebaseapp.com",
@@ -120,98 +113,45 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let gerenteAtual = null;
+let usuarioTipo = localStorage.getItem('tipoUsuario') || 'master'; // master/gerente/vendedor
+let usuarioId = localStorage.getItem('uid');
 
-// Mostrar seção
-function mostrarSecao(id){
-  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+const menu = document.getElementById('menu');
+
+// Cria menu dinamicamente
+const itensMenu = [
+  {nome:'Caixa', id:'caixa', roles:['master']},
+  {nome:'Receitas', id:'receitas', roles:['master']},
+  {nome:'Gerenciar', id:'gerenciar', roles:['master']},
+  {nome:'Despesas', id:'despesas', roles:['master']},
+  {nome:'Lançamentos', id:'lancamentos', roles:['master']},
+  {nome:'Vendas', id:'vendas', roles:['master','gerente','vendedor']},
+  {nome:'Cadastro', id:'cadastro', roles:['master']}
+];
+
+itensMenu.forEach(item=>{
+  if(item.roles.includes(usuarioTipo)){
+    const btn = document.createElement('button');
+    btn.textContent = item.nome;
+    btn.onclick = ()=>abrirSecao(item.id);
+    menu.appendChild(btn);
+  }
+});
+
+function abrirSecao(id){
+  document.querySelectorAll('section').forEach(sec=>sec.style.display='none');
   document.getElementById(id).style.display='block';
 }
 
-// ==== Caixa ====
-async function atualizarCaixa(){
-  // Exemplo, substituir por cálculos reais do Firestore
-  const saldoAnterior=1000, apuradoTotal=500, despesas=200;
-  const saldoFinal = saldoAnterior + apuradoTotal - despesas;
-  document.getElementById('saldoAnterior').textContent = saldoAnterior.toFixed(2);
-  document.getElementById('apuradoTotal').textContent = apuradoTotal.toFixed(2);
-  document.getElementById('despesasTotal').textContent = despesas.toFixed(2);
-  document.getElementById('saldoFinal').textContent = saldoFinal.toFixed(2);
-  document.getElementById('partGer1').textContent = (saldoFinal*0.25).toFixed(2);
-  document.getElementById('partGer2').textContent = (saldoFinal*0.25).toFixed(2);
-  document.getElementById('partBanca').textContent = (saldoFinal*0.5).toFixed(2);
+// Logout
+function logout(){
+  signOut(auth).then(()=>{ window.location.href='login.html'; });
 }
 
-// ==== Receitas ====
-async function adicionarReceita(){
-  const descricao = document.getElementById('descricaoReceita').value;
-  const valor = parseFloat(document.getElementById('valorReceita').value);
-  const data = document.getElementById('dataReceita').value;
-  if(!descricao || isNaN(valor) || !data) return alert('Preencha todos os campos');
-  await addDoc(collection(db,'receitas'), {descricao, valor, data});
-  document.getElementById('descricaoReceita').value='';
-  document.getElementById('valorReceita').value='';
-  document.getElementById('dataReceita').value='';
-  alert('Receita salva!');
-}
+// --------- Aqui você integra todos os métodos de VENDAS, RECEITAS, DESPESAS etc --------
+// Você pode incluir o código de vendas que geramos anteriormente aqui
+// incluir funções: carregarListaVendedores, abrirPainelVendas, adicionarLinhaVenda, calcularLinha, salvarVendas
 
-// ==== Gerentes ====
-async function carregarGerentes() {
-  const snap = await getDocs(collection(db, "gerentes"));
-  const listaGerentesEl = document.getElementById('listaGerentes');
-  listaGerentesEl.innerHTML='';
-  snap.forEach(docSnap=>{
-    const ger = docSnap.data();
-    const btn = document.createElement('button');
-    btn.textContent = ger.nome;
-    btn.onclick = ()=>selecionarGerente(docSnap.id, ger.nome);
-    listaGerentesEl.appendChild(btn);
-  });
-}
-
-async function adicionarGerente(){
-  const nome = document.getElementById('novoGerenteNome').value.trim();
-  if(!nome) return alert('Digite o nome do gerente!');
-  await addDoc(collection(db,'gerentes'), {nome});
-  document.getElementById('novoGerenteNome').value='';
-  carregarGerentes();
-}
-
-async function selecionarGerente(id, nome){
-  gerenteAtual = id;
-  document.getElementById('tituloVendedores').textContent = `Vendedores de ${nome}`;
-  document.getElementById('vendedoresGerente').style.display='block';
-  carregarVendedoresGerente();
-}
-
-async function carregarVendedoresGerente(){
-  if(!gerenteAtual) return;
-  const snap = await getDocs(collection(db, `gerentes/${gerenteAtual}/vendedores`));
-  const lista = document.getElementById('listaVendedoresGerente');
-  lista.innerHTML='';
-  snap.forEach(docSnap=>{
-    const v = docSnap.data();
-    const div = document.createElement('div');
-    div.className='card';
-    div.textContent = `${v.nome} - Cotação: R$${v.cotacao.toFixed(2)}`;
-    lista.appendChild(div);
-  });
-}
-
-async function adicionarVendedor(){
-  if(!gerenteAtual) return alert('Selecione um gerente');
-  const nome = document.getElementById('novoVendedorNome').value.trim();
-  const cotacao = parseFloat(document.getElementById('novoVendedorCotacao').value);
-  if(!nome || isNaN(cotacao)) return alert('Preencha corretamente nome e cotação');
-  await addDoc(collection(db, `gerentes/${gerenteAtual}/vendedores`), {nome, cotacao});
-  document.getElementById('novoVendedorNome').value='';
-  document.getElementById('novoVendedorCotacao').value='';
-  carregarVendedoresGerente();
-}
-
-// ==== Inicialização ====
-carregarGerentes();
-atualizarCaixa();
 </script>
 </body>
-  </html>
+    </html>
