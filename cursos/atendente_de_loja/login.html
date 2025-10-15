@@ -2,140 +2,83 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login do Sistema</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Da Sorte</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #007bff, #00c6ff);
-      height: 100vh;
+      font-family: Arial;
+      background: #f4f4f9;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0;
+      height: 100vh;
     }
-    .container {
+    .login-box {
       background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      width: 350px;
-      text-align: center;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      width: 300px;
     }
-    h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-    input {
-      width: 90%;
+    input, button {
+      width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
+      margin-top: 10px;
       border-radius: 6px;
+      border: 1px solid #ccc;
     }
     button {
-      width: 95%;
-      padding: 10px;
-      background: #007bff;
+      background: #2b579a;
       color: white;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    p {
-      margin-top: 15px;
-      color: #666;
-    }
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    #mensagem {
-      margin-top: 10px;
-      color: red;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Acessar o Sistema</h2>
-    <input type="email" id="email" placeholder="E-mail" required />
-    <input type="password" id="senha" placeholder="Senha" required />
-    <button id="loginBtn">Entrar</button>
-    <p id="mensagem"></p>
-    <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+  <div class="login-box">
+    <h3>Login Da Sorte</h3>
+    <input id="email" type="email" placeholder="E-mail" />
+    <input id="senha" type="password" placeholder="Senha" />
+    <button id="btnLogin">Entrar</button>
+    <p id="msg" style="color:red;"></p>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    // Configuração Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
       authDomain: "dasorte-66ec5.firebaseapp.com",
       projectId: "dasorte-66ec5",
-      storageBucket: "dasorte-66ec5.firebasestorage.app",
+      storageBucket: "dasorte-66ec5.appspot.com",
       messagingSenderId: "606389335961",
       appId: "1:606389335961:web:4986562c4ab1b133684508"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    const emailInput = document.getElementById('email');
-    const senhaInput = document.getElementById('senha');
-    const loginBtn = document.getElementById('loginBtn');
-    const mensagem = document.getElementById('mensagem');
+    const email = document.getElementById("email");
+    const senha = document.getElementById("senha");
+    const btnLogin = document.getElementById("btnLogin");
+    const msg = document.getElementById("msg");
 
-    loginBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim();
-      const senha = senhaInput.value.trim();
-
-      if (!email || !senha) {
-        mensagem.textContent = "Preencha todos os campos.";
-        return;
-      }
-
+    btnLogin.addEventListener("click", async () => {
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-        const user = userCredential.user;
-
-        // Busca no Firestore pelo campo 'uid'
-        const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const usuarioLogado = querySnapshot.docs[0].data();
-
-          mensagem.style.color = "green";
-          mensagem.textContent = "Login realizado com sucesso!";
-
-          // Redireciona para painel após 1s
-          setTimeout(() => {
-            window.location.href = "painel.html";
-          }, 1000);
-
-        } else {
-          mensagem.style.color = "red";
-          mensagem.textContent = "Usuário sem dados no Firestore.";
-        }
-
-      } catch (error) {
-        mensagem.style.color = "red";
-        mensagem.textContent = "Erro ao fazer login: " + error.message;
+        await signInWithEmailAndPassword(auth, email.value, senha.value);
+        window.location.href = "painel.html";
+      } catch (e) {
+        msg.textContent = "Usuário ou senha incorretos";
+        console.error(e);
       }
+    });
+
+    // Se já estiver logado, vai direto para o painel
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "painel.html";
     });
   </script>
 </body>
-  </html>
+</html>
