@@ -3,37 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Master</title>
+<title>Painel Completo - Da Sorte</title>
 <style>
-body { font-family: Arial,sans-serif; background:#f5f5f5; padding:20px; }
-h1,h2,h3 { color:red; }
-button { padding:8px 12px; margin:3px; border:none; border-radius:5px; cursor:pointer; background:red; color:white; }
-button:hover { background:blue; }
-section { margin-top:20px; padding:15px; border:1px solid #ccc; background:#fff; border-radius:6px; display:none; }
-table { width:100%; border-collapse: collapse; margin-top:10px; }
-th,td { border:1px solid #ccc; padding:8px; text-align:center; }
-th { background:#eee; }
-.vendor-btn { background:yellow; color:#333; padding:10px; margin:5px; cursor:pointer; border-radius:6px; display:block; width:100%; text-align:left; }
-.vendor-btn:hover { background:#f3f3f3; }
+body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
+header { background:#4caf50; color:#fff; padding:16px; text-align:center; font-size:20px; font-weight:bold; }
+nav { display:flex; gap:8px; padding:10px; background:#eee; flex-wrap:wrap; }
+nav button { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; background:#2196f3; color:#fff; font-weight:bold; }
+nav button:hover { opacity:0.9; }
+section { padding:20px; display:none; background:#fff; margin:10px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+th { background:#f0f0f0; }
+input[type="number"], input[type="date"], input[type="text"] { width:100%; padding:6px; border-radius:4px; border:1px solid #ccc; }
+.totais { margin-top:10px; font-weight:bold; }
+.lista { margin-top:10px; }
+.card { border:1px solid #ccc; padding:10px; border-radius:6px; margin-bottom:10px; background:#f9f9f9; cursor:pointer; }
+.card:hover { background:#e8f0fe; }
+.hidden { display:none; }
 </style>
 </head>
 <body>
 
-<h1>Painel Master</h1>
+<header>Painel Completo - Da Sorte</header>
 
-<div id="botoesTopo">
-  <button onclick="abrirSecao('caixa')">Caixa</button>
-  <button onclick="abrirSecao('receitas')">Receitas</button>
-  <button onclick="abrirSecao('gerenciar')">Gerenciar</button>
-  <button onclick="abrirSecao('despesas')">Despesas</button>
-  <button onclick="abrirSecao('lancamentos')">Lançamentos</button>
-  <button onclick="abrirSecao('vendas')">Vendas</button>
-  <button onclick="abrirSecao('cadastro')">Cadastro</button>
-</div>
+<nav id="menuMaster">
+  <button onclick="mostrarAba('caixa')">Caixa</button>
+  <button onclick="mostrarAba('receitas')">Receitas</button>
+  <button onclick="mostrarAba('gerenciar')">Gerenciar</button>
+  <button onclick="mostrarAba('despesas')">Despesas</button>
+  <button onclick="mostrarAba('lancamentos')">Lançamentos</button>
+  <button onclick="mostrarAba('vendas')">Vendas</button>
+  <button onclick="mostrarAba('cadastro')">Cadastro</button>
+  <button onclick="logout()">Sair</button>
+</nav>
 
 <!-- CAIXA -->
 <section id="caixa">
-  <h2>Caixa Master</h2>
+  <h2>Caixa Detalhado</h2>
   <table>
     <tr><td>Saldo Anterior</td><td id="saldoAnterior">0.00</td></tr>
     <tr><td>Apurado Total</td><td id="apuradoTotal">0.00</td></tr>
@@ -42,8 +48,8 @@ th { background:#eee; }
   </table>
   <h3>Partilha</h3>
   <table>
-    <tr><td>Gerente 1 (25%)</td><td id="partilhaGer1">0.00</td></tr>
-    <tr><td>Gerente 2 (25%)</td><td id="partilhaGer2">0.00</td></tr>
+    <tr><td>Gerente 1 (25%)</td><td id="partilhaG1">0.00</td></tr>
+    <tr><td>Gerente 2 (25%)</td><td id="partilhaG2">0.00</td></tr>
     <tr><td>Banca (50%)</td><td id="partilhaBanca">0.00</td></tr>
   </table>
 </section>
@@ -51,52 +57,63 @@ th { background:#eee; }
 <!-- RECEITAS -->
 <section id="receitas">
   <h2>Adicionar Receita</h2>
-  <label>Valor: <input type="number" id="valorReceita"/></label>
-  <label>Descrição: <input type="text" id="descReceita"/></label>
-  <label>Data: <input type="date" id="dataReceita"/></label>
-  <button onclick="salvarReceita()">Salvar Receita</button>
-</section>
-
-<!-- DESPESAS -->
-<section id="despesas">
-  <h2>Adicionar Despesa</h2>
-  <label>Data: <input type="date" id="dataDespesa"/></label>
-  <label>Valor: <input type="number" id="valorDespesa"/></label>
-  <label>Descrição: <input type="text" id="descDespesa"/></label>
-  <button onclick="salvarDespesa()">Salvar Despesa</button>
+  <input type="text" id="descReceita" placeholder="Descrição">
+  <input type="number" id="valorReceita" placeholder="Valor" min="0" step="0.01">
+  <input type="date" id="dataReceita">
+  <button onclick="adicionarReceita()">Salvar Receita</button>
+  <div class="lista" id="listaReceitas"></div>
 </section>
 
 <!-- GERENCIAR -->
 <section id="gerenciar">
   <h2>Gerenciar Gerentes e Vendedores</h2>
   <div id="listaGerentes"></div>
+  <div id="listaVendedoresGerente"></div>
+</section>
+
+<!-- DESPESAS -->
+<section id="despesas">
+  <h2>Adicionar Despesa</h2>
+  <input type="text" id="descDespesa" placeholder="Descrição">
+  <input type="number" id="valorDespesa" placeholder="Valor" min="0" step="0.01">
+  <input type="date" id="dataDespesa">
+  <button onclick="adicionarDespesa()">Salvar Despesa</button>
+  <div class="lista" id="listaDespesas"></div>
 </section>
 
 <!-- LANÇAMENTOS -->
 <section id="lancamentos">
-  <h2>Lançamentos</h2>
+  <h2>Lançamentos de Débitos</h2>
   <div id="listaLancamentos"></div>
 </section>
 
 <!-- VENDAS -->
 <section id="vendas">
-  <h2>Vendas</h2>
+  <h2>Vendas dos Vendedores</h2>
   <div id="listaVendedores"></div>
-  <div id="painelVendas" style="display:none;">
-    <h3 id="tituloVendedorSelecionado"></h3>
-    <button onclick="voltarListaVendedores()">Voltar</button>
-    <button onclick="adicionarLinhaVenda()">Adicionar Linha</button>
+  <div id="painelVendas" class="hidden">
+    <h3 id="tituloVendedor"></h3>
+    <button onclick="fecharPainelVendas()">Fechar</button>
+    <button onclick="adicionarLinhaVenda()">Adicionar Venda</button>
     <table id="tabelaVendas">
       <thead>
-        <tr><th>Data</th><th>Recebeu</th><th>Devolveu</th><th>Vendeu</th><th>Apurado</th><th>Pagou</th><th>Deve</th></tr>
+        <tr>
+          <th>Data</th>
+          <th>Recebeu</th>
+          <th>Devolveu</th>
+          <th>Vendeu</th>
+          <th>Apurado</th>
+          <th>Pagou</th>
+          <th>Deve</th>
+          <th>Ações</th>
+        </tr>
       </thead>
       <tbody></tbody>
     </table>
-    <div style="margin-top:10px;">
-      <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
-      <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
-      <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
-      <button onclick="salvarVendas()">Salvar Vendas</button>
+    <div class="totais">
+      <span>Total Apurado: <span id="totalApurado">0.00</span></span>
+      <span>Total Pagou: <span id="totalPagou">0.00</span></span>
+      <span>Total Deve: <span id="totalDeve">0.00</span></span>
     </div>
   </div>
 </section>
@@ -109,10 +126,9 @@ th { background:#eee; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-// Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
   authDomain: "dasorte-66ec5.firebaseapp.com",
@@ -121,62 +137,74 @@ const firebaseConfig = {
   messagingSenderId: "606389335961",
   appId: "1:606389335961:web:4986562c4ab1b133684508"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Exibir seção
-function abrirSecao(id){
-  document.querySelectorAll('section').forEach(s=>s.style.display='none');
-  document.getElementById(id).style.display='block';
+let usuarioAtual = JSON.parse(localStorage.getItem('usuarioAtual')) || {nome:"Master", funcao:"master"};
+
+function mostrarAba(aba){
+  document.querySelectorAll('section').forEach(sec => sec.style.display='none');
+  document.getElementById(aba).style.display='block';
 }
 
-// ===== Receitas =====
-async function salvarReceita(){
-  const valor = parseFloat(document.getElementById('valorReceita').value);
-  const desc = document.getElementById('descReceita').value;
-  const data = document.getElementById('dataReceita').value;
-  if(isNaN(valor) || !data){ alert('Preencha corretamente'); return; }
-  await addDoc(collection(db,'receitas'),{valor,desc,data});
-  alert('Receita salva');
-  calcularCaixa();
+function logout(){
+  localStorage.removeItem('usuarioAtual');
+  window.location.reload();
 }
 
-// ===== Despesas =====
-async function salvarDespesa(){
-  const valor = parseFloat(document.getElementById('valorDespesa').value);
-  const desc = document.getElementById('descDespesa').value;
-  const data = document.getElementById('dataDespesa').value;
-  if(isNaN(valor) || !data){ alert('Preencha corretamente'); return; }
-  await addDoc(collection(db,'despesas'),{valor,desc,data});
-  alert('Despesa salva');
-  calcularCaixa();
-}
-
-// ===== Caixa =====
+// ===== Funções de Caixa =====
 async function calcularCaixa(){
-  const snapR = await getDocs(collection(db,'receitas'));
-  let saldoAnterior=0; snapR.forEach(d=> saldoAnterior+=parseFloat(d.data().valor||0));
-  document.getElementById('saldoAnterior').textContent = saldoAnterior.toFixed(2);
+  let receitas=0, despesas=0;
+  const snapReceitas = await getDocs(collection(db,'receitas'));
+  snapReceitas.forEach(r=>receitas+=parseFloat(r.data().valor||0));
 
-  const snapD = await getDocs(collection(db,'despesas'));
-  let totalDespesas=0; snapD.forEach(d=> totalDespesas+=parseFloat(d.data().valor||0));
-  document.getElementById('despesasTotal').textContent = totalDespesas.toFixed(2);
+  const snapDespesas = await getDocs(collection(db,'despesas'));
+  snapDespesas.forEach(d=>despesas+=parseFloat(d.data().valor||0));
 
-  let apuradoTotal = saldoAnterior*0.5; // Exemplo
-  document.getElementById('apuradoTotal').textContent = apuradoTotal.toFixed(2);
+  const saldoAnterior = receitas;
+  const apuradoTotal = 0; // exemplo: calcular repasses de gerentes
+  const saldoFinal = saldoAnterior + apuradoTotal - despesas;
 
-  let saldoFinal = saldoAnterior + apuradoTotal - totalDespesas;
-  document.getElementById('saldoFinal').textContent = saldoFinal.toFixed(2);
+  document.getElementById('saldoAnterior').textContent=saldoAnterior.toFixed(2);
+  document.getElementById('apuradoTotal').textContent=apuradoTotal.toFixed(2);
+  document.getElementById('despesasTotal').textContent=despesas.toFixed(2);
+  document.getElementById('saldoFinal').textContent=saldoFinal.toFixed(2);
 
-  document.getElementById('partilhaGer1').textContent = (saldoFinal*0.25).toFixed(2);
-  document.getElementById('partilhaGer2').textContent = (saldoFinal*0.25).toFixed(2);
-  document.getElementById('partilhaBanca').textContent = (saldoFinal*0.5).toFixed(2);
+  document.getElementById('partilhaG1').textContent=(saldoFinal*0.25).toFixed(2);
+  document.getElementById('partilhaG2').textContent=(saldoFinal*0.25).toFixed(2);
+  document.getElementById('partilhaBanca').textContent=(saldoFinal*0.5).toFixed(2);
 }
 
-// Inicial
-calcularCaixa();
-</script>
+// ===== Funções de Receitas =====
+async function carregarReceitas(){
+  const snap = await getDocs(collection(db,'receitas'));
+  let html='';
+  snap.forEach(doc => { let r = doc.data(); html+=`<div>${r.data} - ${r.descricao} - R$ ${r.valor}</div>`; });
+  document.getElementById('listaReceitas').innerHTML=html;
+}
+async function adicionarReceita(){
+  const descricao = document.getElementById('descReceita').value;
+  const valor = parseFloat(document.getElementById('valorReceita').value);
+  const data = document.getElementById('dataReceita').value;
+  if(!descricao || !valor || !data) return alert('Preencha todos os campos');
+  await addDoc(collection(db,'receitas'),{descricao, valor, data});
+  document.getElementById('descReceita').value='';
+  document.getElementById('valorReceita').value='';
+  document.getElementById('dataReceita').value='';
+  carregarReceitas();
+  calcularCaixa();
+}
 
+// ===== Inicialização =====
+mostrarAba('caixa');
+calcularCaixa();
+carregarReceitas();
+
+// TODO: Implementar funções restantes:
+// adicionarDespesa(), carregarDespesas(), gerenciarGerentes(), gerenciarVendedores(),
+// adicionarLinhaVenda(), atualizarTotaisVenda(), abrirPainelVendas(), fecharPainelVendas()
+</script>
 </body>
-</html>
+                              </html>
