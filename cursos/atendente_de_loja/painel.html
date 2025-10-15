@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel do Sistema</title>
+  <title>Painel do Sistema - Da Sorte</title>
 
   <style>
     body {
@@ -88,131 +88,10 @@
       background: #b52b27;
     }
   </style>
-
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_AUTH_DOMAIN",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_STORAGE_BUCKET",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      const docRef = doc(db, "usuarios", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) {
-        alert("Usuário não encontrado no Firestore!");
-        return;
-      }
-
-      const dados = docSnap.data();
-      const funcao = dados.funcao;
-      const painelMaster = document.getElementById("painel-master");
-      const painelGerente = document.getElementById("painel-gerente");
-      const painelVendedor = document.getElementById("painel-vendedor");
-
-      if (funcao === "master") {
-        painelMaster.classList.remove("hidden");
-        carregarPainelMaster(dados);
-      } else if (funcao === "gerente") {
-        painelGerente.classList.remove("hidden");
-        carregarPainelGerente(dados);
-      } else if (funcao === "vendedor") {
-        painelVendedor.classList.remove("hidden");
-        carregarPainelVendedor(dados);
-      }
-    });
-
-    async function carregarPainelMaster(dados) {
-      document.getElementById("master-nome").innerText = dados.nome;
-      document.getElementById("master-banca").innerText = dados.localidade;
-
-      const gerenciasDiv = document.getElementById("lista-gerentes");
-      gerenciasDiv.innerHTML = "";
-
-      const q = await getDocs(collection(db, "usuarios"));
-      q.forEach((doc) => {
-        const userData = doc.data();
-        if (userData.funcao === "gerente") {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.textContent = userData.nome + " - " + userData.localidade;
-          card.onclick = () => mostrarDetalhesGerente(doc.id, userData);
-          gerenciasDiv.appendChild(card);
-        }
-      });
-    }
-
-    async function mostrarDetalhesGerente(idGerente, gerente) {
-      const detalhes = document.getElementById("detalhes-gerente");
-      detalhes.classList.remove("hidden");
-      detalhes.innerHTML = `
-        <h3>Banca: ${gerente.localidade}</h3>
-        <p><strong>Gerente:</strong> ${gerente.nome}</p>
-        <p><strong>Caixa detalhado:</strong> 0,00</p>
-        <p><strong>Apurado total:</strong> 0,00</p>
-        <p><strong>Total repassado:</strong> 0,00</p>
-        <p><strong>Total a repassar:</strong> 0,00</p>
-      `;
-
-      const vendedoresDiv = document.getElementById("lista-vendedores");
-      vendedoresDiv.innerHTML = "";
-      const q = await getDocs(collection(db, "usuarios"));
-      q.forEach((doc) => {
-        const v = doc.data();
-        if (v.funcao === "vendedor" && v.gerente === gerente.nome) {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.textContent = v.nome;
-          card.onclick = () => mostrarTabelaVendas(v);
-          vendedoresDiv.appendChild(card);
-        }
-      });
-    }
-
-    function mostrarTabelaVendas(v) {
-      const tabela = document.getElementById("tabela-vendas");
-      tabela.classList.remove("hidden");
-      tabela.querySelector("tbody").innerHTML = `
-        <tr>
-          <td>10/10/2025</td>
-          <td>100</td>
-          <td>10</td>
-          <td>${100 - 10}</td>
-          <td>${(100 - 10) * v.cotacao}</td>
-          <td>50</td>
-          <td>${(100 - 10) * v.cotacao - 50}</td>
-        </tr>
-      `;
-    }
-
-    function logout() {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    }
-  </script>
 </head>
 
 <body>
-  <header><h1>Painel do Sistema</h1></header>
+  <header><h1>Painel do Sistema - Da Sorte</h1></header>
 
   <!-- Painel Master -->
   <div id="painel-master" class="painel hidden">
@@ -299,5 +178,127 @@
 
     <button class="logout-btn" onclick="logout()">Sair</button>
   </div>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    // Firebase SDK v12.4.0
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    // Configuração do Firebase - Da Sorte
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+      authDomain: "dasorte-66ec5.firebaseapp.com",
+      projectId: "dasorte-66ec5",
+      storageBucket: "dasorte-66ec5.firebasestorage.app",
+      messagingSenderId: "606389335961",
+      appId: "1:606389335961:web:4986562c4ab1b133684508"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Autenticação e exibição do painel conforme função
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const userRef = doc(db, "usuarios", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        alert("Usuário não encontrado no Firestore!");
+        return;
+      }
+
+      const dados = userSnap.data();
+      const funcao = dados.funcao;
+
+      if (funcao === "master") {
+        document.getElementById("painel-master").classList.remove("hidden");
+        carregarPainelMaster(dados);
+      } else if (funcao === "gerente") {
+        document.getElementById("painel-gerente").classList.remove("hidden");
+        carregarPainelGerente(dados);
+      } else if (funcao === "vendedor") {
+        document.getElementById("painel-vendedor").classList.remove("hidden");
+        carregarPainelVendedor(dados);
+      }
+    });
+
+    async function carregarPainelMaster(dados) {
+      document.getElementById("master-nome").innerText = dados.nome;
+      document.getElementById("master-banca").innerText = dados.localidade;
+
+      const gerenciasDiv = document.getElementById("lista-gerentes");
+      gerenciasDiv.innerHTML = "";
+
+      const q = await getDocs(collection(db, "usuarios"));
+      q.forEach((docu) => {
+        const userData = docu.data();
+        if (userData.funcao === "gerente") {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.textContent = `${userData.nome} - ${userData.localidade}`;
+          card.onclick = () => mostrarDetalhesGerente(docu.id, userData);
+          gerenciasDiv.appendChild(card);
+        }
+      });
+    }
+
+    async function mostrarDetalhesGerente(idGerente, gerente) {
+      const detalhes = document.getElementById("detalhes-gerente");
+      detalhes.classList.remove("hidden");
+      detalhes.innerHTML = `
+        <h3>Banca: ${gerente.localidade}</h3>
+        <p><strong>Gerente:</strong> ${gerente.nome}</p>
+        <p><strong>Caixa detalhado:</strong> R$0,00</p>
+        <p><strong>Apurado total:</strong> R$0,00</p>
+        <p><strong>Total repassado:</strong> R$0,00</p>
+        <p><strong>Total a repassar:</strong> R$0,00</p>
+      `;
+
+      const vendedoresDiv = document.getElementById("lista-vendedores");
+      vendedoresDiv.innerHTML = "";
+      const q = await getDocs(collection(db, "usuarios"));
+      q.forEach((docu) => {
+        const v = docu.data();
+        if (v.funcao === "vendedor" && v.gerente === gerente.nome) {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.textContent = v.nome;
+          card.onclick = () => mostrarTabelaVendas(v);
+          vendedoresDiv.appendChild(card);
+        }
+      });
+    }
+
+    function mostrarTabelaVendas(v) {
+      const tabela = document.getElementById("tabela-vendas");
+      tabela.classList.remove("hidden");
+      tabela.querySelector("tbody").innerHTML = `
+        <tr>
+          <td>15/10/2025</td>
+          <td>100</td>
+          <td>10</td>
+          <td>${100 - 10}</td>
+          <td>${(100 - 10) * v.cotacao}</td>
+          <td>50</td>
+          <td>${(100 - 10) * v.cotacao - 50}</td>
+        </tr>
+      `;
+    }
+
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    }
+  </script>
 </body>
-                         </html>
+  </html>
