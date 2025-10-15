@@ -15,6 +15,8 @@
   th,td { border:1px solid #ccc; padding:8px; text-align:center; }
   th { background:#eee; }
   input { padding:5px; width:90%; }
+  .btn-small { padding:5px 10px; margin:3px; cursor:pointer; border:none; border-radius:4px; background:#b30000; color:white; }
+  .btn-small:hover { background:#660000; }
 </style>
 </head>
 <body>
@@ -38,9 +40,9 @@
     </tr>
   </table>
   <h3>Partilha</h3>
-  <div>GERENTE 1: <span id="partilhaGerente1">0.00</span></div>
-  <div>GERENTE 2: <span id="partilhaGerente2">0.00</span></div>
-  <div>BANCA: <span id="partilhaBanca">0.00</span></div>
+  <div>GERENTE 1 (25%): <span id="partilhaGerente1">0.00</span></div>
+  <div>GERENTE 2 (25%): <span id="partilhaGerente2">0.00</span></div>
+  <div>BANCA (50%): <span id="partilhaBanca">0.00</span></div>
 </section>
 
 <section id="receitas">
@@ -49,11 +51,7 @@
   <input id="descricaoReceita" placeholder="Descrição"> 
   <input id="dataReceita" type="date"> 
   <button onclick="salvarReceita()">Salvar Receita</button>
-</section>
-
-<section id="gerenciar">
-  <h2>Gerenciar</h2>
-  <div id="listaGerentes"></div>
+  <ul id="listaReceitas"></ul>
 </section>
 
 <section id="despesas">
@@ -62,6 +60,12 @@
   <input type="text" id="descricaoDespesa" placeholder="Descrição">
   <input type="date" id="dataDespesa">
   <button onclick="salvarDespesa()">Salvar Despesa</button>
+  <ul id="listaDespesas"></ul>
+</section>
+
+<section id="gerenciar">
+  <h2>Gerenciar</h2>
+  <div id="listaGerentes"></div>
 </section>
 
 <section id="lancamentos">
@@ -101,6 +105,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebas
 import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
+// Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
   authDomain: "dasorte-66ec5.firebaseapp.com",
@@ -113,7 +118,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let usuarioTipo = localStorage.getItem('tipoUsuario') || 'master'; // master/gerente/vendedor
+let usuarioTipo = localStorage.getItem('tipoUsuario') || 'master';
 let usuarioId = localStorage.getItem('uid');
 
 const menu = document.getElementById('menu');
@@ -148,9 +153,74 @@ function logout(){
   signOut(auth).then(()=>{ window.location.href='login.html'; });
 }
 
-// --------- Aqui você integra todos os métodos de VENDAS, RECEITAS, DESPESAS etc --------
-// Você pode incluir o código de vendas que geramos anteriormente aqui
-// incluir funções: carregarListaVendedores, abrirPainelVendas, adicionarLinhaVenda, calcularLinha, salvarVendas
+// ======= CAIXA =======
+let receitas=[], despesas=[];
+async function carregarCaixa(){
+  // Receitas
+  const snapReceitas = await getDocs(collection(db,'receitas'));
+  receitas = [];
+  snapReceitas.forEach(d=>receitas.push(d.data()));
+  document.getElementById('listaReceitas').innerHTML = '';
+  receitas.forEach(r=>{
+    const li = document.createElement('li');
+    li.textContent = `${r.data} - ${r.descricao} : R$ ${r.valor.toFixed(2)}`;
+    document.getElementById('listaReceitas').appendChild(li);
+  });
+
+  // Despesas
+  const snapDespesas = await getDocs(collection(db,'despesas'));
+  despesas = [];
+  snapDespesas.forEach(d=>despesas.push(d.data()));
+  document.getElementById('listaDespesas').innerHTML = '';
+  despesas.forEach(d=>{
+    const li = document.createElement('li');
+    li.textContent = `${d.data} - ${d.descricao} : R$ ${d.valor.toFixed(2)}`;
+    document.getElementById('listaDespesas').appendChild(li);
+  });
+
+  atualizarCaixa();
+}
+
+function atualizarCaixa(){
+  const saldoAnterior = receitas.reduce((sum,r)=>sum+r.valor,0);
+  const apuradoTotal = 0; // pode somar repasses dos gerentes depois
+  const despesasTotal = despesas.reduce((sum,d)=>sum+d.valor,0);
+  const saldoFinal = saldoAnterior + apuradoTotal - despesasTotal;
+  document.getElementById('saldoAnterior').textContent = saldoAnterior.toFixed(2);
+  document.getElementById('apuradoTotal').textContent = apuradoTotal.toFixed(2);
+  document.getElementById('despesasTotal').textContent = despesasTotal.toFixed(2);
+  document.getElementById('saldoFinal').textContent = saldoFinal.toFixed(2);
+
+  document.getElementById('partilhaGerente1').textContent = (saldoFinal*0.25).toFixed(2);
+  document.getElementById('partilhaGerente2').textContent = (saldoFinal*0.25).toFixed(2);
+  document.getElementById('partilhaBanca').textContent = (saldoFinal*0.5).toFixed(2);
+}
+
+// ======= RECEITAS =======
+async function salvarReceita(){
+  const valor = parseFloat(document.getElementById('valorReceita').value);
+  const descricao = document.getElementById('descricaoReceita').value;
+  const data = document.getElementById('dataReceita').value;
+  if(!valor || !descricao || !data){ alert('Preencha todos os campos'); return; }
+  await addDoc(collection(db,'receitas'),{valor,descricao,data});
+  document.getElementById('valorReceita').value=''; document.getElementById('descricaoReceita').value=''; document.getElementById('dataReceita').value='';
+  carregarCaixa();
+}
+
+// ======= DESPESAS =======
+async function salvarDespesa(){
+  const valor = parseFloat(document.getElementById('valorDespesa').value);
+  const descricao = document.getElementById('descricaoDespesa').value;
+  const data = document.getElementById('dataDespesa').value;
+  if(!valor || !descricao || !data){ alert('Preencha todos os campos'); return; }
+  await addDoc(collection(db,'despesas'),{valor,descricao,data});
+  document.getElementById('valorDespesa').value=''; document.getElementById('descricaoDespesa').value=''; document.getElementById('dataDespesa').value='';
+  carregarCaixa();
+}
+
+// ===== Inicialização =====
+abrirSecao(itensMenu[0].id);
+carregarCaixa();
 
 </script>
 </body>
