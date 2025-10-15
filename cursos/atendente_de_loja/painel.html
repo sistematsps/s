@@ -1,192 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel do Sistema - Da Sorte</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel da Sorte</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f1f1f1;
+      background: #f4f4f9;
       margin: 0;
       padding: 0;
     }
-
     header {
-      background: #222;
+      background: #2b579a;
       color: white;
       padding: 15px;
       text-align: center;
     }
-
-    h2, h3 {
-      margin: 10px 0;
-    }
-
-    .painel {
-      max-width: 1100px;
-      background: white;
-      padding: 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .card {
-      background: #fafafa;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      cursor: pointer;
-      text-align: center;
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      background: #eaeaea;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-
-    th {
-      background: #eee;
-    }
-
-    .hidden {
+    #painelContainer {
       display: none;
+      padding: 20px;
     }
-
-    .logout-btn {
-      background: #d9534f;
+    #logoutBtn {
+      float: right;
+      background: #ff3b3b;
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 20px;
     }
-
-    .logout-btn:hover {
-      background: #b52b27;
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    select, button {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
     }
   </style>
 </head>
-
 <body>
-  <header><h1>Painel do Sistema - Da Sorte</h1></header>
 
-  <!-- Painel Master -->
-  <div id="painel-master" class="painel hidden">
-    <h2>Master</h2>
-    <p><strong>Nome:</strong> <span id="master-nome"></span></p>
-    <p><strong>Banca:</strong> <span id="master-banca"></span></p>
+  <header>
+    <h2>Painel da Sorte</h2>
+    <button id="logoutBtn">Sair</button>
+  </header>
 
-    <h3>Caixa Detalhado</h3>
-    <p>Saldo anterior: R$0,00</p>
-    <p>Apurado total: R$0,00</p>
-    <p>Despesas: R$0,00</p>
-    <p>Saldo final: R$0,00</p>
+  <div id="painelContainer">
+    <h3>Gerenciamento de Usuários</h3>
 
-    <h3>Gerências</h3>
-    <div id="lista-gerentes" class="grid"></div>
+    <div>
+      <label for="funcao">Função:</label>
+      <select id="funcao">
+        <option value="">Selecione...</option>
+        <option value="master">Master</option>
+        <option value="gerente">Gerente</option>
+        <option value="vendedor">Vendedor</option>
+      </select>
+    </div>
 
-    <div id="detalhes-gerente" class="hidden"></div>
+    <div id="gerenteContainer" style="display:none;">
+      <label for="gerenteSelect">Selecione o gerente:</label>
+      <select id="gerenteSelect"></select>
+    </div>
 
-    <h3>Vendedores vinculados</h3>
-    <div id="lista-vendedores" class="grid"></div>
-
-    <table id="tabela-vendas" class="hidden">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Recebeu</th>
-          <th>Devolveu</th>
-          <th>Vendeu</th>
-          <th>Apurado</th>
-          <th>Pagou</th>
-          <th>Deve</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <button class="logout-btn" onclick="logout()">Sair</button>
+    <div id="usuariosContainer"></div>
   </div>
 
-  <!-- Painel Gerente -->
-  <div id="painel-gerente" class="painel hidden">
-    <h2>Gerente</h2>
-    <p><strong>Nome:</strong> <span id="gerente-nome"></span></p>
-    <p><strong>Banca:</strong> <span id="gerente-banca"></span></p>
-
-    <h3>Caixa detalhado</h3>
-    <p>Apurado total: R$0,00</p>
-    <p>Total repassado: R$0,00</p>
-    <p>Total a repassar: R$0,00</p>
-
-    <h3>Seus vendedores</h3>
-    <div id="vendedores-gerente" class="grid"></div>
-
-    <button class="logout-btn" onclick="logout()">Sair</button>
-  </div>
-
-  <!-- Painel Vendedor -->
-  <div id="painel-vendedor" class="painel hidden">
-    <h2>Vendedor</h2>
-    <p><strong>Nome:</strong> <span id="vendedor-nome"></span></p>
-    <p><strong>Banca:</strong> <span id="vendedor-banca"></span></p>
-    <p><strong>Gerente:</strong> <span id="vendedor-gerente"></span></p>
-
-    <h3>Caixa detalhado</h3>
-    <p>Apurado: R$0,00</p>
-    <p>Repassado: R$0,00</p>
-    <p>A repassar: R$0,00</p>
-
-    <h3>Relatório de vendas</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Recebeu</th>
-          <th>Devolveu</th>
-          <th>Vendeu</th>
-          <th>Apurado</th>
-          <th>Pagou</th>
-          <th>Deve</th>
-        </tr>
-      </thead>
-      <tbody id="vendas-vendedor"></tbody>
-    </table>
-
-    <button class="logout-btn" onclick="logout()">Sair</button>
-  </div>
-
-  <!-- Firebase Script -->
   <script type="module">
-    // Firebase SDK v12.4.0
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { 
+      getFirestore, collection, getDocs 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { 
+      getAuth, onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    // Configuração do Firebase - Da Sorte
+    // Configuração Firebase - Da Sorte
     const firebaseConfig = {
       apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
       authDomain: "dasorte-66ec5.firebaseapp.com",
@@ -196,109 +92,67 @@
       appId: "1:606389335961:web:4986562c4ab1b133684508"
     };
 
-    // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Autenticação e exibição do painel conforme função
+    const funcaoSelect = document.getElementById('funcao');
+    const gerenteContainer = document.getElementById('gerenteContainer');
+    const gerenteSelect = document.getElementById('gerenteSelect');
+    const usuariosContainer = document.getElementById('usuariosContainer');
+    const painelContainer = document.getElementById('painelContainer');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // 🔒 Verifica se o usuário está logado
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
+      if (user) {
+        painelContainer.style.display = 'block';
+        carregarUsuarios();
+      } else {
         window.location.href = "login.html";
-        return;
-      }
-
-      const userRef = doc(db, "usuarios", user.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) {
-        alert("Usuário não encontrado no Firestore!");
-        return;
-      }
-
-      const dados = userSnap.data();
-      const funcao = dados.funcao;
-
-      if (funcao === "master") {
-        document.getElementById("painel-master").classList.remove("hidden");
-        carregarPainelMaster(dados);
-      } else if (funcao === "gerente") {
-        document.getElementById("painel-gerente").classList.remove("hidden");
-        carregarPainelGerente(dados);
-      } else if (funcao === "vendedor") {
-        document.getElementById("painel-vendedor").classList.remove("hidden");
-        carregarPainelVendedor(dados);
       }
     });
 
-    async function carregarPainelMaster(dados) {
-      document.getElementById("master-nome").innerText = dados.nome;
-      document.getElementById("master-banca").innerText = dados.localidade;
+    // 🚪 Logout
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
-      const gerenciasDiv = document.getElementById("lista-gerentes");
-      gerenciasDiv.innerHTML = "";
-
-      const q = await getDocs(collection(db, "usuarios"));
-      q.forEach((docu) => {
-        const userData = docu.data();
-        if (userData.funcao === "gerente") {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.textContent = `${userData.nome} - ${userData.localidade}`;
-          card.onclick = () => mostrarDetalhesGerente(docu.id, userData);
-          gerenciasDiv.appendChild(card);
+    // 🔄 Carrega usuários cadastrados
+    async function carregarUsuarios() {
+      usuariosContainer.innerHTML = "<p>Carregando usuários...</p>";
+      try {
+        const snap = await getDocs(collection(db, "usuarios"));
+        if (snap.empty) {
+          usuariosContainer.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
+          return;
         }
-      });
+
+        usuariosContainer.innerHTML = "";
+        snap.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.classList.add("card");
+          div.innerHTML = `
+            <strong>${data.nome || "Sem nome"}</strong><br>
+            Função: ${data.funcao || "Não definida"}<br>
+            Gerente: ${data.gerente || "-"}<br>
+            <button onclick="editarUsuario('${doc.id}')">Editar</button>
+          `;
+          usuariosContainer.appendChild(div);
+        });
+      } catch (e) {
+        console.error("Erro ao buscar usuários:", e);
+        usuariosContainer.innerHTML = "<p>Erro ao carregar usuários.</p>";
+      }
     }
 
-    async function mostrarDetalhesGerente(idGerente, gerente) {
-      const detalhes = document.getElementById("detalhes-gerente");
-      detalhes.classList.remove("hidden");
-      detalhes.innerHTML = `
-        <h3>Banca: ${gerente.localidade}</h3>
-        <p><strong>Gerente:</strong> ${gerente.nome}</p>
-        <p><strong>Caixa detalhado:</strong> R$0,00</p>
-        <p><strong>Apurado total:</strong> R$0,00</p>
-        <p><strong>Total repassado:</strong> R$0,00</p>
-        <p><strong>Total a repassar:</strong> R$0,00</p>
-      `;
-
-      const vendedoresDiv = document.getElementById("lista-vendedores");
-      vendedoresDiv.innerHTML = "";
-      const q = await getDocs(collection(db, "usuarios"));
-      q.forEach((docu) => {
-        const v = docu.data();
-        if (v.funcao === "vendedor" && v.gerente === gerente.nome) {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.textContent = v.nome;
-          card.onclick = () => mostrarTabelaVendas(v);
-          vendedoresDiv.appendChild(card);
-        }
-      });
-    }
-
-    function mostrarTabelaVendas(v) {
-      const tabela = document.getElementById("tabela-vendas");
-      tabela.classList.remove("hidden");
-      tabela.querySelector("tbody").innerHTML = `
-        <tr>
-          <td>15/10/2025</td>
-          <td>100</td>
-          <td>10</td>
-          <td>${100 - 10}</td>
-          <td>${(100 - 10) * v.cotacao}</td>
-          <td>50</td>
-          <td>${(100 - 10) * v.cotacao - 50}</td>
-        </tr>
-      `;
-    }
-
-    function logout() {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    }
+    // ⚙️ Função chamada ao clicar no botão "Editar"
+    window.editarUsuario = (id) => {
+      alert("Abrir tela de edição do usuário ID: " + id);
+      // Aqui futuramente abriremos o painel de edição
+    };
   </script>
 </body>
-  </html>
+</html>
