@@ -1,144 +1,287 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Controle</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-  margin: 0;
-  padding: 0;
-}
-header {
-  background: #4caf50;
-  color: white;
-  padding: 16px;
-  font-size: 18px;
-  text-align: center;
-}
-main {
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-h2, h3 {
-  color: #333;
-}
-.card {
-  background: white;
-  border-radius: 10px;
-  padding: 12px;
-  margin: 8px 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: 0.2s;
-}
-.card:hover {
-  background: #e8f5e9;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-th, td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: center;
-}
-th {
-  background: #f0f0f0;
-}
-.hidden {
-  display: none;
-}
-button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  background: #4caf50;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-}
-button:hover {
-  opacity: 0.9;
-}
-.sair {
-  background: #d32f2f;
-}
-.painel-box {
-  background: white;
-  padding: 16px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Sistema</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #222;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    h2, h3 {
+      margin: 10px 0;
+    }
+
+    .painel {
+      max-width: 1100px;
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .card {
+      background: #fafafa;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      background: #eaeaea;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .logout-btn {
+      background: #d9534f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .logout-btn:hover {
+      background: #b52b27;
+    }
+  </style>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_AUTH_DOMAIN",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_STORAGE_BUCKET",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const docRef = doc(db, "usuarios", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        alert("Usuário não encontrado no Firestore!");
+        return;
+      }
+
+      const dados = docSnap.data();
+      const funcao = dados.funcao;
+      const painelMaster = document.getElementById("painel-master");
+      const painelGerente = document.getElementById("painel-gerente");
+      const painelVendedor = document.getElementById("painel-vendedor");
+
+      if (funcao === "master") {
+        painelMaster.classList.remove("hidden");
+        carregarPainelMaster(dados);
+      } else if (funcao === "gerente") {
+        painelGerente.classList.remove("hidden");
+        carregarPainelGerente(dados);
+      } else if (funcao === "vendedor") {
+        painelVendedor.classList.remove("hidden");
+        carregarPainelVendedor(dados);
+      }
+    });
+
+    async function carregarPainelMaster(dados) {
+      document.getElementById("master-nome").innerText = dados.nome;
+      document.getElementById("master-banca").innerText = dados.localidade;
+
+      const gerenciasDiv = document.getElementById("lista-gerentes");
+      gerenciasDiv.innerHTML = "";
+
+      const q = await getDocs(collection(db, "usuarios"));
+      q.forEach((doc) => {
+        const userData = doc.data();
+        if (userData.funcao === "gerente") {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.textContent = userData.nome + " - " + userData.localidade;
+          card.onclick = () => mostrarDetalhesGerente(doc.id, userData);
+          gerenciasDiv.appendChild(card);
+        }
+      });
+    }
+
+    async function mostrarDetalhesGerente(idGerente, gerente) {
+      const detalhes = document.getElementById("detalhes-gerente");
+      detalhes.classList.remove("hidden");
+      detalhes.innerHTML = `
+        <h3>Banca: ${gerente.localidade}</h3>
+        <p><strong>Gerente:</strong> ${gerente.nome}</p>
+        <p><strong>Caixa detalhado:</strong> 0,00</p>
+        <p><strong>Apurado total:</strong> 0,00</p>
+        <p><strong>Total repassado:</strong> 0,00</p>
+        <p><strong>Total a repassar:</strong> 0,00</p>
+      `;
+
+      const vendedoresDiv = document.getElementById("lista-vendedores");
+      vendedoresDiv.innerHTML = "";
+      const q = await getDocs(collection(db, "usuarios"));
+      q.forEach((doc) => {
+        const v = doc.data();
+        if (v.funcao === "vendedor" && v.gerente === gerente.nome) {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.textContent = v.nome;
+          card.onclick = () => mostrarTabelaVendas(v);
+          vendedoresDiv.appendChild(card);
+        }
+      });
+    }
+
+    function mostrarTabelaVendas(v) {
+      const tabela = document.getElementById("tabela-vendas");
+      tabela.classList.remove("hidden");
+      tabela.querySelector("tbody").innerHTML = `
+        <tr>
+          <td>10/10/2025</td>
+          <td>100</td>
+          <td>10</td>
+          <td>${100 - 10}</td>
+          <td>${(100 - 10) * v.cotacao}</td>
+          <td>50</td>
+          <td>${(100 - 10) * v.cotacao - 50}</td>
+        </tr>
+      `;
+    }
+
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    }
+  </script>
 </head>
+
 <body>
+  <header><h1>Painel do Sistema</h1></header>
 
-<header>Painel do Sistema</header>
+  <!-- Painel Master -->
+  <div id="painel-master" class="painel hidden">
+    <h2>Master</h2>
+    <p><strong>Nome:</strong> <span id="master-nome"></span></p>
+    <p><strong>Banca:</strong> <span id="master-banca"></span></p>
 
-<main>
-  <div id="painelMaster" class="hidden">
-    <div class="painel-box">
-      <h2>Master</h2>
-      <p><strong>Nome:</strong> <span id="nomeMaster"></span></p>
-      <p><strong>Banca:</strong> <span id="bancaMaster"></span></p>
-      <h3>Caixa Detalhado</h3>
-      <p>Saldo Anterior: <span id="saldoAnteriorMaster">0.00</span></p>
-      <p>Apurado Total: <span id="apuradoMaster">0.00</span></p>
-      <p>Despesas: <span id="despesasMaster">0.00</span></p>
-      <p><strong>Saldo Final:</strong> <span id="saldoFinalMaster">0.00</span></p>
-    </div>
+    <h3>Caixa Detalhado</h3>
+    <p>Saldo anterior: R$0,00</p>
+    <p>Apurado total: R$0,00</p>
+    <p>Despesas: R$0,00</p>
+    <p>Saldo final: R$0,00</p>
 
-    <h3>Gerências (clique para ver detalhes)</h3>
-    <div id="listaGerentes"></div>
+    <h3>Gerências</h3>
+    <div id="lista-gerentes" class="grid"></div>
 
-    <div id="infoGerente" class="hidden painel-box">
-      <h3>Informações do Gerente</h3>
-      <p><strong>Banca:</strong> <span id="gerenteBanca"></span></p>
-      <p><strong>Nome:</strong> <span id="gerenteNome"></span></p>
-      <p><strong>Apurado Total:</strong> <span id="apuradoGerente">0.00</span></p>
-      <p><strong>Total Repassado:</strong> <span id="repassadoGerente">0.00</span></p>
-      <p><strong>Total a Repassar:</strong> <span id="aRepassarGerente">0.00</span></p>
-      <h4>Vendedores</h4>
-      <div id="listaVendedores"></div>
-    </div>
+    <div id="detalhes-gerente" class="hidden"></div>
 
-    <div id="infoVendedor" class="hidden painel-box">
-      <h3>Vendas do Vendedor</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Recebeu</th>
-            <th>Devolveu</th>
-            <th>Vendeu</th>
-            <th>Apurou</th>
-            <th>Pagou</th>
-            <th>Deve</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaVendas"></tbody>
-      </table>
-    </div>
+    <h3>Vendedores vinculados</h3>
+    <div id="lista-vendedores" class="grid"></div>
+
+    <table id="tabela-vendas" class="hidden">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Recebeu</th>
+          <th>Devolveu</th>
+          <th>Vendeu</th>
+          <th>Apurado</th>
+          <th>Pagou</th>
+          <th>Deve</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button class="logout-btn" onclick="logout()">Sair</button>
   </div>
 
-  <div id="painelVendedor" class="hidden painel-box">
-    <h2>Vendedor</h2>
-    <p><strong>Nome:</strong> <span id="nomeVend"></span></p>
-    <p><strong>Banca:</strong> <span id="bancaVend"></span></p>
-    <p><strong>Gerente:</strong> <span id="gerenteVend"></span></p>
-    <h3>Caixa Detalhado</h3>
-    <p>Apurado: <span id="apuradoVend">0.00</span></p>
-    <p>Repassado: <span id="repassadoVend">0.00</span></p>
-    <p><strong>A Repassar:</strong> <span id="aRepassarVend">0.00</span></p>
+  <!-- Painel Gerente -->
+  <div id="painel-gerente" class="painel hidden">
+    <h2>Gerente</h2>
+    <p><strong>Nome:</strong> <span id="gerente-nome"></span></p>
+    <p><strong>Banca:</strong> <span id="gerente-banca"></span></p>
 
-    <h4>Relatório de Vendas</h4>
+    <h3>Caixa detalhado</h3>
+    <p>Apurado total: R$0,00</p>
+    <p>Total repassado: R$0,00</p>
+    <p>Total a repassar: R$0,00</p>
+
+    <h3>Seus vendedores</h3>
+    <div id="vendedores-gerente" class="grid"></div>
+
+    <button class="logout-btn" onclick="logout()">Sair</button>
+  </div>
+
+  <!-- Painel Vendedor -->
+  <div id="painel-vendedor" class="painel hidden">
+    <h2>Vendedor</h2>
+    <p><strong>Nome:</strong> <span id="vendedor-nome"></span></p>
+    <p><strong>Banca:</strong> <span id="vendedor-banca"></span></p>
+    <p><strong>Gerente:</strong> <span id="vendedor-gerente"></span></p>
+
+    <h3>Caixa detalhado</h3>
+    <p>Apurado: R$0,00</p>
+    <p>Repassado: R$0,00</p>
+    <p>A repassar: R$0,00</p>
+
+    <h3>Relatório de vendas</h3>
     <table>
       <thead>
         <tr>
@@ -146,146 +289,15 @@ button:hover {
           <th>Recebeu</th>
           <th>Devolveu</th>
           <th>Vendeu</th>
-          <th>Apurou</th>
+          <th>Apurado</th>
           <th>Pagou</th>
           <th>Deve</th>
         </tr>
       </thead>
-      <tbody id="tabelaVendasVend"></tbody>
+      <tbody id="vendas-vendedor"></tbody>
     </table>
+
+    <button class="logout-btn" onclick="logout()">Sair</button>
   </div>
-
-  <div style="text-align:center;margin-top:30px;">
-    <button class="sair" onclick="logout()">Sair</button>
-  </div>
-</main>
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-
-const firebaseConfig = {
-  // 🔹 coloque aqui suas credenciais Firebase
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// Detectar usuário logado
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("Usuário não autenticado!");
-    window.location.href = "login.html";
-    return;
-  }
-
-  const usersRef = collection(db, "usuarios");
-  const snapshot = await getDocs(usersRef);
-  let dadosUsuario = null;
-
-  snapshot.forEach(doc => {
-    if (doc.id === user.uid) dadosUsuario = doc.data();
-  });
-
-  if (!dadosUsuario) {
-    alert("Usuário não encontrado no Firestore!");
-    return;
-  }
-
-  if (dadosUsuario.tipo === "master") {
-    document.getElementById("painelMaster").classList.remove("hidden");
-    document.getElementById("nomeMaster").textContent = dadosUsuario.nome;
-    document.getElementById("bancaMaster").textContent = dadosUsuario.banca;
-    carregarGerentes(dadosUsuario.banca);
-  } else if (dadosUsuario.tipo === "vendedor") {
-    document.getElementById("painelVendedor").classList.remove("hidden");
-    document.getElementById("nomeVend").textContent = dadosUsuario.nome;
-    document.getElementById("bancaVend").textContent = dadosUsuario.banca;
-    document.getElementById("gerenteVend").textContent = dadosUsuario.gerente || "—";
-  }
-});
-
-// Função logout
-function logout() {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
-}
-
-// Carregar gerentes da banca
-async function carregarGerentes(banca) {
-  const gerentesRef = collection(db, "usuarios");
-  const snapshot = await getDocs(gerentesRef);
-  const lista = document.getElementById("listaGerentes");
-  lista.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    const g = doc.data();
-    if (g.tipo === "gerente" && g.banca === banca) {
-      const div = document.createElement("div");
-      div.classList.add("card");
-      div.textContent = g.nome;
-      div.onclick = () => exibirGerente(g, doc.id);
-      lista.appendChild(div);
-    }
-  });
-}
-
-// Exibir gerente e vendedores
-async function exibirGerente(gerente, uid) {
-  document.getElementById("infoGerente").classList.remove("hidden");
-  document.getElementById("gerenteBanca").textContent = gerente.banca;
-  document.getElementById("gerenteNome").textContent = gerente.nome;
-
-  const vendedoresRef = collection(db, "usuarios");
-  const snapshot = await getDocs(vendedoresRef);
-  const lista = document.getElementById("listaVendedores");
-  lista.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    const v = doc.data();
-    if (v.tipo === "vendedor" && v.gerenteUid === uid) {
-      const div = document.createElement("div");
-      div.classList.add("card");
-      div.textContent = v.nome;
-      div.onclick = () => exibirVendedor(v, doc.id);
-      lista.appendChild(div);
-    }
-  });
-}
-
-// Exibir vendas do vendedor
-async function exibirVendedor(vendedor, uid) {
-  document.getElementById("infoVendedor").classList.remove("hidden");
-  const tabela = document.getElementById("tabelaVendas");
-  tabela.innerHTML = "";
-
-  const vendasRef = collection(db, "vendas");
-  const snapshot = await getDocs(vendasRef);
-
-  snapshot.forEach(doc => {
-    const venda = doc.data();
-    if (venda.vendedorUid === uid) {
-      const vendeu = venda.recebeu - venda.devolveu;
-      const apurou = vendeu * vendedor.cotacao;
-      const deve = apurou - venda.pagou;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${venda.data}</td>
-        <td>${venda.recebeu}</td>
-        <td>${venda.devolveu}</td>
-        <td>${vendeu}</td>
-        <td>${apurou.toFixed(2)}</td>
-        <td>${venda.pagou}</td>
-        <td>${deve.toFixed(2)}</td>
-      `;
-      tabela.appendChild(tr);
-    }
-  });
-}
-</script>
-
 </body>
-                                                                         </html>
+                         </html>
