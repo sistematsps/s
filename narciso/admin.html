@@ -60,24 +60,24 @@ document.getElementById("form-curso").addEventListener("submit", async (e) => {
 
   alert("Curso cadastrado com sucesso!");
   document.getElementById("form-curso").reset();
-  carregarCursos();
+  carregarBancas();
 });
 
 /* Listar cursos */
-async function carregarBanca() {
-  const lista = document.getElementById("lista-banca");
+async function carregarBancas() {
+  const lista = document.getElementById("lista-bancas");
   lista.innerHTML = "";
 
-  const snap = await getDocs(collection(db, "banca"));
+  const snap = await getDocs(collection(db, "bancas"));
   snap.forEach((docSnap) => {
-    const banca = docSnap.data();
+    const bancas = docSnap.data();
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
       <h3>${banca.nome}</h3>
       <p>${banca.descricao}</p>
-      <p><b>Página da Banca:</b> ${banca.url}</p>
-      <p><b>Carga Horária:</b> ${banca.cargaHoraria} dias</p>
+      <p><b>Página da Banca:</b> ${bancas.url}</p>
+      <p><b>Carga Horária:</b> ${bancas.cargaHoraria} dias</p>
       <button class="btn" onclick="editarbanca('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
       <button class="btn-danger" onclick="excluirBanca('${docSnap.id}')">Excluir</button>
     `;
@@ -102,11 +102,11 @@ window.salvarEdicao = async () => {
   const url = document.getElementById("edit-url").value;
   const cargaHoraria = parseInt(document.getElementById("edit-cargaHoraria").value) || 0;
 
-  await updateDoc(doc(db, "cursos", id), { nome, descricao, url, cargaHoraria, atualizadoEm: new Date().toLocaleString() });
+  await updateDoc(doc(db, "bancas", id), { nome, descricao, url, cargaHoraria, atualizadoEm: new Date().toLocaleString() });
 
   alert("Banca atualizada com sucesso!");
   fecharModal();
-  carregarCursos();
+  carregarBancas();
 };
 
 window.fecharModal = () => { document.getElementById("modal-editar").style.display = "none"; };
@@ -114,9 +114,9 @@ window.fecharModal = () => { document.getElementById("modal-editar").style.displ
 /* Excluir curso */
 window.excluirBanca = async (id) => {
   if (confirm("Tem certeza que deseja excluir esta Banca?")) {
-    await deleteDoc(doc(db, "banca", id));
+    await deleteDoc(doc(db, "bancas", id));
     alert("banca excluído.");
-    carregarBanca();
+    carregarBancas();
   }
 };
 </script>
