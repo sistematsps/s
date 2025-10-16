@@ -3,65 +3,57 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pitimbu da Sorte - Painel</title>
+<title>Painel - Pitimbu da Sorte</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body { padding: 20px; background: #f5f5f5; }
-h1, h2 { color: red; margin: 0 0 10px 0; }
-input, button, select { padding: 8px; margin: 5px 0; }
-button { background: red; color: white; border: none; cursor: pointer; border-radius: 4px; }
+h1, h2 { color: red; }
+input, button, select { padding: 8px; margin: 5px; }
+button { background: red; color: white; border: none; cursor: pointer; border-radius: 4px; width: 30%; }
 button:hover { background: blue; }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: white; }
 .vendor-row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
 .vendor-btn { flex:1; text-align:left; background: yellow; color:#333; border:1px solid #d0d0d0; padding:12px 14px; font-size:16px; border-radius:6px; cursor:pointer; }
 .vendor-btn:hover { background:#f3f3f3; }
+.vendor-meta { font-size:16px; color:#666; margin-left:8px; }
 .vendor-del { background:black; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 .vendor-del:hover { background:#990000; }
 #painelVendedor { margin-top:20px; background:yellow; padding:15px; border:1px solid #b30000; border-radius:6px; display:none; }
 .totais span { margin-right:20px; font-weight:bold; }
-#logoutBtn { float:right; background:black; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
-.container-top { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-.controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-small.meta { color:#333; display:block; margin-top:6px; }
-.note { font-size:12px; color:#666; margin-top:10px; }
+#logoutBtn { background:black; margin-bottom:15px; width:auto; padding:10px 15px; }
 </style>
 </head>
 <body>
 
-<div class="container-top">
-  <h1>PITIMBU DA SORTE</h1>
-  <div>
-    <div id="infoUsuario"></div>
-    <button id="logoutBtn">Sair</button>
-  </div>
-</div>
+<h1>PITIMBU DA SORTE</h1>
+<button id="logoutBtn" onclick="logout()">Sair</button>
 
-<div id="areaCadastro" style="margin-top:12px; display:none;">
-  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+<div id="adminDiv" style="display:none">
+  <div>
     <input id="nome" placeholder="Nome do vendedor"/>
     <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0"/>
-    <input id="gerenteResp" placeholder="Gerente responsável (opcional)"/>
-    <button id="btnSalvarVendedor">Salvar</button>
-    <button id="btnEditarVendedor">Editar</button>
+    <button onclick="salvarVendedor()">Salvar</button>
+    <button onclick="editarVendedor()">Editar</button>
   </div>
-  <small class="note">Observação: MASTER pode criar/editar/excluir qualquer vendedor. GERENTE só pode criar/editar vendedores sob sua gestão.</small>
+  <div id="listaVendedores"></div>
 </div>
-
-<div id="listaVendedores" style="margin-top:20px;"></div>
 
 <div id="painelVendedor">
   <h2 id="tituloVendedor"></h2>
-  <div class="controls">
-    <button onclick="voltarCadastro()">Voltar ao cadastro</button>
+  <button onclick="voltarCadastro()">Voltar ao cadastro</button>
+  
+  <div style="margin-top:15px;">
     <label>Filtrar por data: <input type="date" id="filtroData"/></label>
     <button onclick="filtrarPorData()">Filtrar</button>
     <button onclick="limparFiltro()">Limpar filtro</button>
     <button onclick="exportarPDF()">Exportar em PDF</button>
-    <button id="btnSalvarVendas" onclick="salvarVendas()">Salvar Vendas</button>
-    <button onclick="adicionarLinha()">Adicionar venda</button>
+    <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
   </div>
-
+  
+  <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
+  
   <table id="tabelaVendas">
     <thead>
       <tr>
@@ -87,18 +79,14 @@ small.meta { color:#333; display:block; margin-top:6px; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import {
-  getFirestore, collection, setDoc, doc, getDocs, deleteDoc, getDoc
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getFirestore, collection, setDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
   authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
   projectId: "pitimbu-da-sorte-80aa6",
-  storageBucket: "pitimbu-da-sorte-80aa6.appspot.com",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
   messagingSenderId: "365898285373",
   appId: "1:365898285373:web:2ce4e344f1e9774c068554"
 };
@@ -107,40 +95,21 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let usuarioAtual = null;
+function salvarDados(chave, dados) { localStorage.setItem(chave, JSON.stringify(dados)); }
+function carregarDados(chave) { const d=localStorage.getItem(chave); try{return d?JSON.parse(d):null}catch{return null;} }
+
 let vendedores = [];
 let vendas = {};
 let vendedorAtual = null;
+let usuarioLogado = null;
 
-// ===== Autenticação & Inicialização =====
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-  // carregar dados do usuário do Firestore (coleção usuarios/{uid})
-  const udoc = await getDoc(doc(db, 'usuarios', user.uid));
-  if (!udoc.exists()) {
-    alert('Usuário não encontrado no Firestore. Entre em contato com o administrador.');
-    await signOut(auth);
-    return;
-  }
-  usuarioAtual = udoc.data();
-  document.getElementById('infoUsuario').innerHTML = `<strong>${usuarioAtual.nome}</strong> — ${usuarioAtual.funcao}`;
-  prepararInterfacePorFuncao();
-});
-
-document.getElementById('logoutBtn').onclick = async () => {
-  await signOut(auth);
-  window.location.href = 'login.html';
-};
+// ===== Função logout =====
+window.logout = function(){
+  signOut(auth).then(()=> window.location.href='login.html');
+}
 
 // ===== Firestore CRUD =====
-async function salvarVendedoresFirestore(lista){
-  for(let vend of lista){
-    await setDoc(doc(db, `vendedores`, vend.nome), vend);
-  }
-}
+async function salvarVendedoresFirestore(lista){ for(let vend of lista){ await setDoc(doc(db, `vendedores`, vend.nome), vend); } }
 async function excluirVendedorFirestore(nome){
   await deleteDoc(doc(db, `vendedores`, nome));
   const colPath = `vendas_${nome}`;
@@ -159,311 +128,200 @@ async function salvarVendasFirestore(vendedor,lista){
     await setDoc(doc(db,colPath,idDoc),v);
   }
 }
-async function carregarVendedoresFirestore(){
-  const snap=await getDocs(collection(db,`vendedores`));
-  let arr=[];
-  snap.forEach(d=>arr.push(d.data()));
-  return arr;
-}
-async function carregarVendasFirestore(vendedor){
-  const snap=await getDocs(collection(db,`vendas_${vendedor}`));
-  let arr=[];
-  snap.forEach(d=>arr.push(d.data()));
-  return arr;
-}
+async function carregarVendedoresFirestore(){ const snap=await getDocs(collection(db,`vendedores`)); let arr=[]; snap.forEach(d=>arr.push(d.data())); return arr; }
+async function carregarVendasFirestore(vendedor){ const snap=await getDocs(collection(db,`vendas_${vendedor}`)); let arr=[]; snap.forEach(d=>arr.push(d.data())); return arr; }
 
-// ===== Preparar interface conforme papel (MASTER / GERENTE / VENDEDOR) =====
-async function prepararInterfacePorFuncao(){
-  document.getElementById('areaCadastro').style.display = 'none';
-  document.getElementById('listaVendedores').innerHTML = 'Carregando...';
-  vendedores = [];
-  vendas = {};
-
-  if (usuarioAtual.funcao === 'MASTER') {
-    document.getElementById('areaCadastro').style.display = 'block';
-    vendedores = await carregarVendedoresFirestore();
-    for (let v of vendedores) {
-      vendas[v.nome] = await carregarVendasFirestore(v.nome);
-    }
-    listarVendedores();
-  } else if (usuarioAtual.funcao === 'GERENTE') {
-    // carregar apenas vendedores cujo gerenteResponsavel === usuarioAtual.nome
-    const all = await carregarVendedoresFirestore();
-    vendedores = all.filter(x => x.gerenteResponsavel === usuarioAtual.nome);
-    for (let v of vendedores) {
-      vendas[v.nome] = await carregarVendasFirestore(v.nome);
-    }
-    listarVendedores();
-  } else if (usuarioAtual.funcao === 'VENDEDOR') {
-    // carregar dados do próprio vendedor (se existir em vendedores collection)
-    const name = usuarioAtual.nome;
-    const docRef = await getDoc(doc(db, 'vendedores', name));
-    if (docRef.exists()) {
-      const v = docRef.data();
-      vendedores = [v];
-    } else {
-      // criar entrada mínima se não existir (usabilidade)
-      vendedores = [{ nome: name, cotacao: usuarioAtual.cotacao || 1, gerenteResponsavel: usuarioAtual.gerenteResponsavel || null }];
-      // opcional: salvar no Firestore? deixei sem salvar automático para não sobrescrever dados reais
-    }
-    vendas[name] = await carregarVendasFirestore(name);
-    listarVendedores();
-    abrirPainel(name); // abre direto o painel do vendedor
+// ===== Carregamento inicial =====
+async function loadAll(){
+  try{ vendedores=await carregarVendedoresFirestore(); } catch{ vendedores=carregarDados('vendedores')||[]; }
+  vendas={};
+  for(let vend of vendedores){
+    let vendasVend=[];
+    try{ vendasVend = await carregarVendasFirestore(vend.nome); } catch{ vendasVend = (carregarDados('vendas')||{})[vend.nome]||[]; }
+    vendas[vend.nome]=vendasVend;
   }
+  listarVendedores();
 }
 
-// ===== CRUD de vendedores (UI + Firestore) =====
-document.getElementById('btnSalvarVendedor').onclick = async () => {
-  // Apenas MASTER pode criar livremente; GERENTE só cria sob sua gestão
-  if (!usuarioAtual) return alert('Aguarde carregamento...');
-  const nome = document.getElementById('nome').value.trim();
-  const cotacao = parseFloat(document.getElementById('cotacao').value);
-  const gerente = document.getElementById('gerenteResp').value.trim() || (usuarioAtual.funcao === 'GERENTE' ? usuarioAtual.nome : null);
-  if (!nome || isNaN(cotacao) || cotacao <= 0) return alert('Preencha corretamente o nome e cotação.');
-  // Permissão:
-  if (usuarioAtual.funcao === 'GERENTE' && gerente !== usuarioAtual.nome) {
-    return alert('Gerente só pode cadastrar vendedores sob sua responsabilidade.');
-  }
-  // proteger duplicata local
-  if (vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase())){
-    return alert('Vendedor já cadastrado localmente.');
-  }
-  const vend = { nome, cotacao, gerenteResponsavel: gerente || null };
-  // salva em Firestore
-  try {
-    await setDoc(doc(db,'vendedores', nome), vend);
-    // atualizar lista local
-    vendedores.push(vend);
-    vendas[nome] = [];
-    listarVendedores();
-    document.getElementById('nome').value=''; document.getElementById('cotacao').value=''; document.getElementById('gerenteResp').value='';
-    alert('Vendedor salvo.');
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao salvar vendedor: ' + (e.message || e));
-  }
-};
+// ===== CRUD Vendedor =====
+async function salvarVendedor(){
+  const nome=document.getElementById('nome').value.trim();
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
+  if(vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase())){ alert('Vendedor já cadastrado.'); return; }
+  vendedores.push({nome,cotacao, gerente: usuarioLogado.funcao==='GERENTE'?usuarioLogado.nome:''});
+  salvarDados('vendedores',vendedores);
+  try{ await salvarVendedoresFirestore(vendedores); } catch{}
+  listarVendedores(); document.getElementById('nome').value=''; document.getElementById('cotacao').value='';
+}
+async function editarVendedor(){
+  const nome=document.getElementById('nome').value.trim();
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
+  const index=vendedores.findIndex(v=>v.nome.toLowerCase()===nome.toLowerCase());
+  if(index===-1){ alert('Vendedor não encontrado.'); return; }
+  vendedores[index].cotacao=cotacao;
+  salvarDados('vendedores',vendedores);
+  try{ await salvarVendedoresFirestore(vendedores); } catch{}
+  listarVendedores(); alert('Cotação atualizada.');
+  if(vendedorAtual===vendedores[index].nome) atualizarTabela();
+}
 
-document.getElementById('btnEditarVendedor').onclick = async () => {
-  const nome = document.getElementById('nome').value.trim();
-  const cotacao = parseFloat(document.getElementById('cotacao').value);
-  const gerente = document.getElementById('gerenteResp').value.trim() || null;
-  if (!nome || isNaN(cotacao) || cotacao <= 0) return alert('Preencha corretamente o nome e cotação.');
-  const index = vendedores.findIndex(v => v.nome.toLowerCase() === nome.toLowerCase());
-  if (index === -1) return alert('Vendedor não encontrado na lista carregada.');
-  // Permissão: MASTER pode editar qualquer, GERENTE só se for seu
-  const alvo = vendedores[index];
-  if (usuarioAtual.funcao === 'GERENTE' && alvo.gerenteResponsavel !== usuarioAtual.nome) {
-    return alert('Você não tem permissão para editar este vendedor.');
-  }
-  const atualizado = { ...alvo, cotacao, gerenteResponsavel: gerente || alvo.gerenteResponsavel };
-  try {
-    await setDoc(doc(db,'vendedores', atualizado.nome), atualizado);
-    vendedores[index] = atualizado;
-    listarVendedores();
-    alert('Vendedor atualizado.');
-    if (vendedorAtual === atualizado.nome) atualizarTabela();
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao editar vendedor: ' + (e.message || e));
-  }
-};
+function listarVendedores(){
+  const div=document.getElementById('listaVendedores'); div.innerHTML='';
+  let listaExibir = vendedores;
+  if(usuarioLogado.funcao==='GERENTE') listaExibir = vendedores.filter(v=>v.gerente===usuarioLogado.nome);
+  if(usuarioLogado.funcao==='VENDEDOR') listaExibir = vendedores.filter(v=>v.nome===usuarioLogado.nome);
 
-async function listarVendedores(){
-  const div = document.getElementById('listaVendedores');
-  div.innerHTML = '';
-  if (!vendedores || vendedores.length === 0) { div.innerHTML = '<small>Nenhum vendedor disponível.</small>'; return; }
-  vendedores.forEach(v => {
-    const row = document.createElement('div'); row.className = 'vendor-row';
-    const btn = document.createElement('button'); btn.className = 'vendor-btn';
-    btn.innerHTML = `<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)} ${v.gerenteResponsavel? (' — Gerente: '+v.gerenteResponsavel):''}</span>`;
-    btn.onclick = () => abrirPainel(v.nome);
-    row.appendChild(btn);
-
-    // Mostrar botão de edição/exclusão apenas para MASTER ou GERENTE (se for gerente do vendedor)
-    if (usuarioAtual.funcao === 'MASTER' || (usuarioAtual.funcao === 'GERENTE' && v.gerenteResponsavel === usuarioAtual.nome)) {
-      const editBtn = document.createElement('button'); editBtn.textContent = 'Editar'; editBtn.style.marginLeft='6px';
-      editBtn.onclick = (e) => {
-        e.stopPropagation();
-        document.getElementById('nome').value = v.nome;
-        document.getElementById('cotacao').value = v.cotacao;
-        document.getElementById('gerenteResp').value = v.gerenteResponsavel || '';
-        document.getElementById('areaCadastro').style.display = 'block';
-      };
-      row.appendChild(editBtn);
-    }
-
-    if (usuarioAtual.funcao === 'MASTER') {
-      const del = document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
-      del.onclick = async (e) => {
-        e.stopPropagation();
-        if (!confirm(`Confirma a exclusão do vendedor "${v.nome}" e todo histórico?`)) return;
-        try {
-          await excluirVendedorFirestore(v.nome);
-          vendedores = vendedores.filter(x=>x.nome!==v.nome);
-          delete vendas[v.nome];
-          listarVendedores();
-          if (vendedorAtual === v.nome) voltarCadastro();
-          alert('Vendedor excluído.');
-        } catch (err) {
-          console.error(err);
-          alert('Erro ao excluir: ' + (err.message || err));
-        }
-      };
-      row.appendChild(del);
-    }
-
-    div.appendChild(row);
+  listaExibir.forEach(v=>{
+    const row=document.createElement('div'); row.className='vendor-row';
+    const btn=document.createElement('button'); btn.className='vendor-btn';
+    btn.innerHTML=`<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)}</span>`; btn.onclick=()=>abrirPainel(v.nome);
+    const del=document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
+    del.onclick=async e=>{ e.stopPropagation(); if(confirm(`Confirma a exclusão do vendedor "${v.nome}" e todo histórico?`)){
+      vendedores=vendedores.filter(x=>x.nome!==v.nome); if(vendas[v.nome]) delete vendas[v.nome]; salvarDados('vendedores',vendedores); salvarDados('vendas',vendas);
+      try{ await excluirVendedorFirestore(v.nome); } catch{}
+      if(vendedorAtual===v.nome) voltarCadastro();
+      listarVendedores(); alert(`Vendedor "${v.nome}" excluído.`); } };
+    if(usuarioLogado.funcao==='MASTER') row.appendChild(del);
+    row.appendChild(btn); div.appendChild(row);
   });
 }
 
-// ===== Painel de vendas =====
-function abrirPainel(nome){
-  vendedorAtual = nome;
-  document.getElementById('painelVendedor').style.display = 'block';
-  document.getElementById('tituloVendedor').textContent = nome;
-  // carregar vendas se não foram carregadas
-  if (!vendas[nome]) {
-    carregarVendasFirestore(nome).then(arr => { vendas[nome] = arr || []; atualizarTabela(); });
-  } else {
-    atualizarTabela();
-  }
-}
-
-function adicionarLinha(){
-  // Permissões: somente MASTER, GERENTE (se gestor) ou VENDEDOR (se for seu próprio)
-  if (!permiteEditarVendedor(vendedorAtual)) return alert('Você não tem permissão para adicionar vendas para este vendedor.');
-  const tbody=document.querySelector('#tabelaVendas tbody'); const tr=document.createElement('tr');
-  tr.innerHTML=`
-    <td><input type="date"/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" readonly/></td>
-    <td><input type="number" readonly/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" readonly/></td>
-    <td class="acoes">
-      <button onclick="excluirLinha(this)">Excluir</button>
-    </td>
-  `;
-  tbody.appendChild(tr);
-}
-
-function editarLinha(btn){
-  if (!permiteEditarVendedor(vendedorAtual)) return alert('Você não tem permissão para editar vendas deste vendedor.');
-  const inputs = btn.parentElement.parentElement.querySelectorAll('input');
-  inputs.forEach(i => i.readOnly = false);
-}
-
-function excluirLinha(btn){
-  if (!permiteEditarVendedor(vendedorAtual)) return alert('Você não tem permissão para excluir vendas deste vendedor.');
-  btn.parentElement.parentElement.remove();
-  // salvamos automaticamente para persistir a remoção
-  salvarVendas();
-}
-
-function calcularLinha(elem){
-  const tr=elem.closest('tr'); const inputs=tr.querySelectorAll('input');
-  const recebeu=parseFloat(inputs[1].value)||0; const devolveu=parseFloat(inputs[2].value)||0; const pagou=parseFloat(inputs[5].value)||0;
-  const vendeu=recebeu-devolveu;
-  const cotacao = (vendedores.find(v=>v.nome===vendedorAtual)?.cotacao) || usuarioAtual.cotacao || 1;
-  const apurou=vendeu * cotacao;
-  const deve = apurou - pagou;
-  inputs[3].value = vendeu;
-  inputs[4].value = apurou.toFixed(2);
-  inputs[6].value = deve.toFixed(2);
-  atualizarTotais();
+// ===== Painel & Vendas =====
+function abrirPainel(nome){ vendedorAtual=nome; document.getElementById('painelVendedor').style.display='block'; document.getElementById('tituloVendedor').textContent=nome; atualizarTabela(); }
+function adicionarLinha(){ const tbody=document.querySelector('#tabelaVendas tbody'); const tr=document.createElement('tr'); tr.innerHTML=`
+<td><input type="date"/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" readonly/></td>
+<td><input type="number" readonly/></td>
+<td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" readonly/></td>
+<td class="acoes">
+<button onclick="editarLinha(this)">Editar</button>
+<button onclick="excluirLinha(this)">Excluir</button>
+</td>
+`; tbody.appendChild(tr); }
+function editarLinha(btn){ const inputs=btn.parentElement.parentElement.querySelectorAll('input'); inputs.forEach(i=>i.readOnly=false); }
+function excluirLinha(btn){ btn.parentElement.parentElement.remove(); salvarVendas(); }
+function calcularLinha(elem){ const tr=elem.closest('tr'); const inputs=tr.querySelectorAll('input'); const recebeu=parseFloat(inputs[1].value)||0; const devolveu=parseFloat(inputs[2].value)||0; const pagou=parseFloat(inputs[5].value)||0; const vendeu=recebeu-devolveu; const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1; const apurou=vendeu*cotacao; const deve=apurou-pagou; inputs[3].value=vendeu; 
+inputs[4].value=apurou.toFixed(2);
+inputs[6].value=deve.toFixed(2);
+atualizarTotais();
 }
 
 async function salvarVendas(){
-  if (!vendedorAtual) return alert('Nenhum vendedor selecionado.');
-  if (!permiteEditarVendedor(vendedorAtual)) return alert('Você não tem permissão para salvar vendas deste vendedor.');
-  const linhas = document.querySelectorAll('#tabelaVendas tbody tr');
-  vendas[vendedorAtual] = [];
-  const cotacao = vendedores.find(v=>v.nome===vendedorAtual)?.cotacao || usuarioAtual.cotacao || 1;
-  linhas.forEach(tr => {
-    const inputs = tr.querySelectorAll('input');
+  if(!vendedorAtual) return;
+  const linhas=document.querySelectorAll('#tabelaVendas tbody tr');
+  vendas[vendedorAtual]=[];
+  const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1;
+  linhas.forEach(tr=>{
+    const inputs=tr.querySelectorAll('input');
     vendas[vendedorAtual].push({
-      data: inputs[0].value || '',
-      recebeu: parseFloat(inputs[1].value) || 0,
-      devolveu: parseFloat(inputs[2].value) || 0,
-      vendeu: parseFloat(inputs[3].value) || 0,
-      apurou: parseFloat(inputs[4].value) || 0,
-      pagou: parseFloat(inputs[5].value) || 0,
-      deve: parseFloat(inputs[6].value) || 0,
-      cotacao
+      data: inputs[0].value,
+      recebeu: parseFloat(inputs[1].value)||0,
+      devolveu: parseFloat(inputs[2].value)||0,
+      vendeu: parseFloat(inputs[3].value)||0,
+      apurou: parseFloat(inputs[4].value)||0,
+      pagou: parseFloat(inputs[5].value)||0,
+      deve: parseFloat(inputs[6].value)||0,
+      cotacao: cotacao
     });
   });
-  try {
-    await salvarVendasFirestore(vendedorAtual, vendas[vendedorAtual]);
-    atualizarTotais();
-    alert('Vendas salvas com sucesso.');
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao salvar vendas: ' + (e.message || e));
-  }
+  salvarDados('vendas',vendas);
+  try{ await salvarVendasFirestore(vendedorAtual,vendas[vendedorAtual]); } catch{}
+  atualizarTotais();
+  alert('Vendas salvas com sucesso.');
 }
 
 function atualizarTabela(filtrarData=''){
-  const tbody = document.querySelector('#tabelaVendas tbody'); tbody.innerHTML = '';
-  const arr = vendas[vendedorAtual] || [];
-  arr.forEach(v => {
-    if (filtrarData && v.data !== filtrarData) return;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="date" value="${v.data||''}"/></td>
-      <td><input type="number" value="${v.recebeu||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.devolveu||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.vendeu||0}" readonly/></td>
-      <td><input type="number" value="${v.apurou||0}" readonly/></td>
-      <td><input type="number" value="${v.pagou||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.deve||0}" readonly/></td>
-      <td class="acoes"><button onclick="excluirLinha(this)">Excluir</button></td>
-    `;
+  const tbody=document.querySelector('#tabelaVendas tbody'); tbody.innerHTML='';
+  (vendas[vendedorAtual]||[]).forEach(v=>{
+    if(filtrarData && v.data!==filtrarData) return;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+<td><input type="date" value="${v.data||''}"/></td>
+<td><input type="number" value="${v.recebeu??0}" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.devolveu??0}" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.vendeu??0}" readonly/></td>
+<td><input type="number" value="${v.apurou??0}" readonly/></td>
+<td><input type="number" value="${v.pagou??0}" onchange="calcularLinha(this)" min="0"/></td>
+<td><input type="number" value="${v.deve??0}" readonly/></td>
+<td class="acoes">
+<button onclick="editarLinha(this)">Editar</button>
+<button onclick="excluirLinha(this)">Excluir</button>
+</td>`;
     tbody.appendChild(tr);
   });
-  // se não houver linhas, exibir uma linha vazia para facilitar edição
-  if ((vendas[vendedorAtual]||[]).length === 0) {
-    // uma linha vazia
-    const tr = document.createElement('tr');
-    tr.innerHTML=`
-      <td><input type="date"/></td>
-      <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" readonly/></td>
-      <td><input type="number" readonly/></td>
-      <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" readonly/></td>
-      <td class="acoes"><button onclick="excluirLinha(this)">Excluir</button></td>
-    `;
-    tbody.appendChild(tr);
-  }
-  // ajustar se o usuário tem permissão de edição: se não permitir, deixar inputs readonly
-  if (!permiteEditarVendedor(vendedorAtual)) {
-    document.querySelectorAll('#tabelaVendas input').forEach(i => i.readOnly = true);
-    document.getElementById('btnSalvarVendas').style.display = 'none';
-    document.querySelectorAll('#tabelaVendas .acoes button').forEach(b => b.style.display = 'none');
-  } else {
-    document.getElementById('btnSalvarVendas').style.display = 'inline-block';
-    document.querySelectorAll('#tabelaVendas .acoes button').forEach(b => b.style.display = 'inline-block');
-    document.querySelectorAll('#tabelaVendas input').forEach(i => i.readOnly = false);
-    // but keep computed fields readonly
-    document.querySelectorAll('#tabelaVendas tbody tr').forEach(tr => {
-      tr.querySelectorAll('input')[3].readOnly = true;
-      tr.querySelectorAll('input')[4].readOnly = true;
-      tr.querySelectorAll('input')[6].readOnly = true;
-    });
-  }
   atualizarTotais();
 }
 
 function atualizarTotais(){
-  const linhas = document.querySelectorAll('#tabelaVendas tbody tr');
-  let apurado = 0, pagou = 0;
-  linhas.forEach(tr => {
-    const i = tr.querySelectorAll('input');
-    apurado += parseFloat(i[4].value) || 0;
-    pagou += parseFloat(i[5].value) || 0;
+  const linhas=document.querySelectorAll('#tabelaVendas tbody tr');
+  let apurado=0, pagou=0;
+  linhas.forEach(tr=>{
+    const inputs=tr.querySelectorAll('input');
+    apurado+=parseFloat(inputs[4].value)||0;
+    pagou+=parseFloat(inputs[5].value)||0;
   });
-  document.getElementById('totalApurado').textContent = apurado.toFixed(2);
-  document.getElement
+  document.getElementById('totalApurado').textContent=apurado.toFixed(2);
+  document.getElementById('totalPagou').textContent=pagou.toFixed(2);
+  document.getElementById('totalDeve').textContent=(apurado-pagou).toFixed(2);
+}
+
+function filtrarPorData(){ atualizarTabela(document.getElementById('filtroData').value); }
+function limparFiltro(){ document.getElementById('filtroData').value=''; atualizarTabela(); }
+function exportarPDF(){ window.print(); }
+function voltarCadastro(){
+  document.getElementById('painelVendedor').style.display='none';
+  vendedorAtual=null;
+  document.querySelector('#tabelaVendas tbody').innerHTML='';
+  document.getElementById('totalApurado').textContent='0.00';
+  document.getElementById('totalPagou').textContent='0.00';
+  document.getElementById('totalDeve').textContent='0.00';
+}
+
+// ===== Expor funções globais =====
+window.salvarVendedor=salvarVendedor;
+window.editarVendedor=editarVendedor;
+window.listarVendedores=listarVendedores;
+window.abrirPainel=abrirPainel;
+window.adicionarLinha=adicionarLinha;
+window.editarLinha=editarLinha;
+window.excluirLinha=excluirLinha;
+window.calcularLinha=calcularLinha;
+window.salvarVendas=salvarVendas;
+window.atualizarTabela=atualizarTabela;
+window.atualizarTotais=atualizarTotais;
+window.filtrarPorData=filtrarPorData;
+window.limparFiltro=limparFiltro;
+window.exportarPDF=exportarPDF;
+window.voltarCadastro=voltarCadastro;
+
+// ===== Checar usuário logado =====
+onAuthStateChanged(auth, user=>{
+  if(user){
+    const uid = user.uid;
+    const userDocRef = doc(db,'usuarios',uid);
+    getDocs(collection(db,'usuarios')).then(()=>{ // opcional se quiser pegar todos
+      userDocRef.get().then(docSnap=>{
+        if(docSnap.exists){
+          usuarioLogado = docSnap.data();
+          if(usuarioLogado.funcao==='MASTER') document.getElementById('adminDiv').style.display='block';
+          else if(usuarioLogado.funcao==='GERENTE') document.getElementById('adminDiv').style.display='block';
+          else if(usuarioLogado.funcao==='VENDEDOR') document.getElementById('adminDiv').style.display='none';
+          loadAll();
+        }
+      }).catch(err=>{ console.error(err); alert('Erro ao carregar dados do usuário.')});
+    });
+  }else{
+    window.location.href='login.html';
+  }
+});
+
+loadAll();
+
+</script>
+</body>
+</html>
