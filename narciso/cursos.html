@@ -37,42 +37,42 @@
   });
 
   async function carregarCursos() {
-    const container = document.getElementById("cursosContainer");
-    container.innerHTML = "<p>Carregando cursos...</p>";
+    const container = document.getElementById("bancasContainer");
+    container.innerHTML = "<p>Carregando cbancas...</p>";
 
-    const cursosSnap = await getDocs(collection(db, "cursos"));
+    const bancaSnap = await getDocs(collection(db, "bancas"));
     container.innerHTML = "";
 
-    cursosSnap.forEach(async (cursoDoc) => {
-      const curso = cursoDoc.data();
-      const idCurso = cursoDoc.id;
+    bancaSnap.forEach(async (bancaDoc) => {
+      const banca = bancaDoc.data();
+      const idbanca = bancaDoc.id;
 
-      const matriculaRef = doc(db, "alunos", uidUsuario, "cursos", idCurso);
+      const matriculaRef = doc(db, "alunos", uidUsuario, "banca", idCurso);
       const matriculaSnap = await getDoc(matriculaRef);
 
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <h3>${curso.nome}</h3>
-        <p>${curso.descricao}</p>
-        <p><strong>Carga Horária:</strong> ${curso.cargaHoraria}h</p>
-        <a href="${curso.url}" target="_blank" class="linkCurso">Acessar Curso</a><br>
+        <h3>${banca.nome}</h3>
+        <p>${banca.descricao}</p>
+        <p><strong>Carga Horária:</strong> ${cbanca.cargaHoraria}h</p>
+        <a href="${banca.url}" target="_blank" class="linkBanca">Acessar Banca</a><br>
         ${
           matriculaSnap.exists()
-            ? `<button disabled>Já Matriculado</button>`
-            : `<button onclick="matricular('${idCurso}', '${curso.nome}')">Matricular-se</button>`
+            ? `<button disabled>Já cadastrado</button>`
+            : `<button onclick="cadastrar('${idCurso}', '${curso.nome}')">cadastre-se</button>`
         }
       `;
       container.appendChild(card);
     });
   }
 
-  window.matricular = async function matricular(idCurso, nomeCurso) {
+  window.matricular = async function matricular(idBanca, nomeBanca) {
     if (!uidUsuario) return;
-    const matriculaRef = doc(db, "alunos", uidUsuario, "cursos", idCurso);
+    const matriculaRef = doc(db, "alunos", uidUsuario, "Banca", idCurso);
     const matriculaSnap = await getDoc(matriculaRef);
     if (matriculaSnap.exists()) {
-      alert("Você já está matriculado neste curso!");
+      alert("Você já está Cadastrado nesta banca!");
       return;
     }
 
@@ -83,8 +83,8 @@
       dataMatricula: new Date().toLocaleDateString("pt-BR")
     });
 
-    alert(`Matrícula realizada com sucesso no curso "${nomeCurso}"!`);
-    carregarCursos();
+    alert(`cadastro realizado com sucesso "${nomeBanca}"!`);
+    carregarBanca();
   };
 
   window.voltarPainel = function voltarPainel() {
