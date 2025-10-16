@@ -33,7 +33,7 @@ onAuthStateChanged(auth, (user) => {
     signOut(auth);
   } else {
     document.getElementById("admin-email").textContent = user.email;
-    carregarCursos();
+    carregarBancas();
   }
 });
 
