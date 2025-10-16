@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login do Aluno</title>
+<title>Login</title>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -29,7 +29,7 @@ const firebaseConfig = {
   const db = getFirestore(app);
 
   // 🔹 Função de login
-  window.loginAluno = async function loginAluno() {
+  window.login = async function loginAluno() {
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
 
@@ -44,12 +44,12 @@ const firebaseConfig = {
       const user = credenciais.user;
 
       // Busca dados do Firestore (opcional)
-      const docRef = doc(db, "alunos", user.uid);
+      const docRef = doc(db, "usuarios", user.uid);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
         const aluno = docSnap.data();
-        console.log("Bem-vindo,", aluno.nome);
+        console.log("Bem-vindo,", usuario.nome);
       }
 
       // Salva UID no localStorage para o painel
@@ -124,7 +124,7 @@ const firebaseConfig = {
     <h2>ÁREA RESTRITA</h2>
     <input type="email" id="email" placeholder="E-mail" required>
     <input type="password" id="senha" placeholder="Senha" required>
-    <button onclick="loginAluno()">Entrar</button>
+    <button onclick="login()">Entrar</button>
     <p>Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
   </div>
 </body>
