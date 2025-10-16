@@ -39,7 +39,7 @@ document.getElementById("form-banca").addEventListener("submit", async (e) => {
   });
 
   alert("Banca cadastrada com sucesso!");
-  document.getElementById("form-banca").reset();
+  document.getElementById("form-bancas").reset();
   carregarBancas();
 });
 
@@ -56,10 +56,10 @@ async function carregarBancas() {
     div.innerHTML = `
       <h3>${banca.nome}</h3>
       <p>${banca.descricao}</p>
-      <p><b>Página da Banca:</b> ${banca.url}</p>
+      <p><b>Página da Banca:</b> ${bancas.url}</p>
       <p><b>Carga Horária:</b> ${banca.cargaHoraria} horas</p>
-      <button class="btn" onclick="editarBanca('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
-      <button class="btn-danger" onclick="excluirBanca('${docSnap.id}')">Excluir</button>
+      <button class="btn" onclick="editarBancas('${docSnap.id}','${bancas.nome}','${banca.descricao}','${bancsa.url}', ${bancas.cargaHoraria})">Editar</button>
+      <button class="btn-danger" onclick="excluirBancas('${docSnap.id}')">Excluir</button>
     `;
     lista.appendChild(div);
   });
