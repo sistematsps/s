@@ -74,36 +74,36 @@
   }
 
   // 🔹 Cursos do aluno
-  async function carregarCursosMatriculados(uid) {
+  async function carregarBancasMatriculados(uid) {
     const container = document.getElementById("cursosMatriculados");
     container.innerHTML = "<p>Carregando cursos...</p>";
 
-    const cursosSnap = await getDocs(collection(db, "alunos", uid, "cursos"));
+    const BancasSnap = await getDocs(collection(db, "alunos", uid, "bancas"));
     container.innerHTML = "";
 
-    if (cursosSnap.empty) {
+    if (bancasSnap.empty) {
       container.innerHTML = "<p>nenhuma banca cadastrada.</p>";
       return;
     }
 
-    for (const cursoDoc of cursosSnap.docs) {
-      const curso = cursoDoc.data();
-      const cursoId = cursoDoc.id;
-      const cursoOriginalSnap = await getDoc(doc(db, "cursos", cursoId));
-      const cursoOriginal = cursoOriginalSnap.exists() ? cursoOriginalSnap.data() : {};
+    for (const bancasDoc of bancasSnap.docs) {
+      const bancas = bancasDoc.data();
+      const bancasId = bancasDoc.id;
+      const bancaOriginalSnap = await getDoc(doc(db, "bancas", bancasId));
+      const bancasOriginal = bancasOriginalSnap.exists() ? cursoOriginalSnap.data() : {};
       const progresso = curso.progresso || 0;
 
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <h3>${curso.nome}</h3>
-        <p><strong>Carga horária:</strong> ${cursoOriginal.cargaHoraria || "N/A"}h</p>
-        <p><strong>Data de matrícula:</strong> ${curso.dataMatricula || "—"}</p>
+        <h3>${Banca.nome}</h3>
+        <p><strong>Carga horária:</strong> ${bancaOriginal.cargaHoraria || "N/A"}h</p>
+        <p><strong>Data de matrícula:</strong> ${banca.dataMatricula || "—"}</p>
         <div class="barra-progresso"><div class="progresso" style="width:${progresso}%;"></div></div>
         <p class="percentual">${progresso}% concluído</p>
         ${
-          cursoOriginal.url
-            ? `<a href="${cursoOriginal.url}" target="_blank"><button>Acessar Curso</button></a>`
+          bandaOriginal.url
+            ? `<a href="${bancasOriginal.url}" target="_blank"><button>Acessar Bancas</button></a>`
             : `<button disabled>Sem link</button>`
         }
       `;
@@ -202,6 +202,8 @@
       <div class="dados-box">
         <h2>Meus Dados Pessoais</h2>
         <div id="dadosAluno"></div>
+        <button onclick="window.location.href='https://sistematsps.github.io/s/pitimbu/relatorio.html'">PITIMBU DA SORTE</button>
+
       </div>
 
       <h2>BANCAS CADASTRADAS</h2>
