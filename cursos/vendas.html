@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pitimbu da Sorte - Painel</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1, h2 { color: red; }
+input, button, select { padding: 8px; margin: 5px; }
+button { background: red; color: white; border: none; cursor: pointer; border-radius: 4px; }
+button:hover { background: blue; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+.vendor-row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+.vendor-btn { flex:1; text-align:left; background: yellow; color:#333; border:1px solid #d0d0d0; padding:12px 14px; font-size:16px; border-radius:6px; cursor:pointer; }
+.vendor-btn:hover { background:#f3f3f3; }
+.vendor-del { background:black; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.vendor-del:hover { background:#990000; }
+#painelVendedor { margin-top:20px; background:yellow; padding:15px; border:1px solid #b30000; border-radius:6px; display:none; }
+.totais span { margin-right:20px; font-weight:bold; }
+#logoutBtn { float:right; background:black; }
+</style>
+</head>
+<body>
+
+<h1>PITIMBU DA SORTE</h1>
+<button id="logoutBtn">Sair</button>
+
+<div id="infoUsuario" style="margin-bottom:20px;"></div>
+
+<div id="areaCadastro" style="display:none;">
+  <input id="nome" placeholder="Nome do vendedor"/>
+  <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0"/>
+  <button onclick="salvarVendedor()">Salvar</button>
+  <button onclick="editarVendedor()">Editar</button>
+</div>
+
+<div id="listaVendedores"></div>
+
+<div id="painelVendedor">
+  <h2 id="tituloVendedor"></h2>
+  <button onclick="voltarCadastro()">Voltar</button>
+
+  <div style="margin-top:15px;">
+    <label>Filtrar por data: <input type="date" id="filtroData"/></label>
+    <button onclick="filtrarPorData()">Filtrar</button>
+    <button onclick="limparFiltro()">Limpar</button>
+    <button onclick="exportarPDF()">Exportar PDF</button>
+    <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
+  </div>
+  
+  <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
+  
+  <table id="tabelaVendas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Recebeu</th>
+        <th>Devolveu</th>
+        <th>Vendeu</th>
+        <th>Apurou</th>
+        <th>Pagou</th>
+        <th>Deve</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="totais" style="margin-top:10px;">
+    <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
+    <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
+    <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { 
+  getFirestore, collection, setDoc, doc, getDoc, getDocs, deleteDoc 
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let usuarioAtual = null;
+let vendedores = [];
+let vendas = {};
+let vendedorAtual = null;
+
+// ===== AUTENTICAÇÃO =====
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const ref = doc(db, "usuarios", user.uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      usuarioAtual = snap.data();
+      document.getElementById("infoUsuario").innerHTML = 
+        `<strong>Usuário:</strong> ${usuarioAtual.nome} — ${usuarioAtual.funcao}`;
+      iniciarSistema();
+    } else {
+      alert("Usuário não encontrado no Firestore!");
+      window.location.href = "login.html";
+    }
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
+
+// ===== Firestore CRUD =====
+async function salvarVendedoresFirestore(lista){
+  for(let vend of lista){ await setDoc(doc(db, `vendedores`, vend.nome), vend); }
+}
+async function excluirVendedorFirestore(nome){
+  await deleteDoc(doc(db, `vendedores`, nome));
+  const colPath = `vendas_${nome}`;
+  const snap = await getDocs(collection(db,colPath));
+  const del=[]; snap.forEach(d=>del.push(deleteDoc(doc(db,colPath,d.id))));
+  await Promise.all(del);
+}
+async function salvarVendasFirestore(vendedor,lista){
+  const colPath=`vendas_${vendedor}`;
+  const existing = await getDocs(collection(db,colPath));
+  const del=[]; existing.forEach(d=>del.push(deleteDoc(doc(db,colPath,d.id)))); await Promise.all(del);
+  for(let i=0;i<lista.length;i++){
+    const v=lista[i];
+    const base=v.data?v.data.replaceAll('-',''):'semdata';
+    const idDoc=`${base}_${i}`;
+    await setDoc(doc(db,colPath,idDoc),v);
+  }
+}
+async function carregarVendedoresFirestore(){
+  const snap=await getDocs(collection(db,`vendedores`));
+  let arr=[];
+  snap.forEach(d=>arr.push(d.data()));
+  return arr;
+}
+async function carregarVendasFirestore(vendedor){
+  const snap=await getDocs(collection(db,`vendas_${vendedor}`));
+  let arr=[];
+  snap.forEach(d=>arr.push(d.data()));
+  return arr;
+}
+
+// ===== INICIALIZAÇÃO =====
+async function iniciarSistema(){
+  const areaCadastro=document.getElementById('areaCadastro');
+  
+  if(usuarioAtual.funcao==="MASTER"){
+    areaCadastro.style.display="block";
+    await loadAll();
+  } 
+  else if(usuarioAtual.funcao==="GERENTE"){
+    areaCadastro.style.display="none";
+    await loadGerente(usuarioAtual.nome);
+  } 
+  else if(usuarioAtual.funcao==="VENDEDOR"){
+    areaCadastro.style.display="none";
+    abrirPainel(usuarioAtual.nome);
+  }
+}
+
+async function loadAll(){
+  vendedores=await carregarVendedoresFirestore();
+  vendas={};
+  for(let vend of vendedores){
+    let vendVendas=await carregarVendasFirestore(vend.nome);
+    vendas[vend.nome]=vendVendas;
+  }
+  listarVendedores();
+}
+
+async function loadGerente(nomeGerente){
+  const snap=await getDocs(collection(db,"vendedores"));
+  vendedores=[];
+  snap.forEach(d=>{
+    const v=d.data();
+    if(v.gerenteResponsavel===nomeGerente) vendedores.push(v);
+  });
+  for(let vend of vendedores){
+    vendas[vend.nome]=await carregarVendasFirestore(vend.nome);
+  }
+  listarVendedores();
+}
+
+// ===== CRUD Vendedor =====
+async function salvarVendedor(){
+  const nome=document.getElementById('nome').value.trim();
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação.'); return; }
+  if(vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase())){ alert('Vendedor já existe.'); return; }
+  const gerenteResp = usuarioAtual.funcao==="GERENTE"?usuarioAtual.nome:null;
+  const vend = {nome, cotacao, gerenteResponsavel: gerenteResp};
+  vendedores.push(vend);
+  await salvarVendedoresFirestore(vendedores);
+  listarVendedores();
+  document.getElementById('nome').value='';
+  document.getElementById('cotacao').value='';
+}
+
+async function editarVendedor(){
+  const nome=document.getElementById('nome').value.trim();
+  const cotacao=parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao)||cotacao<=0){ alert('Preencha corretamente o nome e cotação.'); return; }
+  const index=vendedores.findIndex(v=>v.nome.toLowerCase()===nome.toLowerCase());
+  if(index===-1){ alert('Vendedor não encontrado.'); return; }
+  vendedores[index].cotacao=cotacao;
+  await salvarVendedoresFirestore(vendedores);
+  listarVendedores();
+  alert('Cotação atualizada.');
+  if(vendedorAtual===vendedores[index].nome) atualizarTabela();
+}
+
+function listarVendedores(){
+  const div=document.getElementById('listaVendedores');
+  div.innerHTML='';
+  vendedores.forEach(v=>{
+    const row=document.createElement('div'); row.className='vendor-row';
+    const btn=document.createElement('button'); btn.className='vendor-btn';
+    btn.innerHTML=`<strong>${v.nome}</strong> <span>Cotação: R$ ${Number(v.cotacao).toFixed(2)}</span>`;
+    btn.onclick=()=>abrirPainel(v.nome);
+    row.appendChild(btn);
+
+    if(usuarioAtual.funcao==="MASTER"){
+      const del=document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
+      del.onclick=async e=>{
+        e.stopPropagation();
+        if(confirm(`Excluir vendedor ${v.nome}?`)){
+          vendedores=vendedores.filter(x=>x.nome!==v.nome);
+          await excluirVendedorFirestore(v.nome);
+          listarVendedores();
+        }
+      };
+      row.appendChild(del);
+    }
+    div.appendChild(row);
+  });
+}
+
+// ===== Painel & Vendas =====
+function abrirPainel(nome){
+  vendedorAtual=nome;
+  document.getElementById('painelVendedor').style.display='block';
+  document.getElementById('tituloVendedor').textContent=nome;
+  atualizarTabela();
+}
+function adicionarLinha(){
+  const tbody=document.querySelector('#tabelaVendas tbody');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+  <td><input type="date"/></td>
+  <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+  <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+  <td><input type="number" readonly/></td>
+  <td><input type="number" readonly/></td>
+  <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
+  <td><input type="number" readonly/></td>
+  <td><button onclick="excluirLinha(this)">Excluir</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+function excluirLinha(btn){ btn.parentElement.parentElement.remove(); salvarVendas(); }
+function calcularLinha(elem){
+  const tr=elem.closest('tr');
+  const i=tr.querySelectorAll('input');
+  const recebeu=parseFloat(i[1].value)||0;
+  const devolveu=parseFloat(i[2].value)||0;
+  const pagou=parseFloat(i[5].value)||0;
+  const vendeu=recebeu-devolveu;
+  const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1;
+  const apurou=vendeu*cotacao;
+  const deve=apurou-pagou;
+  i[3].value=vendeu;
+  i[4].value=apurou.toFixed(2);
+  i[6].value=deve.toFixed(2);
+  atualizarTotais();
+}
+async function salvarVendas(){
+  if(!vendedorAtual) return;
+  const linhas=document.querySelectorAll('#tabelaVendas tbody tr');
+  vendas[vendedorAtual]=[];
+  const cotacao=vendedores.find(v=>v.nome===vendedorAtual)?.cotacao||1;
+  linhas.forEach(tr=>{
+    const i=tr.querySelectorAll('input');
+    vendas[vendedorAtual].push({
+      data:i[0].value, recebeu:+i[1].value||0, devolveu:+i[2].value||0,
+      vendeu:+i[3].value||0, apurou:+i[4].value||0,
+      pagou:+i[5].value||0, deve:+i[6].value||0, cotacao
+    });
+  });
+  await salvarVendasFirestore(vendedorAtual, vendas[vendedorAtual]);
+  atualizarTotais();
+  alert('Vendas salvas.');
+}
+function atualizarTabela(fData=''){
+  const tbody=document.querySelector('#tabelaVendas tbody');
+  tbody.innerHTML='';
+  (vendas[vendedorAtual]||[]).forEach(v=>{
+    if(fData && v.data!==fData) return;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+    <td><input type="date" value="${v.data||''}"/></td>
+    <td><input type="number" value="${v.recebeu||0}" onchange="calcularLinha(this)" min="0"/></td>
+    <td><input type="number" value="${v.devolveu||0}" onchange="calcularLinha(this)" min="0"/></td>
+    <td><input type="number" value="${v.vendeu||0}" readonly/></td>
+    <td><input type="number" value="${v.apurou||0}" readonly/></td>
+    <td><input type="number" value="${v.pagou||0}" onchange="calcularLinha(this)" min="0"/></td>
+    <td><input type="number" value="${v.deve||0}" readonly/></td>
+    <td><button onclick="excluirLinha(this)">Excluir</button></td>`;
+    tbody.appendChild(tr);
+  });
+  atualizarTotais();
+}
+function atualizarTotais(){
+  const linhas=document.querySelectorAll('#tabelaVendas tbody tr');
+  let apurado=0, pagou=0;
+  linhas.forEach(tr=>{
+    const i=tr.querySelectorAll('input');
+    apurado+=+i[4].value||0; pagou+=+i[5].value||0;
+  });
+  document.getElementById('totalApurado').textContent=apurado.toFixed(2);
+  document.getElementById('totalPagou').textContent=pagou.toFixed(2);
+  document.getElementById('totalDeve').textContent=(apurado-pagou).toFixed(2);
+}
+function filtrarPorData(){ atualizarTabela(document.getElementById('filtroData').value); }
+function limparFiltro(){ document.getElementById('filtroData').value=''; atualizarTabela(); }
+function exportarPDF(){ window.print(); }
+function voltarCadastro(){
+  document.getElementById('painelVendedor').style.display='none';
+  vendedorAtual=null;
+}
+window.calcularLinha=calcularLinha;
+window.excluirLinha=excluirLinha;
+window.salvarVendas=salvarVendas;
+window.filtrarPorData=filtrarPorData;
+window.limparFiltro=limparFiltro;
+window.exportarPDF=exportarPDF;
+window.voltarCadastro=voltarCadastro;
+</script>
+</body>
+          </html>
