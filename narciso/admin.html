@@ -12,14 +12,14 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 
 /* Firebase Config */
 const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:d987589863479e576ac20d",
-  measurementId: "G-L0VWMGJ003"
+  apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
+  authDomain: "cursos-6f950.firebaseapp.com",
+  projectId: "cursos-6f950",
+  storageBucket: "cursos-6f950.firebasestorage.app",
+  messagingSenderId: "146131122545",
+  appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -49,7 +49,7 @@ document.getElementById("form-curso").addEventListener("submit", async (e) => {
   const url = document.getElementById("url").value;
   const cargaHoraria = parseInt(document.getElementById("cargaHoraria").value) || 0;
 
-  await addDoc(collection(db, "cursos"), {
+  await addDoc(collection(db, "bancas"), {
     nome,
     descricao,
     url,
@@ -63,22 +63,22 @@ document.getElementById("form-curso").addEventListener("submit", async (e) => {
 });
 
 /* Listar cursos */
-async function carregarCursos() {
-  const lista = document.getElementById("lista-cursos");
+async function carregarBanca() {
+  const lista = document.getElementById("lista-banca");
   lista.innerHTML = "";
 
-  const snap = await getDocs(collection(db, "cursos"));
+  const snap = await getDocs(collection(db, "banca"));
   snap.forEach((docSnap) => {
-    const curso = docSnap.data();
+    const banca = docSnap.data();
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <h3>${curso.nome}</h3>
-      <p>${curso.descricao}</p>
-      <p><b>Página do Curso:</b> ${curso.url}</p>
-      <p><b>Carga Horária:</b> ${curso.cargaHoraria} horas</p>
-      <button class="btn" onclick="editarCurso('${docSnap.id}','${curso.nome}','${curso.descricao}','${curso.url}', ${curso.cargaHoraria})">Editar</button>
-      <button class="btn-danger" onclick="excluirCurso('${docSnap.id}')">Excluir</button>
+      <h3>${banca.nome}</h3>
+      <p>${banca.descricao}</p>
+      <p><b>Página da Banca:</b> ${banca.url}</p>
+      <p><b>Carga Horária:</b> ${banca.cargaHoraria} dias</p>
+      <button class="btn" onclick="editarbanca('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
+      <button class="btn-danger" onclick="excluirBanca('${docSnap.id}')">Excluir</button>
     `;
     lista.appendChild(div);
   });
@@ -103,7 +103,7 @@ window.salvarEdicao = async () => {
 
   await updateDoc(doc(db, "cursos", id), { nome, descricao, url, cargaHoraria, atualizadoEm: new Date().toLocaleString() });
 
-  alert("Curso atualizado com sucesso!");
+  alert("Banca atualizada com sucesso!");
   fecharModal();
   carregarCursos();
 };
@@ -111,11 +111,11 @@ window.salvarEdicao = async () => {
 window.fecharModal = () => { document.getElementById("modal-editar").style.display = "none"; };
 
 /* Excluir curso */
-window.excluirCurso = async (id) => {
-  if (confirm("Tem certeza que deseja excluir este curso?")) {
-    await deleteDoc(doc(db, "cursos", id));
-    alert("Curso excluído.");
-    carregarCursos();
+window.excluirBanca = async (id) => {
+  if (confirm("Tem certeza que deseja excluir esta Banca?")) {
+    await deleteDoc(doc(db, "banca", id));
+    alert("banca excluído.");
+    carregarBanca();
   }
 };
 </script>
@@ -145,17 +145,17 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
   </div>
 </header>
 
-<h2>Cadastrar Novo Curso</h2>
+<h2>Cadastrar Nova Banca</h2>
 <form id="form-curso">
-  <label>Nome do Curso</label>
+  <label>Nome da Banca</label>
   <input type="text" id="nome" required>
   <label>Descrição</label>
   <textarea id="descricao" required></textarea>
-  <label>Página do Curso</label>
+  <label>Página da Banca</label>
   <input type="text" id="url" placeholder="Ex: matematica.html" required>
   <label>Carga Horária (horas)</label>
   <input type="number" id="cargaHoraria" min="1" required>
-  <button type="submit" class="btn">Cadastrar Curso</button>
+  <button type="submit" class="btn">Cadastrar Banca</button>
 </form>
 
 <h2>Cursos Cadastrados</h2>
@@ -164,13 +164,13 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
 <!-- Modal de edição -->
 <div id="modal-editar" class="modal">
   <div class="modal-content">
-    <h3>Editar Curso</h3>
+    <h3>Editar Banca</h3>
     <input type="hidden" id="edit-id">
     <label>Nome:</label>
     <input type="text" id="edit-nome">
     <label>Descrição:</label>
     <textarea id="edit-descricao"></textarea>
-    <label>Página do Curso:</label>
+    <label>Página da Banca:</label>
     <input type="text" id="edit-url" placeholder="Ex: matematica.html">
     <label>Carga Horária (horas)</label>
     <input type="number" id="edit-cargaHoraria" min="1">
