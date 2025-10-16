@@ -8,24 +8,24 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // Configuração do Firebase
+  // 🔥 Configuração do novo Firebase
   const firebaseConfig = {
-  apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
-  authDomain: "cursos-6f950.firebaseapp.com",
-  projectId: "cursos-6f950",
-  storageBucket: "cursos-6f950.firebasestorage.app",
-  messagingSenderId: "146131122545",
-  appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
-};
+    apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
+    authDomain: "cursos-6f950.firebaseapp.com",
+    projectId: "cursos-6f950",
+    storageBucket: "cursos-6f950.firebasestorage.app",
+    messagingSenderId: "146131122545",
+    appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
+  };
 
   // Inicializa Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Caminho correto da sua coleção
-  const caminhoBancas = "bancas/x7LCbQKfnf996TVj2ObZ/bancas";
+  // Caminho fixo da coleção de bancas
+  const caminhoBancas = "bancas/tsVozdTNtsqDslt8PZ7G/bancas";
 
   // Função para carregar as bancas
   async function carregarBancas() {
