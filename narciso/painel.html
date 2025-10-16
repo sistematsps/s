@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel do gerente</title>
+<title>Painel do Gerente</title>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -26,84 +26,85 @@
   const db = getFirestore(app);
 
   let uidUsuario = null;
-  let tipoUsuario = "aluno";
+  let tipoUsuario = "gerente";
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) return (window.location.href = "index.html");
     uidUsuario = user.uid;
     document.getElementById("alunoEmail").textContent = user.email;
 
-    const alunoRef = doc(db, "alunos", uidUsuario);
-    const alunoSnap = await getDoc(alunoRef);
+    const gerenteRef = doc(db, "alunos", uidUsuario);
+    const gerenteSnap = await getDoc(gerenteRef);
 
-    if (!alunoSnap.exists()) {
+    if (!gerenteSnap.exists()) {
       document.body.innerHTML = "<h3>Usuário não encontrado no sistema.</h3>";
       return;
     }
 
-    const aluno = alunoSnap.data();
-    tipoUsuario = aluno.tipoUsuario || "aluno";
+    const gerente = gerenteSnap.data();
+    tipoUsuario = gerente.tipoUsuario || "gerente";
 
     if (tipoUsuario === "admin" || tipoUsuario === "master") {
-      document.getElementById("painelAluno").style.display = "block";
+      document.getElementById("painelGerente").style.display = "block";
       document.getElementById("painelAdmin").style.display = "block";
       await carregarListaUsuarios();
     } else {
-      document.getElementById("painelAluno").style.display = "block";
+      document.getElementById("painelGerente").style.display = "block";
       document.getElementById("painelAdmin").style.display = "none";
-      await carregarDadosAluno(uidUsuario);
-      await carregarCursosMatriculados(uidUsuario);
+      await carregarDadosGerente(uidUsuario);
+      await carregarBancasMatriculadas(uidUsuario);
     }
   });
 
-  // 🔹 Dados do Gerente
-  async function carregarDadosAluno(uid) {
-    const alunoRef = doc(db, "alunos", uid);
-    const alunoSnap = await getDoc(alunoRef);
-    const container = document.getElementById("dadosAluno");
-    if (!alunoSnap.exists()) return (container.innerHTML = "<p>Dados não encontrados.</p>");
+  // 🔹 Dados do gerente
+  async function carregarDadosGerente(uid) {
+    const gerenteRef = doc(db, "alunos", uid);
+    const gerenteSnap = await getDoc(gerenteRef);
+    const container = document.getElementById("dadosGerente");
+    if (!gerenteSnap.exists()) return (container.innerHTML = "<p>Dados não encontrados.</p>");
 
-    const aluno = alunoSnap.data();
+    const gerente = gerenteSnap.data();
     container.innerHTML = `
-      <p><strong>Nome:</strong> ${aluno.nome || "—"}</p>
-      <p><strong>CPF:</strong> ${aluno.cpf || "—"}</p>
-      <p><strong>Data de Nascimento:</strong> ${aluno.dataNascimento || "—"}</p>
-      <p><strong>Nome do Pai:</strong> ${aluno.nomePai || "—"}</p>
-      <p><strong>Nome da Mãe:</strong> ${aluno.nomeMae || "—"}</p>
+      <p><strong>Nome:</strong> ${gerente.nome || "—"}</p>
+      <p><strong>CPF:</strong> ${gerente.cpf || "—"}</p>
+      <p><strong>Data de Nascimento:</strong> ${gerente.dataNascimento || "—"}</p>
+      <p><strong>Nome do Pai:</strong> ${gerente.nomePai || "—"}</p>
+      <p><strong>Nome da Mãe:</strong> ${gerente.nomeMae || "—"}</p>
     `;
   }
 
-  // 🔹 Cursos do aluno
-  async function carregarBancasMatriculados(uid) {
-    const container = document.getElementById("cursosMatriculados");
-    container.innerHTML = "<p>Carregando cursos...</p>";
+  // 🔹 Bancas do gerente
+  async function carregarBancasMatriculadas(uid) {
+    const container = document.getElementById("bancasMatriculadas");
+    container.innerHTML = "<p>Carregando bancas...</p>";
 
-    const BancasSnap = await getDocs(collection(db, "alunos", uid, "bancas"));
+    const bancasSnap = await getDocs(collection(db, "alunos", uid, "bancas"));
     container.innerHTML = "";
 
     if (bancasSnap.empty) {
-      container.innerHTML = "<p>nenhuma banca cadastrada.</p>";
+      container.innerHTML = "<p>Nenhuma banca cadastrada.</p>";
       return;
     }
 
-    for (const bancasDoc of bancasSnap.docs) {
-      const bancas = bancasDoc.data();
-      const bancasId = bancasDoc.id;
-      const bancaOriginalSnap = await getDoc(doc(db, "bancas", bancasId));
-      const bancasOriginal = bancasOriginalSnap.exists() ? cursoOriginalSnap.data() : {};
-      const progresso = curso.progresso || 0;
+    for (const bancaDoc of bancasSnap.docs) {
+      const banca = bancaDoc.data();
+      const bancaId = bancaDoc.id;
+
+      const bancaOriginalSnap = await getDoc(doc(db, "bancas", bancaId));
+      const bancaOriginal = bancaOriginalSnap.exists() ? bancaOriginalSnap.data() : {};
+      const progresso = banca.progresso || 0;
 
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <h3>${Banca.nome}</h3>
+        <h3>${banca.nome || bancaOriginal.nome || "Banca sem nome"}</h3>
         <p><strong>Carga horária:</strong> ${bancaOriginal.cargaHoraria || "N/A"}h</p>
         <p><strong>Data de matrícula:</strong> ${banca.dataMatricula || "—"}</p>
         <div class="barra-progresso"><div class="progresso" style="width:${progresso}%;"></div></div>
         <p class="percentual">${progresso}% concluído</p>
         ${
-          bandaOriginal.url
-            ? `<a href="${bancasOriginal.url}" target="_blank"><button>Acessar Bancas</button></a>`
+          bancaOriginal.url
+            ? `<a href="${bancaOriginal.url}" target="_blank"><button>Acessar Banca</button></a>`
             : `<button disabled>Sem link</button>`
         }
       `;
@@ -111,39 +112,39 @@
     }
   }
 
-  // 🔹 Painel do administrador: lista todos os alunos
+  // 🔹 Painel do administrador: lista todos os gerentes
   async function carregarListaUsuarios() {
     const lista = document.getElementById("listaUsuarios");
-    lista.innerHTML = "<p>Carregando lista de alunos...</p>";
+    lista.innerHTML = "<p>Carregando lista de gerentes...</p>";
 
     const snap = await getDocs(collection(db, "alunos"));
     lista.innerHTML = "";
 
     snap.forEach((docSnap) => {
-      const aluno = docSnap.data();
-      if (aluno.tipoUsuario === "admin" || aluno.tipoUsuario === "master") return; // Oculta admins
+      const gerente = docSnap.data();
+      if (gerente.tipoUsuario === "admin" || gerente.tipoUsuario === "master") return; // Oculta admins
       const item = document.createElement("div");
       item.className = "item-usuario";
       item.innerHTML = `
-        <strong>${aluno.nome || "Sem nome"}</strong><br>
-        <span>${aluno.email || ""}</span>
+        <strong>${gerente.nome || "Sem nome"}</strong><br>
+        <span>${gerente.email || ""}</span>
       `;
-      item.onclick = () => abrirPainelAlunoAdmin(docSnap.id);
+      item.onclick = () => abrirPainelGerenteAdmin(docSnap.id);
       lista.appendChild(item);
     });
   }
 
-  // 🔹 Admin clicou em um aluno
-  async function abrirPainelAlunoAdmin(uid) {
+  // 🔹 Admin clicou em um gerente
+  async function abrirPainelGerenteAdmin(uid) {
     document.getElementById("listaUsuarios").style.display = "none";
-    document.getElementById("painelAlunoSelecionado").style.display = "block";
-    await carregarDadosAluno(uid);
-    await carregarCursosMatriculados(uid);
+    document.getElementById("painelGerenteSelecionado").style.display = "block";
+    await carregarDadosGerente(uid);
+    await carregarBancasMatriculadas(uid);
   }
 
-  // 🔹 Voltar para lista de alunos
+  // 🔹 Voltar para lista
   window.voltarLista = function voltarLista() {
-    document.getElementById("painelAlunoSelecionado").style.display = "none";
+    document.getElementById("painelGerenteSelecionado").style.display = "none";
     document.getElementById("listaUsuarios").style.display = "block";
   };
 
@@ -182,9 +183,9 @@
   button {
     padding: 8px 15px; border: none; border-radius: 8px; color: green; cursor: pointer;
   }
-  #btnSair { background-color: #dc3545; }
+  #btnSair { background-color: #dc3545; color: white; }
   #btnSair:hover { background-color: #c82333; }
-  #btnVoltar { background-color: #17a2b8; }
+  #btnVoltar { background-color: #17a2b8; color: white; }
   #btnVoltar:hover { background-color: #138496; }
   .item-usuario { cursor: pointer; transition: 0.2s; }
   .item-usuario:hover { background: #e9f2ff; }
@@ -195,40 +196,39 @@
   <header><h1>Painel do Gerente</h1></header>
 
   <div class="container">
-    <div id="infoAluno">Logado como: <span id="alunoEmail"></span></div>
+    <div id="infoGerente">Logado como: <span id="alunoEmail"></span></div>
 
     <!-- Painel do GERENTE -->
-    <div id="painelAluno" style="display:none;">
+    <div id="painelGerente" style="display:none;">
       <div class="dados-box">
         <h2>Meus Dados Pessoais</h2>
-        <div id="dadosAluno"></div>
+        <div id="dadosGerente"></div>
         <button onclick="window.location.href='https://sistematsps.github.io/s/pitimbu/relatorio.html'">PITIMBU DA SORTE</button>
-
       </div>
 
       <h2>BANCAS CADASTRADAS</h2>
-      <div id="cursosMatriculados" class="cards"></div>
+      <div id="bancasMatriculadas" class="cards"></div>
 
       <div class="acoes">
-        <button id="btnVoltar" onclick="window.location.href='cursos.html'">Ver outras bancas</button>
+        <button id="btnVoltar" onclick="window.location.href='bancas.html'">Ver outras bancas</button>
         <button id="btnSair" onclick="sair()">Sair</button>
       </div>
     </div>
 
     <!-- Painel do ADMIN -->
     <div id="painelAdmin" style="display:none;">
-      <h2>Lista de Alunos</h2>
+      <h2>Lista de Gerentes</h2>
       <div id="listaUsuarios"></div>
 
-      <div id="painelAlunoSelecionado" style="display:none;">
+      <div id="painelGerenteSelecionado" style="display:none;">
         <button id="btnVoltar" onclick="voltarLista()">← Voltar para lista</button>
         <div class="dados-box">
-          <h2>Dados do Aluno</h2>
-          <div id="dadosAluno"></div>
+          <h2>Dados do Gerente</h2>
+          <div id="dadosGerente"></div>
         </div>
 
-        <h2>bancas</h2>
-        <div id="cursosMatriculados" class="cards"></div>
+        <h2>Bancas</h2>
+        <div id="bancasMatriculadas" class="cards"></div>
       </div>
 
       <div class="acoes">
