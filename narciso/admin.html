@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Administrativo</title>
+<title>Painel de Bancas</title>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 /* Firebase Config */
 const firebaseConfig = {
@@ -22,25 +21,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-/* Controle de login */
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "index.html"; // Redireciona usuários não logados
-  } else {
-    document.getElementById("admin-email").textContent = user.email;
-    carregarBancas();
-  }
-});
-
-window.sair = async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-};
-
-/* Cadastrar Curso */
-document.getElementById("form-curso").addEventListener("submit", async (e) => {
+/* Cadastrar Banca */
+document.getElementById("form-banca").addEventListener("submit", async (e) => {
   e.preventDefault();
   const nome = document.getElementById("nome").value;
   const descricao = document.getElementById("descricao").value;
@@ -55,12 +38,12 @@ document.getElementById("form-curso").addEventListener("submit", async (e) => {
     criadoEm: new Date().toLocaleString()
   });
 
-  alert("Curso cadastrado com sucesso!");
-  document.getElementById("form-curso").reset();
+  alert("Banca cadastrada com sucesso!");
+  document.getElementById("form-banca").reset();
   carregarBancas();
 });
 
-/* Listar cursos */
+/* Listar bancas */
 async function carregarBancas() {
   const lista = document.getElementById("lista-bancas");
   lista.innerHTML = "";
@@ -75,15 +58,15 @@ async function carregarBancas() {
       <p>${banca.descricao}</p>
       <p><b>Página da Banca:</b> ${banca.url}</p>
       <p><b>Carga Horária:</b> ${banca.cargaHoraria} horas</p>
-      <button class="btn" onclick="editarCurso('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
+      <button class="btn" onclick="editarBanca('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
       <button class="btn-danger" onclick="excluirBanca('${docSnap.id}')">Excluir</button>
     `;
     lista.appendChild(div);
   });
 }
 
-/* Editar Curso */
-window.editarCurso = (id, nome, descricao, url, cargaHoraria) => {
+/* Editar Banca */
+window.editarBanca = (id, nome, descricao, url, cargaHoraria) => {
   document.getElementById("edit-id").value = id;
   document.getElementById("edit-nome").value = nome;
   document.getElementById("edit-descricao").value = descricao;
@@ -108,7 +91,7 @@ window.salvarEdicao = async () => {
 
 window.fecharModal = () => { document.getElementById("modal-editar").style.display = "none"; };
 
-/* Excluir curso */
+/* Excluir Banca */
 window.excluirBanca = async (id) => {
   if (confirm("Tem certeza que deseja excluir esta Banca?")) {
     await deleteDoc(doc(db, "bancas", id));
@@ -116,11 +99,13 @@ window.excluirBanca = async (id) => {
     carregarBancas();
   }
 };
+
+/* Carrega as bancas ao abrir a página */
+window.addEventListener('DOMContentLoaded', carregarBancas);
 </script>
 
 <style>
 body { font-family: Arial; background:#f4f6f9; margin:0; padding:20px; }
-header { display:flex; justify-content:space-between; align-items:center; }
 h1 { color:#007bff; }
 form { background:white; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); margin-bottom:30px; }
 input, textarea { width:100%; padding:8px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc; }
@@ -135,16 +120,10 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
 </head>
 
 <body>
-<header>
-  <h1>Painel do Administrador</h1>
-  <div>
-    <span id="admin-email"></span>
-    <button class="btn" onclick="sair()">Sair</button>
-  </div>
-</header>
+<h1>Painel de Bancas</h1>
 
 <h2>Cadastrar Nova Banca</h2>
-<form id="form-curso">
+<form id="form-banca">
   <label>Nome da Banca</label>
   <input type="text" id="nome" required>
   <label>Descrição</label>
@@ -156,7 +135,7 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
   <button type="submit" class="btn">Cadastrar Banca</button>
 </form>
 
-<h2>Cursos Cadastrados</h2>
+<h2>Bancas Cadastradas</h2>
 <div id="lista-bancas"></div>
 
 <!-- Modal de edição -->
@@ -179,4 +158,4 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
   </div>
 </div>
 </body>
-  </html>
+</html>
