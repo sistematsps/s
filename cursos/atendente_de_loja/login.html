@@ -1,182 +1,107 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login - Pitimbu da Sorte</title>
-<style>
-  *{box-sizing:border-box;font-family:Arial, sans-serif}
-  body{background:#f5f5f5;margin:0;padding:20px;display:flex;align-items:center;justify-content:center;height:100vh;}
-  .card{width:420px;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
-  h1{color:#c00;margin:0 0 14px}
-  label{display:block;margin-top:10px;font-size:14px}
-  input,select,button{width:100%;padding:10px;margin-top:6px;border:1px solid #ddd;border-radius:6px}
-  button{background:#c00;color:#fff;border:none;cursor:pointer}
-  button.secondary{background:#eee;color:#333;margin-top:8px}
-  .row{display:flex;gap:8px}
-  .hidden{display:none}
-  .msg{margin-top:10px;font-size:14px;color:#333}
-  small.note{display:block;margin-top:8px;color:#666}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Pitimbu da Sorte</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .container { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { color: red; text-align: center; }
+    input, select, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: red; color: white; font-weight: bold; cursor: pointer; }
+    button:hover { background: blue; }
+    .alt { text-align: center; margin-top: 10px; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Login - Pitimbu da Sorte</h2>
 
-<div class="card">
-  <h1>Pitimbu da Sorte</h1>
-
-  <div id="authArea">
-    <div id="loginForm">
-      <label>Email</label>
-      <input type="email" id="loginEmail" placeholder="seu@email.com" />
-      <label>Senha</label>
-      <input type="password" id="loginSenha" placeholder="senha" />
-      <button id="btnLogin">Entrar</button>
-      <button class="secondary" id="showSignup">Criar conta</button>
-      <p class="msg" id="loginMsg"></p>
+    <div id="loginDiv">
+      <input id="emailLogin" type="email" placeholder="E-mail">
+      <input id="senhaLogin" type="password" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+      <div class="alt"><a href="#" onclick="mostrarCadastro()">Criar nova conta</a></div>
     </div>
 
-    <div id="signupForm" class="hidden">
-      <label>Nome</label>
-      <input type="text" id="signupNome" placeholder="Seu nome completo" />
-      <label>Email</label>
-      <input type="email" id="signupEmail" placeholder="seu@email.com" />
-      <label>Senha</label>
-      <input type="password" id="signupSenha" placeholder="mínimo 6 caracteres" />
-      <label>Função</label>
-      <select id="signupFuncao">
-        <option value="VENDEDOR">VENDEDOR</option>
-        <option value="GERENTE">GERENTE</option>
+    <div id="cadastroDiv" style="display:none;">
+      <input id="nomeCadastro" placeholder="Nome completo">
+      <input id="emailCadastro" type="email" placeholder="E-mail">
+      <input id="senhaCadastro" type="password" placeholder="Senha">
+      <select id="funcaoCadastro">
+        <option value="">Selecione a função</option>
         <option value="MASTER">MASTER</option>
+        <option value="GERENTE">GERENTE</option>
+        <option value="VENDEDOR">VENDEDOR</option>
       </select>
-      <div id="campoGerente" class="hidden">
-        <label>Gerente responsável (nome)</label>
-        <input type="text" id="signupGerente" placeholder="Nome do gerente (se vendedor)" />
-      </div>
-      <label>Cotação (opcional)</label>
-      <input type="number" id="signupCotacao" step="0.01" min="0" placeholder="1.00" />
-      <button id="btnSignup">Criar conta</button>
-      <button class="secondary" id="showLogin">Voltar ao login</button>
-      <p class="msg" id="signupMsg"></p>
-      <small class="note">Observação: por segurança, avalie restringir a criação de MASTER/GERENTE via regras do Firestore ou fluxo administrativo.</small>
+      <input id="cotacaoCadastro" placeholder="Cotação (para vendedor)" type="number" step="0.01">
+      <input id="gerenteCadastro" placeholder="Gerente responsável (se for vendedor)">
+      <button onclick="criarConta()">Criar conta</button>
+      <div class="alt"><a href="#" onclick="mostrarLogin()">Já tenho conta</a></div>
     </div>
   </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    sendPasswordResetEmail
-  } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc
-  } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { getFirestore, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-  // === CONFIG FIREBASE - substitua se necessário (mantive sua configuração) ===
-  const firebaseConfig = {
-    apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
-    authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
-    projectId: "pitimbu-da-sorte-80aa6",
-    storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
-    messagingSenderId: "365898285373",
-    appId: "1:365898285373:web:2ce4e344f1e9774c068554"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+      authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+      projectId: "pitimbu-da-sorte-80aa6",
+      storageBucket: "pitimbu-da-sorte-80aa6.appspot.com",
+      messagingSenderId: "365898285373",
+      appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  // Elementos
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-  const showSignupBtn = document.getElementById('showSignup');
-  const showLoginBtn = document.getElementById('showLogin');
-
-  const loginEmail = document.getElementById('loginEmail');
-  const loginSenha = document.getElementById('loginSenha');
-  const loginMsg = document.getElementById('loginMsg');
-
-  const signupNome = document.getElementById('signupNome');
-  const signupEmail = document.getElementById('signupEmail');
-  const signupSenha = document.getElementById('signupSenha');
-  const signupFuncao = document.getElementById('signupFuncao');
-  const signupGerente = document.getElementById('signupGerente');
-  const signupCotacao = document.getElementById('signupCotacao');
-  const signupMsg = document.getElementById('signupMsg');
-  const campoGerente = document.getElementById('campoGerente');
-
-  // Toggle forms
-  showSignupBtn.onclick = () => { loginForm.classList.add('hidden'); signupForm.classList.remove('hidden'); clearMsgs(); };
-  showLoginBtn.onclick = () => { signupForm.classList.add('hidden'); loginForm.classList.remove('hidden'); clearMsgs(); };
-
-  signupFuncao.onchange = () => {
-    if (signupFuncao.value === 'VENDEDOR') campoGerente.classList.remove('hidden');
-    else campoGerente.classList.add('hidden');
-  };
-
-  function clearMsgs(){ loginMsg.textContent=''; signupMsg.textContent=''; }
-
-  // === LOGIN ===
-  document.getElementById('btnLogin').onclick = async () => {
-    clearMsgs();
-    const email = loginEmail.value.trim();
-    const senha = loginSenha.value;
-    if(!email || !senha){ loginMsg.textContent = 'Preencha email e senha.'; return; }
-    try{
-      await signInWithEmailAndPassword(auth, email, senha);
-      // on success, redirect to index
-      window.location.href = 'index.html';
-    }catch(err){
-      console.error(err);
-      loginMsg.textContent = 'Erro ao entrar: ' + (err.message || err.code || 'Tente novamente');
+    function mostrarCadastro() {
+      document.getElementById('loginDiv').style.display = 'none';
+      document.getElementById('cadastroDiv').style.display = 'block';
     }
-  };
-
-  // === CADASTRO ===
-  document.getElementById('btnSignup').onclick = async () => {
-    clearMsgs();
-    const nome = signupNome.value.trim();
-    const email = signupEmail.value.trim();
-    const senha = signupSenha.value;
-    const funcao = signupFuncao.value;
-    const gerenteResp = (funcao === 'VENDEDOR') ? signupGerente.value.trim() : null;
-    const cotacaoVal = parseFloat(signupCotacao.value) || 1;
-
-    if(!nome || !email || !senha){ signupMsg.textContent = 'Preencha nome, email e senha.'; return; }
-    if(senha.length < 6){ signupMsg.textContent = 'Senha precisa ter ao menos 6 caracteres.'; return; }
-    if(funcao === 'VENDEDOR' && !gerenteResp){ signupMsg.textContent = 'Informe o gerente responsável para VENDEDOR.'; return; }
-
-    try{
-      // cria usuário no Auth
-      const cred = await createUserWithEmailAndPassword(auth, email, senha);
-      const uid = cred.user.uid;
-
-      // grava documento no Firestore: usuarios/{uid}
-      const usuarioDoc = {
-        nome,
-        email,
-        funcao,
-        gerenteResponsavel: gerenteResp || null,
-        cotacao: Number(cotacaoVal) || 1,
-        criadoEm: new Date().toISOString()
-      };
-      await setDoc(doc(db, 'usuarios', uid), usuarioDoc);
-
-      // redireciona para painel
-      window.location.href = 'index.html';
-    }catch(err){
-      console.error(err);
-      signupMsg.textContent = 'Erro ao criar conta: ' + (err.message || err.code || 'Tente novamente');
+    function mostrarLogin() {
+      document.getElementById('cadastroDiv').style.display = 'none';
+      document.getElementById('loginDiv').style.display = 'block';
     }
-  };
 
-  // Dica: aqui você poderia também implementar "esqueci a senha"
-  // exemplo (não mostrado na UI): sendPasswordResetEmail(auth, email)
+    async function criarConta() {
+      const nome = document.getElementById('nomeCadastro').value.trim();
+      const email = document.getElementById('emailCadastro').value.trim();
+      const senha = document.getElementById('senhaCadastro').value.trim();
+      const funcao = document.getElementById('funcaoCadastro').value;
+      const cotacao = parseFloat(document.getElementById('cotacaoCadastro').value) || 0;
+      const gerente = document.getElementById('gerenteCadastro').value.trim();
 
-</script>
+      if (!email || !senha || !nome || !funcao) return alert('Preencha todos os campos obrigatórios.');
+
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, senha);
+        const uid = userCred.user.uid;
+        await setDoc(doc(db, "usuarios", uid), {
+          nome, email, funcao, cotacao, gerenteResponsavel: gerente
+        });
+        alert("Conta criada com sucesso!");
+        window.location.href = "index.html";
+      } catch (e) {
+        alert("Erro ao criar conta: " + e.message);
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('emailLogin').value.trim();
+      const senha = document.getElementById('senhaLogin').value.trim();
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+        window.location.href = "index.html";
+      } catch (e) {
+        alert("Erro ao entrar: " + e.message);
+      }
+    }
+  </script>
 </body>
-  </html>
+ </html>
