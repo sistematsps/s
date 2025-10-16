@@ -20,17 +20,14 @@ const firebaseConfig = {
   appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 /* Controle de login */
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "index.html";
-  else if (user.email !== "pitimbudasorte@gmail.com") {
-    alert("Acesso restrito ao administrador.");
-    signOut(auth);
+  if (!user) {
+    window.location.href = "index.html"; // Redireciona usuários não logados
   } else {
     document.getElementById("admin-email").textContent = user.email;
     carregarBancas();
@@ -70,15 +67,15 @@ async function carregarBancas() {
 
   const snap = await getDocs(collection(db, "bancas"));
   snap.forEach((docSnap) => {
-    const bancas = docSnap.data();
+    const banca = docSnap.data();
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
       <h3>${banca.nome}</h3>
       <p>${banca.descricao}</p>
-      <p><b>Página da Banca:</b> ${bancas.url}</p>
-      <p><b>Carga Horária:</b> ${bancas.cargaHoraria} dias</p>
-      <button class="btn" onclick="editarbanca('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
+      <p><b>Página da Banca:</b> ${banca.url}</p>
+      <p><b>Carga Horária:</b> ${banca.cargaHoraria} horas</p>
+      <button class="btn" onclick="editarCurso('${docSnap.id}','${banca.nome}','${banca.descricao}','${banca.url}', ${banca.cargaHoraria})">Editar</button>
       <button class="btn-danger" onclick="excluirBanca('${docSnap.id}')">Excluir</button>
     `;
     lista.appendChild(div);
@@ -115,7 +112,7 @@ window.fecharModal = () => { document.getElementById("modal-editar").style.displ
 window.excluirBanca = async (id) => {
   if (confirm("Tem certeza que deseja excluir esta Banca?")) {
     await deleteDoc(doc(db, "bancas", id));
-    alert("banca excluído.");
+    alert("Banca excluída.");
     carregarBancas();
   }
 };
@@ -160,7 +157,7 @@ button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
 </form>
 
 <h2>Cursos Cadastrados</h2>
-<div id="lista-cursos"></div>
+<div id="lista-bancas"></div>
 
 <!-- Modal de edição -->
 <div id="modal-editar" class="modal">
