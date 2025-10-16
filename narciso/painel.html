@@ -56,7 +56,7 @@
     }
   });
 
-  // 🔹 Dados do aluno
+  // 🔹 Dados do Gerente
   async function carregarDadosAluno(uid) {
     const alunoRef = doc(db, "alunos", uid);
     const alunoSnap = await getDoc(alunoRef);
@@ -225,7 +225,7 @@
           <div id="dadosAluno"></div>
         </div>
 
-        <h2>Cursos do Aluno</h2>
+        <h2>bancas</h2>
         <div id="cursosMatriculados" class="cards"></div>
       </div>
 
