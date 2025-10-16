@@ -10,7 +10,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // 🔥 Configuração do novo Firebase
+  // 🔥 Configuração do Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
     authDomain: "cursos-6f950.firebaseapp.com",
@@ -24,8 +24,8 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Caminho fixo da coleção de bancas
-  const caminhoBancas = "bancas/tsVozdTNtsqDslt8PZ7G/bancas";
+  // Caminho da coleção de bancas
+  const caminhoBancas = "bancas/x7LCbQKfnf996TVj2ObZ/bancas";
 
   // Função para carregar as bancas
   async function carregarBancas() {
