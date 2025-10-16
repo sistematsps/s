@@ -8,7 +8,7 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // Configuração do Firebase
   const firebaseConfig = {
@@ -25,22 +25,26 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Carregar bancas
+  // Caminho correto da sua coleção
+  const caminhoBancas = "bancas/x7LCbQKfnf996TVj2ObZ/bancas";
+
+  // Função para carregar as bancas
   async function carregarBancas() {
     const container = document.getElementById("bancasContainer");
     container.innerHTML = "<p>Carregando bancas...</p>";
 
     try {
-      const bancasSnap = await getDocs(collection(db, "bancas"));
+      const bancasRef = collection(db, caminhoBancas);
+      const snapshot = await getDocs(bancasRef);
       container.innerHTML = "";
 
-      if (bancasSnap.empty) {
-        container.innerHTML = "<p>Nenhuma banca cadastrada ainda.</p>";
+      if (snapshot.empty) {
+        container.innerHTML = "<p>Nenhuma banca cadastrada encontrada.</p>";
         return;
       }
 
-      bancasSnap.forEach((bancaDoc) => {
-        const banca = bancaDoc.data();
+      snapshot.forEach((docSnap) => {
+        const banca = docSnap.data();
 
         const card = document.createElement("div");
         card.className = "card";
@@ -56,12 +60,11 @@
         container.appendChild(card);
       });
     } catch (erro) {
-      container.innerHTML = "<p>Erro ao carregar bancas.</p>";
-      console.error(erro);
+      console.error("Erro ao carregar bancas:", erro);
+      container.innerHTML = "<p>Erro ao carregar bancas. Verifique o console.</p>";
     }
   }
 
-  // Executa ao carregar a página
   window.onload = carregarBancas;
 </script>
 
