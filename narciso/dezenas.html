@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerenciamento de Entradas e Saídas</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f8f8f8; }
+  h1, h2 { color: #b30000; }
+  label { display:block; margin:5px 0 2px; font-weight:bold; }
+  input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding:6px; margin-bottom:8px; border-radius:4px; border:1px solid #ccc; }
+  button { padding:8px 15px; margin:3px; border:none; border-radius:4px; background:#b30000; color:white; cursor:pointer; }
+  button:hover { background:#900000; }
+  hr { margin:20px 0; border:1px solid #ccc; }
+  table { width:100%; border-collapse: collapse; margin-top:10px; background:#fff; }
+  th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+  th { background:#ffcccc; }
+  .totais { font-weight:bold; margin-top:10px; }
+  #btnExport { background:#006400; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<h1>Gerenciamento de Entradas e Saídas</h1>
+
+<label for="sistemaSelect">Sistema:</label>
+<select id="sistemaSelect">
+  <option value="pitimbu">Pitimbu da Sorte</option>
+  <option value="timonha">Timonha da Sorte</option>
+</select>
+
+<h2>Lançamentos</h2>
+<label>Vendedor:</label><input type="text" id="vendedorLanc" />
+<label>Data:</label><input type="date" id="dataLanc" />
+<label>Valor:</label><input type="number" step="0.01" id="valorLanc" />
+<label>Referente a:</label><input type="text" id="refLanc" />
+<button onclick="salvarLancamento()">Salvar</button>
+<button onclick="editarLancamento()">Editar</button>
+<button onclick="excluirLancamento()">Excluir</button>
+
+<table id="tabelaLancamentos">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Vendedor</th>
+      <th>Referente a</th>
+      <th>Valor</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  Recebido: R$ <span id="totalRecebido">0.00</span> | 
+  Pago: R$ <span id="totalPago">0.00</span> | 
+  Saldo: R$ <span id="saldo">0.00</span>
+</div>
+
+<hr>
+
+<h2>Valores Pagos</h2>
+<label>Data:</label><input type="date" id="dataPago" />
+<label>Vendedor:</label><input type="text" id="vendedorPago" />
+<label>Valor Pago:</label><input type="number" step="0.01" id="valorPago" />
+<label>Quem Pagou:</label><input type="text" id="quemPagou" />
+<button onclick="salvarValorPago()">Salvar</button>
+
+<table id="tabelaPagos">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Vendedor</th>
+      <th>Valor Pago</th>
+      <th>Quem Pagou</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<hr>
+
+<h2>Repasses</h2>
+<label>Vendedor:</label><input type="text" id="vendedorRepasse" />
+<label>Descrição:</label><input type="text" id="descRepasse" />
+<label>Valor:</label><input type="number" step="0.01" id="valorRepasse" />
+<button onclick="salvarRepasse()">Salvar</button>
+
+<table id="tabelaRepasses">
+  <thead>
+    <tr>
+      <th>Vendedor</th>
+      <th>Descrição</th>
+      <th>Valor</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<button id="btnExport" onclick="exportarRelatorio()">Exportar Relatório (JPG)</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // ====== CONFIGURAÇÃO FIREBASE ======
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_ID",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const sistemaSelect = document.getElementById('sistemaSelect');
+  let sistemaAtivo = sistemaSelect.value;
+  let editarIndexLanc = null;
+
+  sistemaSelect.addEventListener('change', ()=>{
+    sistemaAtivo = sistemaSelect.value;
+    carregarDados();
+  });
+
+  // ====== Lançamentos ======
+  function carregarLancamentos(){
+    const tbody = document.querySelector('#tabelaLancamentos tbody');
+    tbody.innerHTML='';
+    let totalRec=0;
+    db.collection(`lancamentos_${sistemaAtivo}`).orderBy('data','asc')
+      .get().then(snapshot=>{
+        snapshot.forEach(doc=>{
+          const l = doc.data();
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td>${l.data}</td><td>${l.vendedor}</td><td>${l.ref}</td><td>${parseFloat(l.valor).toFixed(2)}</td>`;
+          tbody.appendChild(tr);
+          totalRec+=parseFloat(l.valor);
+        });
+        document.getElementById('totalRecebido').textContent=totalRec.toFixed(2);
+        atualizarSaldo();
+      });
+  }
+
+  function salvarLancamento(){
+    const vendedor=document.getElementById('vendedorLanc').value.trim();
+    const data=document.getElementById('dataLanc').value;
+    const valor=parseFloat(document.getElementById('valorLanc').value);
+    const ref=document.getElementById('refLanc').value.trim();
+    if(!vendedor||!data||isNaN(valor)||valor<=0||!ref){ alert('Preencha todos os campos'); return;}
+    db.collection(`lancamentos_${sistemaAtivo}`).add({vendedor,data,valor,ref})
+      .then(()=>{ limparFormularioLanc(); carregarLancamentos(); });
+  }
+
+  function limparFormularioLanc(){
+    document.getElementById('vendedorLanc').value='';
+    document.getElementById('dataLanc').value='';
+    document.getElementById('valorLanc').value='';
+    document.getElementById('refLanc').value='';
+  }
+
+  // ====== Valores Pagos ======
+  function carregarPagos(){
+    const tbody=document.querySelector('#tabelaPagos tbody'); tbody.innerHTML='';
+    let totalPago=0;
+    db.collection(`valoresPagos_${sistemaAtivo}`).orderBy('data','asc')
+      .get().then(snapshot=>{
+        snapshot.forEach(doc=>{
+          const v=doc.data();
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td>${v.data}</td><td>${v.vendedor}</td><td>${parseFloat(v.valor).toFixed(2)}</td><td>${v.quemPagou}</td>`;
+          tbody.appendChild(tr);
+          totalPago+=parseFloat(v.valor);
+        });
+        document.getElementById('totalPago').textContent=totalPago.toFixed(2);
+        atualizarSaldo();
+      });
+  }
+
+  function salvarValorPago(){
+    const data=document.getElementById('dataPago').value;
+    const vendedor=document.getElementById('vendedorPago').value.trim();
+    const valor=parseFloat(document.getElementById('valorPago').value);
+    const quemPagou=document.getElementById('quemPagou').value.trim();
+    if(!data||!vendedor||isNaN(valor)||valor<=0||!quemPagou){ alert('Preencha todos os campos'); return;}
+    db.collection(`valoresPagos_${sistemaAtivo}`).add({data,vendedor,valor,quemPagou})
+      .then(()=>{ limparFormularioPagos(); carregarPagos(); });
+  }
+
+  function limparFormularioPagos(){
+    document.getElementById('dataPago').value='';
+    document.getElementById('vendedorPago').value='';
+    document.getElementById('valorPago').value='';
+    document.getElementById('quemPagou').value='';
+  }
+
+  function atualizarSaldo(){
+    const rec=parseFloat(document.getElementById('totalRecebido').textContent)||0;
+    const pag=parseFloat(document.getElementById('totalPago').textContent)||0;
+    document.getElementById('saldo').textContent=(rec-pag).toFixed(2);
+  }
+
+  // ====== Repasses ======
+  function carregarRepasses(){
+    const tbody=document.querySelector('#tabelaRepasses tbody'); tbody.innerHTML='';
+    db.collection(`repasses_${sistemaAtivo}`).get().then(snapshot=>{
+      snapshot.forEach(doc=>{
+        const r=doc.data();
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${r.vendedor}</td><td>${r.descricao}</td><td>${parseFloat(r.valor).toFixed(2)}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  }
+
+  function salvarRepasse(){
+    const vendedor=document.getElementById('vendedorRepasse').value.trim();
+    const descricao=document.getElementById('descRepasse').value.trim();
+    const valor=parseFloat(document.getElementById('valorRepasse').value);
+    if(!vendedor||!descricao||isNaN(valor)||valor<=0){ alert('Preencha todos os campos'); return;}
+    db.collection(`repasses_${sistemaAtivo}`).add({vendedor,descricao,valor})
+      .then(()=>{ 
+        document.getElementById('vendedorRepasse').value='';
+        document.getElementById('descRepasse').value='';
+        document.getElementById('valorRepasse').value='';
+        carregarRepasses();
+      });
+  }
+
+  // ====== Exportar Relatório ======
+  function exportarRelatorio(){
+    html2canvas(document.body).then(canvas=>{
+      const link=document.createElement('a');
+      link.download=`relatorio_${sistemaAtivo}.jpg`;
+      link.href=canvas.toDataURL('image/jpeg',0.9);
+      link.click();
+    });
+  }
+
+  // ====== Inicialização ======
+  function carregarDados(){
+    carregarLancamentos();
+    carregarPagos();
+    carregarRepasses();
+  }
+
+  window.onload=carregarDados;
+</script>
+</body>
+</html>

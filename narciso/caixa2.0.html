@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Caixa 2.0 - Clientes (Tempo Real)</title>
+  <!-- Firebase v8 (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root { --primary:#0d6efd; --bg:#f7f7fa; --card:#ffffff; --text:#1f2937; --muted:#6b7280; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; margin: 20px; background: var(--bg); color: var(--text); }
+    h1 { text-align:center; margin-bottom: 8px; }
+    .sub { text-align:center; color: var(--muted); margin-top:0; }
+    .row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+    .select { padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    .card { background: var(--card); border:1px solid #e5e7eb; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.03); }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
+
+    label { font-weight:600; margin-top:8px; display:block; }
+    input, select, button { width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; }
+    input:focus, select:focus { outline:none; border-color: var(--primary); }
+    .btn { background: var(--primary); color:#fff; border:none; cursor:pointer; font-weight:600; }
+    .btn:hover { filter: brightness(0.95); }
+    .btn-muted { background:#111827; color:#fff; }
+    .btn-whats { background:#25D366; color:#fff; }
+    .btn-row { display:flex; gap:10px; flex-wrap:wrap; }
+
+    ul { list-style:none; padding:0; margin:0; }
+    li { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+    li small { color: var(--muted); }
+
+    .totais { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin: 16px 0 8px; }
+    .pill { background:#eef2ff; color:#1d4ed8; padding:8px 14px; border-radius:999px; font-weight:700; }
+    .muted { color: var(--muted); }
+
+    .section-title { margin: 8px 0 12px; }
+
+    .stack { display:grid; gap:10px; }
+
+    .split { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 600px){ .split{ grid-template-columns:1fr; } }
+
+    .danger { color:#b91c1c; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Caixa 2.0 – Clientes</h1>
+  <p class="sub">Tempo real com Firebase • Sem LocalStorage</p>
+
+  <!-- Sistema -->
+  <div class="row" style="justify-content:center; margin-bottom:12px;">
+    <div class="select">
+      <label for="sistemaSelect" style="margin:0 0 6px 0;">Sistema</label>
+      <select id="sistemaSelect">
+        <option value="pitimbu">Pitimbu da Sorte</option>
+        <option value="timonha">Timonha da Sorte</option>
+      </select>
+    </div>
+    <div class="pill" id="badgeSistema">Ativo: Pitimbu da Sorte</div>
+  </div>
+
+  <!-- Totais -->
+  <div class="totais">
+    <div class="pill">Total Geral: R$ <span id="totalGeral">0,00</span></div>
+  </div>
+
+  <div class="grid">
+    <!-- Coluna esquerda: clientes + cadastro -->
+    <div class="card">
+      <h3 class="section-title">Cadastrar novo cliente</h3>
+      <div class="stack">
+        <label>Nome do cliente</label>
+        <input id="nomeClienteInput" placeholder="Ex.: João da Silva" />
+        <label>Telefone (WhatsApp) – opcional (apenas números, DDD + telefone)</label>
+        <input id="telefoneClienteInput" placeholder="Ex.: 85988887777" />
+        <button class="btn" onclick="adicionarCliente()">Adicionar Cliente</button>
+      </div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #e5e7eb;">
+
+      <h3 class="section-title">Clientes</h3>
+      <ul id="listaClientes"></ul>
+      <p class="muted" id="hintClientes">Clique em um cliente para ver/lançar valores e pagamentos.</p>
+    </div>
+
+    <!-- Coluna direita: detalhes do cliente -->
+    <div class="card">
+      <h3 class="section-title">Detalhes do cliente</h3>
+      <div id="detalhesVazio" class="muted">Nenhum cliente selecionado.</div>
+
+      <div id="detalhesCliente" style="display:none;">
+        <h3 style="margin:4px 0 8px;"> <span id="nomeCliente"></span> </h3>
+        <p><b>Saldo atual:</b> R$ <span id="saldoCliente">0,00</span></p>
+
+        <div class="btn-row" style="margin:10px 0 20px;">
+          <button class="btn" onclick="gerarPDF()">📄 Gerar PDF</button>
+          <button class="btn btn-whats" onclick="enviarWhatsApp()">🟢 WhatsApp</button>
+        </div>
+
+        <div class="split">
+          <div>
+            <h4 class="section-title">Adicionar Valor (débito)</h4>
+            <div class="stack">
+              <label>Data</label>
+              <input type="date" id="dataValor">
+              <label>Valor</label>
+              <input type="number" step="0.01" id="valorValor" placeholder="0.00">
+              <label>Referente</label>
+              <input type="text" id="referenteValor" placeholder="Ex.: Empréstimo, Aposta, etc.">
+              <button class="btn" onclick="adicionarValor()">Adicionar Valor</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="section-title">Adicionar Pagamento (crédito)</h4>
+            <div class="stack">
+              <label>Data</label>
+              <input type="date" id="dataPagamento">
+              <label>Valor</label>
+              <input type="number" step="0.01" id="valorPagamento" placeholder="0.00">
+              <button class="btn" onclick="adicionarPagamento()">Adicionar Pagamento</button>
+            </div>
+          </div>
+        </div>
+
+        <hr style="margin:16px 0; border:none; border-top:1px solid #e5e7eb;">
+
+        <div class="split">
+          <div>
+            <h4 class="section-title">Valores</h4>
+            <ul id="listaValores"></ul>
+          </div>
+          <div>
+            <h4 class="section-title">Pagamentos</h4>
+            <ul id="listaPagamentos"></ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== Firebase Config (use a sua configuração) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCc3XpTCx9bNhOPng8WJwHp4NMTVSFqT0w",
+    authDomain: "gerenciador-77f3d.firebaseapp.com",
+    projectId: "gerenciador-77f3d",
+    storageBucket: "gerenciador-77f3d.firebasestorage.app",
+    messagingSenderId: "850976780997",
+    appId: "1:850976780997:web:4ef37c71147a3c411c36ac",
+    measurementId: "G-93N1ZBCP97"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const FieldValue = firebase.firestore.FieldValue;
+
+  // ===== Sistema ativo (namespacing) =====
+  const selectSistema = document.getElementById('sistemaSelect');
+  const badgeSistema  = document.getElementById('badgeSistema');
+  let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+  selectSistema.value = sistemaAtivo;
+  atualizarBadge();
+
+  selectSistema.addEventListener('change', () => {
+    sistemaAtivo = selectSistema.value;
+    localStorage.setItem('sistemaAtivo', sistemaAtivo);
+    atualizarBadge();
+    resubscribeClientes();
+    limparDetalhes();
+  });
+
+  function atualizarBadge() {
+    badgeSistema.textContent = 'Ativo: ' + (sistemaAtivo === 'pitimbu' ? 'Pitimbu da Sorte' : 'Timonha da Sorte');
+  }
+  function colClientes(){ return `${sistemaAtivo}_clientes`; }
+
+  // ===== Estado / listeners ativos =====
+  let unsubClientes = null;
+  let unsubValores = null;
+  let unsubPagamentos = null;
+
+  let clienteSelecionado = null;
+  let nomeSelecionado = "";
+  let saldoSelecionado = 0;
+  let telefoneSelecionado = "";
+
+  // ===== Helpers =====
+  const brl = n => (Number(n)||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  function limparDetalhes(){
+    clienteSelecionado = null;
+    nomeSelecionado = "";
+    saldoSelecionado = 0;
+    telefoneSelecionado = "";
+
+    document.getElementById('detalhesCliente').style.display = 'none';
+    document.getElementById('detalhesVazio').style.display = 'block';
+    document.getElementById('nomeCliente').textContent = '';
+    document.getElementById('saldoCliente').textContent = '0,00';
+
+    if (unsubValores) { unsubValores(); unsubValores = null; }
+    if (unsubPagamentos) { unsubPagamentos(); unsubPagamentos = null; }
+  }
+
+  // ===== Clientes: cadastro =====
+  async function adicionarCliente() {
+    const nome = document.getElementById("nomeClienteInput").value.trim();
+    const tel  = document.getElementById("telefoneClienteInput").value.trim(); // opcional
+    if (!nome) { alert("Digite o nome do cliente."); return; }
+
+    // Evitar duplicidade simples por nome (não bloqueia 100%)
+    const dup = await db.collection(colClientes()).where('nome', '==', nome).limit(1).get();
+    if (!dup.empty) { alert('Já existe um cliente com esse nome.'); return; }
+
+    await db.collection(colClientes()).add({ nome, telefone: tel || null, saldo: 0 });
+    document.getElementById("nomeClienteInput").value = "";
+    document.getElementById("telefoneClienteInput").value = "";
+  }
+
+  // ===== Clientes: lista em tempo real =====
+  function resubscribeClientes(){
+    if (unsubClientes) { unsubClientes(); unsubClientes = null; }
+    unsubClientes = db.collection(colClientes())
+      .orderBy('nome')
+      .onSnapshot(snap => {
+        const lista = document.getElementById("listaClientes");
+        lista.innerHTML = "";
+        let total = 0;
+
+        if (snap.empty){
+          document.getElementById('hintClientes').textContent = 'Nenhum cliente. Cadastre o primeiro ao lado.';
+        } else {
+          document.getElementById('hintClientes').textContent = 'Clique em um cliente para ver/lançar valores e pagamentos.';
+        }
+
+        snap.forEach(docu => {
+          const c = docu.data();
+          total += c.saldo || 0;
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <div>
+              <div><strong>${c.nome}</strong></div>
+              <small>${c.telefone ? '📱 ' + c.telefone : '— sem telefone —'}</small>
+            </div>
+            <div><strong>R$ ${brl(c.saldo)}</strong></div>
+          `;
+          li.onclick = () => mostrarDetalhes(docu.id, c.nome, c.saldo || 0, c.telefone || "");
+          lista.appendChild(li);
+        });
+
+        document.getElementById("totalGeral").textContent = brl(total);
+      }, err => {
+        console.error(err);
+        alert('Erro ao carregar clientes: ' + err.message);
+      });
+  }
+  resubscribeClientes();
+
+  // ===== Detalhes do cliente =====
+  function mostrarDetalhes(clienteId, nome, saldo, telefone){
+    clienteSelecionado = clienteId;
+    nomeSelecionado = nome;
+    saldoSelecionado = saldo;
+    telefoneSelecionado = telefone || "";
+
+    document.getElementById('detalhesVazio').style.display = 'none';
+    document.getElementById('detalhesCliente').style.display = 'block';
+    document.getElementById('nomeCliente').textContent = nomeSelecionado;
+    document.getElementById('saldoCliente').textContent = brl(saldoSelecionado);
+
+    // listeners em tempo real para subcoleções
+    const refValores = db.collection(colClientes()).doc(clienteSelecionado).collection('valores').orderBy('data', 'desc');
+    const refPag    = db.collection(colClientes()).doc(clienteSelecionado).collection('pagamentos').orderBy('data', 'desc');
+
+    if (unsubValores) unsubValores();
+    if (unsubPagamentos) unsubPagamentos();
+
+    unsubValores = refValores.onSnapshot(s => {
+      const ul = document.getElementById('listaValores');
+      ul.innerHTML = "";
+      s.forEach(d => {
+        const v = d.data();
+        const li = document.createElement('li');
+        li.innerHTML = `<div>${v.data || ''}<small class="muted"> • ${v.referente || '-'}</small></div><div><strong>R$ ${brl(v.valor)}</strong></div>`;
+        ul.appendChild(li);
+      });
+    });
+
+    unsubPagamentos = refPag.onSnapshot(s => {
+      const ul = document.getElementById('listaPagamentos');
+      ul.innerHTML = "";
+      s.forEach(d => {
+        const p = d.data();
+        const li = document.createElement('li');
+        li.innerHTML = `<div>${p.data || ''}</div><div class="danger"><strong>R$ ${brl(p.valor)}</strong></div>`;
+        ul.appendChild(li);
+      });
+    });
+
+    // também escuta o doc do cliente para saldo ao vivo
+    db.collection(colClientes()).doc(clienteSelecionado).onSnapshot(doc => {
+      const c = doc.data();
+      if (c){
+        saldoSelecionado = c.saldo || 0;
+        document.getElementById('saldoCliente').textContent = brl(saldoSelecionado);
+      }
+    });
+  }
+
+  // ===== Lançar valor (débito) =====
+  async function adicionarValor(){
+    if (!clienteSelecionado) { alert('Selecione um cliente.'); return; }
+    const data = document.getElementById('dataValor').value;
+    const valor = parseFloat(document.getElementById('valorValor').value);
+    const referente = (document.getElementById('referenteValor').value || '').trim();
+
+    if (!data || isNaN(valor) || valor <= 0){
+      alert('Preencha data e valor (> 0).'); return;
+    }
+    await db.collection(colClientes()).doc(clienteSelecionado).collection('valores').add({ data, valor, referente });
+    // incrementa saldo do cliente
+    await db.collection(colClientes()).doc(clienteSelecionado)
+      .update({ saldo: FieldValue.increment(valor) });
+
+    // limpa inputs
+    document.getElementById('dataValor').value = "";
+    document.getElementById('valorValor').value = "";
+    document.getElementById('referenteValor').value = "";
+  }
+
+  // ===== Lançar pagamento (crédito) =====
+  async function adicionarPagamento(){
+    if (!clienteSelecionado) { alert('Selecione um cliente.'); return; }
+    const data = document.getElementById('dataPagamento').value;
+    const valor = parseFloat(document.getElementById('valorPagamento').value);
+
+    if (!data || isNaN(valor) || valor <= 0){
+      alert('Preencha data e valor (> 0).'); return;
+    }
+    await db.collection(colClientes()).doc(clienteSelecionado).collection('pagamentos').add({ data, valor });
+    // decrementa saldo do cliente
+    await db.collection(colClientes()).doc(clienteSelecionado)
+      .update({ saldo: FieldValue.increment(-valor) });
+
+    // limpa inputs
+    document.getElementById('dataPagamento').value = "";
+    document.getElementById('valorPagamento').value = "";
+  }
+
+  // ===== Geração de PDF =====
+  async function gerarPDF(){
+    if (!clienteSelecionado){ alert('Selecione um cliente.'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Cabeçalho
+    doc.setFontSize(16);
+    doc.text(`Relatório do Cliente`, 14, 16);
+    doc.setFontSize(12);
+    doc.text(`Nome: ${nomeSelecionado}`, 14, 24);
+    if (telefoneSelecionado) doc.text(`Telefone: ${telefoneSelecionado}`, 14, 30);
+    doc.text(`Sistema: ${sistemaAtivo === 'pitimbu' ? 'Pitimbu da Sorte' : 'Timonha da Sorte'}`, 14, 36);
+    doc.text(`Emitido em: ${new Date().toLocaleString()}`, 14, 42);
+
+    doc.setFontSize(13);
+    doc.text(`Saldo Atual: R$ ${brl(saldoSelecionado)}`, 14, 50);
+
+    let y = 58;
+    doc.setFontSize(12);
+    doc.text(`Valores (débito):`, 14, y);
+    y += 6;
+
+    const valoresSnap = await db.collection(colClientes()).doc(clienteSelecionado).collection('valores').orderBy('data').get();
+    if (valoresSnap.empty){
+      doc.text(`— sem valores —`, 14, y);
+      y += 6;
+    } else {
+      valoresSnap.forEach(v => {
+        const d = v.data();
+        const linha = `${d.data || ''}  •  R$ ${brl(d.valor)}  •  ${d.referente || '-'}`;
+        doc.text(linha, 14, y);
+        y += 6;
+        if (y > 280){ doc.addPage(); y = 16; }
+      });
+    }
+
+    y += 4;
+    doc.text(`Pagamentos (crédito):`, 14, y);
+    y += 6;
+
+    const pagSnap = await db.collection(colClientes()).doc(clienteSelecionado).collection('pagamentos').orderBy('data').get();
+    if (pagSnap.empty){
+      doc.text(`— sem pagamentos —`, 14, y);
+      y += 6;
+    } else {
+      pagSnap.forEach(p => {
+        const d = p.data();
+        const linha = `${d.data || ''}  •  R$ ${brl(d.valor)}`;
+        doc.text(linha, 14, y);
+        y += 6;
+        if (y > 280){ doc.addPage(); y = 16; }
+      });
+    }
+
+    // Salva o PDF
+    doc.save(`relatorio_${nomeSelecionado}.pdf`);
+  }
+
+  // ===== WhatsApp share =====
+  async function enviarWhatsApp(){
+    if (!clienteSelecionado){ alert('Selecione um cliente.'); return; }
+
+    // Gera um PDF em Blob (sem salvar automaticamente)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text(`Relatório do Cliente: ${nomeSelecionado}`, 14, 16);
+    doc.setFontSize(12);
+    doc.text(`Sistema: ${sistemaAtivo === 'pitimbu' ? 'Pitimbu da Sorte' : 'Timonha da Sorte'}`, 14, 24);
+    doc.text(`Emitido em: ${new Date().toLocaleString()}`, 14, 30);
+    doc.text(`Saldo Atual: R$ ${brl(saldoSelecionado)}`, 14, 38);
+
+    let y = 48;
+    doc.text(`(Para o arquivo completo, use o botão "Gerar PDF")`, 14, y);
+    y += 10;
+
+    // Converte para Blob
+    const blob = doc.output('blob');
+    const fileName = `relatorio_${nomeSelecionado}.pdf`;
+    const file = new File([blob], fileName, { type: 'application/pdf' });
+
+    const telefone = (telefoneSelecionado || '').replace(/\D/g,'');
+    const msg = `Olá ${nomeSelecionado}, segue seu relatório. Saldo: R$ ${brl(saldoSelecionado)}.`;
+    const waUrl = `https://wa.me/${telefone ? telefone : ''}?text=${encodeURIComponent(msg)}`;
+
+    // Tenta Web Share (mobile/desktop compatível)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          title: fileName,
+          text: msg,
+          files: [file],
+        });
+        return;
+      } catch (e) {
+        // Se o usuário cancelar ou não der certo, cai no fallback
+      }
+    }
+
+    // Fallback: baixa o PDF e abre o WhatsApp com a mensagem pronta
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Abre WhatsApp (o usuário poderá anexar o PDF manualmente)
+    window.open(waUrl, '_blank');
+  }
+
+</script>
+</body>
+</html>

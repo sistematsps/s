@@ -1,161 +1,78 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Bancas</title>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-/* Firebase Config */
-const firebaseConfig = {
-  apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
-  authDomain: "cursos-6f950.firebaseapp.com",
-  projectId: "cursos-6f950",
-  storageBucket: "cursos-6f950.firebasestorage.app",
-  messagingSenderId: "146131122545",
-  appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* Cadastrar Banca */
-document.getElementById("form-banca").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nome = document.getElementById("nome").value;
-  const descricao = document.getElementById("descricao").value;
-  const url = document.getElementById("url").value;
-  const cargaHoraria = parseInt(document.getElementById("cargaHoraria").value) || 0;
-
-  await addDoc(collection(db, "bancas"), {
-    nome,
-    descricao,
-    url,
-    cargaHoraria,
-    criadoEm: new Date().toLocaleString()
-  });
-
-  alert("Banca cadastrada com sucesso!");
-  document.getElementById("form-bancas").reset();
-  carregarBancas();
-});
-
-/* Listar bancas */
-async function carregarBancas() {
-  const lista = document.getElementById("lista-bancas");
-  lista.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "bancas"));
-  snap.forEach((docSnap) => {
-    const banca = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <h3>${banca.nome}</h3>
-      <p>${banca.descricao}</p>
-      <p><b>Página da Banca:</b> ${bancas.url}</p>
-      <p><b>Carga Horária:</b> ${banca.cargaHoraria} horas</p>
-      <button class="btn" onclick="editarBancas('${docSnap.id}','${bancas.nome}','${banca.descricao}','${bancsa.url}', ${bancas.cargaHoraria})">Editar</button>
-      <button class="btn-danger" onclick="excluirBancas('${docSnap.id}')">Excluir</button>
-    `;
-    lista.appendChild(div);
-  });
-}
-
-/* Editar Banca */
-window.editarBanca = (id, nome, descricao, url, cargaHoraria) => {
-  document.getElementById("edit-id").value = id;
-  document.getElementById("edit-nome").value = nome;
-  document.getElementById("edit-descricao").value = descricao;
-  document.getElementById("edit-url").value = url;
-  document.getElementById("edit-cargaHoraria").value = cargaHoraria;
-  document.getElementById("modal-editar").style.display = "flex";
-};
-
-window.salvarEdicao = async () => {
-  const id = document.getElementById("edit-id").value;
-  const nome = document.getElementById("edit-nome").value;
-  const descricao = document.getElementById("edit-descricao").value;
-  const url = document.getElementById("edit-url").value;
-  const cargaHoraria = parseInt(document.getElementById("edit-cargaHoraria").value) || 0;
-
-  await updateDoc(doc(db, "bancas", id), { nome, descricao, url, cargaHoraria, atualizadoEm: new Date().toLocaleString() });
-
-  alert("Banca atualizada com sucesso!");
-  fecharModal();
-  carregarBancas();
-};
-
-window.fecharModal = () => { document.getElementById("modal-editar").style.display = "none"; };
-
-/* Excluir Banca */
-window.excluirBanca = async (id) => {
-  if (confirm("Tem certeza que deseja excluir esta Banca?")) {
-    await deleteDoc(doc(db, "bancas", id));
-    alert("Banca excluída.");
-    carregarBancas();
-  }
-};
-
-/* Carrega as bancas ao abrir a página */
-window.addEventListener('DOMContentLoaded', carregarBancas);
-</script>
-
+<title>Painel Administrativo</title>
 <style>
-body { font-family: Arial; background:#f4f6f9; margin:0; padding:20px; }
-h1 { color:#007bff; }
-form { background:white; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); margin-bottom:30px; }
-input, textarea { width:100%; padding:8px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc; }
-button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
-.btn { background:#007bff; color:white; margin-right:5px; }
-.btn:hover { background:#0056b3; }
-.btn-danger { background:#dc3545; color:white; }
-.card { background:white; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.1); padding:15px; margin-bottom:15px; }
-.modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
-.modal-content { background:white; padding:20px; border-radius:8px; width:300px; }
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+  .slide { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+  .active { display: block; }
+  h1, h2 { text-align: center; margin-bottom: 20px; }
+  .buttons, .cards { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+  button, .card { padding: 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; transition: 0.2s; text-align: center; }
+  button { background-color: #2196f3; color: white; }
+  button:hover, .card:hover { background-color: #0b7dda; color: #fff; }
+  .card { background-color: #fff; color: #333; width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 </style>
 </head>
-
 <body>
-<h1>Painel de Bancas</h1>
 
-<h2>Cadastrar Nova Banca</h2>
-<form id="form-banca">
-  <label>Nome da Banca</label>
-  <input type="text" id="nome" required>
-  <label>Descrição</label>
-  <textarea id="descricao" required></textarea>
-  <label>Página da Banca</label>
-  <input type="text" id="url" placeholder="Ex: matematica.html" required>
-  <label>Carga Horária (horas)</label>
-  <input type="number" id="cargaHoraria" min="1" required>
-  <button type="submit" class="btn">Cadastrar Banca</button>
-</form>
-
-<h2>Bancas Cadastradas</h2>
-<div id="lista-bancas"></div>
-
-<!-- Modal de edição -->
-<div id="modal-editar" class="modal">
-  <div class="modal-content">
-    <h3>Editar Banca</h3>
-    <input type="hidden" id="edit-id">
-    <label>Nome:</label>
-    <input type="text" id="edit-nome">
-    <label>Descrição:</label>
-    <textarea id="edit-descricao"></textarea>
-    <label>Página da Banca:</label>
-    <input type="text" id="edit-url" placeholder="Ex: matematica.html">
-    <label>Carga Horária (horas)</label>
-    <input type="number" id="edit-cargaHoraria" min="1">
-    <div style="margin-top:10px;">
-      <button class="btn" onclick="salvarEdicao()">Salvar</button>
-      <button class="btn-danger" onclick="fecharModal()">Cancelar</button>
-    </div>
+<!-- Slide 0: Painel Inicial -->
+<div id="slide0" class="slide active">
+  <h1>Painel Administrativo</h1>
+  <div class="buttons">
+    <button onclick="window.location.href='https://sistematsps.github.io/pitimbu/admin.html'">PITIMBU DA SORTE</button>
+    <button onclick="window.location.href='https://sistematsps.github.io/timonha/admin.html'">TIMONHA DA SORTE</button>
+    <button onclick="window.location.href='https://sistematsps.github.io/dezena/admin.html'">DEZENA DA SORTE</button>
   </div>
 </div>
+
+<!-- Slide 1: PITIMBU DA SORTE -->
+<div id="slide1" class="slide">
+  <h2>PITIMBU DA SORTE</h2>
+  <div class="cards">
+   
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 2: TIMONHA DA SORTE -->
+<div id="slide2" class="slide">
+  <h2>TIMONHA DA SORTE</h2>
+  <div class="cards">
+      <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+        <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 3: DEZENA DA SORTE -->
+<div id="slide3" class="slide">
+  <h2>DEZENA DA SORTE</h2>
+  <div class="cards">
+   
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+     <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<script>
+function goToSlide(n) {
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach(s => s.classList.remove('active'));
+  document.getElementById('slide' + n).classList.add('active');
+}
+</script>
+
 </body>
 </html>
+
+
+

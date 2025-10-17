@@ -1,131 +1,89 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  // 🔧 Configuração do Firebase (mesma usada no cadastro)
- // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:6ac28154089900e06ac20d",
-  measurementId: "G-X9DQLB0BMF"
-};
-
-  // Inicializa Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // 🔹 Função de login
-  window.login = async function loginAluno() {
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value;
-
-    if (!email || !senha) {
-      alert("Por favor, preencha todos os campos!");
-      return;
-    }
-
-    try {
-      // Faz login via Authentication
-      const credenciais = await signInWithEmailAndPassword(auth, email, senha);
-      const user = credenciais.user;
-
-      // Busca dados do Firestore (opcional)
-      const docRef = doc(db, "usuarios", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const aluno = docSnap.data();
-        console.log("Bem-vindo,", usuario.nome);
-      }
-
-      // Salva UID no localStorage para o painel
-      localStorage.setItem("alunoUID", user.uid);
-
-      alert("Login realizado com sucesso!");
-      window.location.href = "painel.html";
-    } catch (erro) {
-      console.error(erro);
-      if (erro.code === "auth/invalid-credential" || erro.code === "auth/wrong-password") {
-        alert("E-mail ou senha incorretos.");
-      } else if (erro.code === "auth/user-not-found") {
-        alert("Usuário não encontrado.");
-      } else {
-        alert("Erro ao fazer login: " + erro.message);
-      }
-    }
-  };
-</script>
-
+<title>Painel Administrativo</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f6fa;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .container {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    width: 320px;
-  }
-  h2 {
-    text-align: center;
-    color: #007bff;
-  }
-  input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #0056b3;
-  }
-  p {
-    text-align: center;
-    margin-top: 10px;
-  }
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+  .slide { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+  .active { display: block; }
+  h1, h2 { text-align: center; margin-bottom: 20px; }
+  .buttons, .cards { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+  button, .card { padding: 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; transition: 0.2s; text-align: center; width: 100%;}
+  button { background-color: #2196f3; color: white; }
+  button:hover, .card:hover { background-color: #0b7dda; color: #fff; }
+  .card { background-color: #fff; color: #333; width: 150px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 </style>
 </head>
-
 <body>
-  <div class="container">
-    <h2>ÁREA RESTRITA</h2>
-    <input type="email" id="email" placeholder="E-mail" required>
-    <input type="password" id="senha" placeholder="Senha" required>
-    <button onclick="login()">Entrar</button>
-    <p>Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+
+<!-- Slide 0: Painel Inicial -->
+<div id="slide0" class="slide active">
+  <h1>Painel Administrativo</h1>
+  <div class="buttons">
+    <button onclick="window.location.href='https://sistematsps.github.io/s/pitimbu/painel.html'">PITIMBU DA SORTE</button>
+    <button onclick="window.location.href='https://sistematsps.github.io/s/timonha/painel.html'">TIMONHA DA SORTE</button>
+    <button onclick="window.location.href='https://sistematsps.github.io/s/dezena/painel.html'">DEZENA DA SORTE</button>
+     <button onclick="window.location.href='https://sistematsps.github.io/s/cursos'">CURSOS</button>
   </div>
+</div>
+
+<!-- Slide 1: PITIMBU DA SORTE -->
+<div id="slide1" class="slide">
+  <h2>PITIMBU DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 2: TIMONHA DA SORTE -->
+<div id="slide2" class="slide">
+  <h2>TIMONHA DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<!-- Slide 3: DEZENA DA SORTE -->
+<div id="slide3" class="slide">
+  <h2>DEZENA DA SORTE</h2>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
+    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
+    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
+    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
+    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
+    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
+    <div class="card" onclick="goToSlide(0)">Sair</div>
+  </div>
+</div>
+
+<script>
+function goToSlide(n) {
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach(s => s.classList.remove('active'));
+  document.getElementById('slide' + n).classList.add('active');
+}
+</script>
+
 </body>
 </html>
+
+
+
+
+
+

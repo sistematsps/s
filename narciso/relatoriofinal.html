@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relatório Final - Pitimbu/Timonha da Sorte</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .clock { font-weight: bold; }
+  h2, h3 { text-align: center; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #eee; }
+  hr { margin: 20px 0; }
+  button { display: inline-block; margin: 10px 6px; padding: 10px 16px; background-color: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  button:hover { background-color: #0b7dda; }
+  .totais { text-align: center; font-weight: bold; margin-top: 15px; }
+  .sistema-wrap { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+  .badge-sistema { display:inline-block; padding:6px 10px; border-radius:999px; background:#ffe6e6; color:#b30000; font-weight:bold; font-size:12px; }
+  .filtro-dados { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin: 10px 0 15px; }
+  .filtro-dados input, .filtro-dados select { padding:6px; }
+</style>
+</head>
+<body>
+
+<div class="sistema-wrap">
+  <label for="sistemaSelect"><strong>Sistema:</strong></label>
+  <select id="sistemaSelect">
+    <option value="pitimbu">Pitimbu da Sorte</option>
+    <option value="timonha">Timonha da Sorte</option>
+    <option value="dezena">Dezena da Sorte</option>
+  </select>
+  <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu da Sorte</span>
+</div>
+
+<div class="header">
+  <div>Usuário logado: <strong id="usuarioLogado">---</strong></div>
+  <div class="clock" id="relogio"></div>
+</div>
+
+<div class="filtro-dados">
+  <label>Início:</label><input type="date" id="dataInicioFiltro">
+  <label>Fim:</label><input type="date" id="dataFimFiltro">
+  <label>Vendedor:</label>
+  <select id="vendedorFiltro">
+    <option value="">Todos</option>
+  </select>
+  <button id="btnAplicar">Aplicar Filtro</button>
+  <button id="btnLimpar" type="button">Limpar</button>
+</div>
+
+<hr>
+<h2>RELATÓRIO DE VENDAS</h2>
+<hr>
+
+<table id="tabelaVendas">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Data</th>
+      <th>Recebeu</th>
+      <th>Devolveu</th>
+      <th>Vendeu</th>
+      <th>Apurou</th>
+      <th>Pagou</th>
+      <th>Deve</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL APURADO: <span id="totalApurado">R$ 0,00</span>
+</div>
+
+<hr>
+<h3>RELATÓRIO DE DESPESAS</h3>
+<hr>
+
+<table id="tabelaDespesas">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Valor</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL DAS DESPESAS: <span id="totalDespesas">R$ 0,00</span>
+</div>
+
+<hr>
+<div class="totais">
+  TOTAL DAS RECEITAS: <span id="totalReceitas">R$ 0,00</span><br>
+  TOTAL DAS DESPESAS: <span id="totalGastos">R$ 0,00</span><br>
+  TOTAL FINAL: <span id="totalFinal">R$ 0,00</span>
+</div>
+
+<div style="text-align:center; margin-top:10px;">
+  <button onclick="imprimirRelatorio()">Imprimir Relatório</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.appspot.com",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// UI refs
+const selectSistema = document.getElementById('sistemaSelect');
+const badgeSistema = document.getElementById('badgeSistema');
+const vendedorSelectFiltro = document.getElementById('vendedorFiltro');
+const dataInicioEl = document.getElementById('dataInicioFiltro');
+const dataFimEl = document.getElementById('dataFimFiltro');
+
+let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+selectSistema.value = sistemaAtivo;
+document.getElementById("usuarioLogado").textContent = localStorage.getItem("usuarioLogado") || "Desconhecido";
+
+function atualizarBadge() {
+  badgeSistema.textContent = 'Ativo: ' + (sistemaAtivo==='pitimbu'?'Pitimbu da Sorte':'Timonha da Sorte');
+}
+atualizarBadge();
+
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById('relogio').textContent = agora.toLocaleDateString() + ' ' + agora.toLocaleTimeString();
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+// ---- Estado em memória ----
+let vendedores = [];
+// Map<String, Array<Venda>>
+let vendasPorVendedor = new Map();
+let despesas = [];
+
+// Unsubscribes para evitar listeners duplicados
+let unsubVendedores = null;
+let unsubDespesas = null;
+let unsubPorVendedor = []; // array de funções
+
+// ---- Helpers ----
+function toISODate(anyDate) {
+  if (!anyDate) return '';
+  // Firestore Timestamp
+  if (typeof anyDate === 'object') {
+    if (typeof anyDate.toDate === 'function') {
+      const d = anyDate.toDate();
+      return d.toISOString().slice(0,10);
+    }
+    if ('seconds' in anyDate) {
+      return new Date(anyDate.seconds * 1000).toISOString().slice(0,10);
+    }
+  }
+  if (typeof anyDate === 'string') {
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(anyDate)) return anyDate;
+    // DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(anyDate)) {
+      const [dd, mm, yyyy] = anyDate.split('/');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    // Tentar parse genérico
+    const d = new Date(anyDate);
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+  }
+  return '';
+}
+function passaFiltroData(iso, ini, fim) {
+  if (ini && iso < ini) return false;
+  if (fim && iso > fim) return false;
+  return true;
+}
+function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
+
+// ---- Renderizações ----
+function renderVendas() {
+  const tbody = document.querySelector("#tabelaVendas tbody");
+  tbody.innerHTML = '';
+  let totalApurado = 0;
+
+  const ini = dataInicioEl.value || '';
+  const fim = dataFimEl.value || '';
+  const filtroVend = vendedorSelectFiltro.value || '';
+
+  // Flatten das vendas
+  const todas = [];
+  vendasPorVendedor.forEach(arr => todas.push(...arr));
+
+  // Ordenar por data asc
+  todas.sort((a,b) => (toISODate(a.data)||'') .localeCompare(toISODate(b.data)||''));
+
+  for (const venda of todas) {
+    const iso = toISODate(venda.data);
+    if (!passaFiltroData(iso, ini, fim)) continue;
+    if (filtroVend && venda._vendedor?.nome !== filtroVend) continue;
+
+    const v = venda._vendedor || { nome: venda.vendedor || '—', cotacao: venda.cotacao || 1 };
+    const recebeu = parseFloat(venda.recebeu || 0);
+    const devolveu = parseFloat(venda.devolveu || 0);
+    const pagou = parseFloat(venda.pagou || 0);
+    const vendeu = recebeu - devolveu;
+    const cot = Number(v.cotacao || venda.cotacao || 1);
+    const apurou = vendeu * cot;
+    const deve = apurou - pagou;
+    totalApurado += apurou;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${v.nome}</td>
+      <td>${iso}</td>
+      <td>${recebeu}</td>
+      <td>${devolveu}</td>
+      <td>${vendeu}</td>
+      <td>${moeda(apurou)}</td>
+      <td>${moeda(pagou)}</td>
+      <td>${moeda(deve)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("totalApurado").textContent = moeda(totalApurado);
+  document.getElementById("totalReceitas").textContent = moeda(totalApurado);
+  renderTotaisFinais();
+}
+
+function renderDespesas() {
+  const tbody = document.querySelector("#tabelaDespesas tbody");
+  tbody.innerHTML = '';
+  let totalDespesas = 0;
+
+  const ini = dataInicioEl.value || '';
+  const fim = dataFimEl.value || '';
+
+  // Ordenar por data asc
+  const arr = [...despesas].sort((a,b)=> (toISODate(a.data)||'').localeCompare(toISODate(b.data)||'') );
+
+  for (const d of arr) {
+    const iso = toISODate(d.data);
+    if (!passaFiltroData(iso, ini, fim)) continue;
+    const valor = parseFloat(d.valor || 0);
+    totalDespesas += valor;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${iso}</td>
+      <td>${moeda(valor)}</td>
+      <td>${d.descricao || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
+  document.getElementById("totalGastos").textContent = moeda(totalDespesas);
+  renderTotaisFinais();
+}
+
+function renderTotaisFinais() {
+  const receitas = parseFloat((document.getElementById("totalReceitas").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
+  const gastos = parseFloat((document.getElementById("totalGastos").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
+  document.getElementById("totalFinal").textContent = moeda(receitas - gastos);
+}
+
+// ---- Subscrições ----
+function limparSubscricoesVendas() {
+  unsubPorVendedor.forEach(u => { try{u();}catch{} });
+  unsubPorVendedor = [];
+  vendasPorVendedor.clear();
+}
+
+function iniciarSubscricoes() {
+  // Limpa tudo antes
+  if (unsubVendedores) { try{unsubVendedores();}catch{} unsubVendedores = null; }
+  if (unsubDespesas) { try{unsubDespesas();}catch{} unsubDespesas = null; }
+  limparSubscricoesVendas();
+
+  // Vendedores
+  const colVendedores = collection(db, `${sistemaAtivo}_vendedores`);
+  unsubVendedores = onSnapshot(colVendedores, snap => {
+    vendedores = snap.docs.map(d => d.data());
+    // Popular filtro de vendedor
+    vendedorSelectFiltro.innerHTML = '<option value="">Todos</option>';
+    vendedores.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.nome;
+      opt.textContent = v.nome;
+      vendedorSelectFiltro.appendChild(opt);
+    });
+
+    // Recriar listeners de vendas por vendedor
+    limparSubscricoesVendas();
+    vendedores.forEach(v => {
+      const colV = collection(db, `${sistemaAtivo}_vendas_${v.nome}`);
+      const unsub = onSnapshot(colV, snapV => {
+        const arr = snapV.docs.map(doc => {
+          const dados = doc.data();
+          // anexa vendedor e garante cotação
+          return { ...dados, _vendedor: { nome: v.nome, cotacao: Number(v.cotacao || 1) } };
+        });
+        vendasPorVendedor.set(v.nome, arr);
+        renderVendas();
+      });
+      unsubPorVendedor.push(unsub);
+    });
+  });
+
+  // Despesas
+  const colDespesas = collection(db, `${sistemaAtivo}_despesas`);
+  unsubDespesas = onSnapshot(colDespesas, snap => {
+    despesas = snap.docs.map(d => d.data());
+    renderDespesas();
+  });
+}
+
+// ---- Eventos UI ----
+selectSistema.addEventListener('change', () => {
+  sistemaAtivo = selectSistema.value;
+  localStorage.setItem('sistemaAtivo', sistemaAtivo);
+  atualizarBadge();
+  iniciarSubscricoes();
+});
+
+document.getElementById('btnAplicar').addEventListener('click', () => {
+  renderVendas();
+  renderDespesas();
+});
+document.getElementById('btnLimpar').addEventListener('click', () => {
+  dataInicioEl.value = '';
+  dataFimEl.value = '';
+  vendedorSelectFiltro.value = '';
+  renderVendas();
+  renderDespesas();
+});
+// Também filtra ao mudar campos
+[dataInicioEl, dataFimEl, vendedorSelectFiltro].forEach(el => {
+  el.addEventListener('change', () => {
+    renderVendas();
+    renderDespesas();
+  });
+});
+
+// ---- Print ----
+window.imprimirRelatorio = function imprimirRelatorio() { window.print(); };
+
+// ---- Start ----
+iniciarSubscricoes();
+
+</script>
+
+</body>
+</html>
+

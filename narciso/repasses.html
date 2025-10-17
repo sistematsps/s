@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Mestre Final - Firestore</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; color: #333; }
+  h1, h2 { text-align: center; color: green; }
+  select, button { padding: 8px; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background-color: #ffcccc; }
+  tfoot td { font-weight: bold; background-color: #ffe6e6; }
+  .section { margin-top: 40px; }
+  #btnExport { background:green; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px; margin-top:20px; }
+  #btnExport:hover { background:#900000; }
+</style>
+</head>
+<body>
+
+<h1>Relatório Mestre Final</h1>
+
+<label for="sistemaSelect"><strong>Selecione o Sistema:</strong></label>
+<select id="sistemaSelect">
+  <option value="pitimbu">Pitimbu da Sorte</option>
+  <option value="timonha">Timonha da Sorte</option>
+</select>
+<button id="btnExport" onclick="exportarPDF()">Exportar em PDF</button>
+
+<div class="section" id="vendasSection">
+  <h2>Vendas por Vendedor</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Vendedor</th>
+        <th>Data</th>
+        <th>Recebeu</th>
+        <th>Devolveu</th>
+        <th>Vendeu</th>
+        <th>Apurou (R$)</th>
+        <th>Pagou (R$)</th>
+        <th>Deve (R$)</th>
+      </tr>
+    </thead>
+    <tbody id="vendasBody"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5">TOTAL</td>
+        <td id="totalApurado">0.00</td>
+        <td id="totalPagou">0.00</td>
+        <td id="totalDeve">0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="section" id="debitoSection">
+  <h2>DÉBITOS / Lançamentos Diretos por Vendedor</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Vendedor</th>
+        <th>Débito Atual (R$)</th>
+      </tr>
+    </thead>
+    <tbody id="debitoBody"></tbody>
+  </table>
+</div>
+
+<div class="section" id="receitasSection">
+  <h2>Receitas</h2>
+  <table>
+    <thead><tr><th>Descrição</th><th>Valor (R$)</th></tr></thead>
+    <tbody id="receitasBody"></tbody>
+    <tfoot><tr><td>Total Receitas</td><td id="totalReceitas">0.00</td></tr></tfoot>
+  </table>
+</div>
+
+<div class="section" id="despesasSection">
+  <h2>Despesas</h2>
+  <table>
+    <thead><tr><th>Descrição</th><th>Valor (R$)</th></tr></thead>
+    <tbody id="despesasBody"></tbody>
+    <tfoot><tr><td>Total Despesas</td><td id="totalDespesas">0.00</td></tr></tfoot>
+  </table>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+    authDomain: "meuappweb-65522.firebaseapp.com",
+    projectId: "meuappweb-65522",
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+    messagingSenderId: "305368794616",
+    appId: "1:305368794616:web:d987589863479e576ac20d",
+    measurementId: "G-L0VWMGJ003"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  // LOGIN ANÔNIMO PARA TESTE
+  auth.signInAnonymously().catch(error => console.error("Erro login anônimo:", error));
+
+  const sistemaSelect = document.getElementById('sistemaSelect');
+
+  function formatar(valor) { return parseFloat(valor || 0).toFixed(2); }
+
+  async function carregarRelatorio() {
+    const sistemaAtivo = sistemaSelect.value;
+    ["vendasBody","debitoBody","receitasBody","despesasBody"].forEach(id => document.getElementById(id).innerHTML='');
+    ["totalApurado","totalPagou","totalDeve","totalReceitas","totalDespesas"].forEach(id => document.getElementById(id).textContent='0.00');
+
+    let totalApurado = 0, totalPagou = 0;
+
+    try {
+      const vendedoresSnap = await db.collection(sistemaAtivo + '_vendedores').get();
+      if(vendedoresSnap.empty){
+        document.getElementById('vendasBody').innerHTML = '<tr><td colspan="8">Nenhum vendedor encontrado</td></tr>';
+      }
+
+      for(const doc of vendedoresSnap.docs){
+        const vendedor = doc.data();
+        const nome = vendedor.nome;
+
+        const vendasSnap = await db.collection(sistemaAtivo + '_vendas').doc(nome).collection('historico').get();
+        let saldoDebito = 0;
+
+        vendasSnap.forEach(vendaDoc=>{
+          const v = vendaDoc.data();
+          const vendeu = (v.recebeu||0)-(v.devolveu||0);
+          const apurou = v.apurou!==undefined ? v.apurou : vendeu*(vendedor.cotacao||1);
+          const pagou = v.pagou||0;
+          const deve = apurou - pagou;
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${nome}</td><td>${v.data||''}</td><td>${formatar(v.recebeu)}</td>
+                          <td>${formatar(v.devolveu)}</td><td>${formatar(vendeu)}</td><td>${formatar(apurou)}</td>
+                          <td>${formatar(pagou)}</td><td>${formatar(deve)}</td>`;
+          document.getElementById('vendasBody').appendChild(tr);
+
+          totalApurado += apurou;
+          totalPagou += pagou;
+          saldoDebito += deve;
+        });
+
+        const trDebito = document.createElement('tr');
+        trDebito.innerHTML = `<td>${nome}</td><td>${formatar(saldoDebito)}</td>`;
+        document.getElementById('debitoBody').appendChild(trDebito);
+      }
+
+      document.getElementById('totalApurado').textContent = formatar(totalApurado);
+      document.getElementById('totalPagou').textContent = formatar(totalPagou);
+      document.getElementById('totalDeve').textContent = formatar(totalApurado-totalPagou);
+
+      let totalRec=0;
+      const receitasSnap = await db.collection(sistemaAtivo + '_receitas').get();
+      receitasSnap.forEach(r=>{
+        const data = r.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${data.descricao}</td><td>${formatar(data.valor)}</td>`;
+        document.getElementById('receitasBody').appendChild(tr);
+        totalRec += data.valor||0;
+      });
+      document.getElementById('totalReceitas').textContent = formatar(totalRec);
+
+      let totalDes=0;
+      const despesasSnap = await db.collection(sistemaAtivo + '_despesas').get();
+      despesasSnap.forEach(d=>{
+        const data = d.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${data.descricao}</td><td>${formatar(data.valor)}</td>`;
+        document.getElementById('despesasBody').appendChild(tr);
+        totalDes += data.valor||0;
+      });
+      document.getElementById('totalDespesas').textContent = formatar(totalDes);
+
+    } catch(e){
+      console.error(e);
+      alert('Erro ao carregar relatório: '+e.message);
+    }
+  }
+
+  function exportarPDF(){ window.print(); }
+
+  sistemaSelect.addEventListener('change', carregarRelatorio);
+  window.onload = carregarRelatorio;
+</script>
+
+</body>
+</html>

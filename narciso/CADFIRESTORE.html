@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cadastro de Vendedores - Firebase</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1, h2 { color: #b30000; }
+input, button, select { padding: 8px; margin: 5px; }
+button { background: #b30000; color: white; border: none; cursor: pointer; border-radius: 4px; width: 30%; }
+button:hover { background: #8a0000; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: #ffcccc; }
+.totais span { margin-right: 20px; font-weight: bold; }
+#painelVendedor { margin-top: 20px; background: #fff; padding: 15px; border: 1px solid #b30000; border-radius: 6px; }
+.acoes button { margin: 0 2px; }
+#btnSalvarVendas { background: #006400; width: auto; }
+#btnSalvarVendas:hover { background: #004d00; }
+#listaVendedores { max-width: 900px; margin-top: 10px; }
+.vendor-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.vendor-btn { flex: 1; text-align: left; background: #fff; color: #333; border: 1px solid #d0d0d0; padding: 12px 14px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+.vendor-btn:hover { background:#f3f3f3; }
+.vendor-meta { font-size: 13px; color: #666; margin-left: 8px; }
+.vendor-del { background: #cc0000; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+.vendor-del:hover { background:#990000; }
+.sistema-wrap { display: flex; gap: 8px; align-items: center; margin: 10px 0 15px 0; background:#fff; border:1px solid #ddd; padding:10px; border-radius:6px; max-width:900px; }
+.badge-sistema { display:inline-block; padding:6px 10px; border-radius:999px; background:#ffe6e6; color:#b30000; font-weight:bold; font-size:12px; }
+@media (max-width:600px){
+  .vendor-row { flex-direction: column; align-items: stretch; }
+  .vendor-del { width: 100%; }
+  button { width: 100%; }
+  .sistema-wrap { flex-direction: column; align-items: flex-start; }
+}
+</style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+// Configuração do Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.appspot.com",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
+
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+</script>
+</head>
+<body>
+<h1>Cadastro de Vendedores</h1>
+
+<div class="sistema-wrap">
+  <label for="sistemaSelect"><strong>Sistema:</strong></label>
+  <select id="sistemaSelect">
+    <option value="pitimbu">Pitimbu da Sorte</option>
+    <option value="timonha">Timonha da Sorte</option>
+  </select>
+  <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu da Sorte</span>
+</div>
+
+<div>
+  <input id="nome" placeholder="Nome do vendedor" />
+  <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0" />
+  <button onclick="salvarVendedor()">Salvar</button>
+  <button onclick="editarVendedor()">Editar</button>
+</div>
+
+<div id="listaVendedores"></div>
+
+<div id="painelVendedor" style="display:none;">
+  <h2 id="tituloVendedor"></h2>
+  <button onclick="voltarCadastro()">Voltar ao cadastro</button>
+  <div style="margin-top:15px;">
+    <label>Filtrar por data: <input type="date" id="filtroData" /></label>
+    <button onclick="filtrarPorData()">Filtrar</button>
+    <button onclick="limparFiltro()">Limpar filtro</button>
+    <button onclick="exportarPDF()">Exportar em PDF</button>
+    <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
+  </div>
+
+  <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
+  <table id="tabelaVendas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Recebeu</th>
+        <th>Devolveu</th>
+        <th>Vendeu</th>
+        <th>Apurou</th>
+        <th>Pagou</th>
+        <th>Deve</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="totais" style="margin-top:10px;">
+    <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
+    <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
+    <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
+  </div>
+</div>
+
+<script type="module">
+let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+const selectSistema = document.getElementById('sistemaSelect');
+const badgeSistema = document.getElementById('badgeSistema');
+selectSistema.value = sistemaAtivo;
+badgeSistema.textContent = sistemaAtivo === 'pitimbu' ? 'Ativo: Pitimbu da Sorte' : 'Ativo: Timonha da Sorte';
+
+selectSistema.addEventListener('change', () => {
+  sistemaAtivo = selectSistema.value;
+  localStorage.setItem('sistemaAtivo', sistemaAtivo);
+  badgeSistema.textContent = sistemaAtivo === 'pitimbu' ? 'Ativo: Pitimbu da Sorte' : 'Ativo: Timonha da Sorte';
+  loadAll();
+  voltarCadastro();
+});
+
+function getChave(chaveBase){ return `${sistemaAtivo}_${chaveBase}`; }
+function salvarDados(chaveBase, dados){ localStorage.setItem(getChave(chaveBase), JSON.stringify(dados)); }
+function carregarDados(chaveBase){ const d=localStorage.getItem(getChave(chaveBase)); return d ? JSON.parse(d) : []; }
+
+let vendedores = [];
+let vendas = {};
+let vendedorAtual = null;
+
+async function salvarVendedor(){
+  const nome = document.getElementById('nome').value.trim();
+  const cotacao = parseFloat(document.getElementById('cotacao').value);
+  if(!nome || isNaN(cotacao) || cotacao<=0){ alert('Preencha corretamente.'); return; }
+  if(vendedores.find(v=>v.nome.toLowerCase()===nome.toLowerCase())){ alert('Vendedor já cadastrado.'); return; }
+
+  const novo = {nome,cotacao};
+  vendedores.push(novo);
+  salvarDados('vendedores', vendedores);
+  listarVendedores();
+
+  // Salva no Firestore
+  try{
+    await setDoc(doc(db,'vendedores',nome.replace(/\s/g,'_')), novo);
+    console.log('Vendedor salvo no Firestore');
+  }catch(e){ console.error('Erro ao salvar no Firestore:', e); }
+
+  document.getElementById('nome').value='';
+  document.getElementById('cotacao').value='';
+}
+
+function listarVendedores(){
+  const div = document.getElementById('listaVendedores'); div.innerHTML='';
+  vendedores.forEach(v=>{
+    const row = document.createElement('div'); row.className='vendor-row';
+    const btn = document.createElement('button'); btn.className='vendor-btn';
+    btn.innerHTML=`<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${v.cotacao.toFixed(2)}</span>`;
+    btn.onclick = ()=>abrirPainel(v.nome);
+    const del = document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
+    del.onclick = e=>{ e.stopPropagation(); if(confirm(`Confirma exclusão do vendedor "${v.nome}"?`)){ excluirVendedor(v.nome); } };
+    row.appendChild(btn); row.appendChild(del); div.appendChild(row);
+  });
+}
+
+function excluirVendedor(nome){
+  vendedores=vendedores.filter(v=>v.nome!==nome); if(vendas[nome]) delete vendas[nome]; salvarDados('vendedores',vendedores); salvarDados('vendas',vendas); listarVendedores(); voltarCadastro();
+  // Firestore
+  setDoc(doc(db,'vendedores',nome.replace(/\s/g,'')),{}).then(()=>console.log('Vendedor removido do Firestore')).catch(e=>console.error(e));
+}
+
+function loadAll(){ vendedores=carregarDados('vendedores'); vendas=carregarDados('vendas'); listarVendedores(); }
+loadAll();
+</script>
+</body>
+</html>

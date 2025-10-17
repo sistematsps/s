@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Web Teste</title>
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+      authDomain: "meuappweb-65522.firebaseapp.com",
+      projectId: "meuappweb-65522",
+      storageBucket: "meuappweb-65522.appspot.com",
+      messagingSenderId: "305368794616",
+      appId: "1:305368794616:web:023c3e78897d0f626ac20d",
+      measurementId: "G-S4D12SJGKC"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // Funções para salvar e listar dados
+    async function salvarDado() {
+      const nome = document.getElementById('nome').value;
+      const valor = document.getElementById('valor').value;
+      if(nome && valor){
+        await addDoc(collection(db, "vendas"), { nome, valor });
+        alert("Dado salvo!");
+        listarDados();
+      } else {
+        alert("Preencha todos os campos!");
+      }
+    }
+
+    async function listarDados() {
+      const querySnapshot = await getDocs(collection(db, "vendas"));
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+      querySnapshot.forEach((doc) => {
+        lista.innerHTML += `<li>${doc.data().nome} - ${doc.data().valor}</li>`;
+      });
+    }
+
+    window.salvarDado = salvarDado;
+    window.listarDados = listarDados;
+
+    window.addEventListener('DOMContentLoaded', listarDados);
+  </script>
+</head>
+<body>
+  <h1>Teste Firebase Web</h1>
+  <label>Nome:</label>
+  <input type="text" id="nome"><br><br>
+  <label>Valor:</label>
+  <input type="number" id="valor"><br><br>
+  <button onclick="salvarDado()">Salvar</button>
+
+  <h2>Lista de Vendas</h2>
+  <ul id="lista"></ul>
+</body>
+</html>

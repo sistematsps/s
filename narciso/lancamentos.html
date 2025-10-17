@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lançamentos Diretos - Firestore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
+    h1 { text-align: center; }
+    .sistema-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; }
+    .badge-sistema { display:inline-block; padding:6px 10px; border-radius:999px; background:green; color:#b30000; font-weight:bold; font-size:12px; }
+    .vendedor {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .vendedor h3 {
+      margin: 0 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    input[type="number"] {
+      padding: 5px;
+      width: 100px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #45a049; }
+    #msg {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lançamentos Diretos nos Vendedores</h1>
+
+  <div class="sistema-wrap">
+    <label for="sistemaSelect"><strong>Sistema:</strong></label>
+    <select id="sistemaSelect">
+      <option value="pitimbu">Pitimbu da Sorte</option>
+      <option value="timonha">Timonha da Sorte</option>
+      <option value="dezena">Dezena da Sorte</option>
+    </select>
+    <span class="badge-sistema" id="badgeSistema">Ativo: Pitimbu da Sorte</span>
+  </div>
+
+  <div id="container"></div>
+  <div id="msg"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+// ===== CONFIGURAÇÃO FIREBASE =====
+const firebaseConfig = {
+  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+  authDomain: "meuappweb-65522.firebaseapp.com",
+  projectId: "meuappweb-65522",
+  storageBucket: "meuappweb-65522.appspot.com",
+  messagingSenderId: "305368794616",
+  appId: "1:305368794616:web:d987589863479e576ac20d",
+  measurementId: "G-L0VWMGJ003"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ===== CONTEXTO DE SISTEMA =====
+const selectSistema = document.getElementById('sistemaSelect');
+const badgeSistema  = document.getElementById('badgeSistema');
+let sistemaAtivo = localStorage.getItem('sistemaAtivo') || 'pitimbu';
+selectSistema.value = sistemaAtivo;
+atualizarBadge();
+
+selectSistema.addEventListener('change', () => {
+  sistemaAtivo = selectSistema.value;
+  localStorage.setItem('sistemaAtivo', sistemaAtivo);
+  atualizarBadge();
+  carregarVendedores(); // recarrega os dados do sistema selecionado
+});
+
+function atualizarBadge() {
+  badgeSistema.textContent = 'Ativo: ' + (sistemaAtivo === 'pitimbu' ? 'Pitimbu da Sorte' : 'Timonha da Sorte');
+}
+
+// ===== CARREGAR VENDEDORES E VENDAS DO FIRESTORE =====
+async function carregarVendedores() {
+  const container = document.getElementById('container');
+  container.innerHTML = '';
+
+  const vendedoresSnap = await getDocs(collection(db, `${sistemaAtivo}_vendedores`));
+  if (vendedoresSnap.empty) {
+    container.innerHTML = '<p>Nenhum vendedor cadastrado.</p>';
+    return;
+  }
+
+  const vendedores = [];
+  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
+
+  for (const v of vendedores) {
+    const vendasSnap = await getDocs(collection(db, `${sistemaAtivo}_vendas_${v.nome}`));
+    const lista = [];
+    vendasSnap.forEach(docSnap => {
+      const data = docSnap.data();
+      lista.push({id: docSnap.id, ...data});
+    });
+
+    let totalDeve = 0;
+    lista.forEach(linha => {
+      const apurou = parseFloat(linha.apurou) || 0;
+      const pagou = parseFloat(linha.pagou) || 0;
+      totalDeve += (apurou - pagou);
+    });
+
+    const div = document.createElement('div');
+    div.className = 'vendedor';
+    div.innerHTML = `
+      <h3>
+        ${v.nome}
+        <span style="font-size: 14px; color: #c00;">Débito: R$ ${totalDeve.toFixed(2)}</span>
+      </h3>
+      <input type="number" step="0.01" id="debito_${v.nome.replace(/\s+/g, '_')}" placeholder="Valor do débito" />
+      <button onclick="lancarDebito('${v.nome}')">Lançar</button>
+    `;
+    container.appendChild(div);
+
+    // Armazena a lista no próprio div para acessar no lançamento
+    div.dataset.vendas = JSON.stringify(lista);
+  }
+}
+
+// ===== FUNÇÃO DE LANÇAR DÉBITO =====
+window.lancarDebito = async function(nome) {
+  const inputId = `debito_${nome.replace(/\s+/g,'_')}`;
+  const valorInput = document.getElementById(inputId);
+  const valor = parseFloat(valorInput.value);
+
+  if (isNaN(valor) || valor <= 0) {
+    alert('Informe um valor válido maior que zero para o débito.');
+    return;
+  }
+
+  const vendasSnap = await getDocs(collection(db, `${sistemaAtivo}_vendas_${nome}`));
+  const lista = [];
+  vendasSnap.forEach(docSnap => lista.push({id: docSnap.id, ...docSnap.data()}));
+
+  for (let i = lista.length - 1; i >= 0; i--) {
+    const linha = lista[i];
+    const apurou = parseFloat(linha.apurou) || 0;
+    const pagou = parseFloat(linha.pagou) || 0;
+    const deve = apurou - pagou;
+
+    if (deve > 0) {
+      const novoPagou = pagou + valor;
+      const novoDeve = apurou - novoPagou;
+
+      await updateDoc(doc(db, `${sistemaAtivo}_vendas_${nome}`, linha.id), {
+        pagou: novoPagou,
+        deve: novoDeve
+      });
+
+      valorInput.value = '';
+      document.getElementById('msg').textContent = `Débito de R$ ${valor.toFixed(2)} lançado para ${nome}.`;
+
+      setTimeout(() => carregarVendedores(), 1500);
+      return;
+    }
+  }
+
+  alert(`Nenhuma linha com débito encontrada para ${nome}.`);
+}
+
+// ===== INICIALIZAÇÃO =====
+carregarVendedores();
+
+</script>
+</body>
+</html>
+
