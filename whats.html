@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini WhatsApp — UI Melhorada</title>
+<link rel="preload" href="https://www.soundjay.com/button/sounds/button-16.mp3" as="audio">
+<style>
+  :root{
+    --bg:#f2f2f2;
+    --accent:#25D366;
+    --left:#ffffff;
+    --right:#dcf8c6;
+    --muted:#8a8a8a;
+    --card-bg:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter, "Helvetica Neue", Arial, sans-serif;background:var(--bg);margin:0;display:flex;justify-content:center;padding:20px}
+  .app{width:100%;max-width:1100px;background:var(--card-bg);border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.08);display:flex}
+  /* left column (contacts) */
+  .left{width:340px;border-right:1px solid #eee;padding:16px;background:#fff;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .brand h2{margin:0;font-size:18px;color:#075e54}
+  .search{display:flex;gap:8px;margin-bottom:10px}
+  .search input{flex:1;padding:8px;border-radius:8px;border:1px solid #ddd}
+  .search button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+  .contacts{flex:1;overflow:auto;padding-right:6px}
+  .contact{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;cursor:pointer;transition:background .12s;position:relative}
+  .contact:hover{background:#f6fdfa}
+  .contact-left{display:flex;gap:10px;align-items:center}
+  .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+  .meta{display:flex;flex-direction:column}
+  .meta .name{font-weight:600}
+  .meta .preview{font-size:13px;color:var(--muted);max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .contact-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .time{font-size:12px;color:var(--muted)}
+  .badge{background:#e53935;color:#fff;padding:3px 7px;border-radius:12px;font-size:12px}
+  /* right column (chat area) */
+  .right{flex:1;display:flex;flex-direction:column;background:linear-gradient(#fafafa,#fff)}
+  .header{padding:14px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px}
+  .header .title{font-weight:700}
+  .chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:10px;min-height:420px}
+  .messages{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:8px}
+  .message{max-width:72%;padding:10px 12px;border-radius:12px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.03);opacity:0;transform:translateY(6px);animation:msg-in .18s ease forwards}
+  @keyframes msg-in{to{opacity:1;transform:none}}
+  .message .ts{display:block;font-size:11px;color:var(--muted);margin-top:6px;text-align:right}
+  .sent{margin-left:auto;background:var(--right);border-bottom-right-radius:4px}
+  .received{margin-right:auto;background:var(--left);border-bottom-left-radius:4px}
+  .message img{max-width:260px;border-radius:8px;display:block}
+  .input-row{display:flex;gap:8px;padding:12px;border-top:1px solid #eee;align-items:center}
+  .input-row input[type="text"]{flex:1;padding:10px;border-radius:20px;border:1px solid #ddd}
+  .input-row button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:12px;cursor:pointer}
+  .small{font-size:12px;color:var(--muted)}
+  /* responsive */
+  @media (max-width:900px){ .left{display:none} .app{width:100%} }
+</style>
+</head>
+<body>
+<div class="app" role="application">
+  <div class="left">
+    <div class="brand">
+      <h2>Mini WhatsApp</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="logoutBtn" style="background:#ef5350;border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer">Sair</button>
+      </div>
+    </div>
+
+    <div class="search">
+      <input id="searchInput" placeholder="Pesquisar e-mail..." />
+      <button id="searchBtn">Pesquisar</button>
+    </div>
+
+    <div class="contacts" id="contacts"></div>
+    <div class="small" style="margin-top:8px;text-align:center;color:#999">Hierarquia: master / gerente / vendedor / cliente</div>
+  </div>
+
+  <div class="right">
+    <div class="header">
+      <div>
+        <div class="title" id="chatTitle">Nenhuma conversa selecionada</div>
+        <div class="small" id="chatSubtitle">Escolha um contato à esquerda</div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="messages" id="messages"></div>
+
+      <div class="input-row">
+        <input type="text" id="messageInput" placeholder="Digite uma mensagem..." />
+        <input type="file" id="fileInput" accept="image/*,audio/*" />
+        <button id="sendBtn">Enviar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal fallback for small screens (keeps same chat) -->
+<div id="chatModal" style="display:none"></div>
+
+<audio id="notifySound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
+
+<script type="module">
+/* Final polished version:
+   - message timestamps
+   - last message preview + time in contact list
+   - smooth scrolling (scrollIntoView with behavior:'smooth')
+   - nicer bubbles + simple animation
+   - keeps all functionality (hierarchy, storage for media, notifications)
+*/
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
+  authDomain: "cursos-6f950.firebaseapp.com",
+  projectId: "cursos-6f950",
+  storageBucket: "cursos-6f950.appspot.com",
+  messagingSenderId: "146131122545",
+  appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+/* --- DOM --- */
+const contactsEl = document.getElementById('contacts');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const chatTitle = document.getElementById('chatTitle');
+const chatSubtitle = document.getElementById('chatSubtitle');
+const messagesEl = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+const fileInput = document.getElementById('fileInput');
+const sendBtn = document.getElementById('sendBtn');
+const notifySound = document.getElementById('notifySound');
+const logoutBtn = document.getElementById('logoutBtn');
+
+let currentUser = null;
+let currentUserDoc = null;
+let currentRole = null;
+let currentChatId = null;
+let unsubscribeChat = null;
+let contactsCache = {}; // cache user docs by uid
+
+/* --- helpers --- */
+function formatTime(ts){
+  try{
+    const d = (typeof ts === 'number' || typeof ts === 'string') ? new Date(ts) : (ts && ts.toDate ? ts.toDate() : new Date());
+    return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  } catch(e){ return ''; }
+}
+function createAvatarLetter(email){ return (email||'?')[0].toUpperCase(); }
+function stringToColor(str){
+  let hash=0; for(let i=0;i<str.length;i++) hash = str.charCodeAt(i) + ((hash<<5)-hash);
+  let color='#'; for(let i=0;i<3;i++){ const v=(hash>>(i*8))&255; color += ('00'+v.toString(16)).slice(-2); } return color;
+}
+function scrollToBottomSmooth(){
+  const last = messagesEl.lastElementChild;
+  if(last) last.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+/* --- auth / session --- */
+logoutBtn.onclick = async ()=>{ try{ await signOut(auth); }catch(e){ console.error(e); } };
+
+onAuthStateChanged(auth, async user => {
+  if(user){
+    currentUser = user;
+    // get user doc (contains role and vinculos)
+    const ud = await getDoc(doc(db,'users',user.uid));
+    currentUserDoc = ud.exists() ? ud.data() : null;
+    currentRole = currentUserDoc?.funcao || null;
+    await loadContacts(); // initial load
+    if(Notification.permission !== 'granted') Notification.requestPermission();
+  } else {
+    // if not logged in, show a simple prompt flow
+    currentUser = null;
+    currentUserDoc = null;
+    currentRole = null;
+    contactsEl.innerHTML = `
+      <div style="padding:12px">
+        <h3>Entrar / Cadastrar</h3>
+        <p style="font-size:13px;color:#666">Use os formulários do seu outro ambiente — aqui assumimos que você já tem um projeto com cadastro. Se não, me peça para gerar a tela de login/cadastro integrada.</p>
+        <p class="small">Se quiser que eu gere o fluxo de login/cadastro também, diga "Gerar login"</p>
+      </div>
+    `;
+    messagesEl.innerHTML = `<div style="padding:18px;color:#666">Faça login para ver contatos.</div>`;
+  }
+});
+
+/* --- load contacts according to roles --- */
+async function loadContacts(){
+  contactsEl.innerHTML = '<div style="padding:10px;color:#666">Carregando...</div>';
+  // load all users (we need to compute visibility)
+  const snaps = await getDocs(collection(db,'users'));
+  contactsEl.innerHTML = '';
+  contactsCache = {};
+  snaps.forEach(s => { contactsCache[s.id] = s.data(); });
+
+  // iterate and add visible ones
+  for(const [uid, u] of Object.entries(contactsCache)){
+    if(uid === currentUser.uid) continue;
+    const visible = computeVisibility(uid, u);
+    if(visible) renderContact(uid, u);
+  }
+}
+
+/* compute whether current user sees user(uid) */
+function computeVisibility(uid, u){
+  if(!currentUserDoc) return false;
+  const myV = currentUserDoc.vinculos || [];
+  const theirV = u.vinculos || [];
+
+  if(currentRole === 'master') return true;
+  if(currentRole === 'gerente'){
+    // gerente vê vendedores vinculados a ele + clientes
+    if(myV.includes(uid)) return true; // explicit vinculo
+    if(u.funcao === 'cliente') return true;
+    return false;
+  }
+  if(currentRole === 'vendedor'){
+    // vendedor vê seus clientes (in his vinculos) OR clients that have him in their vinculos
+    if(myV.includes(uid)) return true;
+    if(u.vinculos && u.vinculos.includes(currentUser.uid) && u.funcao === 'cliente') return true;
+    return false;
+  }
+  if(currentRole === 'cliente'){
+    // cliente vê vendedores he selected OR vendors who have him in vinculos
+    if(myV.includes(uid)) return true;
+    if(u.vinculos && u.vinculos.includes(currentUser.uid) && u.funcao === 'vendedor') return true;
+    return false;
+  }
+  return false;
+}
+
+/* render contact item and listen for last message + unread */
+function renderContact(uid,u){
+  const el = document.createElement('div');
+  el.className = 'contact';
+  const avatarColor = stringToColor(u.email || uid);
+  el.innerHTML = `
+    <div class="contact-left">
+      <div class="avatar" style="background:${avatarColor};width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center">${createAvatarLetter(u.email)}</div>
+      <div class="meta">
+        <div class="name">${u.email}</div>
+        <div class="preview" id="preview-${uid}">—</div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="time" id="time-${uid}"></div>
+      <div class="badge" id="badge-${uid}" style="display:none">!</div>
+    </div>
+  `;
+  contactsEl.appendChild(el);
+
+  // listen chat doc to update preview/time and unread badge
+  const chatId = [currentUser.uid, uid].sort().join('_');
+  const chatRef = doc(db, 'chats', chatId);
+  onSnapshot(chatRef, snap => {
+    if(!snap.exists()) {
+      document.getElementById(`preview-${uid}`).textContent = '';
+      document.getElementById(`time-${uid}`).textContent = '';
+      return;
+    }
+    const data = snap.data();
+    const msgs = data.messages || [];
+    const last = msgs[msgs.length - 1];
+    if(last){
+      const previewEl = document.getElementById(`preview-${uid}`);
+      const timeEl = document.getElementById(`time-${uid}`);
+      const badgeEl = document.getElementById(`badge-${uid}`);
+      // preview text
+      if(last.type === 'text') previewEl.textContent = last.content;
+      else if(last.type === 'image') previewEl.textContent = '📷 Foto';
+      else if(last.type === 'audio') previewEl.textContent = '🎵 Áudio';
+      // time
+      timeEl.textContent = formatTime(last.timestamp);
+      // unread badge logic (simple): show if last message sender is other user and we don't have this chat open
+      if(last.sender !== currentUser.uid && currentChatId !== chatId){
+        badgeEl.style.display = 'inline-block';
+        // sound + pop-up
+        try{ notifySound.play().catch(()=>{}); }catch(e){}
+        if(Notification.permission === 'granted'){
+          const title = 'Nova mensagem de ' + (u.email || 'Contato');
+          const body = (last.type === 'text') ? last.content : (last.type === 'image' ? 'Foto' : 'Áudio');
+          new Notification(title, { body });
+        }
+      } else {
+        badgeEl.style.display = 'none';
+      }
+    }
+  });
+
+  el.addEventListener('click', () => {
+    // clear badge and open chat
+    const badgeEl = document.getElementById(`badge-${uid}`);
+    if(badgeEl) badgeEl.style.display = 'none';
+    openChat(uid, u.email);
+  });
+}
+
+/* open a chat: listen messages, render with timestamps, scroll smooth */
+async function openChat(targetUid, targetEmail){
+  // set header
+  chatTitle.textContent = targetEmail;
+  chatSubtitle.textContent = `Conversa com ${targetEmail}`;
+  // compute chatId
+  const chatId = [currentUser.uid, targetUid].sort().join('_');
+  // set currentChatId (used for unread logic)
+  currentChatId = chatId;
+
+  // ensure chat doc exists
+  const refChat = doc(db, 'chats', chatId);
+  const s = await getDoc(refChat);
+  if(!s.exists()){
+    await setDoc(refChat, { users: [currentUser.uid, targetUid], messages: [] });
+  }
+
+  // unsubscribe previous
+  if(unsubscribeChat) unsubscribeChat();
+
+  // listen messages
+  unsubscribeChat = onSnapshot(refChat, snap => {
+    const data = snap.data();
+    const msgs = data?.messages || [];
+    messagesEl.innerHTML = '';
+    msgs.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'message ' + (m.sender === currentUser.uid ? 'sent' : 'received');
+      // content
+      if(m.type === 'text'){
+        const p = document.createElement('div'); p.textContent = m.content; div.appendChild(p);
+      } else if(m.type === 'image'){
+        const img = document.createElement('img'); img.src = m.content; img.style.maxWidth='260px'; img.style.borderRadius='8px'; div.appendChild(img);
+      } else if(m.type === 'audio'){
+        const audio = document.createElement('audio'); audio.controls=true; audio.src = m.content; div.appendChild(audio);
+      }
+      // timestamp
+      const ts = document.createElement('span'); ts.className = 'ts'; ts.textContent = formatTime(m.timestamp);
+      div.appendChild(ts);
+      messagesEl.appendChild(div);
+    });
+
+    // smooth scroll for new messages
+    scrollToBottomSmooth();
+  });
+}
+
+/* send message (text or file) */
+sendBtn.onclick = async () => {
+  if(!currentChatId) return alert('Selecione um contato.');
+  const text = messageInput.value.trim();
+  const file = fileInput.files[0];
+  const chatRef = doc(db, 'chats', currentChatId);
+
+  // ensure doc exists (defensive)
+  const s = await getDoc(chatRef);
+  if(!s.exists()) await setDoc(chatRef, { users: [], messages: [] });
+
+  if(file){
+    // determine type and upload to storage
+    const isImage = file.type.startsWith('image/');
+    const isAudio = file.type.startsWith('audio/');
+    const ext = isImage ? 'jpg' : (isAudio ? 'mp3' : 'bin');
+    const storagePath = `chats/${currentChatId}/${Date.now()}.${ext}`;
+    const storageRef = ref(storage, storagePath);
+    try{
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await updateDoc(chatRef, { messages: arrayUnion({
+        sender: currentUser.uid,
+        type: isImage ? 'image' : (isAudio ? 'audio' : 'file'),
+        content: url,
+        timestamp: Date.now()
+      })});
+    }catch(e){ console.error('Upload erro', e); alert('Erro upload: '+e.message); }
+    fileInput.value = '';
+  }
+
+  if(text){
+    await updateDoc(chatRef, { messages: arrayUnion({
+      sender: currentUser.uid,
+      type: 'text',
+      content: text,
+      timestamp: Date.now()
+    })});
+    messageInput.value = '';
+  }
+};
+
+/* search button */
+searchBtn.onclick = async () => {
+  const term = searchInput.value.trim().toLowerCase();
+  if(!term) return alert('Digite e-mail para pesquisar');
+  // re-run basic load and render only matches that user can see
+  contactsEl.innerHTML = '';
+  const snaps = await getDocs(collection(db,'users'));
+  snaps.forEach(s => {
+    const u = s.data();
+    const uid = s.id;
+    if(uid === currentUser.uid) return;
+    if(u.email && u.email.toLowerCase() === term){
+      if(computeVisibility(uid,u)) renderContact(uid,u);
+    }
+  });
+};
+
+/* initial note: if you want login UI scaffold, ask me to generate it (I left simple auth flows in earlier versions). */
+
+console.log('UI aprimorada carregada. Se precisar, eu adiciono o formulário de login/cadastro embutido.');
+</script>
+</body>
+</html>
