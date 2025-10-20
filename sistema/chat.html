@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini WhatsApp - Chat</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    #login-screen, #chat-screen {
+      width: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #aaa;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .chat-container {
+      display: flex;
+      flex: 1;
+      height: 100vh;
+    }
+    #contacts {
+      width: 30%;
+      background: #fff;
+      border-right: 1px solid #ccc;
+      overflow-y: auto;
+    }
+    .contact {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      position: relative;
+    }
+    .contact:hover {
+      background: #f9f9f9;
+    }
+    .unread-dot {
+      position: absolute;
+      right: 10px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      background: red;
+      border-radius: 50%;
+      display: none;
+    }
+    #chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #chat-header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f4f4f4;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 70%;
+      clear: both;
+    }
+    .sent {
+      background: #007bff;
+      color: white;
+      margin-left: auto;
+    }
+    .received {
+      background: #e5e5ea;
+      color: black;
+      margin-right: auto;
+    }
+    #input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #message-input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+    }
+    #send-btn {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+    }
+    #logout-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+    }
+  </style>
+</head>
+<body>
+  <!-- TELA DE LOGIN -->
+  <div id="login-screen">
+    <form id="login-form">
+      <h2>Entrar no Chat</h2>
+      <input type="email" id="login-email" placeholder="E-mail" required />
+      <input type="password" id="login-senha" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <!-- TELA DO CHAT -->
+  <div id="chat-screen" style="display:none;">
+    <button id="logout-btn">Sair</button>
+    <div class="chat-container">
+      <div id="contacts"></div>
+      <div id="chat-area">
+        <div id="chat-header">Selecione um contato</div>
+        <div id="messages"></div>
+        <div id="input-area">
+          <input type="text" id="message-input" placeholder="Digite sua mensagem..." />
+          <button id="send-btn">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where, getDocs, onSnapshot, updateDoc, setDoc, arrayUnion, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
+      authDomain: "cursos-6f950.firebaseapp.com",
+      projectId: "cursos-6f950",
+      storageBucket: "cursos-6f950.appspot.com",
+      messagingSenderId: "146131122545",
+      appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById("login-form");
+    const loginScreen = document.getElementById("login-screen");
+    const chatScreen = document.getElementById("chat-screen");
+    const logoutBtn = document.getElementById("logout-btn");
+    const contactsDiv = document.getElementById("contacts");
+    const chatHeader = document.getElementById("chat-header");
+    const messagesDiv = document.getElementById("messages");
+    const msgInput = document.getElementById("message-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    let currentUser = null;
+    let selectedContact = null;
+    let unsubscribeMessages = null;
+
+    // Login
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = loginForm["login-email"].value;
+      const senha = loginForm["login-senha"].value;
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (err) {
+        alert("Erro ao entrar: " + err.message);
+      }
+    });
+
+    // Logout
+    logoutBtn.onclick = () => signOut(auth);
+
+    // Sessão
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        loginScreen.style.display = "none";
+        chatScreen.style.display = "block";
+        await loadContacts();
+      } else {
+        chatScreen.style.display = "none";
+        loginScreen.style.display = "flex";
+      }
+    });
+
+    // Carregar contatos conforme função
+    async function loadContacts() {
+      contactsDiv.innerHTML = "";
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return;
+
+      const userData = userSnap.data();
+      const funcao = userData.funcao;
+      let q;
+
+      if (funcao === "master") {
+        q = query(collection(db, "users"));
+      } else if (funcao === "gerente") {
+        q = query(collection(db, "users"), where("vinculos", "array-contains", currentUser.uid));
+      } else if (funcao === "vendedor") {
+        q = query(collection(db, "users"), where("vinculos", "array-contains", currentUser.uid));
+      } else if (funcao === "cliente") {
+        q = query(collection(db, "users"), where("funcao", "==", "vendedor"));
+      }
+
+      const snapshot = await getDocs(q);
+      snapshot.forEach(docSnap => {
+        const u = docSnap.data();
+        if (u.email !== currentUser.email) {
+          const div = document.createElement("div");
+          div.classList.add("contact");
+          div.textContent = u.nome + " (" + u.email + ")";
+          const dot = document.createElement("div");
+          dot.classList.add("unread-dot");
+          div.appendChild(dot);
+          div.onclick = () => openChat(docSnap.id, u.nome);
+          contactsDiv.appendChild(div);
+        }
+      });
+    }
+
+    // Abrir chat
+    async function openChat(contactId, contactName) {
+      selectedContact = contactId;
+      chatHeader.textContent = "Conversando com " + contactName;
+      messagesDiv.innerHTML = "";
+
+      if (unsubscribeMessages) unsubscribeMessages();
+
+      const chatId = [currentUser.uid, contactId].sort().join("_");
+      const chatRef = doc(db, "chats", chatId);
+
+      unsubscribeMessages = onSnapshot(chatRef, (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        const mensagens = data.mensagens || [];
+        messagesDiv.innerHTML = "";
+        mensagens.forEach(msg => {
+          const div = document.createElement("div");
+          div.classList.add("message", msg.de === currentUser.uid ? "sent" : "received");
+          div.textContent = msg.texto;
+          messagesDiv.appendChild(div);
+        });
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    }
+
+    // Enviar mensagem
+    sendBtn.onclick = async () => {
+      const texto = msgInput.value.trim();
+      if (!texto || !selectedContact) return;
+
+      const chatId = [currentUser.uid, selectedContact].sort().join("_");
+      const chatRef = doc(db, "chats", chatId);
+
+      await setDoc(chatRef, {
+        mensagens: arrayUnion({
+          texto,
+          de: currentUser.uid,
+          para: selectedContact,
+          timestamp: serverTimestamp()
+        })
+      }, { merge: true });
+
+      msgInput.value = "";
+    };
+  </script>
+</body>
+</html>
