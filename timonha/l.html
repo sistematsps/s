@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lançamentos Diretos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
+    h1 { text-align: center; }
+    .vendedor {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .vendedor h3 {
+      margin: 0 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    input[type="number"] {
+      padding: 5px;
+      width: 100px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #45a049; }
+    #msg {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>DEVEDORES TIMONHA DA SORTE</h1>
+
+  <div id="container"></div>
+  <div id="msg"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+// ===== CONFIGURAÇÃO FIREBASE =====
+const firebaseConfig = {
+  apiKey: "AIzaSyD91WcNkb6Y4bZIVJdA75m4HlpId7HwbAk",
+  authDomain: "pitimbu-da-sorte.firebaseapp.com",
+  projectId: "pitimbu-da-sorte",
+  storageBucket: "pitimbu-da-sorte.firebasestorage.app",
+  messagingSenderId: "689037113918",
+  appId: "1:689037113918:web:334207c5b44f37bb992f6f",
+  measurementId: "G-3WKL6THK72"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const docRef = doc(db, "movimentos", "timonha_da_sorte");
+
+let vendedores = [];
+
+// ===== CARREGAR VENDEDORES E VENDAS DO MESMO DOCUMENTO =====
+async function carregarVendedores() {
+  const container = document.getElementById('container');
+  container.innerHTML = '<p>Carregando...</p>';
+
+  const snap = await getDoc(docRef);
+  if (!snap.exists()) {
+    container.innerHTML = '<p>Nenhum vendedor encontrado.</p>';
+    return;
+  }
+
+  const data = snap.data();
+  vendedores = data.vendedores || [];
+  container.innerHTML = '';
+
+  vendedores.forEach(v => {
+    const vendas = v.vendas || [];
+    let totalDeve = 0;
+
+    vendas.forEach(linha => {
+      const apurou = parseFloat(linha.apurou) || 0;
+      const pagou = parseFloat(linha.pagou) || 0;
+      totalDeve += (apurou - pagou);
+    });
+
+    const div = document.createElement('div');
+    div.className = 'vendedor';
+    div.innerHTML = `
+      <h3>
+        ${v.nome}
+        <span style="font-size:14px; color:#c00;">Débito: R$ ${totalDeve.toFixed(2)}</span>
+      </h3>
+      <input type="number" step="0.01" id="debito_${v.nome.replace(/\s+/g,'_')}" placeholder="Valor do pagamento" />
+      <button onclick="lancarDebito('${v.nome}')">Lançar</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ===== FUNÇÃO DE LANÇAR PAGAMENTO DIRETO =====
+window.lancarDebito = async function(nome) {
+  const inputId = `debito_${nome.replace(/\s+/g,'_')}`;
+  const valorInput = document.getElementById(inputId);
+  const valor = parseFloat(valorInput.value);
+
+  if (isNaN(valor) || valor <= 0) {
+    alert('Informe um valor válido maior que zero.');
+    return;
+  }
+
+  const vendedor = vendedores.find(v => v.nome === nome);
+  if (!vendedor) return alert('Vendedor não encontrado.');
+
+  const vendas = vendedor.vendas || [];
+  if (vendas.length === 0) return alert('Nenhuma venda encontrada para este vendedor.');
+
+  // Procurar última venda com débito
+  for (let i = vendas.length - 1; i >= 0; i--) {
+    const venda = vendas[i];
+    const apurou = parseFloat(venda.apurou) || 0;
+    const pagou = parseFloat(venda.pagou) || 0;
+    const deve = apurou - pagou;
+
+    if (deve > 0) {
+      const novoPagou = pagou + valor;
+      const novoDeve = apurou - novoPagou;
+
+      venda.pagou = novoPagou;
+      venda.deve = novoDeve < 0 ? 0 : novoDeve;
+
+      await salvarNoFirestore();
+      valorInput.value = '';
+      document.getElementById('msg').textContent = `Pagamento de R$ ${valor.toFixed(2)} lançado para ${nome}.`;
+
+      setTimeout(() => { document.getElementById('msg').textContent = ''; carregarVendedores(); }, 1500);
+      return;
+    }
+  }
+
+  alert(`Nenhum débito pendente encontrado para ${nome}.`);
+}
+
+// ===== SALVAR NO MESMO DOCUMENTO FIRESTORE =====
+async function salvarNoFirestore() {
+  try {
+    const snap = await getDoc(docRef);
+    let data = snap.exists() ? snap.data() : {};
+    data.vendedores = vendedores;
+    await setDoc(docRef, data, { merge: true });
+  } catch (e) {
+    console.error("Erro ao salvar dados:", e);
+  }
+}
+
+// ===== INICIALIZAÇÃO =====
+carregarVendedores();
+</script>
+</body>
+  </html>
