@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Relatório Final</title>
+<title>Relatório Final - TIMONHA DA SORTE</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
   .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -94,7 +94,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, doc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD91WcNkb6Y4bZIVJdA75m4HlpId7HwbAk",
@@ -109,6 +109,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// UI refs
 const vendedorSelectFiltro = document.getElementById('vendedorFiltro');
 const dataInicioEl = document.getElementById('dataInicioFiltro');
 const dataFimEl = document.getElementById('dataFimFiltro');
@@ -122,6 +123,12 @@ function atualizarRelogio() {
 setInterval(atualizarRelogio, 1000);
 atualizarRelogio();
 
+// ---- Estado em memória ----
+let vendedores = [];
+let despesas = [];
+let receitas = [];
+
+// ---- Helpers ----
 function toISODate(anyDate) {
   if (!anyDate) return '';
   if (typeof anyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(anyDate)) return anyDate;
@@ -136,35 +143,7 @@ function passaFiltroData(iso, ini, fim) {
 }
 function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
 
-let vendas = [];
-let despesas = [];
-
-// ---- Carregar dados do documento movimentos / TIMONHA da sorte ----
-async function carregarMovimentos() {
-  const docRef = doc(db, 'movimentos', 'TIMONHA da sorte');
-
-  // Vendas
-  const vendasSnap = await getDocs(collection(docRef, 'vendas'));
-  vendas = vendasSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-  // Popular select vendedores
-  const nomes = Array.from(new Set(vendas.map(v=>v.vendedor)));
-  vendedorSelectFiltro.innerHTML = '<option value="">Todos</option>';
-  nomes.forEach(n => {
-    const opt = document.createElement('option');
-    opt.value = n;
-    opt.textContent = n;
-    vendedorSelectFiltro.appendChild(opt);
-  });
-
-  // Despesas
-  const despesasSnap = await getDocs(collection(docRef, 'despesas'));
-  despesas = despesasSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-  renderVendas();
-  renderDespesas();
-}
-
+// ---- Renderizações ----
 function renderVendas() {
   const tbody = document.querySelector("#tabelaVendas tbody");
   tbody.innerHTML = '';
@@ -174,7 +153,8 @@ function renderVendas() {
   const fim = dataFimEl.value || '';
   const filtroVend = vendedorSelectFiltro.value || '';
 
-  const todas = vendas.slice().sort((a,b)=> (toISODate(a.data)||'').localeCompare(toISODate(b.data)||''));
+  const todas = vendedores.slice();
+  todas.sort((a,b) => (toISODate(a.data)||'').localeCompare(toISODate(b.data)||''));
 
   for (const venda of todas) {
     const iso = toISODate(venda.data);
@@ -184,9 +164,8 @@ function renderVendas() {
     const recebeu = parseFloat(venda.recebeu || 0);
     const devolveu = parseFloat(venda.devolveu || 0);
     const pagou = parseFloat(venda.pagou || 0);
-    const cotacao = parseFloat(venda.cotacao || 1);
     const vendeu = recebeu - devolveu;
-    const apurou = vendeu * cotacao;
+    const apurou = venda.apurou !== undefined ? parseFloat(venda.apurou) : vendeu * (venda.cotacao || 1);
     const deve = apurou - pagou;
     totalApurado += apurou;
 
@@ -206,7 +185,7 @@ function renderVendas() {
 
   document.getElementById("totalApurado").textContent = moeda(totalApurado);
   document.getElementById("totalReceitas").textContent = moeda(totalApurado);
-  renderDespesas(); // Atualiza totais finais
+  renderTotaisFinais();
 }
 
 function renderDespesas() {
@@ -258,9 +237,38 @@ document.getElementById('btnLimpar').addEventListener('click', () => {
 
 window.imprimirRelatorio = function imprimirRelatorio() { window.print(); };
 
+// ---- Carregar dados do Firestore ----
+async function carregarMovimentos() {
+  const docRef = doc(db, 'movimentos', 'timonha_da_sorte');
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    vendedores = data.vendedores || [];
+    despesas = data.despesas || [];
+    receitas = data.receitas || [];
+
+    // Popular select de vendedores
+    const nomes = Array.from(new Set(vendedores.map(v => v.vendedor)));
+    vendedorSelectFiltro.innerHTML = '<option value="">Todos</option>';
+    nomes.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n;
+      opt.textContent = n;
+      vendedorSelectFiltro.appendChild(opt);
+    });
+
+    renderVendas();
+    renderDespesas();
+  } else {
+    console.log("Documento não encontrado");
+  }
+}
+
 // ---- Start ----
 carregarMovimentos();
+
 </script>
 
 </body>
-</html>
+  </html>
