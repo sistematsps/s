@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Vendas - Timonha da Sorte</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+  h1 { text-align: center; }
+  .filtros { margin: 20px 0; text-align: center; }
+  button { padding: 6px 12px; margin: 5px; cursor: pointer; border: none; background: #007bff; color: white; border-radius: 4px; }
+  button:hover { background: #0056b3; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+  th { background-color: #ccc; }
+  hr { margin: 30px 0; }
+  #totalDia { font-weight: bold; color: green; margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>RELATÓRIO DE VENDAS - TIMONHA DA SORTE</h1>
+
+<div class="filtros">
+  <label for="filtroData">Filtrar por data:</label>
+  <input type="date" id="filtroData" />
+  <button id="btnGerar">Consultar</button>
+  <button id="btnExportarDOC">Exportar Word</button>
+  <button id="btnPrint">Print da Tela</button>
+</div>
+
+<div id="relatorioContainer"></div>
+<div id="totalDia"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+// ===== CONFIG FIREBASE =====
+const firebaseConfig = {
+  apiKey: "AIzaSyD91WcNkb6Y4bZIVJdA75m4HlpId7HwbAk",
+  authDomain: "pitimbu-da-sorte.firebaseapp.com",
+  projectId: "pitimbu-da-sorte",
+  storageBucket: "pitimbu-da-sorte.firebasestorage.app",
+  messagingSenderId: "689037113918",
+  appId: "1:689037113918:web:334207c5b44f37bb992f6f",
+  measurementId: "G-3WKL6THK72"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let relatorioHTML = '';
+
+async function gerarRelatorio() {
+  const filtroData = document.getElementById('filtroData').value;
+  const relatorioContainer = document.getElementById('relatorioContainer');
+  const totalDiaDiv = document.getElementById('totalDia');
+  relatorioContainer.innerHTML = '';
+  totalDiaDiv.innerHTML = '';
+  relatorioHTML = '';
+
+  // === BUSCAR DOCUMENTO UNIFICADO ===
+  const docRef = doc(db, "movimentos", "timonha_da_sorte");
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhum dado encontrado.</p>';
+    return;
+  }
+
+  const dados = docSnap.data();
+  const vendedores = dados.vendedores || [];
+  const despesas = dados.despesas || [];
+
+  let algumResultado = false;
+  let totalApuradoDia = 0;
+  const detalhesVendedores = [];
+
+  for (const vendedor of vendedores) {
+    const vendasFiltradas = (vendedor.vendas || []).filter(v => !filtroData || v.data === filtroData);
+
+    if (vendasFiltradas.length === 0) continue;
+    algumResultado = true;
+
+    let html = `<h3>${vendedor.nome.toUpperCase()}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Recebeu</th>
+                      <th>Devolveu</th>
+                      <th>Vendeu</th>
+                      <th>Apurou</th>
+                      <th>Pagou</th>
+                      <th>Deve</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+
+    let somaVendedor = 0;
+
+    for (const v of vendasFiltradas) {
+      const recebeu = parseFloat(v.recebeu || 0);
+      const devolveu = parseFloat(v.devolveu || 0);
+      const vendeu = recebeu - devolveu;
+      const apurou = parseFloat(v.apurou || vendeu * (vendedor.cotacao || 1));
+      const pagou = parseFloat(v.pagou || 0);
+      const deve = apurou - pagou;
+
+      somaVendedor += apurou;
+
+      html += `<tr>
+                <td>${v.data || ''}</td>
+                <td>${recebeu}</td>
+                <td>${devolveu}</td>
+                <td>${vendeu}</td>
+                <td>R$ ${apurou.toFixed(2)}</td>
+                <td>R$ ${pagou.toFixed(2)}</td>
+                <td>R$ ${deve.toFixed(2)}</td>
+              </tr>`;
+    }
+
+    html += '</tbody></table><hr>';
+    relatorioContainer.innerHTML += html;
+    relatorioHTML += html;
+
+    totalApuradoDia += somaVendedor;
+    detalhesVendedores.push({ nome: vendedor.nome, valor: somaVendedor });
+  }
+
+  // === EXIBE RESUMO ===
+  if (!algumResultado) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    return;
+  }
+
+  if (filtroData) {
+    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+    htmlResumo += '<ul>';
+    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+    htmlResumo += '</ul>';
+
+    // === Mostrar despesas do mesmo dia ===
+    const despesasDoDia = despesas.filter(d => d.data === filtroData);
+    if (despesasDoDia.length > 0) {
+      let totalDespesas = 0;
+      htmlResumo += '<h3>Despesas do dia</h3><ul>';
+      despesasDoDia.forEach(d => {
+        totalDespesas += parseFloat(d.valor || 0);
+        htmlResumo += `<li>${d.descricao}: R$ ${parseFloat(d.valor).toFixed(2)}</li>`;
+      });
+      htmlResumo += `</ul><p style="color:red;">Total de despesas: R$ ${totalDespesas.toFixed(2)}</p>`;
+      htmlResumo += `<p style="color:blue;">Lucro líquido: R$ ${(totalApuradoDia - totalDespesas).toFixed(2)}</p>`;
+    }
+
+    totalDiaDiv.innerHTML = htmlResumo;
+    relatorioHTML += htmlResumo;
+  }
+}
+
+// === BOTÕES ===
+document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+
+document.getElementById('btnExportarDOC').addEventListener('click', () => {
+  if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
+
+  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                 "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
+                 "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
+  const footer = "</body></html>";
+
+  const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'relatorio_timonha_da_sorte.doc';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+// === AUTO GERAR AO ABRIR ===
+window.onload = gerarRelatorio;
+</script>
+</body>
+</html>
