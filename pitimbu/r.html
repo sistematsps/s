@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório de Vendas</title>
+<title>Relatório de Vendas e Despesas</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
   h1 { text-align: center; }
@@ -17,7 +17,7 @@
 </style>
 </head>
 <body>
-<h1>PITIMBU DA SORTE</h1>
+<h1>PITIMBU DA SORTE - RELATÓRIO</h1>
 
 <div class="filtros">
   <label for="filtroData">Filtrar por data:</label>
@@ -47,7 +47,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let relatorioHTML = ''; // Guarda o HTML gerado para exportação
+let relatorioHTML = '';
 
 async function gerarRelatorio() {
   const filtroData = document.getElementById('filtroData').value;
@@ -62,36 +62,46 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Buscar documento do dia na coleção cotacoes
   const docRef = doc(db, 'cotacoes', filtroData);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma informação encontrada para esta data.</p>';
     return;
   }
 
-  const dataCotacao = docSnap.data();
-  const vendedores = dataCotacao.vendedores || {};
-  let algumResultado = false;
+  const dataDoc = docSnap.data();
   let totalApuradoDia = 0;
-  const detalhesVendedores = [];
 
-  for (const nome in vendedores) {
-    const vendasObj = vendedores[nome];
-    const vendas = [];
+  // ===== EXIBIR DESPESAS =====
+  const despesas = dataDoc.despesas || {};
+  if (Object.keys(despesas).length > 0) {
+    let htmlDespesas = `<h3>DESPESAS</h3>
+                        <table>
+                        <thead><tr><th>Data</th><th>Descrição</th><th>Valor (R$)</th></tr></thead>
+                        <tbody>`;
+    let totalDespesas = 0;
 
-    // Iterar sobre cada ID de venda dentro do vendedor
-    for (const vendaId in vendasObj) {
-      const venda = vendasObj[vendaId];
-      if (venda.data === filtroData) {
-        vendas.push(venda);
-      }
+    for (const despId in despesas) {
+      const d = despesas[despId];
+      htmlDespesas += `<tr>
+                         <td>${d.data || ''}</td>
+                         <td>${d.descricao || ''}</td>
+                         <td>R$ ${Number(d.valor || 0).toFixed(2)}</td>
+                       </tr>`;
+      totalDespesas += Number(d.valor || 0);
     }
 
-    if (vendas.length === 0) continue;
-    algumResultado = true;
+    htmlDespesas += `</tbody></table>`;
+    relatorioContainer.innerHTML += htmlDespesas;
+    totalApuradoDia -= totalDespesas; // despesas reduzem o total
+    relatorioHTML += htmlDespesas;
+  }
 
+  // ===== EXIBIR VENDAS =====
+  const vendas = dataDoc.vendas || {};
+  for (const nome in vendas) {
+    const vendasVendedor = vendas[nome];
     let html = `<h3>${nome.toUpperCase()}</h3>
                 <table>
                   <thead>
@@ -106,14 +116,16 @@ async function gerarRelatorio() {
                     </tr>
                   </thead>
                   <tbody>`;
-
     let somaVendedor = 0;
-    vendas.forEach(v => {
+
+    for (const vendaId in vendasVendedor) {
+      const v = vendasVendedor[vendaId];
+      if (v.data !== filtroData) continue;
+
       const vendeu = v.vendeu || ((v.recebeu || 0) - (v.devolveu || 0));
       const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
       const pagou = v.pagou || 0;
       const deve = v.deve !== undefined ? v.deve : apurou - pagou;
-      somaVendedor += apurou;
 
       html += `<tr>
                  <td>${v.data || ''}</td>
@@ -124,29 +136,18 @@ async function gerarRelatorio() {
                  <td>R$ ${pagou.toFixed(2)}</td>
                  <td>R$ ${deve.toFixed(2)}</td>
                </tr>`;
-    });
+      somaVendedor += apurou;
+    }
 
     html += '</tbody></table><hr>';
     relatorioContainer.innerHTML += html;
     relatorioHTML += html;
-
     totalApuradoDia += somaVendedor;
-    detalhesVendedores.push({ nome, valor: somaVendedor });
   }
 
-  if (!algumResultado) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
-    return;
-  }
-
-  if (detalhesVendedores.length > 0) {
-    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-    htmlResumo += '<ul>';
-    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
-    htmlResumo += '</ul>';
-    totalDiaDiv.innerHTML = htmlResumo;
-    relatorioHTML += htmlResumo;
-  }
+  // ===== RESUMO =====
+  totalDiaDiv.innerHTML = `<p>Total líquido do dia <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+  relatorioHTML += `<p>Total líquido do dia <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
 }
 
 // ===== Botão Consultar =====
@@ -158,15 +159,14 @@ document.getElementById('btnExportarDOC').addEventListener('click', () => {
 
   const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
                  "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
-                 "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
+                 "<head><meta charset='utf-8'><title>Relatório</title></head><body>";
   const footer = "</body></html>";
 
   const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
-
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'relatorio_vendas.doc';
+  link.download = 'relatorio.doc';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
