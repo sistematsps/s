@@ -1,150 +1,186 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Caixa - Pitimbu da Sorte</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    padding: 20px;
-  }
-  h1 {
-    text-align: center;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: white;
-  }
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  th {
-    background: #007bff;
-    color: white;
-  }
-  tr:nth-child(even) {
-    background: #f9f9f9;
-  }
-  .totais {
-    background: #e6ffe6;
-    font-weight: bold;
-  }
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1, h2 { color: red; }
+input, button, select { padding: 8px; margin: 5px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: #ffcccc; }
+.total-box { margin: 20px 0; padding: 15px; background: #fff3f3; border: 1px solid #b30000; }
+.totais span { display: inline-block; min-width: 150px; margin-right: 20px; font-weight: bold; }
+hr { margin: 30px 0; border: 1px solid #b30000; }
+button { cursor:pointer; }
 </style>
 </head>
 <body>
-<h1>Caixa - Pitimbu da Sorte</h1>
 
-<table id="tabelaCaixa">
-  <thead>
-    <tr>
-      <th>Vendedor</th>
-      <th>Apurou</th>
-      <th>Devolveu</th>
-      <th>Recebeu</th>
-      <th>Deve</th>
-    </tr>
-  </thead>
-  <tbody id="corpoTabela"></tbody>
-  <tfoot>
-    <tr class="totais">
-      <td>Total</td>
-      <td id="totalApurou">0</td>
-      <td id="totalDevolveu">0</td>
-      <td id="totalRecebeu">0</td>
-      <td id="totalDeve">0</td>
-    </tr>
-    <tr class="totais">
-      <td>Despesas Totais</td>
-      <td colspan="4" id="totalDespesas">0</td>
-    </tr>
-    <tr class="totais">
-      <td>Saldo Final</td>
-      <td colspan="4" id="saldoFinal">0</td>
-    </tr>
-  </tfoot>
+<h1>PITIMBU DA SORTE</h1>
+
+<div class="total-box totais">
+  <span>SALDO ANTERIOR: R$ <span id="saldoAnterior">0.00</span></span>
+  <span>APURADO: R$ <span id="apuradoTotal">0.00</span></span>
+  <span>DESPESAS: R$ <span id="despesasTotal">0.00</span></span>
+  <span>SALDO FINAL: R$ <span id="saldoFinal">0.00</span></span>
+</div>
+
+<hr>
+
+<label>Data do Documento: <input type="date" id="dataDoc"></label>
+<button id="btnCarregar">Carregar Dados</button>
+
+<h2>Resumo de Vendas</h2>
+<table id="tabelaResumo">
+<thead>
+<tr>
+<th>Data</th>
+<th>Vendedor</th>
+<th>Vendeu</th>
+<th>Apurou</th>
+<th>Pagou</th>
+<th>Deve</th>
+</tr>
+</thead>
+<tbody></tbody>
 </table>
 
-<!-- Firebase SDK -->
+<h2>Despesas</h2>
+<table id="tabelaDespesas">
+<thead>
+<tr>
+<th>Descrição</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Receitas</h2>
+<table id="tabelaReceitas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Descrição</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Partilha de Recursos</h2>
+<div class="total-box">
+<p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
+<p>JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
+<p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
+</div>
+
+<button id="btnExportar">Exportar em PDF</button>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_DOMINIO.firebaseapp.com",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_PROJECT_ID.appspot.com",
-    messagingSenderId: "SEU_ID",
-    appId: "SEU_APP_ID"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  async function carregarCaixa() {
-    const dataAtual = new Date().toISOString().split('T')[0]; // Ex: 2025-10-27
-    const docRef = doc(db, "cotacoes", dataAtual);
-    const docSnap = await getDoc(docRef);
+function formatar(valor){ return parseFloat(valor||0).toFixed(2); }
 
-    if (!docSnap.exists()) {
-      alert("Nenhum registro encontrado para " + dataAtual);
-      return;
-    }
+async function carregarCaixa() {
+  const dataDoc = document.getElementById("dataDoc").value || new Date().toISOString().split("T")[0];
+  const docRef = doc(db, "cotacoes", dataDoc);
+  const snap = await getDoc(docRef);
 
-    const dados = docSnap.data();
-    const vendedores = dados.vendedores || {};
-    const despesas = dados.despesas || {};
-
-    const corpoTabela = document.getElementById("corpoTabela");
-    corpoTabela.innerHTML = "";
-
-    let totalApurou = 0, totalDevolveu = 0, totalRecebeu = 0, totalDeve = 0, totalDespesas = 0;
-
-    // 🔹 Carrega as vendas
-    for (const nome in vendedores) {
-      const vendedor = vendedores[nome];
-      const vendas = vendedor.vendas || {};
-
-      for (const dataVenda in vendas) {
-        const v = vendas[dataVenda];
-        corpoTabela.innerHTML += `
-          <tr>
-            <td>${vendedor.nome}</td>
-            <td>${v.apurou?.toFixed(2) || 0}</td>
-            <td>${v.devolveu?.toFixed(2) || 0}</td>
-            <td>${v.recebeu?.toFixed(2) || 0}</td>
-            <td>${v.deve?.toFixed(2) || 0}</td>
-          </tr>
-        `;
-        totalApurou += v.apurou || 0;
-        totalDevolveu += v.devolveu || 0;
-        totalRecebeu += v.recebeu || 0;
-        totalDeve += v.deve || 0;
-      }
-    }
-
-    // 🔹 Soma as despesas do mesmo documento
-    for (const item in despesas) {
-      const valor = despesas[item];
-      if (typeof valor === "number") totalDespesas += valor;
-    }
-
-    // 🔹 Atualiza totais
-    document.getElementById("totalApurou").textContent = totalApurou.toFixed(2);
-    document.getElementById("totalDevolveu").textContent = totalDevolveu.toFixed(2);
-    document.getElementById("totalRecebeu").textContent = totalRecebeu.toFixed(2);
-    document.getElementById("totalDeve").textContent = totalDeve.toFixed(2);
-    document.getElementById("totalDespesas").textContent = totalDespesas.toFixed(2);
-    document.getElementById("saldoFinal").textContent = (totalApurou - totalDespesas).toFixed(2);
+  if(!snap.exists()){
+    alert("Nenhum documento encontrado para a data: " + dataDoc);
+    return;
   }
 
-  carregarCaixa();
+  const dados = snap.data();
+  const vendedores = dados.vendedores || {};
+  const despesas = dados.despesas || {};
+  const receitas = dados.receitas || {};
+
+  // ======== RESUMO DE VENDAS ========
+  const tbodyResumo = document.querySelector("#tabelaResumo tbody");
+  tbodyResumo.innerHTML = "";
+  let apuradoTotal = 0;
+
+  for(const nome in vendedores){
+    const vendedor = vendedores[nome];
+    const vendas = vendedor.vendas || {};
+    const cotacao = vendedor.cotacao || 1;
+
+    for(const dataVenda in vendas){
+      const v = vendas[dataVenda];
+      const vendeu = v.vendeu || 0;
+      const apurou = v.apurou || (vendeu * cotacao);
+      const pagou = v.pagou || 0;
+      const deve = v.deve || (apurou - pagou);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${dataVenda}</td>
+        <td>${nome}</td>
+        <td>${formatar(vendeu)}</td>
+        <td>${formatar(apurou)}</td>
+        <td>${formatar(pagou)}</td>
+        <td>${formatar(deve)}</td>
+      `;
+      tbodyResumo.appendChild(tr);
+      apuradoTotal += apurou;
+    }
+  }
+
+  // ======== DESPESAS ========
+  const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
+  tbodyDespesas.innerHTML = "";
+  let totalDespesas = 0;
+  for(const desc in despesas){
+    const valor = despesas[desc];
+    tbodyDespesas.innerHTML += `<tr><td>${desc}</td><td>${formatar(valor)}</td></tr>`;
+    totalDespesas += valor;
+  }
+
+  // ======== RECEITAS ========
+  const tbodyReceitas = document.querySelector("#tabelaReceitas tbody");
+  tbodyReceitas.innerHTML = "";
+  let saldoAnterior = 0;
+  for(const data in receitas){
+    const r = receitas[data];
+    tbodyReceitas.innerHTML += `<tr><td>${data}</td><td>${r.descricao || ''}</td><td>${formatar(r.valor)}</td></tr>`;
+    saldoAnterior += parseFloat(r.valor || 0);
+  }
+
+  // ======== SALDOS E PARTILHA ========
+  const saldoFinal = saldoAnterior + apuradoTotal - totalDespesas;
+
+  document.getElementById("saldoAnterior").textContent = formatar(saldoAnterior);
+  document.getElementById("apuradoTotal").textContent = formatar(apuradoTotal);
+  document.getElementById("despesasTotal").textContent = formatar(totalDespesas);
+  document.getElementById("saldoFinal").textContent = formatar(saldoFinal);
+
+  document.getElementById("benedito").textContent = formatar(saldoFinal * 0.25);
+  document.getElementById("jose").textContent = formatar(saldoFinal * 0.25);
+  document.getElementById("pedro").textContent = formatar(saldoFinal * 0.5);
+}
+
+document.getElementById("btnCarregar").addEventListener("click", carregarCaixa);
+document.getElementById("btnExportar").addEventListener("click", ()=>window.print());
 </script>
+
 </body>
 </html>
