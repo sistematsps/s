@@ -34,6 +34,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
+// ===== CONFIGURAÇÃO FIREBASE =====
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
   authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
@@ -46,7 +47,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let relatorioHTML = '';
+let relatorioHTML = ''; // Guarda o HTML gerado para exportação
 
 async function gerarRelatorio() {
   const filtroData = document.getElementById('filtroData').value;
@@ -61,39 +62,34 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Buscar documento da data selecionada na coleção cotacoes
+  // Document do dia na coleção cotacoes
   const docRef = doc(db, 'cotacoes', filtroData);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma cotação encontrada para esta data.</p>';
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
     return;
   }
 
-  const dataDoc = docSnap.data();
-  const vendedores = dataDoc.vendedores || {};
-
-  if (Object.keys(vendedores).length === 0) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhum vendedor cadastrado nesta data.</p>';
-    return;
-  }
-
+  const dataCotacao = docSnap.data();
+  const vendedores = dataCotacao.vendedores || {};
   let algumResultado = false;
   let totalApuradoDia = 0;
   const detalhesVendedores = [];
 
   for (const nome in vendedores) {
-    const v = vendedores[nome];
+    const vendasObj = vendedores[nome];
+    const vendas = [];
 
-    // Cada vendedor tem cotacao e possivelmente outras informações de vendas
-    const cotacao = v.cotacao || 1;
-    const apurou = v.apurou || 0;
-    const pagou = v.pagou || 0;
-    const deve = apurou - pagou;
-    const recebeu = v.recebeu || 0;
-    const devolveu = v.devolveu || 0;
-    const vendeu = recebeu - devolveu;
+    // Percorrer todas as vendas do vendedor
+    for (const vendaId in vendasObj) {
+      const venda = vendasObj[vendaId];
+      if (venda.data === filtroData) {
+        vendas.push(venda);
+      }
+    }
 
+    if (vendas.length === 0) continue;
     algumResultado = true;
 
     let html = `<h3>${nome.toUpperCase()}</h3>
@@ -109,24 +105,33 @@ async function gerarRelatorio() {
                       <th>Deve</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>${filtroData}</td>
-                      <td>${recebeu}</td>
-                      <td>${devolveu}</td>
-                      <td>${vendeu}</td>
-                      <td>R$ ${apurou.toFixed(2)}</td>
-                      <td>R$ ${pagou.toFixed(2)}</td>
-                      <td>R$ ${deve.toFixed(2)}</td>
-                    </tr>
-                  </tbody>
-                </table><hr>`;
+                  <tbody>`;
 
+    let somaVendedor = 0;
+    vendas.forEach(v => {
+      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+      const pagou = v.pagou || 0;
+      const deve = v.deve !== undefined ? v.deve : apurou - pagou;
+      somaVendedor += apurou;
+
+      html += `<tr>
+                 <td>${v.data || ''}</td>
+                 <td>${v.recebeu || 0}</td>
+                 <td>${v.devolveu || 0}</td>
+                 <td>${vendeu}</td>
+                 <td>R$ ${apurou.toFixed(2)}</td>
+                 <td>R$ ${pagou.toFixed(2)}</td>
+                 <td>R$ ${deve.toFixed(2)}</td>
+               </tr>`;
+    });
+
+    html += '</tbody></table><hr>';
     relatorioContainer.innerHTML += html;
     relatorioHTML += html;
 
-    totalApuradoDia += apurou;
-    detalhesVendedores.push({ nome, valor: apurou });
+    totalApuradoDia += somaVendedor;
+    detalhesVendedores.push({ nome, valor: somaVendedor });
   }
 
   if (!algumResultado) {
@@ -134,24 +139,30 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Resumo do dia
-  let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-  htmlResumo += '<ul>';
-  detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
-  htmlResumo += '</ul>';
-  totalDiaDiv.innerHTML = htmlResumo;
-  relatorioHTML += htmlResumo;
+  if (detalhesVendedores.length > 0) {
+    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+    htmlResumo += '<ul>';
+    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+    htmlResumo += '</ul>';
+    totalDiaDiv.innerHTML = htmlResumo;
+    relatorioHTML += htmlResumo;
+  }
 }
 
-// Botões
+// ===== Botão Consultar =====
 document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+
+// ===== Exportar Word (.docx) =====
 document.getElementById('btnExportarDOC').addEventListener('click', () => {
   if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
+
   const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
                  "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
                  "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
   const footer = "</body></html>";
+
   const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -161,9 +172,13 @@ document.getElementById('btnExportarDOC').addEventListener('click', () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 });
-document.getElementById('btnPrint').addEventListener('click', () => window.print());
 
-// Carregar relatório do dia atual automaticamente
+// ===== Print da tela =====
+document.getElementById('btnPrint').addEventListener('click', () => {
+  window.print();
+});
+
+// ===== Inicialização =====
 window.onload = () => {
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('filtroData').value = hoje;
