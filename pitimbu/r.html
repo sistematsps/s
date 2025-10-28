@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Vendas</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+  h1 { text-align: center; }
+  .filtros { margin: 20px 0; text-align: center; }
+  button { padding: 6px 12px; margin: 5px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+  th { background-color: #ccc; }
+  hr { margin: 30px 0; }
+  #totalDia { font-weight: bold; color: green; margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>PITIMBU DA SORTE</h1>
+
+<div class="filtros">
+  <label for="filtroData">Filtrar por data:</label>
+  <input type="date" id="filtroData" />
+  <button id="btnGerar">Consultar</button>
+  <button id="btnExportarDOC">Exportar Word</button>
+  <button id="btnPrint">Print da Tela</button>
+</div>
+
+<div id="relatorioContainer"></div>
+<div id="totalDia"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let relatorioHTML = ''; // Guarda o HTML gerado para exportação
+
+async function gerarRelatorio() {
+  const filtroData = document.getElementById('filtroData').value;
+  const relatorioContainer = document.getElementById('relatorioContainer');
+  const totalDiaDiv = document.getElementById('totalDia');
+  relatorioContainer.innerHTML = '';
+  totalDiaDiv.innerHTML = '';
+  relatorioHTML = '';
+
+  if (!filtroData) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Informe uma data para gerar o relatório.</p>';
+    return;
+  }
+
+  // Buscar documento do dia na coleção cotacoes
+  const docRef = doc(db, 'cotacoes', filtroData.replace(/-/g, ''));
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    return;
+  }
+
+  const cotacoes = docSnap.data();
+  const vendasData = cotacoes.vendas || {};
+  let algumResultado = false;
+  let totalApuradoDia = 0;
+  const detalhesVendedores = [];
+
+  for (const nome in vendasData) {
+    const vendasVendedor = vendasData[nome];
+    const vendas = Object.values(vendasVendedor).filter(v => v.data === filtroData);
+
+    if (vendas.length === 0) continue;
+    algumResultado = true;
+
+    let html = `<h3>${nome.toUpperCase()}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Recebeu</th>
+                      <th>Devolveu</th>
+                      <th>Vendeu</th>
+                      <th>Apurou</th>
+                      <th>Pagou</th>
+                      <th>Deve</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+
+    let somaVendedor = 0;
+    vendas.forEach(v => {
+      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+      const pagou = v.pagou || 0;
+      const deve = apurou - pagou;
+      somaVendedor += apurou;
+      html += `<tr>
+                 <td>${v.data || ''}</td>
+                 <td>${v.recebeu || 0}</td>
+                 <td>${v.devolveu || 0}</td>
+                 <td>${vendeu}</td>
+                 <td>R$ ${apurou.toFixed(2)}</td>
+                 <td>R$ ${pagou.toFixed(2)}</td>
+                 <td>R$ ${deve.toFixed(2)}</td>
+               </tr>`;
+    });
+
+    html += '</tbody></table><hr>';
+    relatorioContainer.innerHTML += html;
+    relatorioHTML += html;
+
+    totalApuradoDia += somaVendedor;
+    detalhesVendedores.push({ nome, valor: somaVendedor });
+  }
+
+  if (!algumResultado) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    return;
+  }
+
+  if (detalhesVendedores.length > 0) {
+    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+    htmlResumo += '<ul>';
+    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+    htmlResumo += '</ul>';
+    totalDiaDiv.innerHTML = htmlResumo;
+    relatorioHTML += htmlResumo;
+  }
+}
+
+// ===== Botão Consultar =====
+document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+
+// ===== Exportar Word (.docx) =====
+document.getElementById('btnExportarDOC').addEventListener('click', () => {
+  if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
+
+  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                 "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
+                 "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
+  const footer = "</body></html>";
+
+  const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'relatorio_vendas.doc';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+// ===== Print da tela =====
+document.getElementById('btnPrint').addEventListener('click', () => {
+  window.print();
+});
+
+window.onload = () => {
+  // opcional: carregar relatório do dia atual automaticamente
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('filtroData').value = hoje;
+  gerarRelatorio();
+};
+</script>
+</body>
+</html>
