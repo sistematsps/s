@@ -1,34 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório de Vendas</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relatório Final</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-  h1, h2, h3 { text-align: center; }
-  .filtros { margin: 20px 0; text-align: center; }
-  button { padding: 6px 12px; margin: 5px; cursor: pointer; }
-  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  th, td { border: 1px solid #999; padding: 5px; text-align: center; }
-  th { background-color: #ccc; }
-  hr { margin: 30px 0; }
-  #totalDia { font-weight: bold; color: green; margin-top: 20px; }
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .clock { font-weight: bold; }
+  h2, h3 { text-align: center; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #eee; }
+  hr { margin: 20px 0; }
+  button { display: inline-block; margin: 10px 6px; padding: 10px 16px; background-color: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  button:hover { background-color: #0b7dda; }
+  .totais { text-align: center; font-weight: bold; margin-top: 15px; }
+  .filtro-dados { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin: 10px 0 15px; }
+  .filtro-dados input, .filtro-dados select { padding:6px; }
 </style>
 </head>
 <body>
-<h1>PITIMBU DA SORTE</h1>
 
-<div class="filtros">
-  <label for="filtroData">Filtrar por data:</label>
-  <input type="date" id="filtroData" />
-  <button id="btnGerar">Consultar</button>
-  <button id="btnExportarDOC">Exportar Word</button>
-  <button id="btnPrint">Print da Tela</button>
+<div class="header">
+  <div>Usuário logado: <strong id="usuarioLogado">---</strong></div>
+  <div class="clock" id="relogio"></div>
 </div>
 
-<div id="relatorioContainer"></div>
-<div id="totalDia"></div>
+<div class="filtro-dados">
+  <label>Data:</label><input type="date" id="dataFiltro">
+  <label>Vendedor:</label>
+  <select id="vendedorFiltro">
+    <option value="">Todos</option>
+  </select>
+  <button id="btnAplicar">Aplicar Filtro</button>
+</div>
+
+<hr>
+<h2>RELATÓRIO FINAL PITIMBU DA SORTE</h2>
+<hr>
+
+<table id="tabelaVendas">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Data</th>
+      <th>Recebeu</th>
+      <th>Devolveu</th>
+      <th>Vendeu</th>
+      <th>Apurou</th>
+      <th>Pagou</th>
+      <th>Deve</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL APURADO: <span id="totalApurado">R$ 0,00</span>
+</div>
+
+<hr>
+<h3>RELATÓRIO DE DESPESAS PITIMBU DA SORTE</h3>
+<hr>
+
+<table id="tabelaDespesas">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Valor</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL DAS DESPESAS: <span id="totalDespesas">R$ 0,00</span>
+</div>
+
+<hr>
+<div class="totais">
+  TOTAL FINAL: <span id="totalFinal">R$ 0,00</span>
+</div>
+
+<div style="text-align:center; margin-top:10px;">
+  <button onclick="imprimirRelatorio()">Imprimir Relatório</button>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -46,166 +104,102 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let relatorioHTML = ''; // Guarda o HTML gerado para exportação
+const dataFiltroEl = document.getElementById("dataFiltro");
+const vendedorFiltroEl = document.getElementById("vendedorFiltro");
+
+document.getElementById("usuarioLogado").textContent = localStorage.getItem("usuarioLogado") || "Desconhecido";
+
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById('relogio').textContent = agora.toLocaleDateString() + ' ' + agora.toLocaleTimeString();
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
 
 async function gerarRelatorio() {
-  const filtroData = document.getElementById('filtroData').value;
-  const relatorioContainer = document.getElementById('relatorioContainer');
-  const totalDiaDiv = document.getElementById('totalDia');
-  relatorioContainer.innerHTML = '';
-  totalDiaDiv.innerHTML = '';
-  relatorioHTML = '';
+  const filtroData = dataFiltroEl.value;
+  if (!filtroData) return;
 
-  if (!filtroData) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Informe uma data para gerar o relatório.</p>';
-    return;
-  }
-
-  // Buscar documento do dia na coleção cotacoes
-  const docRef = doc(db, 'cotacoes', filtroData.replace(/-/g, ''));
+  const docRef = doc(db, 'cotacoes', filtroData);
   const docSnap = await getDoc(docRef);
-
   if (!docSnap.exists()) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+    alert("Nenhum dado encontrado para esta data.");
     return;
   }
+  const dataDoc = docSnap.data();
 
-  const cotacoes = docSnap.data();
-  const vendasData = cotacoes.vendas || {};
-  const despesasData = cotacoes.despesas || {};
-  let algumResultado = false;
-  let totalApuradoDia = 0;
-  let totalDespesasDia = 0;
-  const detalhesVendedores = [];
+  // Limpar tabelas
+  document.querySelector("#tabelaVendas tbody").innerHTML = '';
+  document.querySelector("#tabelaDespesas tbody").innerHTML = '';
+  vendedorFiltroEl.innerHTML = '<option value="">Todos</option>';
 
-  // ===== VENDAS =====
-  for (const nome in vendasData) {
-    const vendasVendedor = vendasData[nome];
-    const vendas = Object.values(vendasVendedor).filter(v => v.data === filtroData);
+  let totalApurado = 0;
+  let totalDespesas = 0;
 
-    if (vendas.length === 0) continue;
-    algumResultado = true;
-
-    let html = `<h3>${nome.toUpperCase()}</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Recebeu</th>
-                      <th>Devolveu</th>
-                      <th>Vendeu</th>
-                      <th>Apurou</th>
-                      <th>Pagou</th>
-                      <th>Deve</th>
-                    </tr>
-                  </thead>
-                  <tbody>`;
-
-    let somaVendedor = 0;
-    vendas.forEach(v => {
-      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+  // ----- VENDAS -----
+  const vendas = dataDoc.vendas || {};
+  for (const nome in vendas) {
+    const vendasVendedor = vendas[nome];
+    vendedorFiltroEl.innerHTML += `<option value="${nome}">${nome}</option>`;
+    for (const vendaId in vendasVendedor) {
+      const v = vendasVendedor[vendaId];
+      const recebeu = v.recebeu || 0;
+      const devolveu = v.devolveu || 0;
+      const vendeu = v.vendeu || (recebeu - devolveu);
+      const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
       const pagou = v.pagou || 0;
-      const deve = apurou - pagou;
-      somaVendedor += apurou;
-      html += `<tr>
-                 <td>${v.data || ''}</td>
-                 <td>${v.recebeu || 0}</td>
-                 <td>${v.devolveu || 0}</td>
-                 <td>${vendeu}</td>
-                 <td>R$ ${apurou.toFixed(2)}</td>
-                 <td>R$ ${pagou.toFixed(2)}</td>
-                 <td>R$ ${deve.toFixed(2)}</td>
-               </tr>`;
-    });
+      const deve = v.deve !== undefined ? v.deve : apurou - pagou;
 
-    html += '</tbody></table><hr>';
-    relatorioContainer.innerHTML += html;
-    relatorioHTML += html;
+      // Filtrar por vendedor
+      if (vendedorFiltroEl.value && vendedorFiltroEl.value !== nome) continue;
 
-    totalApuradoDia += somaVendedor;
-    detalhesVendedores.push({ nome, valor: somaVendedor });
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${nome}</td>
+                      <td>${v.data || ''}</td>
+                      <td>${recebeu}</td>
+                      <td>${devolveu}</td>
+                      <td>${vendeu}</td>
+                      <td>${moeda(apurou)}</td>
+                      <td>${moeda(pagou)}</td>
+                      <td>${moeda(deve)}</td>`;
+      document.querySelector("#tabelaVendas tbody").appendChild(tr);
+      totalApurado += apurou;
+    }
   }
 
-  // ===== DESPESAS =====
-  const despesas = Object.values(despesasData).filter(d => d.data === filtroData);
-  if (despesas.length > 0) {
-    let html = `<h3>DESPESAS</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Descrição</th>
-                      <th>Valor (R$)</th>
-                    </tr>
-                  </thead>
-                  <tbody>`;
-    despesas.forEach(d => {
-      html += `<tr>
-                 <td>${d.data || ''}</td>
-                 <td>${d.descricao || ''}</td>
-                 <td>${(d.valor || 0).toFixed(2)}</td>
-               </tr>`;
-      totalDespesasDia += d.valor || 0;
-    });
-    html += '</tbody></table><hr>';
-    relatorioContainer.innerHTML += html;
-    relatorioHTML += html;
+  // ----- DESPESAS -----
+  const despesas = dataDoc.despesas || {};
+  for (const despId in despesas) {
+    const d = despesas[despId];
+    const valor = d.valor || 0;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${d.data || ''}</td>
+                    <td>${moeda(valor)}</td>
+                    <td>${d.descricao || ''}</td>`;
+    document.querySelector("#tabelaDespesas tbody").appendChild(tr);
+    totalDespesas += valor;
   }
 
-  if (!algumResultado && despesas.length === 0) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda ou despesa encontrada para esta data.</p>';
-    return;
-  }
-
-  // ===== RESUMO FINAL =====
-  let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-  if (detalhesVendedores.length > 0) {
-    htmlResumo += '<ul>';
-    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
-    htmlResumo += '</ul>';
-  }
-  if (despesas.length > 0) {
-    htmlResumo += `<p>Total de Despesas: R$ ${totalDespesasDia.toFixed(2)}</p>`;
-  }
-  totalDiaDiv.innerHTML = htmlResumo;
-  relatorioHTML += htmlResumo;
+  // Totais
+  document.getElementById("totalApurado").textContent = moeda(totalApurado);
+  document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
+  document.getElementById("totalReceitas").textContent = moeda(totalApurado);
+  document.getElementById("totalGastos").textContent = moeda(totalDespesas);
+  document.getElementById("totalFinal").textContent = moeda(totalApurado - totalDespesas);
 }
 
-// ===== Botão Consultar =====
-document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+// Eventos
+document.getElementById("btnAplicar").addEventListener("click", gerarRelatorio);
 
-// ===== Exportar Word (.docx) =====
-document.getElementById('btnExportarDOC').addEventListener('click', () => {
-  if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
+// Inicializa com a data atual
+dataFiltroEl.value = new Date().toISOString().slice(0,10);
+gerarRelatorio();
 
-  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
-                 "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
-                 "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
-  const footer = "</body></html>";
-
-  const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'relatorio_vendas.doc';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-});
-
-// ===== Print da tela =====
-document.getElementById('btnPrint').addEventListener('click', () => {
-  window.print();
-});
-
-window.onload = () => {
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('filtroData').value = hoje;
-  gerarRelatorio();
-};
+window.imprimirRelatorio = () => window.print();
 </script>
+
 </body>
 </html>
