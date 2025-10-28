@@ -62,7 +62,7 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Document do dia na coleção cotacoes
+  // Buscar documento do dia na coleção cotacoes
   const docRef = doc(db, 'cotacoes', filtroData);
   const docSnap = await getDoc(docRef);
 
@@ -81,7 +81,7 @@ async function gerarRelatorio() {
     const vendasObj = vendedores[nome];
     const vendas = [];
 
-    // Percorrer todas as vendas do vendedor
+    // Iterar sobre cada ID de venda dentro do vendedor
     for (const vendaId in vendasObj) {
       const venda = vendasObj[vendaId];
       if (venda.data === filtroData) {
@@ -109,8 +109,8 @@ async function gerarRelatorio() {
 
     let somaVendedor = 0;
     vendas.forEach(v => {
-      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+      const vendeu = v.vendeu || ((v.recebeu || 0) - (v.devolveu || 0));
+      const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
       const pagou = v.pagou || 0;
       const deve = v.deve !== undefined ? v.deve : apurou - pagou;
       somaVendedor += apurou;
