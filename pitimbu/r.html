@@ -32,7 +32,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
@@ -61,68 +61,73 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Buscar documento do dia na coleção cotacoes
-  const docRef = doc(db, 'cotacoes', filtroData.replace(/-/g, ''));
-  const docSnap = await getDoc(docRef);
+  // Buscar todos os documentos na coleção 'cotacoes' com campo data = filtroData
+  const cotacoesRef = collection(db, 'cotacoes');
+  const q = query(cotacoesRef, where('data', '==', filtroData));
+  const querySnap = await getDocs(q);
 
-  if (!docSnap.exists()) {
+  if (querySnap.empty) {
     relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
     return;
   }
 
-  const cotacoes = docSnap.data();
-  const vendasData = cotacoes.vendas || {};
   let algumResultado = false;
   let totalApuradoDia = 0;
   const detalhesVendedores = [];
 
-  for (const nome in vendasData) {
-    const vendasVendedor = vendasData[nome];
-    const vendas = Object.values(vendasVendedor).filter(v => v.data === filtroData);
+  querySnap.forEach(docSnap => {
+    const cotacoes = docSnap.data();
+    const vendasData = cotacoes.vendas || {};
 
-    if (vendas.length === 0) continue;
-    algumResultado = true;
+    for (const nome in vendasData) {
+      const vendasVendedor = vendasData[nome];
+      const vendas = Object.values(vendasVendedor);
 
-    let html = `<h3>${nome.toUpperCase()}</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Recebeu</th>
-                      <th>Devolveu</th>
-                      <th>Vendeu</th>
-                      <th>Apurou</th>
-                      <th>Pagou</th>
-                      <th>Deve</th>
-                    </tr>
-                  </thead>
-                  <tbody>`;
+      if (vendas.length === 0) continue;
+      algumResultado = true;
 
-    let somaVendedor = 0;
-    vendas.forEach(v => {
-      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-      const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
-      const pagou = v.pagou || 0;
-      const deve = apurou - pagou;
-      somaVendedor += apurou;
-      html += `<tr>
-                 <td>${v.data || ''}</td>
-                 <td>${v.recebeu || 0}</td>
-                 <td>${v.devolveu || 0}</td>
-                 <td>${vendeu}</td>
-                 <td>R$ ${apurou.toFixed(2)}</td>
-                 <td>R$ ${pagou.toFixed(2)}</td>
-                 <td>R$ ${deve.toFixed(2)}</td>
-               </tr>`;
-    });
+      let html = `<h3>${nome.toUpperCase()}</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Data</th>
+                        <th>Recebeu</th>
+                        <th>Devolveu</th>
+                        <th>Vendeu</th>
+                        <th>Apurou</th>
+                        <th>Pagou</th>
+                        <th>Deve</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
 
-    html += '</tbody></table><hr>';
-    relatorioContainer.innerHTML += html;
-    relatorioHTML += html;
+      let somaVendedor = 0;
+      vendas.forEach(v => {
+        if (v.data !== filtroData) return;
+        const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+        const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
+        const pagou = v.pagou || 0;
+        const deve = apurou - pagou;
+        somaVendedor += apurou;
+        html += `<tr>
+                   <td>${v.data || ''}</td>
+                   <td>${v.recebeu || 0}</td>
+                   <td>${v.devolveu || 0}</td>
+                   <td>${vendeu}</td>
+                   <td>R$ ${apurou.toFixed(2)}</td>
+                   <td>R$ ${pagou.toFixed(2)}</td>
+                   <td>R$ ${deve.toFixed(2)}</td>
+                 </tr>`;
+      });
 
-    totalApuradoDia += somaVendedor;
-    detalhesVendedores.push({ nome, valor: somaVendedor });
-  }
+      html += '</tbody></table><hr>';
+      relatorioContainer.innerHTML += html;
+      relatorioHTML += html;
+
+      totalApuradoDia += somaVendedor;
+      detalhesVendedores.push({ nome, valor: somaVendedor });
+    }
+  });
 
   if (!algumResultado) {
     relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
@@ -168,8 +173,8 @@ document.getElementById('btnPrint').addEventListener('click', () => {
   window.print();
 });
 
+// ===== Carregar relatório do dia atual automaticamente =====
 window.onload = () => {
-  // opcional: carregar relatório do dia atual automaticamente
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('filtroData').value = hoje;
   gerarRelatorio();
