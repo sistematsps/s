@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>DEVEDORES PITIMBU DA SORTE </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
+    h1 { text-align: center; }
+    .vendedor {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .vendedor h3 {
+      margin: 0 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    input[type="number"] {
+      padding: 5px;
+      width: 100px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #45a049; }
+    #msg {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>DEVEDORES PITIMBU DA SORTE</h1>
+
+  <div id="container"></div>
+  <div id="msg"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+// ===== CONFIGURAÇÃO FIREBASE =====
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ===== DOCUMENTO DO DIA =====
+const hoje = new Date().toISOString().split('T')[0];
+const docRef = doc(db, 'cotacoes', hoje);
+
+let cotacoes = {}; // todo o documento do dia
+
+async function carregarVendedores() {
+  const container = document.getElementById('container');
+  container.innerHTML = '';
+
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    container.innerHTML = '<p>Nenhum movimento encontrado para hoje.</p>';
+    return;
+  }
+
+  cotacoes = docSnap.data();
+  const vendedoresData = cotacoes.vendas || {};
+
+  const nomes = Object.keys(vendedoresData);
+  if (nomes.length === 0) {
+    container.innerHTML = '<p>Nenhum vendedor cadastrado.</p>';
+    return;
+  }
+
+  for (const nome of nomes) {
+    const vendasVendedor = vendedoresData[nome] || {};
+    let totalDeve = 0;
+
+    Object.values(vendasVendedor).forEach(linha => {
+      const apurou = parseFloat(linha.apurou) || 0;
+      const pagou = parseFloat(linha.pagou) || 0;
+      totalDeve += (apurou - pagou);
+    });
+
+    const div = document.createElement('div');
+    div.className = 'vendedor';
+    div.innerHTML = `
+      <h3>
+        ${nome}
+        <span style="font-size: 14px; color: #c00;">Débito: R$ ${totalDeve.toFixed(2)}</span>
+      </h3>
+      <input type="number" step="0.01" id="debito_${nome.replace(/\s+/g, '_')}" placeholder="Valor do débito" />
+      <button onclick="lancarDebito('${nome}')">Lançar</button>
+    `;
+    container.appendChild(div);
+
+    div.dataset.vendas = JSON.stringify(vendasVendedor);
+  }
+}
+
+// ===== LANÇAR DÉBITO =====
+window.lancarDebito = async function(nome) {
+  const inputId = `debito_${nome.replace(/\s+/g,'_')}`;
+  const valorInput = document.getElementById(inputId);
+  let valor = parseFloat(valorInput.value);
+
+  if (isNaN(valor) || valor <= 0) {
+    alert('Informe um valor válido maior que zero para o débito.');
+    return;
+  }
+
+  const vendasVendedor = cotacoes.vendas[nome];
+  const chaves = Object.keys(vendasVendedor).sort().reverse(); // do mais recente
+
+  for (const key of chaves) {
+    const linha = vendasVendedor[key];
+    const apurou = parseFloat(linha.apurou) || 0;
+    const pagou = parseFloat(linha.pagou) || 0;
+    let deve = apurou - pagou;
+
+    if (deve > 0) {
+      const lancamento = Math.min(valor, deve);
+      linha.pagou = pagou + lancamento;
+      linha.deve = deve - lancamento;
+      valor -= lancamento;
+
+      if (valor <= 0) break;
+    }
+  }
+
+  await updateDoc(docRef, { vendas: cotacoes.vendas });
+  valorInput.value = '';
+  document.getElementById('msg').textContent = `Débito lançado para ${nome}.`;
+  setTimeout(() => carregarVendedores(), 1500);
+};
+
+// ===== INICIALIZAÇÃO =====
+carregarVendedores();
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relatório Final</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .clock { font-weight: bold; }
+  h2, h3 { text-align: center; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #eee; }
+  hr { margin: 20px 0; }
+  button { display: inline-block; margin: 10px 6px; padding: 10px 16px; background-color: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  button:hover { background-color: #0b7dda; }
+  .totais { text-align: center; font-weight: bold; margin-top: 15px; }
+  .filtro-dados { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin: 10px 0 15px; }
+  .filtro-dados input, .filtro-dados select { padding:6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>Usuário logado: <strong id="usuarioLogado">---</strong></div>
+  <div class="clock" id="relogio"></div>
+</div>
+
+<div class="filtro-dados">
+  <label>Início:</label><input type="date" id="dataInicioFiltro">
+  <label>Fim:</label><input type="date" id="dataFimFiltro">
+  <label>Vendedor:</label>
+  <select id="vendedorFiltro">
+    <option value="">Todos</option>
+  </select>
+  <button id="btnGerar">Gerar Relatório</button>
+</div>
+
+<hr>
+<h2>RELATÓRIO FINAL PITIMBU DA SORTE</h2>
+<hr>
+
+<table id="tabelaVendas">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Data</th>
+      <th>Recebeu</th>
+      <th>Devolveu</th>
+      <th>Vendeu</th>
+      <th>Apurou</th>
+      <th>Pagou</th>
+      <th>Deve</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL APURADO: <span id="totalApurado">R$ 0,00</span>
+</div>
+
+<hr>
+<h3>RELATÓRIO DE DESPESAS PITIMBU DA SORTE</h3>
+<hr>
+
+<table id="tabelaDespesas">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Valor</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="totais">
+  TOTAL DAS DESPESAS: <span id="totalDespesas">R$ 0,00</span>
+</div>
+
+<hr>
+<div class="totais">
+  TOTAL FINAL: <span id="totalFinal">R$ 0,00</span>
+</div>
+
+<div style="text-align:center; margin-top:10px;">
+  <button onclick="imprimirRelatorio()">Imprimir Relatório</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById("usuarioLogado").textContent = localStorage.getItem("usuarioLogado") || "Desconhecido";
+
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById('relogio').textContent = agora.toLocaleDateString() + ' ' + agora.toLocaleTimeString();
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
+
+function toISODate(d) {
+  if (!d) return '';
+  if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  const dt = new Date(d);
+  if (!isNaN(dt.getTime())) return dt.toISOString().slice(0,10);
+  return '';
+}
+
+function entreDatas(data, inicio, fim) {
+  if (inicio && data < inicio) return false;
+  if (fim && data > fim) return false;
+  return true;
+}
+
+async function gerarRelatorio() {
+  const inicio = document.getElementById('dataInicioFiltro').value;
+  const fim = document.getElementById('dataFimFiltro').value;
+  const vendedorFiltro = document.getElementById('vendedorFiltro').value;
+
+  // Reset
+  const tbodyVendas = document.querySelector("#tabelaVendas tbody");
+  tbodyVendas.innerHTML = '';
+  const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
+  tbodyDespesas.innerHTML = '';
+  let totalApurado = 0;
+  let totalDespesas = 0;
+
+  // --- Percorre todas as datas no período ---
+  // Para simplificação, vamos buscar todas as cotações existentes na coleção "cotacoes"
+  const cotacoesSnap = await getDocs(collection(db, 'cotacoes'));
+  const cotacoesDocs = cotacoesSnap.docs.map(d => ({ id: d.id, data: d.data() }));
+
+  for (const docItem of cotacoesSnap.docs) {
+    const dataId = docItem.id; // formato: YYYY-MM-DD ou 20251028
+    const docData = docItem.data();
+
+    const isoData = dataId.includes('-') ? dataId : `${dataId.slice(0,4)}-${dataId.slice(4,6)}-${dataId.slice(6,8)}`;
+    if (!entreDatas(isoData, inicio, fim)) continue;
+
+    // Vendas
+    const vendasMap = docData.vendas || {};
+    for (const nome in vendasMap) {
+      if (vendedorFiltro && vendedorFiltro !== nome) continue;
+      const vendasVendedor = vendasMap[nome];
+      for (const key in vendasVendedor) {
+        const v = vendasVendedor[key];
+        const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+        const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
+        const deve = v.deve !== undefined ? v.deve : apurou - (v.pagou || 0);
+        totalApurado += apurou;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${nome}</td>
+          <td>${v.data || isoData}</td>
+          <td>${v.recebeu || 0}</td>
+          <td>${v.devolveu || 0}</td>
+          <td>${vendeu}</td>
+          <td>${moeda(apurou)}</td>
+          <td>${moeda(v.pagou || 0)}</td>
+          <td>${moeda(deve)}</td>
+        `;
+        tbodyVendas.appendChild(tr);
+      }
+    }
+
+    // Despesas
+    const despesasMap = docData.despesas || {};
+    for (const key in despesasMap) {
+      const d = despesasMap[key];
+      const isoDesp = toISODate(d.data || isoData);
+      if (!entreDatas(isoDesp, inicio, fim)) continue;
+
+      totalDespesas += d.valor || 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${isoDesp}</td>
+        <td>${moeda(d.valor || 0)}</td>
+        <td>${d.descricao || ''}</td>
+      `;
+      tbodyDespesas.appendChild(tr);
+    }
+  }
+
+  document.getElementById("totalApurado").textContent = moeda(totalApurado);
+  document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
+  document.getElementById("totalFinal").textContent = moeda(totalApurado - totalDespesas);
+
+  // Atualiza select de vendedores
+  const selectVendedor = document.getElementById('vendedorFiltro');
+  selectVendedor.innerHTML = '<option value="">Todos</option>';
+  for (const docItem of cotacoesSnap.docs) {
+    const vendedoresMap = docItem.data().vendedores || {};
+    for (const nome in vendedoresMap) {
+      if (![...selectVendedor.options].some(o => o.value === nome)) {
+        const opt = document.createElement('option');
+        opt.value = nome;
+        opt.textContent = nome;
+        selectVendedor.appendChild(opt);
+      }
+    }
+  }
+}
+
+document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
+
+window.imprimirRelatorio = function() { window.print(); };
+
+// --- Carrega data atual automaticamente ---
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('dataInicioFiltro').value = hoje;
+document.getElementById('dataFimFiltro').value = hoje;
+gerarRelatorio();
+</script>
+
+</body>
+</html>
