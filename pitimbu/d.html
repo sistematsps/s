@@ -1,1 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Despesas - Pitimbu da Sorte</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body { padding: 20px; background: #f5f5f5; }
+h1 { color: red; }
+label { display: block; margin: 10px 0 5px; font-weight: bold; }
+input[type="text"], input[type="number"], input[type="date"] {
+  width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;
+}
+button {
+  background-color: red; color: white; padding: 10px 20px; border: none;
+  border-radius: 4px; cursor: pointer; margin-top: 10px;
+}
+button:hover { background-color: #900000; }
+table {
+  width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff;
+}
+th, td {
+  border: 1px solid #ccc; padding: 8px; text-align: center;
+}
+th { background: #ffcccc; }
+.acoes button { margin: 0 3px; padding: 5px 10px; font-size: 14px; }
+@media (max-width: 600px) {
+  button { width: 100%; margin-bottom: 8px; }
+  .acoes button { width: 48%; margin-bottom: 5px; }
+}
+</style>
+</head>
+<body>
 
+<h1>DESPESAS PITIMBU DA SORTE</h1>
+
+<label for="valorDespesa">Despesa (R$):</label>
+<input type="number" id="valorDespesa" min="0" step="0.01" />
+
+<label for="descricaoDespesa">Descrição da Despesa:</label>
+<input type="text" id="descricaoDespesa" />
+
+<label for="dataDespesa">Data da Despesa:</label>
+<input type="date" id="dataDespesa" />
+
+<button id="btnSalvar">Salvar Despesa</button>
+
+<table id="tabelaDespesas">
+<thead>
+<tr>
+<th>Data</th>
+<th>Descrição</th>
+<th>Valor (R$)</th>
+<th>Ações</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button id="btnExportar" style="margin-top:20px;">Exportar Despesas</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
+  authDomain: "pitimbu-da-sorte-80aa6.firebaseapp.com",
+  projectId: "pitimbu-da-sorte-80aa6",
+  storageBucket: "pitimbu-da-sorte-80aa6.firebasestorage.app",
+  messagingSenderId: "365898285373",
+  appId: "1:365898285373:web:2ce4e344f1e9774c068554"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let despesas = {}, editarKey = null;
+
+// Documento de hoje (no mesmo local das vendas)
+const hoje = new Date().toISOString().split('T')[0];
+const docRef = doc(db, 'cotacoes', hoje);
+
+async function carregarDespesas() {
+  despesas = {};
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (data.despesas) despesas = data.despesas;
+  }
+  listarDespesas();
+}
+
+function listarDespesas() {
+  const tbody = document.querySelector('#tabelaDespesas tbody');
+  tbody.innerHTML = '';
+  Object.entries(despesas).forEach(([key, d]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${d.data || ''}</td>
+      <td>${d.descricao || ''}</td>
+      <td>${Number(d.valor).toFixed(2)}</td>
+      <td class="acoes">
+        <button onclick="editarDespesa('${key}')">Editar</button>
+        <button onclick="excluirDespesa('${key}')">Excluir</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('btnSalvar').addEventListener('click', salvarDespesa);
+
+async function salvarDespesa() {
+  const valor = parseFloat(document.getElementById('valorDespesa').value);
+  const descricao = document.getElementById('descricaoDespesa').value.trim();
+  const data = document.getElementById('dataDespesa').value;
+
+  if (isNaN(valor) || valor <= 0) { alert('Informe um valor válido.'); return; }
+  if (!descricao) { alert('Informe a descrição.'); return; }
+  if (!data) { alert('Informe a data.'); return; }
+
+  const novaDespesa = { valor, descricao, data };
+  const chave = editarKey || `despesa_${Date.now()}`;
+  despesas[chave] = novaDespesa;
+
+  await updateDoc(docRef, { despesas });
+  editarKey = null;
+  limparFormulario();
+  carregarDespesas();
+}
+
+window.editarDespesa = function(key) {
+  const d = despesas[key];
+  document.getElementById('valorDespesa').value = d.valor;
+  document.getElementById('descricaoDespesa').value = d.descricao;
+  document.getElementById('dataDespesa').value = d.data;
+  editarKey = key;
+};
+
+window.excluirDespesa = async function(key) {
+  if (!confirm('Confirma a exclusão desta despesa?')) return;
+  delete despesas[key];
+  await updateDoc(docRef, { despesas });
+  carregarDespesas();
+};
+
+function limparFormulario() {
+  document.getElementById('valorDespesa').value = '';
+  document.getElementById('descricaoDespesa').value = '';
+  document.getElementById('dataDespesa').value = '';
+  editarKey = null;
+}
+
+document.getElementById('btnExportar').addEventListener('click', () => window.print());
+
+window.onload = carregarDespesas;
+</script>
+
+</body>
+</html>
