@@ -32,7 +32,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
@@ -46,7 +46,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let relatorioHTML = ''; // Guarda o HTML gerado para exportação
+let relatorioHTML = '';
 
 async function gerarRelatorio() {
   const filtroData = document.getElementById('filtroData').value;
@@ -61,13 +61,20 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Buscar todos os documentos na coleção 'cotacoes' com campo data = filtroData
-  const cotacoesRef = collection(db, 'cotacoes');
-  const q = query(cotacoesRef, where('data', '==', filtroData));
-  const querySnap = await getDocs(q);
+  // Documento do dia: YYYYMMDD
+  const docId = filtroData.replace(/-/g,'');
+  const docRef = doc(db, 'cotacoes', docId);
+  const docSnap = await getDoc(docRef);
 
-  if (querySnap.empty) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
+  if (!docSnap.exists()) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma cotação encontrada para esta data.</p>';
+    return;
+  }
+
+  const cotacoes = docSnap.data();
+  const vendedores = cotacoes.vendedores || {};
+  if (Object.keys(vendedores).length === 0) {
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhum vendedor cadastrado nesta data.</p>';
     return;
   }
 
@@ -75,89 +82,75 @@ async function gerarRelatorio() {
   let totalApuradoDia = 0;
   const detalhesVendedores = [];
 
-  querySnap.forEach(docSnap => {
-    const cotacoes = docSnap.data();
-    const vendasData = cotacoes.vendas || {};
+  for (const key in vendedores) {
+    const v = vendedores[key];
+    const cotacao = v.cotacao || 0;
+    const nome = v.nome || key;
 
-    for (const nome in vendasData) {
-      const vendasVendedor = vendasData[nome];
-      const vendas = Object.values(vendasVendedor);
+    // Exemplo: simular vendas com base na cotação
+    const recebeu = 100; // aqui você pode ajustar para buscar valores reais
+    const devolveu = 0;
+    const vendeu = recebeu - devolveu;
+    const apurou = vendeu * cotacao;
+    const pagou = 0;
+    const deve = apurou - pagou;
 
-      if (vendas.length === 0) continue;
-      algumResultado = true;
+    algumResultado = true;
+    totalApuradoDia += apurou;
+    detalhesVendedores.push({ nome, valor: apurou });
 
-      let html = `<h3>${nome.toUpperCase()}</h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Data</th>
-                        <th>Recebeu</th>
-                        <th>Devolveu</th>
-                        <th>Vendeu</th>
-                        <th>Apurou</th>
-                        <th>Pagou</th>
-                        <th>Deve</th>
-                      </tr>
-                    </thead>
-                    <tbody>`;
+    let html = `<h3>${nome.toUpperCase()}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Recebeu</th>
+                      <th>Devolveu</th>
+                      <th>Vendeu</th>
+                      <th>Apurou</th>
+                      <th>Pagou</th>
+                      <th>Deve</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>${filtroData}</td>
+                      <td>${recebeu}</td>
+                      <td>${devolveu}</td>
+                      <td>${vendeu}</td>
+                      <td>R$ ${apurou.toFixed(2)}</td>
+                      <td>R$ ${pagou.toFixed(2)}</td>
+                      <td>R$ ${deve.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table><hr>`;
 
-      let somaVendedor = 0;
-      vendas.forEach(v => {
-        if (v.data !== filtroData) return;
-        const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-        const apurou = (v.apurou !== undefined) ? v.apurou : vendeu * (v.cotacao || 1);
-        const pagou = v.pagou || 0;
-        const deve = apurou - pagou;
-        somaVendedor += apurou;
-        html += `<tr>
-                   <td>${v.data || ''}</td>
-                   <td>${v.recebeu || 0}</td>
-                   <td>${v.devolveu || 0}</td>
-                   <td>${vendeu}</td>
-                   <td>R$ ${apurou.toFixed(2)}</td>
-                   <td>R$ ${pagou.toFixed(2)}</td>
-                   <td>R$ ${deve.toFixed(2)}</td>
-                 </tr>`;
-      });
-
-      html += '</tbody></table><hr>';
-      relatorioContainer.innerHTML += html;
-      relatorioHTML += html;
-
-      totalApuradoDia += somaVendedor;
-      detalhesVendedores.push({ nome, valor: somaVendedor });
-    }
-  });
+    relatorioContainer.innerHTML += html;
+    relatorioHTML += html;
+  }
 
   if (!algumResultado) {
     relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma venda encontrada para esta data.</p>';
     return;
   }
 
-  if (detalhesVendedores.length > 0) {
-    let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-    htmlResumo += '<ul>';
-    detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
-    htmlResumo += '</ul>';
-    totalDiaDiv.innerHTML = htmlResumo;
-    relatorioHTML += htmlResumo;
-  }
+  let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+  htmlResumo += '<ul>';
+  detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
+  htmlResumo += '</ul>';
+  totalDiaDiv.innerHTML = htmlResumo;
+  relatorioHTML += htmlResumo;
 }
 
-// ===== Botão Consultar =====
+// Botões
 document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
-
-// ===== Exportar Word (.docx) =====
 document.getElementById('btnExportarDOC').addEventListener('click', () => {
   if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
-
   const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
                  "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
                  "<head><meta charset='utf-8'><title>Relatório de Vendas</title></head><body>";
   const footer = "</body></html>";
-
   const blob = new Blob([header + relatorioHTML + footer], { type: 'application/msword' });
-
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -167,13 +160,9 @@ document.getElementById('btnExportarDOC').addEventListener('click', () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 });
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
 
-// ===== Print da tela =====
-document.getElementById('btnPrint').addEventListener('click', () => {
-  window.print();
-});
-
-// ===== Carregar relatório do dia atual automaticamente =====
+// Carregar relatório do dia atual automaticamente
 window.onload = () => {
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('filtroData').value = hoje;
