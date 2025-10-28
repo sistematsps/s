@@ -61,7 +61,7 @@ async function gerarRelatorio() {
     return;
   }
 
-  // Documento da data selecionada
+  // Buscar documento da data selecionada na coleção cotacoes
   const docRef = doc(db, 'cotacoes', filtroData);
   const docSnap = await getDoc(docRef);
 
@@ -82,13 +82,18 @@ async function gerarRelatorio() {
   let totalApuradoDia = 0;
   const detalhesVendedores = [];
 
-  // Percorrer cada vendedor
   for (const nome in vendedores) {
     const v = vendedores[nome];
-    const vendasVendedor = v.vendas || {}; // vendas armazenadas dentro do vendedor
-    const vendasArray = Object.values(vendasVendedor).filter(x => x.data === filtroData);
 
-    if (vendasArray.length === 0) continue;
+    // Cada vendedor tem cotacao e possivelmente outras informações de vendas
+    const cotacao = v.cotacao || 1;
+    const apurou = v.apurou || 0;
+    const pagou = v.pagou || 0;
+    const deve = apurou - pagou;
+    const recebeu = v.recebeu || 0;
+    const devolveu = v.devolveu || 0;
+    const vendeu = recebeu - devolveu;
+
     algumResultado = true;
 
     let html = `<h3>${nome.toUpperCase()}</h3>
@@ -104,36 +109,24 @@ async function gerarRelatorio() {
                       <th>Deve</th>
                     </tr>
                   </thead>
-                  <tbody>`;
+                  <tbody>
+                    <tr>
+                      <td>${filtroData}</td>
+                      <td>${recebeu}</td>
+                      <td>${devolveu}</td>
+                      <td>${vendeu}</td>
+                      <td>R$ ${apurou.toFixed(2)}</td>
+                      <td>R$ ${pagou.toFixed(2)}</td>
+                      <td>R$ ${deve.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table><hr>`;
 
-    let somaVendedor = 0;
-
-    vendasArray.forEach(venda => {
-      const recebeu = venda.recebeu || 0;
-      const devolveu = venda.devolveu || 0;
-      const vendeu = recebeu - devolveu;
-      const apurou = venda.apurou || vendeu * (venda.cotacao || 1);
-      const pagou = venda.pagou || 0;
-      const deve = venda.deve || (apurou - pagou);
-      somaVendedor += apurou;
-
-      html += `<tr>
-                 <td>${venda.data || ''}</td>
-                 <td>${recebeu}</td>
-                 <td>${devolveu}</td>
-                 <td>${vendeu}</td>
-                 <td>R$ ${apurou.toFixed(2)}</td>
-                 <td>R$ ${pagou.toFixed(2)}</td>
-                 <td>R$ ${deve.toFixed(2)}</td>
-               </tr>`;
-    });
-
-    html += '</tbody></table><hr>';
     relatorioContainer.innerHTML += html;
     relatorioHTML += html;
 
-    totalApuradoDia += somaVendedor;
-    detalhesVendedores.push({ nome, valor: somaVendedor });
+    totalApuradoDia += apurou;
+    detalhesVendedores.push({ nome, valor: apurou });
   }
 
   if (!algumResultado) {
@@ -141,6 +134,7 @@ async function gerarRelatorio() {
     return;
   }
 
+  // Resumo do dia
   let htmlResumo = `<p>Total apurado em <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
   htmlResumo += '<ul>';
   detalhesVendedores.forEach(v => htmlResumo += `<li>${v.nome}: R$ ${v.valor.toFixed(2)}</li>`);
