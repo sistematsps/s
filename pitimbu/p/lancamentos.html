@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>DEVEDORES PITIMBU DA SORTE </title>
+  <title>DEVEDORES PITIMBU DA SORTE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
@@ -50,7 +50,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 // ===== CONFIGURAÇÃO FIREBASE =====
 const firebaseConfig = {
@@ -65,19 +65,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ===== DOCUMENTO DO DIA =====
-const hoje = new Date().toISOString().split('T')[0];
-const docRef = doc(db, 'cotacoes', hoje);
+// ===== DOCUMENTO FIXO =====
+const docRef = doc(db, 'cotacoes', 'dados');
 
-let cotacoes = {}; // todo o documento do dia
+let cotacoes = {}; // todo o documento
 
 async function carregarVendedores() {
   const container = document.getElementById('container');
   container.innerHTML = '';
 
   const docSnap = await getDoc(docRef);
+
+  // Cria o documento se não existir
   if (!docSnap.exists()) {
-    container.innerHTML = '<p>Nenhum movimento encontrado para hoje.</p>';
+    await setDoc(docRef, { vendas: {} });
+    container.innerHTML = '<p>Nenhum movimento encontrado.</p>';
     return;
   }
 
