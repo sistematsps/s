@@ -62,7 +62,7 @@ th { background: #ffcccc; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 // Config Firebase
 const firebaseConfig = {
@@ -77,11 +77,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let despesas = {}, editarKey = null;
+// Referência fixa: cotacoes/dados
+const docRef = doc(db, "cotacoes", "dados");
 
-// Documento de hoje (no mesmo local das vendas)
-const hoje = new Date().toISOString().split('T')[0];
-const docRef = doc(db, 'cotacoes', hoje);
+let despesas = {};
+let editarKey = null;
 
 async function carregarDespesas() {
   despesas = {};
@@ -94,13 +94,13 @@ async function carregarDespesas() {
 }
 
 function listarDespesas() {
-  const tbody = document.querySelector('#tabelaDespesas tbody');
-  tbody.innerHTML = '';
+  const tbody = document.querySelector("#tabelaDespesas tbody");
+  tbody.innerHTML = "";
   Object.entries(despesas).forEach(([key, d]) => {
-    const tr = document.createElement('tr');
+    const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${d.data || ''}</td>
-      <td>${d.descricao || ''}</td>
+      <td>${d.data || ""}</td>
+      <td>${d.descricao || ""}</td>
       <td>${Number(d.valor).toFixed(2)}</td>
       <td class="acoes">
         <button onclick="editarDespesa('${key}')">Editar</button>
@@ -110,16 +110,16 @@ function listarDespesas() {
   });
 }
 
-document.getElementById('btnSalvar').addEventListener('click', salvarDespesa);
+document.getElementById("btnSalvar").addEventListener("click", salvarDespesa);
 
 async function salvarDespesa() {
-  const valor = parseFloat(document.getElementById('valorDespesa').value);
-  const descricao = document.getElementById('descricaoDespesa').value.trim();
-  const data = document.getElementById('dataDespesa').value;
+  const valor = parseFloat(document.getElementById("valorDespesa").value);
+  const descricao = document.getElementById("descricaoDespesa").value.trim();
+  const data = document.getElementById("dataDespesa").value;
 
-  if (isNaN(valor) || valor <= 0) { alert('Informe um valor válido.'); return; }
-  if (!descricao) { alert('Informe a descrição.'); return; }
-  if (!data) { alert('Informe a data.'); return; }
+  if (isNaN(valor) || valor <= 0) { alert("Informe um valor válido."); return; }
+  if (!descricao) { alert("Informe a descrição."); return; }
+  if (!data) { alert("Informe a data."); return; }
 
   const novaDespesa = { valor, descricao, data };
   const chave = editarKey || `despesa_${Date.now()}`;
@@ -131,29 +131,29 @@ async function salvarDespesa() {
   carregarDespesas();
 }
 
-window.editarDespesa = function(key) {
+window.editarDespesa = function (key) {
   const d = despesas[key];
-  document.getElementById('valorDespesa').value = d.valor;
-  document.getElementById('descricaoDespesa').value = d.descricao;
-  document.getElementById('dataDespesa').value = d.data;
+  document.getElementById("valorDespesa").value = d.valor;
+  document.getElementById("descricaoDespesa").value = d.descricao;
+  document.getElementById("dataDespesa").value = d.data;
   editarKey = key;
 };
 
-window.excluirDespesa = async function(key) {
-  if (!confirm('Confirma a exclusão desta despesa?')) return;
+window.excluirDespesa = async function (key) {
+  if (!confirm("Confirma a exclusão desta despesa?")) return;
   delete despesas[key];
   await updateDoc(docRef, { despesas });
   carregarDespesas();
 };
 
 function limparFormulario() {
-  document.getElementById('valorDespesa').value = '';
-  document.getElementById('descricaoDespesa').value = '';
-  document.getElementById('dataDespesa').value = '';
+  document.getElementById("valorDespesa").value = "";
+  document.getElementById("descricaoDespesa").value = "";
+  document.getElementById("dataDespesa").value = "";
   editarKey = null;
 }
 
-document.getElementById('btnExportar').addEventListener('click', () => window.print());
+document.getElementById("btnExportar").addEventListener("click", () => window.print());
 
 window.onload = carregarDespesas;
 </script>
