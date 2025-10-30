@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório de Vendas e Despesas</title>
+<title>Relatório de Vendas e Despesas - PITIMBU DA SORTE</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
   h1 { text-align: center; }
-  .filtros { margin: 20px 0; text-align: center; }
   button { padding: 6px 12px; margin: 5px; cursor: pointer; }
   table { width: 100%; border-collapse: collapse; margin-top: 10px; }
   th, td { border: 1px solid #999; padding: 5px; text-align: center; }
@@ -19,10 +18,8 @@
 <body>
 <h1>PITIMBU DA SORTE - RELATÓRIO</h1>
 
-<div class="filtros">
-  <label for="filtroData">Filtrar por data:</label>
-  <input type="date" id="filtroData" />
-  <button id="btnGerar">Consultar</button>
+<div class="filtros" style="text-align:center;">
+  <button id="btnGerar">Atualizar Relatório</button>
   <button id="btnExportarDOC">Exportar Word</button>
   <button id="btnPrint">Print da Tela</button>
 </div>
@@ -49,31 +46,26 @@ const db = getFirestore(app);
 
 let relatorioHTML = '';
 
+// ===== GERAR RELATÓRIO =====
 async function gerarRelatorio() {
-  const filtroData = document.getElementById('filtroData').value;
   const relatorioContainer = document.getElementById('relatorioContainer');
   const totalDiaDiv = document.getElementById('totalDia');
   relatorioContainer.innerHTML = '';
   totalDiaDiv.innerHTML = '';
   relatorioHTML = '';
 
-  if (!filtroData) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Informe uma data para gerar o relatório.</p>';
-    return;
-  }
-
-  const docRef = doc(db, 'cotacoes', filtroData);
+  const docRef = doc(db, 'cotacoes', 'dados'); // documento fixo
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
-    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma informação encontrada para esta data.</p>';
+    relatorioContainer.innerHTML = '<p style="text-align:center;">Nenhuma informação encontrada.</p>';
     return;
   }
 
   const dataDoc = docSnap.data();
-  let totalApuradoDia = 0;
+  let totalDia = 0;
 
-  // ===== EXIBIR DESPESAS =====
+  // ===== DESPESAS =====
   const despesas = dataDoc.despesas || {};
   if (Object.keys(despesas).length > 0) {
     let htmlDespesas = `<h3>DESPESAS</h3>
@@ -94,11 +86,11 @@ async function gerarRelatorio() {
 
     htmlDespesas += `</tbody></table>`;
     relatorioContainer.innerHTML += htmlDespesas;
-    totalApuradoDia -= totalDespesas; // despesas reduzem o total
+    totalDia -= totalDespesas; // despesas reduzem o total
     relatorioHTML += htmlDespesas;
   }
 
-  // ===== EXIBIR VENDAS =====
+  // ===== VENDAS =====
   const vendas = dataDoc.vendas || {};
   for (const nome in vendas) {
     const vendasVendedor = vendas[nome];
@@ -120,7 +112,6 @@ async function gerarRelatorio() {
 
     for (const vendaId in vendasVendedor) {
       const v = vendasVendedor[vendaId];
-      if (v.data !== filtroData) continue;
 
       const vendeu = v.vendeu || ((v.recebeu || 0) - (v.devolveu || 0));
       const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
@@ -142,18 +133,18 @@ async function gerarRelatorio() {
     html += '</tbody></table><hr>';
     relatorioContainer.innerHTML += html;
     relatorioHTML += html;
-    totalApuradoDia += somaVendedor;
+    totalDia += somaVendedor;
   }
 
   // ===== RESUMO =====
-  totalDiaDiv.innerHTML = `<p>Total líquido do dia <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
-  relatorioHTML += `<p>Total líquido do dia <strong>${filtroData}</strong>: R$ ${totalApuradoDia.toFixed(2)}</p>`;
+  totalDiaDiv.innerHTML = `<p>Total líquido: R$ ${totalDia.toFixed(2)}</p>`;
+  relatorioHTML += `<p>Total líquido: R$ ${totalDia.toFixed(2)}</p>`;
 }
 
-// ===== Botão Consultar =====
+// ===== BOTÕES =====
 document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
 
-// ===== Exportar Word (.docx) =====
+// Exportar Word (.doc)
 document.getElementById('btnExportarDOC').addEventListener('click', () => {
   if (!relatorioHTML) { alert('Gere o relatório primeiro'); return; }
 
@@ -173,17 +164,11 @@ document.getElementById('btnExportarDOC').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-// ===== Print da tela =====
-document.getElementById('btnPrint').addEventListener('click', () => {
-  window.print();
-});
+// Print da tela
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
 
-// ===== Inicialização =====
-window.onload = () => {
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('filtroData').value = hoje;
-  gerarRelatorio();
-};
+// ===== INICIALIZAÇÃO =====
+window.onload = gerarRelatorio;
 </script>
 </body>
 </html>
