@@ -89,7 +89,7 @@ const db = getFirestore(app);
 
 function formatar(v){ return parseFloat(v || 0).toFixed(2); }
 
-async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
+async function carregarCaixa(inicio='', fim='') {
   const hoje = new Date().toISOString().split("T")[0];
   const docRef = doc(db, "cotacoes", hoje);
   const docSnap = await getDoc(docRef);
@@ -117,40 +117,54 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
     const vendasDoVendedor = vendasMap[vendedor];
     for(const chave in vendasDoVendedor){
       const v = vendasDoVendedor[chave];
-      if(v.data >= inicio && v.data <= fim){
+      const dataVenda = v.data || '';
+
+      // Se não há filtro → mostra apenas o dia de hoje
+      if(!inicio && !fim && dataVenda !== hoje) continue;
+
+      // Se há filtro → respeita intervalo
+      if(inicio && fim && (dataVenda < inicio || dataVenda > fim)) continue;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${dataVenda}</td>
+        <td>${vendedor}</td>
+        <td>${formatar(v.vendeu)}</td>
+        <td>${formatar(v.apurou)}</td>
+        <td>${formatar(v.pagou)}</td>
+        <td>${formatar(v.deve)}</td>
+      `;
+      tbodyResumo.appendChild(tr);
+      totalApurado += parseFloat(v.apurou || 0);
+    }
+  }
+
+  // === DESPESAS (só quando há filtro) ===
+  if(inicio && fim){
+    for(const chave in despesasMap){
+      const d = despesasMap[chave];
+      if(d.data >= inicio && d.data <= fim){
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${v.data || ''}</td>
-          <td>${vendedor}</td>
-          <td>${formatar(v.vendeu)}</td>
-          <td>${formatar(v.apurou)}</td>
-          <td>${formatar(v.pagou)}</td>
-          <td>${formatar(v.deve)}</td>
+          <td>${d.data || ''}</td>
+          <td>${d.descricao || ''}</td>
+          <td>${formatar(d.valor)}</td>
         `;
-        tbodyResumo.appendChild(tr);
-        totalApurado += parseFloat(v.apurou || 0);
+        tbodyDespesas.appendChild(tr);
+        totalDespesas += parseFloat(d.valor || 0);
       }
     }
   }
 
-  // === DESPESAS ===
-  for(const chave in despesasMap){
-    const d = despesasMap[chave];
-    if(d.data >= inicio && d.data <= fim){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${d.data || ''}</td>
-        <td>${d.descricao || ''}</td>
-        <td>${formatar(d.valor)}</td>
-      `;
-      tbodyDespesas.appendChild(tr);
-      totalDespesas += parseFloat(d.valor || 0);
-    }
+  // === CÁLCULOS ===
+  let totalFinal = 0;
+  if(inicio && fim){
+    totalFinal = totalApurado - totalDespesas;
+  } else {
+    totalFinal = totalApurado; // só mostra o apurado do dia
   }
 
-  // === CÁLCULOS ===
-  const totalFinal = totalApurado - totalDespesas;
-
+  // === Atualiza totais ===
   document.getElementById("apuradoTotal").textContent = formatar(totalApurado);
   document.getElementById("despesasTotal").textContent = formatar(totalDespesas);
   document.getElementById("saldoFinal").textContent = formatar(totalFinal);
@@ -162,8 +176,8 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
 
 // === FILTRO ===
 document.getElementById("btnFiltrar").addEventListener("click", ()=>{
-  const inicio = document.getElementById("dataInicio").value || '0000-00-00';
-  const fim = document.getElementById("dataFim").value || '9999-12-31';
+  const inicio = document.getElementById("dataInicio").value;
+  const fim = document.getElementById("dataFim").value;
   carregarCaixa(inicio, fim);
 });
 
