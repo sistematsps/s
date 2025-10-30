@@ -129,7 +129,7 @@ async function carregarCaixa(inicio='', fim='') {
       tr.innerHTML = `
         <td>${dataVenda}</td>
         <td>${vendedor}</td>
-        <td>${formatar(v.vendeu)}</td>
+        <td>${parseInt(v.vendeu || 0)}</td>
         <td>${formatar(v.apurou)}</td>
         <td>${formatar(v.pagou)}</td>
         <td>${formatar(v.deve)}</td>
