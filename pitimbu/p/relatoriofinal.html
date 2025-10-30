@@ -28,8 +28,6 @@
 </div>
 
 <div class="filtro-dados">
-  <label>Início:</label><input type="date" id="dataInicioFiltro">
-  <label>Fim:</label><input type="date" id="dataFimFiltro">
   <label>Vendedor:</label>
   <select id="vendedorFiltro">
     <option value="">Todos</option>
@@ -91,7 +89,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
@@ -116,88 +114,66 @@ atualizarRelogio();
 
 function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
 
-function toISODate(d) {
-  if (!d) return '';
-  if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-  const dt = new Date(d);
-  if (!isNaN(dt.getTime())) return dt.toISOString().slice(0,10);
-  return '';
-}
-
-function entreDatas(data, inicio, fim) {
-  if (inicio && data < inicio) return false;
-  if (fim && data > fim) return false;
-  return true;
-}
-
 async function gerarRelatorio() {
-  const inicio = document.getElementById('dataInicioFiltro').value;
-  const fim = document.getElementById('dataFimFiltro').value;
   const vendedorFiltro = document.getElementById('vendedorFiltro').value;
 
-  // Reset
   const tbodyVendas = document.querySelector("#tabelaVendas tbody");
   tbodyVendas.innerHTML = '';
   const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
   tbodyDespesas.innerHTML = '';
+
   let totalApurado = 0;
   let totalDespesas = 0;
 
-  // --- Percorre todas as datas no período ---
-  // Para simplificação, vamos buscar todas as cotações existentes na coleção "cotacoes"
-  const cotacoesSnap = await getDocs(collection(db, 'cotacoes'));
-  const cotacoesDocs = cotacoesSnap.docs.map(d => ({ id: d.id, data: d.data() }));
+  const docRef = doc(db, 'cotacoes', 'dados'); // documento fixo
+  const docSnap = await getDoc(docRef);
 
-  for (const docItem of cotacoesSnap.docs) {
-    const dataId = docItem.id; // formato: YYYY-MM-DD ou 20251028
-    const docData = docItem.data();
+  if (!docSnap.exists()) {
+    alert('Nenhum dado encontrado em cotacoes/dados.');
+    return;
+  }
 
-    const isoData = dataId.includes('-') ? dataId : `${dataId.slice(0,4)}-${dataId.slice(4,6)}-${dataId.slice(6,8)}`;
-    if (!entreDatas(isoData, inicio, fim)) continue;
+  const dataDoc = docSnap.data();
 
-    // Vendas
-    const vendasMap = docData.vendas || {};
-    for (const nome in vendasMap) {
-      if (vendedorFiltro && vendedorFiltro !== nome) continue;
-      const vendasVendedor = vendasMap[nome];
-      for (const key in vendasVendedor) {
-        const v = vendasVendedor[key];
-        const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
-        const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
-        const deve = v.deve !== undefined ? v.deve : apurou - (v.pagou || 0);
-        totalApurado += apurou;
+  // --- VENDAS ---
+  const vendas = dataDoc.vendas || {};
+  for (const nome in vendas) {
+    if (vendedorFiltro && vendedorFiltro !== nome) continue;
+    const vendasVendedor = vendas[nome];
+    for (const key in vendasVendedor) {
+      const v = vendasVendedor[key];
+      const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
+      const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
+      const deve = v.deve !== undefined ? v.deve : apurou - (v.pagou || 0);
+      totalApurado += apurou;
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${nome}</td>
-          <td>${v.data || isoData}</td>
-          <td>${v.recebeu || 0}</td>
-          <td>${v.devolveu || 0}</td>
-          <td>${vendeu}</td>
-          <td>${moeda(apurou)}</td>
-          <td>${moeda(v.pagou || 0)}</td>
-          <td>${moeda(deve)}</td>
-        `;
-        tbodyVendas.appendChild(tr);
-      }
-    }
-
-    // Despesas
-    const despesasMap = docData.despesas || {};
-    for (const key in despesasMap) {
-      const d = despesasMap[key];
-      const isoDesp = toISODate(d.data || isoData);
-      if (!entreDatas(isoDesp, inicio, fim)) continue;
-
-      totalDespesas += d.valor || 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${isoDesp}</td>
-        <td>${moeda(d.valor || 0)}</td>
-        <td>${d.descricao || ''}</td>
+        <td>${nome}</td>
+        <td>${v.data || ''}</td>
+        <td>${v.recebeu || 0}</td>
+        <td>${v.devolveu || 0}</td>
+        <td>${vendeu}</td>
+        <td>${moeda(apurou)}</td>
+        <td>${moeda(v.pagou || 0)}</td>
+        <td>${moeda(deve)}</td>
       `;
-      tbodyDespesas.appendChild(tr);
+      tbodyVendas.appendChild(tr);
     }
+  }
+
+  // --- DESPESAS ---
+  const despesas = dataDoc.despesas || {};
+  for (const key in despesas) {
+    const d = despesas[key];
+    totalDespesas += d.valor || 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${d.data || ''}</td>
+      <td>${moeda(d.valor || 0)}</td>
+      <td>${d.descricao || ''}</td>
+    `;
+    tbodyDespesas.appendChild(tr);
   }
 
   document.getElementById("totalApurado").textContent = moeda(totalApurado);
@@ -207,16 +183,12 @@ async function gerarRelatorio() {
   // Atualiza select de vendedores
   const selectVendedor = document.getElementById('vendedorFiltro');
   selectVendedor.innerHTML = '<option value="">Todos</option>';
-  for (const docItem of cotacoesSnap.docs) {
-    const vendedoresMap = docItem.data().vendedores || {};
-    for (const nome in vendedoresMap) {
-      if (![...selectVendedor.options].some(o => o.value === nome)) {
-        const opt = document.createElement('option');
-        opt.value = nome;
-        opt.textContent = nome;
-        selectVendedor.appendChild(opt);
-      }
-    }
+  const vendedoresData = dataDoc.vendedores || {};
+  for (const nome in vendedoresData) {
+    const opt = document.createElement('option');
+    opt.value = nome;
+    opt.textContent = nome;
+    selectVendedor.appendChild(opt);
   }
 }
 
@@ -224,12 +196,8 @@ document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
 
 window.imprimirRelatorio = function() { window.print(); };
 
-// --- Carrega data atual automaticamente ---
-const hoje = new Date().toISOString().split('T')[0];
-document.getElementById('dataInicioFiltro').value = hoje;
-document.getElementById('dataFimFiltro').value = hoje;
-gerarRelatorio();
+window.onload = gerarRelatorio;
 </script>
 
 </body>
-</html>
+  </html>
