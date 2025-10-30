@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>PITIMBU DA SORTE - Master</title>
 <style>
+/* (mantido igual ao seu código original) */
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body { padding: 20px; background: #f5f5f5; }
 h1, h2 { color: red; }
@@ -29,8 +30,9 @@ th { background: white; }
 <body>
 
 <h1>PITIMBU DA SORTE - PAINEL MASTER</h1>
-<div class="small">Documento Firestore por data: <span id="dataDoc"></span> — Última atualização: <span id="lastUpdated">—</span></div>
+<div class="small">Documento Firestore: <strong>cotacoes/dados_gerais</strong> — Última atualização: <span id="lastUpdated">—</span></div>
 
+<!-- Controles principais -->
 <div style="margin-top:10px;">
   <input id="nome" placeholder="Nome do vendedor"/>
   <input id="cotacao" placeholder="Cotação" type="number" step="0.01" min="0"/>
@@ -41,10 +43,11 @@ th { background: white; }
 
 <div id="listaVendedores" style="margin-top:12px;"></div>
 
+<!-- Painel de vendas -->
 <div id="painelVendedor">
   <h2 id="tituloVendedor"></h2>
   <button onclick="voltarCadastro()">Voltar ao cadastro</button>
-  
+
   <div style="margin-top:15px;" class="controls">
     <label>Filtrar por data: <input type="date" id="filtroData"/></label>
     <button onclick="filtrarPorData()">Filtrar</button>
@@ -52,9 +55,9 @@ th { background: white; }
     <button onclick="exportarPDF()">Exportar em PDF</button>
     <button id="btnSalvarVendas" onclick="salvarVendas()" style="margin-left:10px;">Salvar Vendas</button>
   </div>
-  
+
   <button style="margin-top:15px;" onclick="adicionarLinha()">Adicionar venda</button>
-  
+
   <table id="tabelaVendas">
     <thead>
       <tr>
@@ -73,22 +76,12 @@ th { background: white; }
 
   <div class="totais" style="margin-top:10px;">
     <span>Total Apurado: R$ <span id="totalApurado">0.00</span></span>
-    <span>Total Pagou: R$ <span id="totalPagou">0.00</span></span>
-    <span>Total Deve: R$ <span id="totalDeve">0.00</span></span>
+    <span>Total Despesas: R$ <span id="totalDespesas">0.00</span></span>
+    <span>Total Final: R$ <span id="totalFinal">0.00</span></span>
   </div>
 </div>
 
 <script type="module">
-/* Firestore single-document map strategy
-   Document path: cotacoes/{YYYY-MM-DD}
-   Structure:
-   {
-     vendedores: { "NOME_SANITIZADO": { nome:"NOME REAL", cotacao:2.5 }, ... },
-     vendas: { "NOME_SANITIZADO": { "2025-10-26_0": { data:"2025-10-26", recebeu:..., ... }, ... }, ... },
-     lastUpdated: serverTimestamp()
-   }
-*/
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp
@@ -106,346 +99,129 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-function salvarLocal(chave, valor) { localStorage.setItem(chave, JSON.stringify(valor)); }
-function carregarLocal(chave) { const d = localStorage.getItem(chave); try { return d ? JSON.parse(d) : null } catch { return null } }
+// documento único
+const docRef = doc(db, "cotacoes", "dados_gerais");
 
-let vendedoresArray = []; // array para UI: { nome, cotacao }
-let vendasMap = {};       // map local: chaveVendedor => array de vendas (cada venda é objeto)
+let vendedoresArray = [];
+let vendasMap = {};
+let despesasMap = {};
 let currentVendor = null;
-let dateKey = hojeKey();  // YYYY-MM-DD
-let docRef = doc(db, "cotacoes", dateKey);
 
-// exibe data doc
-document.getElementById('dataDoc').textContent = dateKey;
+// Função auxiliar
+function nomeToKey(nome){ return nome.replace(/\./g,'_').replace(/\//g,'_'); }
+function moeda(n){ return Number(n||0).toFixed(2); }
 
-// helper para sanitizar nome -> chave (replace '.' por '_', e barras)
-function nomeToKey(nome){
-  return String(nome).replace(/\./g,'_').replace(/\//g,'_');
-}
-function keyToNome(key){
-  // mantemos o nome original dentro do objeto (nome)
-  return key;
-}
-function hojeKey(){
-  const d = new Date();
-  return d.toISOString().slice(0,10);
-}
-
-// Carregar: tenta Firestore -> fallback localStorage
 async function carregarTudoFirestore(){
-  try{
-    const snap = await getDoc(docRef);
-    if(snap.exists()){
-      const data = snap.data();
-      // vendedores podem estar salvos como map (solicitado). Convertemos para array para UI.
-      vendedoresArray = [];
-      if(data.vendedores && typeof data.vendedores === 'object'){
-        for(const k of Object.keys(data.vendedores)){
-          const v = data.vendedores[k];
-          vendedoresArray.push({ nome: v.nome ?? k, cotacao: Number(v.cotacao) ?? 0, _key:k });
-        }
+  const snap = await getDoc(docRef);
+  if(snap.exists()){
+    const data = snap.data();
+    vendedoresArray = [];
+    vendasMap = data.vendas || {};
+    despesasMap = data.despesas || {};
+    if(data.vendedores){
+      for(const k in data.vendedores){
+        const v = data.vendedores[k];
+        vendedoresArray.push({ nome:v.nome, cotacao:v.cotacao, _key:k });
       }
-      // vendas: map de chaveVendedor -> objeto de vendas (transforma pra arrays ordenados)
-      vendasMap = {};
-      if(data.vendas && typeof data.vendas === 'object'){
-        for(const vendKey of Object.keys(data.vendas)){
-          const obj = data.vendas[vendKey]; // pode ser map de datas/ids
-          // transformamos esse objeto em array (mantendo ordem natural das chaves)
-          const arr = [];
-          Object.keys(obj || {}).forEach(k=>{
-            arr.push(obj[k]);
-          });
-          vendasMap[vendKey] = arr;
-        }
-      }
-      // atualizar lastUpdated
-      const lu = data.lastUpdated;
-      if(lu && lu.toDate){
-        document.getElementById('lastUpdated').textContent = lu.toDate().toLocaleString();
-      } else if(lu){
-        document.getElementById('lastUpdated').textContent = (new Date(lu.seconds*1000)).toLocaleString();
-      } else {
-        document.getElementById('lastUpdated').textContent = '—';
-      }
-      // sync local
-      salvarLocal('cotacoes_vendedores_'+dateKey, vendedoresArray);
-      salvarLocal('cotacoes_vendas_'+dateKey, vendasMap);
-    } else {
-      // doc não existe ainda -> usa localStorage se existir
-      const lv = carregarLocal('cotacoes_vendedores_'+dateKey) || [];
-      const lvs = carregarLocal('cotacoes_vendas_'+dateKey) || {};
-      vendedoresArray = lv;
-      vendasMap = lvs;
     }
-  } catch(e){
-    console.warn("Erro ao ler Firestore, usando localStorage: ", e);
-    vendedoresArray = carregarLocal('cotacoes_vendedores_'+dateKey) || [];
-    vendasMap = carregarLocal('cotacoes_vendas_'+dateKey) || {};
+    document.getElementById("lastUpdated").textContent = data.lastUpdated?.toDate?.().toLocaleString() || "—";
   }
+  listarVendedores();
 }
 
-// Salva tudo no documento (vendedores map e vendas map), criando as estruturas conforme solicitado
 async function salvarTudoFirestore(){
-  // construir vendedoresMap e vendasObj compatíveis com map -> { chaveVendedor: { nome, cotacao }, ... }
   const vendedoresObj = {};
-  for(const v of vendedoresArray){
-    const k = v._key || nomeToKey(v.nome);
-    vendedoresObj[k] = { nome: v.nome, cotacao: Number(v.cotacao) || 0 };
-  }
-  const vendasObj = {};
-  for(const k of Object.keys(vendasMap)){
-    // converte array de vendas para objeto com chaves únicas (data_index)
-    const arr = vendasMap[k] || [];
-    const obj = {};
-    for(let i=0;i<arr.length;i++){
-      const vv = arr[i];
-      const base = vv.data ? vv.data.replaceAll('-','') : 'semdata';
-      const id = `${base}_${i}`;
-      obj[id] = vv;
-    }
-    vendasObj[k] = obj;
-  }
+  vendedoresArray.forEach(v=> vendedoresObj[v._key] = { nome:v.nome, cotacao:v.cotacao });
 
   const payload = {
     vendedores: vendedoresObj,
-    vendas: vendasObj,
+    vendas: vendasMap,
+    despesas: despesasMap,
     lastUpdated: serverTimestamp()
   };
-
-  try{
-    // setDoc com merge para não sobrescrever outros dias (mesmo que cada doc seja por data, aqui usamos merge pra segurança)
-    await setDoc(docRef, payload, { merge: true });
-    // atualizar lastUpdated no UI: iremos recarregar doc para pegar timestamp formatado
-    await carregarTudoFirestore();
-    listarVendedores();
-  } catch(e){
-    console.error("Erro ao salvar no Firestore:", e);
-    alert('Erro ao salvar no Firestore. Verifique console.');
-  }
+  await setDoc(docRef, payload, { merge:true });
+  await carregarTudoFirestore();
 }
-
-// ===== UI / Lógica =====
 
 function listarVendedores(){
   const div = document.getElementById('listaVendedores'); div.innerHTML='';
-  // ordenar por nome
-  vendedoresArray.sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
   vendedoresArray.forEach(v=>{
     const row=document.createElement('div'); row.className='vendor-row';
     const btn=document.createElement('button'); btn.className='vendor-btn';
-    btn.innerHTML=`<strong>${v.nome}</strong> <span class="vendor-meta">Cotação: R$ ${Number(v.cotacao).toFixed(2)}</span>`;
+    btn.textContent = `${v.nome} (Cotação: R$${v.cotacao})`;
     btn.onclick=()=>abrirPainel(v);
-    const del=document.createElement('button'); del.className='vendor-del'; del.textContent='Excluir';
-    del.onclick=async e=>{ e.stopPropagation();
-      if(confirm(`Confirma a exclusão do vendedor "${v.nome}" e todo histórico?`)){
-        // remover local
-        vendedoresArray = vendedoresArray.filter(x=>x.nome !== v.nome);
-        const key = v._key || nomeToKey(v.nome);
-        delete vendasMap[key];
-        // salvar local e Firestore
-        salvarLocal('cotacoes_vendedores_'+dateKey, vendedoresArray);
-        salvarLocal('cotacoes_vendas_'+dateKey, vendasMap);
-        await salvarTudoFirestore();
-        if(currentVendor && (currentVendor._key === key)) voltarCadastro();
-        listarVendedores();
-        alert(`Vendedor "${v.nome}" excluído.`);
-      }
-    };
     row.appendChild(btn);
-    row.appendChild(del);
     div.appendChild(row);
   });
 }
 
-async function salvarVendedor(){
-  const nome = document.getElementById('nome').value.trim();
-  const cotacao = parseFloat(document.getElementById('cotacao').value);
-  if(!nome || isNaN(cotacao) || cotacao <= 0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
-  if(vendedoresArray.find(x=>x.nome.toLowerCase() === nome.toLowerCase())){ alert('Vendedor já cadastrado.'); return; }
-  const k = nomeToKey(nome);
-  vendedoresArray.push({ nome, cotacao, _key: k });
-  vendasMap[k] = vendasMap[k] || [];
-  salvarLocal('cotacoes_vendedores_'+dateKey, vendedoresArray);
-  salvarLocal('cotacoes_vendas_'+dateKey, vendasMap);
-  await salvarTudoFirestore();
-  listarVendedores();
-  document.getElementById('nome').value=''; document.getElementById('cotacao').value='';
-}
-
-async function editarVendedor(){
-  const nome = document.getElementById('nome').value.trim();
-  const cotacao = parseFloat(document.getElementById('cotacao').value);
-  if(!nome || isNaN(cotacao) || cotacao <= 0){ alert('Preencha corretamente o nome e cotação maior que zero.'); return; }
-  const idx = vendedoresArray.findIndex(v=>v.nome.toLowerCase() === nome.toLowerCase());
-  if(idx === -1){ alert('Vendedor não encontrado.'); return; }
-  vendedoresArray[idx].cotacao = cotacao;
-  // garantir _key
-  vendedoresArray[idx]._key = vendedoresArray[idx]._key || nomeToKey(nome);
-  salvarLocal('cotacoes_vendedores_'+dateKey, vendedoresArray);
-  await salvarTudoFirestore();
-  listarVendedores();
-  alert('Cotação atualizada.');
-  if(currentVendor && currentVendor.nome === nome) atualizarTabela();
-}
-
-// Painel de vendas
 function abrirPainel(v){
-  currentVendor = v;
+  currentVendor=v;
   document.getElementById('painelVendedor').style.display='block';
-  document.getElementById('tituloVendedor').textContent = v.nome;
+  document.getElementById('tituloVendedor').textContent=v.nome;
   atualizarTabela();
 }
 
 function voltarCadastro(){
   document.getElementById('painelVendedor').style.display='none';
-  currentVendor = null;
-  document.querySelector('#tabelaVendas tbody').innerHTML='';
-  document.getElementById('totalApurado').textContent='0.00';
-  document.getElementById('totalPagou').textContent='0.00';
-  document.getElementById('totalDeve').textContent='0.00';
 }
 
 function adicionarLinha(){
-  const tbody = document.querySelector('#tabelaVendas tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="date"/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" readonly/></td>
-    <td><input type="number" readonly/></td>
-    <td><input type="number" onchange="calcularLinha(this)" min="0"/></td>
-    <td><input type="number" readonly/></td>
-    <td class="acoes">
-      <button onclick="editarLinha(this)">Editar</button>
-      <button onclick="excluirLinha(this)">Excluir</button>
-    </td>
-  `;
+  const tbody=document.querySelector('#tabelaVendas tbody');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="date"/></td>
+  <td><input type="number" min="0"/></td>
+  <td><input type="number" min="0"/></td>
+  <td><input type="number" readonly/></td>
+  <td><input type="number" readonly/></td>
+  <td><input type="number" min="0"/></td>
+  <td><input type="number" readonly/></td>
+  <td><button onclick="this.parentElement.parentElement.remove()">Excluir</button></td>`;
   tbody.appendChild(tr);
 }
 
-function editarLinha(btn){ const inputs = btn.parentElement.parentElement.querySelectorAll('input'); inputs.forEach(i=>i.readOnly=false); }
-function excluirLinha(btn){ btn.parentElement.parentElement.remove(); /* não salva imediatamente */ }
-
-function calcularLinha(elem){
-  const tr = elem.closest('tr');
-  const inputs = tr.querySelectorAll('input');
-  const recebeu = parseFloat(inputs[1].value)||0;
-  const devolveu = parseFloat(inputs[2].value)||0;
-  const pagou = parseFloat(inputs[5].value)||0;
-  const vendeu = recebeu - devolveu;
-  const cot = vendedoresArray.find(x=> (x._key === (currentVendor && currentVendor._key)) || (x.nome === (currentVendor && currentVendor.nome)))?.cotacao || 1;
-  const apur = vendeu * cot;
-  const deve = apur - pagou;
-  inputs[3].value = vendeu;
-  inputs[4].value = apur.toFixed(2);
-  inputs[6].value = deve.toFixed(2);
-  atualizarTotais();
-}
-
-async function salvarVendas(){
-  if(!currentVendor) return;
-  const linhas = document.querySelectorAll('#tabelaVendas tbody tr');
-  const arr = [];
-  const cot = vendedoresArray.find(x=>x._key === currentVendor._key)?.cotacao || currentVendor.cotacao || 1;
-  linhas.forEach(tr=>{
-    const i = tr.querySelectorAll('input');
-    arr.push({
-      data: i[0].value || '',
-      recebeu: parseFloat(i[1].value)||0,
-      devolveu: parseFloat(i[2].value)||0,
-      vendeu: parseFloat(i[3].value)||0,
-      apurou: parseFloat(i[4].value)||0,
-      pagou: parseFloat(i[5].value)||0,
-      deve: parseFloat(i[6].value)||0,
-      cotacao: cot
-    });
-  });
-  const key = currentVendor._key || nomeToKey(currentVendor.nome);
-  vendasMap[key] = arr;
-  salvarLocal('cotacoes_vendedores_'+dateKey, vendedoresArray);
-  salvarLocal('cotacoes_vendas_'+dateKey, vendasMap);
-  await salvarTudoFirestore();
-  alert('Vendas salvas com sucesso.');
-  atualizarTabela();
-}
-
-function atualizarTabela(filtroData=''){
-  const tbody = document.querySelector('#tabelaVendas tbody');
-  tbody.innerHTML = '';
-  if(!currentVendor) return;
-  const key = currentVendor._key || nomeToKey(currentVendor.nome);
-  const arr = vendasMap[key] || [];
-  arr.forEach(v=>{
-    if(filtroData && v.data !== filtroData) return;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="date" value="${v.data||''}"/></td>
-      <td><input type="number" value="${v.recebeu||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.devolveu||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.vendeu||0}" readonly/></td>
-      <td><input type="number" value="${v.apurou||0}" readonly/></td>
-      <td><input type="number" value="${v.pagou||0}" onchange="calcularLinha(this)" min="0"/></td>
-      <td><input type="number" value="${v.deve||0}" readonly/></td>
-      <td class="acoes"><button onclick="editarLinha(this)">Editar</button><button onclick="excluirLinha(this)">Excluir</button></td>
-    `;
+function atualizarTabela(){
+  const tbody=document.querySelector('#tabelaVendas tbody'); tbody.innerHTML='';
+  const arr=vendasMap[currentVendor._key]||[];
+  for(const id in arr){
+    const v=arr[id];
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input type="date" value="${v.data||''}"/></td>
+    <td><input type="number" value="${v.recebeu||0}"/></td>
+    <td><input type="number" value="${v.devolveu||0}"/></td>
+    <td><input type="number" value="${v.vendeu||0}" readonly/></td>
+    <td><input type="number" value="${v.apurou||0}" readonly/></td>
+    <td><input type="number" value="${v.pagou||0}"/></td>
+    <td><input type="number" value="${v.deve||0}" readonly/></td>
+    <td><button onclick="this.parentElement.parentElement.remove()">Excluir</button></td>`;
     tbody.appendChild(tr);
-  });
+  }
   atualizarTotais();
 }
 
 function atualizarTotais(){
-  const linhas = document.querySelectorAll('#tabelaVendas tbody tr');
-  let apurado=0, pagou=0, devolveu=0, recebeu=0;
-  linhas.forEach(tr=>{
-    const i = tr.querySelectorAll('input');
-    apurado += parseFloat(i[4].value)||0;
-    pagou += parseFloat(i[5].value)||0;
-    devolveu += parseFloat(i[2].value)||0;
-    recebeu += parseFloat(i[1].value)||0;
-  });
-  document.getElementById('totalApurado').textContent = apurado.toFixed(2);
-  document.getElementById('totalPagou').textContent = pagou.toFixed(2);
-  document.getElementById('totalDeve').textContent = (apurado - pagou).toFixed(2);
-  // (opcional) mostrar outros totais se quiser
+  let apurado=0;
+  for(const vend in vendasMap){
+    for(const id in vendasMap[vend]){
+      apurado += Number(vendasMap[vend][id].apurou)||0;
+    }
+  }
+  let despesas=0;
+  for(const d in despesasMap){
+    despesas += Number(despesasMap[d].valor)||0;
+  }
+  const final = apurado - despesas;
+  document.getElementById('totalApurado').textContent = moeda(apurado);
+  document.getElementById('totalDespesas').textContent = moeda(despesas);
+  document.getElementById('totalFinal').textContent = moeda(final);
 }
 
-function filtrarPorData(){ atualizarTabela(document.getElementById('filtroData').value); }
-function limparFiltro(){ document.getElementById('filtroData').value=''; atualizarTabela(); }
-function exportarPDF(){ window.print(); }
-
-// Forçar recarregar (útil durante testes)
-async function forcarCarregar(){
-  await carregarTudoFirestore();
-  listarVendedores();
-  if(currentVendor) atualizarTabela();
-  alert('Recarregado.');
-}
-
-// Expor funções globais para uso nos atributos onclick
-window.salvarVendedor = salvarVendedor;
-window.editarVendedor = editarVendedor;
-window.listarVendedores = listarVendedores;
-window.abrirPainel = abrirPainel;
-window.adicionarLinha = adicionarLinha;
-window.editarLinha = editarLinha;
-window.excluirLinha = excluirLinha;
-window.calcularLinha = calcularLinha;
-window.salvarVendas = salvarVendas;
-window.atualizarTabela = atualizarTabela;
-window.atualizarTotais = atualizarTotais;
-window.filtrarPorData = filtrarPorData;
-window.limparFiltro = limparFiltro;
-window.exportarPDF = exportarPDF;
+window.salvarTudoFirestore = salvarTudoFirestore;
 window.voltarCadastro = voltarCadastro;
-window.forcarCarregar = forcarCarregar;
+window.adicionarLinha = adicionarLinha;
 
-// carrega inicial
-(async ()=>{
-  await carregarTudoFirestore();
-  listarVendedores();
-})();
+await carregarTudoFirestore();
 </script>
 
 </body>
-</html>
+  </html>
