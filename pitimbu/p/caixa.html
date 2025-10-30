@@ -87,101 +87,111 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔴 Novo caminho conforme seu Firestore
-// /cotacoes/dados/dados
-const docRef = doc(db, "cotacoes/dados", "dados");
+// ** CORREÇÃO PRINCIPAL **
+// Buscar o documento correto: /cotacoes (coleção) -> documento "dados"
+const docRef = doc(db, "cotacoes", "dados");
 
 function formatar(v){ return parseFloat(v || 0).toFixed(2); }
 
 async function carregarCaixa(inicio='', fim='') {
-  const snap = await getDoc(docRef);
-  if(!snap.exists()){
-    alert("Nenhum dado encontrado em /cotacoes/dados/dados");
-    return;
-  }
+  try {
+    const snap = await getDoc(docRef);
+    if(!snap.exists()){
+      console.error("Documento /cotacoes/dados não existe.");
+      alert("Nenhum dado encontrado em /cotacoes/dados");
+      return;
+    }
 
-  const dados = snap.data();
-  const vendasMap = dados.vendas || {};
-  const despesasMap = dados.despesas || {};
-  const lastUpdated = dados.lastUpdated ? new Date(dados.lastUpdated.seconds * 1000).toLocaleString('pt-BR') : '—';
+    // Se os seus dados estiverem aninhados dentro de um campo 'dados' (como você mostrou),
+    // use root = data.dados, caso contrário use o próprio data.
+    const raw = snap.data();
+    const root = raw.dados && typeof raw.dados === 'object' ? raw.dados : raw;
 
-  const tbodyResumo = document.querySelector("#tabelaResumo tbody");
-  const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
-  tbodyResumo.innerHTML = "";
-  tbodyDespesas.innerHTML = "";
+    console.log("Documento lido com sucesso. root keys:", Object.keys(root));
 
-  let totalApurado = 0;
-  let totalDespesas = 0;
-  const hoje = new Date().toISOString().split("T")[0];
+    const vendasMap = root.vendas || {};
+    const despesasMap = root.despesas || {};
+    const hoje = new Date().toISOString().split("T")[0];
 
-  // === VENDAS ===
-  for(const vendedor in vendasMap){
-    const vendas = vendasMap[vendedor];
-    for(const chave in vendas){
-      const v = vendas[chave];
-      const dataVenda = v.data || "";
-      if(inicio && fim){
-        if(dataVenda < inicio || dataVenda > fim) continue;
+    const tbodyResumo = document.querySelector("#tabelaResumo tbody");
+    const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
+    tbodyResumo.innerHTML = "";
+    tbodyDespesas.innerHTML = "";
+
+    let totalApurado = 0;
+    let totalDespesas = 0;
+
+    // VENDAS
+    for (const vendedor of Object.keys(vendasMap)) {
+      const mapaVendas = vendasMap[vendedor] || {};
+      for (const chave of Object.keys(mapaVendas)) {
+        const v = mapaVendas[chave];
+        const dataVenda = v?.data || '';
+        // aplicando filtros
+        if (inicio && fim) {
+          if (dataVenda < inicio || dataVenda > fim) continue;
+        } else {
+          if (dataVenda !== hoje) continue;
+        }
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dataVenda}</td>
+          <td>${vendedor}</td>
+          <td>${formatar(v.vendeu)}</td>
+          <td>${formatar(v.apurou)}</td>
+          <td>${formatar(v.pagou)}</td>
+          <td>${formatar(v.deve)}</td>
+        `;
+        tbodyResumo.appendChild(tr);
+        totalApurado += parseFloat(v.apurou || 0);
+      }
+    }
+
+    // DESPESAS
+    for (const chave of Object.keys(despesasMap)) {
+      const d = despesasMap[chave];
+      const dataDesp = d?.data || '';
+      if (inicio && fim) {
+        if (dataDesp < inicio || dataDesp > fim) continue;
       } else {
-        if(dataVenda !== hoje) continue;
+        if (dataDesp !== hoje) continue;
       }
       const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${dataVenda}</td>
-        <td>${vendedor}</td>
-        <td>${formatar(v.vendeu)}</td>
-        <td>${formatar(v.apurou)}</td>
-        <td>${formatar(v.pagou)}</td>
-        <td>${formatar(v.deve)}</td>
-      `;
-      tbodyResumo.appendChild(tr);
-      totalApurado += parseFloat(v.apurou || 0);
+      tr.innerHTML = `<td>${dataDesp}</td><td>${d.descricao||''}</td><td>${formatar(d.valor)}</td>`;
+      tbodyDespesas.appendChild(tr);
+      totalDespesas += parseFloat(d.valor || 0);
     }
+
+    const totalFinal = totalApurado - totalDespesas;
+    document.getElementById("apuradoTotal").textContent = formatar(totalApurado);
+    document.getElementById("despesasTotal").textContent = formatar(totalDespesas);
+    document.getElementById("saldoFinal").textContent = formatar(totalFinal);
+
+    document.getElementById("benedito").textContent = formatar(totalFinal * 0.25);
+    document.getElementById("jose").textContent = formatar(totalFinal * 0.25);
+    document.getElementById("pedro").textContent = formatar(totalFinal * 0.5);
+
+  } catch (err) {
+    console.error("Erro ao carregar caixa:", err);
+    alert("Erro ao carregar dados. Veja o console (F12).");
   }
-
-  // === DESPESAS ===
-  for(const chave in despesasMap){
-    const d = despesasMap[chave];
-    const dataDespesa = d.data || "";
-    if(inicio && fim){
-      if(dataDespesa < inicio || dataDespesa > fim) continue;
-    } else {
-      if(dataDespesa !== hoje) continue;
-    }
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${dataDespesa}</td>
-      <td>${d.descricao || ''}</td>
-      <td>${formatar(d.valor)}</td>
-    `;
-    tbodyDespesas.appendChild(tr);
-    totalDespesas += parseFloat(d.valor || 0);
-  }
-
-  // === CÁLCULOS ===
-  const totalFinal = totalApurado - totalDespesas;
-  document.getElementById("apuradoTotal").textContent = formatar(totalApurado);
-  document.getElementById("despesasTotal").textContent = formatar(totalDespesas);
-  document.getElementById("saldoFinal").textContent = formatar(totalFinal);
-
-  document.getElementById("benedito").textContent = formatar(totalFinal * 0.25);
-  document.getElementById("jose").textContent = formatar(totalFinal * 0.25);
-  document.getElementById("pedro").textContent = formatar(totalFinal * 0.5);
 }
 
-// === FILTRO ===
+// FILTRO
 document.getElementById("btnFiltrar").addEventListener("click", ()=>{
   const inicio = document.getElementById("dataInicio").value;
   const fim = document.getElementById("dataFim").value;
-  carregarCaixa(inicio, fim);
+  if (inicio && !fim) { alert("Informe a data final do filtro."); return; }
+  if (fim && !inicio) { alert("Informe a data inicial do filtro."); return; }
+  carregarCaixa(inicio || '', fim || '');
 });
 
-// === EXPORTAR PDF ===
+// EXPORTAR
 document.getElementById("btnExportar").addEventListener("click", ()=>window.print());
 
-// === CARREGAR INICIAL ===
+// CARREGAR INICIAL
 window.onload = ()=>carregarCaixa();
 </script>
 
 </body>
-</html>
+  </html>
