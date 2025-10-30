@@ -28,6 +28,8 @@
 </div>
 
 <div class="filtro-dados">
+  <label>Início:</label><input type="date" id="dataInicioFiltro">
+  <label>Fim:</label><input type="date" id="dataFimFiltro">
   <label>Vendedor:</label>
   <select id="vendedorFiltro">
     <option value="">Todos</option>
@@ -114,7 +116,16 @@ atualizarRelogio();
 
 function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
 
+function entreDatas(data, inicio, fim) {
+  if (!data) return false;
+  if (inicio && data < inicio) return false;
+  if (fim && data > fim) return false;
+  return true;
+}
+
 async function gerarRelatorio() {
+  const inicio = document.getElementById('dataInicioFiltro').value;
+  const fim = document.getElementById('dataFimFiltro').value;
   const vendedorFiltro = document.getElementById('vendedorFiltro').value;
 
   const tbodyVendas = document.querySelector("#tabelaVendas tbody");
@@ -142,6 +153,9 @@ async function gerarRelatorio() {
     const vendasVendedor = vendas[nome];
     for (const key in vendasVendedor) {
       const v = vendasVendedor[key];
+      const dataVenda = v.data || '';
+      if (!entreDatas(dataVenda, inicio, fim)) continue;
+
       const vendeu = (v.recebeu || 0) - (v.devolveu || 0);
       const apurou = v.apurou !== undefined ? v.apurou : vendeu * (v.cotacao || 1);
       const deve = v.deve !== undefined ? v.deve : apurou - (v.pagou || 0);
@@ -150,7 +164,7 @@ async function gerarRelatorio() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${nome}</td>
-        <td>${v.data || ''}</td>
+        <td>${dataVenda}</td>
         <td>${v.recebeu || 0}</td>
         <td>${v.devolveu || 0}</td>
         <td>${vendeu}</td>
@@ -166,10 +180,13 @@ async function gerarRelatorio() {
   const despesas = dataDoc.despesas || {};
   for (const key in despesas) {
     const d = despesas[key];
+    const dataDespesa = d.data || '';
+    if (!entreDatas(dataDespesa, inicio, fim)) continue;
+
     totalDespesas += d.valor || 0;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${d.data || ''}</td>
+      <td>${dataDespesa}</td>
       <td>${moeda(d.valor || 0)}</td>
       <td>${d.descricao || ''}</td>
     `;
@@ -183,7 +200,7 @@ async function gerarRelatorio() {
   // Atualiza select de vendedores
   const selectVendedor = document.getElementById('vendedorFiltro');
   selectVendedor.innerHTML = '<option value="">Todos</option>';
-  const vendedoresData = dataDoc.vendedores || {};
+  const vendedoresData = dataDoc.vendas || {};
   for (const nome in vendedoresData) {
     const opt = document.createElement('option');
     opt.value = nome;
@@ -196,7 +213,12 @@ document.getElementById('btnGerar').addEventListener('click', gerarRelatorio);
 
 window.imprimirRelatorio = function() { window.print(); };
 
-window.onload = gerarRelatorio;
+// --- Carrega data atual automaticamente ---
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('dataInicioFiltro').value = hoje;
+document.getElementById('dataFimFiltro').value = hoje;
+
+gerarRelatorio();
 </script>
 
 </body>
