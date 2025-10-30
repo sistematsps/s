@@ -50,26 +50,6 @@ button { cursor:pointer; }
 <tbody></tbody>
 </table>
 
-<h2>Receitas (adicionadas manualmente)</h2>
-<div style="margin-bottom: 20px;">
-  <label>Data: <input type="date" id="dataReceita" /></label>
-  <label>Valor: <input type="number" id="valorReceita" step="0.01" min="0"/></label>
-  <label>Descrição: <input type="text" id="descricaoReceita"/></label>
-  <button id="btnSalvarReceita">Adicionar Receita</button>
-</div>
-
-<table id="tabelaReceitas">
-<thead>
-<tr>
-<th>Data</th>
-<th>Valor</th>
-<th>Descrição</th>
-<th>Ações</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-
 <h2>Despesas</h2>
 <table id="tabelaDespesas">
 <thead>
@@ -93,7 +73,7 @@ button { cursor:pointer; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, doc, getDoc, addDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8IxOX_0e6T7DUzGf1DlPOHLNCq5zCK2M",
@@ -107,32 +87,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-function formatar(valor){ return parseFloat(valor||0).toFixed(2); }
+function formatar(v){ return parseFloat(v || 0).toFixed(2); }
 
 async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
-  // === BUSCA NO DOCUMENTO /cotacoes/{DATA} ===
   const hoje = new Date().toISOString().split("T")[0];
   const docRef = doc(db, "cotacoes", hoje);
   const docSnap = await getDoc(docRef);
+
   if(!docSnap.exists()){
-    alert("Nenhum dado encontrado no documento /cotacoes/" + hoje);
+    alert("Nenhum dado encontrado em /cotacoes/" + hoje);
     return;
   }
 
   const dados = docSnap.data();
   const vendasMap = dados.vendas || {};
   const despesasMap = dados.despesas || {};
-  const receitasMap = dados.receitas || {};
 
-  // === Processar vendas ===
-  let apurado = 0;
+  // === Tabelas ===
   const tbodyResumo = document.querySelector("#tabelaResumo tbody");
+  const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
   tbodyResumo.innerHTML = "";
+  tbodyDespesas.innerHTML = "";
 
+  let totalApurado = 0;
+  let totalDespesas = 0;
+
+  // === VENDAS ===
   for(const vendedor in vendasMap){
-    const registros = vendasMap[vendedor];
-    for(const chave in registros){
-      const v = registros[chave];
+    const vendasDoVendedor = vendasMap[vendedor];
+    for(const chave in vendasDoVendedor){
+      const v = vendasDoVendedor[chave];
       if(v.data >= inicio && v.data <= fim){
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -144,60 +128,51 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
           <td>${formatar(v.deve)}</td>
         `;
         tbodyResumo.appendChild(tr);
-        apurado += parseFloat(v.apurou || 0);
+        totalApurado += parseFloat(v.apurou || 0);
       }
     }
   }
 
-  // === Processar despesas ===
-  const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
-  tbodyDespesas.innerHTML = "";
-  let despesasTotais = 0;
+  // === DESPESAS ===
   for(const chave in despesasMap){
     const d = despesasMap[chave];
     if(d.data >= inicio && d.data <= fim){
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${d.data || ''}</td><td>${d.descricao || ''}</td><td>${formatar(d.valor)}</td>`;
+      tr.innerHTML = `
+        <td>${d.data || ''}</td>
+        <td>${d.descricao || ''}</td>
+        <td>${formatar(d.valor)}</td>
+      `;
       tbodyDespesas.appendChild(tr);
-      despesasTotais += parseFloat(d.valor || 0);
+      totalDespesas += parseFloat(d.valor || 0);
     }
   }
 
-  // === Receitas ===
-  let saldoAnterior = 0;
-  for(const chave in receitasMap){
-    const r = receitasMap[chave];
-    saldoAnterior += parseFloat(r.valor || 0);
-  }
+  // === CÁLCULOS ===
+  const totalFinal = totalApurado - totalDespesas;
 
-  // === Atualizar totais ===
-  const saldoFinal = saldoAnterior + apurado - despesasTotais;
-  document.getElementById('saldoAnterior').textContent = formatar(saldoAnterior);
-  document.getElementById('apuradoTotal').textContent = formatar(apurado);
-  document.getElementById('despesasTotal').textContent = formatar(despesasTotais);
-  document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
+  document.getElementById("apuradoTotal").textContent = formatar(totalApurado);
+  document.getElementById("despesasTotal").textContent = formatar(totalDespesas);
+  document.getElementById("saldoFinal").textContent = formatar(totalFinal);
 
-  document.getElementById('benedito').textContent = formatar(saldoFinal * 0.25);
-  document.getElementById('jose').textContent = formatar(saldoFinal * 0.25);
-  document.getElementById('pedro').textContent = formatar(saldoFinal * 0.5);
+  document.getElementById("benedito").textContent = formatar(totalFinal * 0.25);
+  document.getElementById("jose").textContent = formatar(totalFinal * 0.25);
+  document.getElementById("pedro").textContent = formatar(totalFinal * 0.5);
 }
 
-// === Adicionar receita manual (sem mudar) ===
-document.getElementById("btnSalvarReceita").addEventListener("click", async ()=>{ alert("Função de adicionar receita mantida apenas para interface."); });
-
-// === Filtro ===
+// === FILTRO ===
 document.getElementById("btnFiltrar").addEventListener("click", ()=>{
   const inicio = document.getElementById("dataInicio").value || '0000-00-00';
   const fim = document.getElementById("dataFim").value || '9999-12-31';
-  carregarCaixa(inicio,fim);
+  carregarCaixa(inicio, fim);
 });
 
-// === Exportar PDF ===
-document.getElementById("btnExportar").addEventListener("click",()=>window.print());
+// === EXPORTAR PDF ===
+document.getElementById("btnExportar").addEventListener("click", ()=>window.print());
 
-// === Iniciar ===
-window.onload = ()=>{ carregarCaixa(); }
+// === CARREGAR INICIAL ===
+window.onload = ()=>{ carregarCaixa(); };
 </script>
 
 </body>
-</html>
+  </html>
