@@ -86,20 +86,24 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const docRef = doc(db, "cotacoes", "dados"); // 🔴 FIXO PARA O MESMO LOCAL DO MASTER
+
+// 🔴 Novo caminho conforme seu Firestore
+// /cotacoes/dados/dados
+const docRef = doc(db, "cotacoes/dados", "dados");
 
 function formatar(v){ return parseFloat(v || 0).toFixed(2); }
 
 async function carregarCaixa(inicio='', fim='') {
   const snap = await getDoc(docRef);
   if(!snap.exists()){
-    alert("Nenhum dado encontrado em /cotacoes/dados");
+    alert("Nenhum dado encontrado em /cotacoes/dados/dados");
     return;
   }
 
   const dados = snap.data();
   const vendasMap = dados.vendas || {};
   const despesasMap = dados.despesas || {};
+  const lastUpdated = dados.lastUpdated ? new Date(dados.lastUpdated.seconds * 1000).toLocaleString('pt-BR') : '—';
 
   const tbodyResumo = document.querySelector("#tabelaResumo tbody");
   const tbodyDespesas = document.querySelector("#tabelaDespesas tbody");
@@ -116,11 +120,9 @@ async function carregarCaixa(inicio='', fim='') {
     for(const chave in vendas){
       const v = vendas[chave];
       const dataVenda = v.data || "";
-      // Se filtro estiver ativo, só exibe o intervalo
       if(inicio && fim){
         if(dataVenda < inicio || dataVenda > fim) continue;
       } else {
-        // Sem filtro: mostra apenas o dia atual
         if(dataVenda !== hoje) continue;
       }
       const tr = document.createElement("tr");
@@ -182,4 +184,4 @@ window.onload = ()=>carregarCaixa();
 </script>
 
 </body>
-  </html>
+</html>
