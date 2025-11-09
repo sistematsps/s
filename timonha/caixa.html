@@ -85,7 +85,8 @@ button { cursor:pointer; }
 <h2>Partilha de Recursos</h2>
 <div class="total-box">
 <p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
-<p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
+<p>CLAUDIO ROBERIO: R$ <span id="tata">0.00</span></p>
+  <p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
 </div>
 
 <button id="btnExportar">Exportar em PDF</button>
@@ -195,8 +196,9 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
   document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
 
   // ===== Partilha =====
-  document.getElementById('benedito').textContent=formatar(saldoFinal*0.10);
-    document.getElementById('pedro').textContent=formatar(saldoFinal*0.9);
+  document.getElementById('benedito').textContent=formatar(saldoFinal*0.15);
+  document.getElementById('tata').textContent=formatar(saldoFinal*0,15);
+  document.getElementById('pedro').textContent=formatar(saldoFinal*0.7);
   }
 
 // ===== Adicionar nova receita =====
@@ -254,6 +256,7 @@ window.onload = ()=>{ carregarCaixa(); }
 
 </body>
 </html>
+
 
 
 
