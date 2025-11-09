@@ -194,7 +194,7 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
   document.getElementById('saldoFinal').textContent = formatar(saldoFinal);
 
   // ===== Partilha =====
-  document.getElementById('benedito').textContent=formatar(saldoFinal*0.25);
+  document.getElementById('benedito').textContent=formatar(saldoFinal*0.25-100.00);
   document.getElementById('jose').textContent=formatar(saldoFinal*0.25);
   document.getElementById('pedro').textContent=formatar(saldoFinal*0.5);
 }
@@ -254,6 +254,7 @@ window.onload = ()=>{ carregarCaixa(); }
 
 </body>
 </html>
+
 
 
 
