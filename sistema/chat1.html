@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat — Demo</title>
+  <style>
+    :root{--accent:#ff6b81;--bg:#f7f7fb;--card:#fff}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
+    body{margin:0;background:var(--bg);color:#222}
+    .app{max-width:1000px;margin:28px auto;display:grid;grid-template-columns:320px 1fr;gap:18px;padding:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(10,10,10,0.06)}
+    header{display:flex;align-items:center;gap:12px}
+    header h1{margin:0;font-size:18px}
+    .auth{max-width:360px;margin:24px auto}
+    input,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px}
+    button{background:var(--accent);color:#fff;border:none;cursor:pointer}
+    button.secondary{background:#eee;color:#333}
+    .users-list{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow:auto;padding-right:6px}
+    .user-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px solid #eee}
+    .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover}
+    .online-dot{width:11px;height:11px;border-radius:50%;background:#46d369;border:2px solid #fff;margin-left:auto}
+    .chat-area{display:flex;flex-direction:column;height:80vh}
+    .messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+    .msg{max-width:70%;padding:8px;border-radius:8px}
+    .msg.me{align-self:flex-end;background:#dfefff}
+    .msg.them{align-self:flex-start;background:#fff}
+    .composer{display:flex;gap:8px;padding:8px}
+    .small{font-size:12px;color:#666}
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- AUTH / PROFILE UI -->
+    <div id="authView" class="auth card">
+      <header>
+        <h1>Chat Romântico — Entrar / Criar conta</h1>
+      </header>
+      <div id="authForms">
+        <div id="signupForm" style="margin-top:12px">
+          <input id="signupName" placeholder="Nome completo" />
+          <input id="signupAge" placeholder="Idade" type="number" style="margin-top:8px" />
+          <input id="signupEmail" placeholder="Email" style="margin-top:8px" />
+          <input id="signupPassword" placeholder="Senha" type="password" style="margin-top:8px" />
+          <textarea id="signupBio" placeholder="Breve descrição (bio)" style="margin-top:8px"></textarea>
+          <label style="margin-top:8px;font-size:13px">Foto de perfil (jpg/png):</label>
+          <input id="signupPhoto" type="file" accept="image/*" style="margin-top:6px" />
+          <button id="btnSignup" style="margin-top:10px">Criar conta</button>
+        </div>
+        <hr style="margin:12px 0" />
+        <div id="loginForm">
+          <input id="loginEmail" placeholder="Email" />
+          <input id="loginPassword" placeholder="Senha" type="password" style="margin-top:8px" />
+          <button id="btnLogin" style="margin-top:10px">Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="appView" class="app" style="display:none">
+      <div class="card">
+        <header style="margin-bottom:10px">
+          <h1>Conexões</h1>
+          <div id="meInfo" style="margin-top:8px"></div>
+        </header>
+
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button id="btnRefreshUsers" class="secondary">Atualizar</button>
+          <button id="btnLogout" class="secondary">Sair</button>
+        </div>
+
+        <div class="users-list card" id="usersList"></div>
+      </div>
+
+      <div class="card chat-area">
+        <div id="chatHeader" style="display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;padding-bottom:10px">
+          <img id="chatAvatar" src="" class="avatar" style="width:56px;height:56px" />
+          <div>
+            <div id="chatName" style="font-weight:600"></div>
+            <div id="chatStatus" class="small"></div>
+          </div>
+        </div>
+
+        <div id="messages" class="messages"></div>
+
+        <div class="composer">
+          <input id="messageInput" placeholder="Escreva uma mensagem..." />
+          <button id="btnSend">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase v9 modular -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC0dUhymi72gkug-oo0-xqqBEtgvlIgvY0",
+  authDomain: "cursos-6f950.firebaseapp.com",
+  projectId: "cursos-6f950",
+  storageBucket: "cursos-6f950.firebasestorage.app",
+  messagingSenderId: "146131122545",
+  appId: "1:146131122545:web:043f8207f457ad5b7f5ed0"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+    // ---------------------------
+    // Imports
+    // ---------------------------
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot, orderBy, limit, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-storage.js';
+    import { getDatabase, ref as dbRef, onValue, set, onDisconnect, serverTimestamp as rtdbServerTimestamp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
+    const storage = getStorage(app);
+    const rtdb = getDatabase(app);
+
+    // ---------------------------
+    // UI refs
+    // ---------------------------
+    const authView = document.getElementById('authView');
+    const appView = document.getElementById('appView');
+    const btnSignup = document.getElementById('btnSignup');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const btnRefreshUsers = document.getElementById('btnRefreshUsers');
+    const usersList = document.getElementById('usersList');
+    const meInfo = document.getElementById('meInfo');
+
+    // Chat UI
+    const chatAvatar = document.getElementById('chatAvatar');
+    const chatName = document.getElementById('chatName');
+    const chatStatus = document.getElementById('chatStatus');
+    const messagesEl = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const btnSend = document.getElementById('btnSend');
+
+    let currentUser = null;
+    let currentChatWith = null; // user object of the person we're chatting with
+    let unsubscribeMessages = null;
+
+    // ---------------------------
+    // Auth actions
+    // ---------------------------
+    btnSignup.onclick = async () => {
+      const name = document.getElementById('signupName').value.trim();
+      const age = parseInt(document.getElementById('signupAge').value) || null;
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const bio = document.getElementById('signupBio').value.trim();
+      const file = document.getElementById('signupPhoto').files[0];
+
+      if(!name || !email || !password){alert('Preencha nome, email e senha.'); return}
+
+      try{
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCred.user.uid;
+
+        // upload photo if provided
+        let photoURL = '';
+        if(file){
+          const storageRef = sRef(storage, `profilePhotos/${uid}/${file.name}`);
+          await uploadBytes(storageRef, file);
+          photoURL = await getDownloadURL(storageRef);
+          // update user profile
+          await updateProfile(userCred.user, {displayName: name, photoURL});
+        } else {
+          await updateProfile(userCred.user, {displayName: name});
+        }
+
+        // write user doc
+        await setDoc(doc(firestore,'users',uid),{
+          uid, name, email, bio, age, photoURL, createdAt: serverTimestamp()
+        });
+
+        alert('Conta criada com sucesso!');
+      }catch(err){console.error(err);alert('Erro: '+err.message)}
+    };
+
+    btnLogin.onclick = async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if(!email||!password){alert('Preencha email e senha');return}
+      try{
+        await signInWithEmailAndPassword(auth,email,password);
+      }catch(err){console.error(err);alert('Erro no login: '+err.message)}
+    };
+
+    btnLogout.onclick = async ()=>{
+      await signOut(auth);
+    };
+
+    btnRefreshUsers.onclick = () => loadUsers();
+
+    // ---------------------------
+    // Presence (Realtime Database)
+    // ---------------------------
+    async function setupPresence(uid){
+      try{
+        const myStatusRef = dbRef(rtdb, `status/${uid}`);
+        // set online
+        await set(myStatusRef, {state:'online', lastChanged: Date.now()});
+
+        // on disconnect set offline with lastSeen
+        onDisconnect(myStatusRef).set({state:'offline', lastChanged: Date.now()});
+      }catch(e){console.warn('Presence error', e)}
+    }
+
+    function showOnlineDot(user){
+      return user && user._presence && user._presence.state === 'online';
+    }
+
+    // ---------------------------
+    // Load users list
+    // ---------------------------
+    async function loadUsers(){
+      usersList.innerHTML = '';
+      const q = query(collection(firestore,'users'));
+      const snap = await getDocs(q);
+      snap.forEach(docSnap => {
+        const u = docSnap.data();
+        // create user item
+        const it = document.createElement('div'); it.className='user-item';
+        const img = document.createElement('img'); img.className='avatar'; img.src = u.photoURL || 'https://via.placeholder.com/48?text=U';
+        const name = document.createElement('div'); name.innerHTML = `<strong>${u.name}</strong><div class="small">${u.age?u.age+' anos':''}</div>`;
+        const btn = document.createElement('button'); btn.textContent='Conversar'; btn.className='secondary'; btn.onclick = ()=>openChatWith(u);
+        it.appendChild(img); it.appendChild(name);
+
+        // presence
+        const presenceDot = document.createElement('div');
+        presenceDot.style.marginLeft='auto';
+        presenceDot.innerHTML = '<div class="small">--</div>';
+
+        // listen realtime presence for this user
+        const presRef = dbRef(rtdb, `status/${u.uid}`);
+        onValue(presRef, snapshot=>{
+          const status = snapshot.val();
+          if(status && status.state==='online'){
+            presenceDot.innerHTML = '<div class="online-dot" title="Online"></div>';
+          } else if(status && status.lastChanged){
+            const d = new Date(status.lastChanged); presenceDot.innerHTML = `<div class="small">visto ${d.toLocaleString()}</div>`;
+          } else {
+            presenceDot.innerHTML = '<div class="small">off</div>';
+          }
+        });
+
+        it.appendChild(presenceDot);
+        it.appendChild(btn);
+        usersList.appendChild(it);
+      });
+    }
+
+    // ---------------------------
+    // Chat helpers
+    // ---------------------------
+    function chatIdFor(u1, u2){
+      const ids = [u1.uid, u2.uid].sort();
+      return ids.join('_');
+    }
+
+    async function openChatWith(user){
+      currentChatWith = user;
+      document.getElementById('chatAvatar').src = user.photoURL || 'https://via.placeholder.com/56?text=U';
+      document.getElementById('chatName').textContent = user.name;
+
+      // show presence summary
+      const presRef = dbRef(rtdb, `status/${user.uid}`);
+      onValue(presRef, snap=>{
+        const st = snap.val();
+        if(st && st.state==='online') chatStatus.textContent = 'Online agora';
+        else if(st && st.lastChanged) chatStatus.textContent = 'Visto em '+ new Date(st.lastChanged).toLocaleString();
+        else chatStatus.textContent = 'Offline';
+      });
+
+      // unsubscribe old
+      if(unsubscribeMessages) unsubscribeMessages();
+      messagesEl.innerHTML = '';
+
+      const cid = chatIdFor(currentUser, user);
+      const messagesCol = collection(firestore,'chats',cid,'messages');
+      // we will use onSnapshot in a simple way
+      const q = query(messagesCol, orderBy('ts'));
+      unsubscribeMessages = onSnapshot(q, snap=>{
+        messagesEl.innerHTML = '';
+        snap.forEach(ms => {
+          const m = ms.data();
+          const div = document.createElement('div');
+          div.className = 'msg ' + (m.from === currentUser.uid ? 'me' : 'them');
+          div.innerHTML = `<div>${m.text}</div><div class="small" style="margin-top:6px">${new Date(m.ts?.toMillis ? m.ts.toMillis() : m.ts).toLocaleString()}</div>`;
+          messagesEl.appendChild(div);
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      });
+    }
+
+    btnSend.onclick = async ()=>{
+      const txt = messageInput.value.trim();
+      if(!txt || !currentChatWith) return;
+      const cid = chatIdFor(currentUser, currentChatWith);
+      const messagesCol = collection(firestore,'chats',cid,'messages');
+      await addDoc(messagesCol, {from: currentUser.uid, text: txt, ts: serverTimestamp()});
+      messageInput.value = '';
+    };
+
+    // ---------------------------
+    // Auth state observer
+    // ---------------------------
+    onAuthStateChanged(auth, async (user)=>{
+      if(user){
+        currentUser = {uid:user.uid, name: user.displayName, email: user.email, photoURL: user.photoURL};
+        // ensure user doc exists in Firestore (in case they logged in after signup via other flow)
+        const userDocRef = doc(firestore,'users',user.uid);
+        const userSnap = await getDoc(userDocRef);
+        if(!userSnap.exists()){
+          await setDoc(userDocRef,{uid:user.uid, name:user.displayName||'Usuário', email:user.email, photoURL:user.photoURL||'', bio:'', createdAt: serverTimestamp()});
+        }
+
+        // setup presence
+        setupPresence(user.uid);
+
+        // show app
+        authView.style.display='none';
+        appView.style.display='grid';
+
+        // show me info
+        const meData = (await getDoc(userDocRef)).data();
+        meInfo.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><img src="${meData.photoURL||'https://via.placeholder.com/48?text=U'}" class="avatar"/><div><strong>${meData.name}</strong><div class="small">${meData.bio||''}</div></div></div>`;
+
+        // load users
+        loadUsers();
+      } else {
+        currentUser = null;
+        authView.style.display='block';
+        appView.style.display='none';
+      }
+    });
+
+    // small util: onSnapshot import is missing earlier; import here dynamically
+    import('https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js').then(mod=>{
+      // onSnapshot is available in mod
+    });
+
+    // Needed functions referenced but not imported earlier
+    // Re-import onSnapshot and serverTimestamp properly
+    // (We could have imported earlier, but this keeps the bundle clear)
+    import { onSnapshot } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
+    // serverTimestamp was imported above as serverTimestamp (named import) - ensure availability
+
+    // END of module
+  </script>
+</body>
+</html>
