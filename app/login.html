@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Sistema de Atendimento</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(135deg, #00aaff, #0066ff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #0066ff;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      background: #0066ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #004ecc;
+    }
+    .link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .link a {
+      color: #0066ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Entrar</h2>
+    <input type="email" id="email" placeholder="Seu e-mail" required>
+    <input type="password" id="senha" placeholder="Sua senha" required>
+    <button id="btnLogin">Entrar</button>
+    <div class="link">
+      Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+      authDomain: "meuappweb-65522.firebaseapp.com",
+      projectId: "meuappweb-65522",
+      storageBucket: "meuappweb-65522.firebasestorage.app",
+      messagingSenderId: "305368794616",
+      appId: "1:305368794616:web:d987589863479e576ac20d",
+      measurementId: "G-L0VWMGJ003"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const btnLogin = document.getElementById('btnLogin');
+
+    btnLogin.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+
+      if (!email || !senha) {
+        alert('Preencha todos os campos.');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+        alert('Login realizado com sucesso!');
+        window.location.href = 'painel.html';
+      } catch (error) {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            alert('E-mail inválido.');
+            break;
+          case 'auth/user-not-found':
+            alert('Usuário não encontrado.');
+            break;
+          case 'auth/wrong-password':
+            alert('Senha incorreta.');
+            break;
+          default:
+            alert('Erro ao fazer login: ' + error.message);
+        }
+      }
+    });
+
+    // Se já estiver logado, redireciona automaticamente
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = 'painel.html';
+      }
+    });
+  </script>
+
+</body>
+</html>

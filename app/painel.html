@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Atendimento</title>
+  <script type="module">
+    // Importações Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+      authDomain: "meuappweb-65522.firebaseapp.com",
+      projectId: "meuappweb-65522",
+      storageBucket: "meuappweb-65522.firebasestorage.app",
+      messagingSenderId: "305368794616",
+      appId: "1:305368794616:web:d987589863479e576ac20d",
+      measurementId: "G-L0VWMGJ003"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let usuarioAtual = null;
+    let chatAtivo = null;
+
+    // 🔹 Verifica login
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      usuarioAtual = user;
+      document.getElementById("userEmail").innerText = user.email;
+      carregarSolicitacoes();
+      carregarContatos();
+    });
+
+    // 🔹 Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    // 🔹 Pesquisa usuário
+    document.getElementById("pesquisarBtn").addEventListener("click", searchUser);
+    async function searchUser() {
+      const termo = document.getElementById("searchInput").value.trim().toLowerCase();
+      if (!termo) return alert("Digite um nome ou e-mail.");
+
+      const q = query(collection(db, "usuarios"), where("email", ">=", termo));
+      const querySnapshot = await getDocs(q);
+
+      const area = document.getElementById("resultados");
+      area.innerHTML = "";
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.email !== usuarioAtual.email) {
+          const card = document.createElement("div");
+          card.className = "user-card";
+          card.innerHTML = `
+            <p>${data.email}</p>
+            <button class="add-btn" onclick="enviarSolicitacao('${data.email}')">Adicionar</button>
+          `;
+          area.appendChild(card);
+        }
+      });
+
+      if (area.innerHTML === "") area.innerHTML = "<p>Nenhum usuário encontrado.</p>";
+    }
+
+    // 🔹 Enviar solicitação
+    window.enviarSolicitacao = async (destinatarioEmail) => {
+      const ref = collection(db, "solicitacoes");
+      await addDoc(ref, {
+        de: usuarioAtual.email,
+        para: destinatarioEmail,
+        status: "pendente",
+        timestamp: serverTimestamp()
+      });
+      alert("Solicitação enviada!");
+    };
+
+    // 🔹 Carregar solicitações
+    function carregarSolicitacoes() {
+      const area = document.getElementById("solicitacoesList");
+      const q = query(collection(db, "solicitacoes"));
+      onSnapshot(q, (snapshot) => {
+        area.innerHTML = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data.para === usuarioAtual.email && data.status === "pendente") {
+            const card = document.createElement("div");
+            card.className = "user-card";
+            card.innerHTML = `
+              <p>${data.de}</p>
+              <button onclick="aceitarSolicitacao('${docSnap.id}', '${data.de}')">Aceitar</button>
+              <button onclick="recusarSolicitacao('${docSnap.id}')">Recusar</button>
+            `;
+            area.appendChild(card);
+          }
+        });
+      });
+    }
+
+    // 🔹 Aceitar solicitação
+    window.aceitarSolicitacao = async (id, emailOutro) => {
+      const ref = doc(db, "solicitacoes", id);
+      await updateDoc(ref, { status: "aceita" });
+      await addDoc(collection(db, "amigos"), {
+        usuarios: [usuarioAtual.email, emailOutro],
+        timestamp: serverTimestamp()
+      });
+      carregarContatos();
+      alert("Solicitação aceita!");
+    };
+
+    window.recusarSolicitacao = async (id) => {
+      const ref = doc(db, "solicitacoes", id);
+      await updateDoc(ref, { status: "recusada" });
+      alert("Solicitação recusada.");
+    };
+
+    // 🔹 Carregar contatos aceitos
+    function carregarContatos() {
+      const area = document.getElementById("contatosList");
+      const q = query(collection(db, "amigos"));
+      onSnapshot(q, (snapshot) => {
+        area.innerHTML = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const usuarios = data.usuarios;
+          if (usuarios.includes(usuarioAtual.email)) {
+            const amigo = usuarios.find(u => u !== usuarioAtual.email);
+            const card = document.createElement("div");
+            card.className = "user-card";
+            card.innerHTML = `
+              <p>${amigo}</p>
+              <button onclick="abrirChat('${amigo}')">Conversar</button>
+            `;
+            area.appendChild(card);
+          }
+        });
+      });
+    }
+
+    // 🔹 Abrir chat
+    window.abrirChat = async (amigoEmail) => {
+      chatAtivo = amigoEmail;
+      document.getElementById("chatHeader").innerText = "Conversando com " + amigoEmail;
+      document.getElementById("chatArea").innerHTML = "";
+
+      const q = query(collection(db, "mensagens"));
+      onSnapshot(q, (snapshot) => {
+        const chatArea = document.getElementById("chatArea");
+        chatArea.innerHTML = "";
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const ehDoChat = 
+            (data.remetente === usuarioAtual.email && data.destinatario === amigoEmail) ||
+            (data.remetente === amigoEmail && data.destinatario === usuarioAtual.email);
+          if (ehDoChat) {
+            const msg = document.createElement("div");
+            msg.className = data.remetente === usuarioAtual.email ? "msg-enviada" : "msg-recebida";
+            if (data.tipo === "texto") msg.textContent = data.texto;
+            else if (data.tipo === "imagem") msg.innerHTML = `<img src="${data.arquivoURL}" class="img-msg">`;
+            else if (data.tipo === "pdf") msg.innerHTML = `<a href="${data.arquivoURL}" target="_blank">📄 PDF</a>`;
+            else if (data.tipo === "audio") msg.innerHTML = `<audio controls src="${data.arquivoURL}"></audio>`;
+            chatArea.appendChild(msg);
+          }
+        });
+      });
+    };
+
+    // 🔹 Enviar mensagem (texto ou arquivo)
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const texto = document.getElementById("msgInput").value.trim();
+      if (!chatAtivo || !texto) return;
+      await addDoc(collection(db, "mensagens"), {
+        remetente: usuarioAtual.email,
+        destinatario: chatAtivo,
+        texto,
+        tipo: "texto",
+        arquivoURL: null,
+        timestamp: serverTimestamp()
+      });
+      document.getElementById("msgInput").value = "";
+    });
+
+    // 🔹 Upload de arquivos
+    document.getElementById("fileInput").addEventListener("change", async (e) => {
+      if (!chatAtivo) return alert("Abra um chat primeiro.");
+      const file = e.target.files[0];
+      const tipo = file.type.includes("image") ? "imagem" :
+                   file.type.includes("pdf") ? "pdf" :
+                   file.type.includes("audio") ? "audio" : "outro";
+
+      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      await addDoc(collection(db, "mensagens"), {
+        remetente: usuarioAtual.email,
+        destinatario: chatAtivo,
+        texto: "",
+        tipo,
+        arquivoURL: url,
+        timestamp: serverTimestamp()
+      });
+      e.target.value = "";
+    });
+  </script>
+
+  <style>
+    body { font-family: Arial; background:#f2f2f2; margin:0; padding:0; }
+    header { background:#25d366; color:#fff; padding:10px; display:flex; justify-content:space-between; align-items:center; }
+    .container { padding:10px; }
+    .user-card { background:#fff; padding:10px; margin:5px 0; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
+    .user-card button { background:#25d366; color:#fff; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; }
+    #chatArea { background:#fff; border-radius:8px; padding:10px; height:300px; overflow-y:auto; margin-top:10px; }
+    .msg-enviada { background:#dcf8c6; padding:6px; margin:4px; border-radius:8px; align-self:flex-end; }
+    .msg-recebida { background:#eee; padding:6px; margin:4px; border-radius:8px; align-self:flex-start; }
+    .img-msg { width:150px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Painel</h3>
+    <div>
+      <span id="userEmail"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <input type="text" id="searchInput" placeholder="Buscar usuário...">
+    <button id="pesquisarBtn">🔍 Pesquisar</button>
+    <div id="resultados"></div>
+
+    <h4>Solicitações pendentes</h4>
+    <div id="solicitacoesList"></div>
+
+    <h4>Meus contatos</h4>
+    <div id="contatosList"></div>
+
+    <h4 id="chatHeader"></h4>
+    <div id="chatArea"></div>
+
+    <div style="display:flex; gap:5px; margin-top:10px;">
+      <input type="text" id="msgInput" placeholder="Digite uma mensagem..." style="flex:1;">
+      <input type="file" id="fileInput">
+      <button id="sendBtn">Enviar</button>
+    </div>
+  </div>
+</body>
+</html>
