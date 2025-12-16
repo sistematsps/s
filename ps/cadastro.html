@@ -1,0 +1,334 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro de Vendedores</title>
+
+<!-- jsPDF + AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+.box {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 6px;
+  margin: 4px;
+}
+
+button {
+  padding: 6px 10px;
+  margin: 3px;
+  cursor: pointer;
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card {
+  width: 180px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+.card.ativo {
+  border-color: #007bff;
+  background: #eaf3ff;
+}
+
+/* TABELA */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: #eee;
+}
+
+/* TOTAIS */
+.totais {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-weight: bold;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Cadastro de Vendedores</h2>
+
+<div class="box">
+  <input id="nomeVendedor" placeholder="Nome do vendedor">
+  <input id="cotacao" type="number" placeholder="Cotação">
+  <br>
+  <button onclick="salvarVendedor()">Salvar</button>
+  <button onclick="editarCotacao()">Editar Cotação</button>
+  <button onclick="excluirVendedor()">Excluir</button>
+</div>
+
+<div class="box">
+  <h3>Vendedores</h3>
+  <div class="cards" id="listaVendedores"></div>
+</div>
+
+<div class="box" id="vendasBox" style="display:none;">
+  <h3>Histórico – <span id="vendedorSelecionado"></span></h3>
+
+  <button onclick="adicionarLinha()">Adicionar Linha</button>
+
+  <table id="tabelaVendas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Bloco</th>
+        <th>Anterior</th>
+        <th>Final</th>
+        <th>Recebido</th>
+        <th>Devolvido</th>
+        <th>Vendido</th>
+        <th>Apurado</th>
+        <th>Pago</th>
+        <th>Devendo</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="totais">
+    <span>Recebido: <span id="tRecebido">0</span></span>
+    <span>Vendido: <span id="tVendido">0</span></span>
+    <span>Apurado: R$ <span id="tApurado">0</span></span>
+    <span>Pago: R$ <span id="tPago">0</span></span>
+    <span>Devendo: R$ <span id="tDevendo">0</span></span>
+  </div>
+
+  <br>
+  <button onclick="salvarVendas()">Salvar Vendas</button>
+  <button onclick="gerarPDF()">Gerar PDF</button>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+let vendedorAtual = null;
+
+/* ========= VENDEDORES ========= */
+function carregarVendedores() {
+  listaVendedores.innerHTML = "";
+  const v = JSON.parse(localStorage.getItem("vendedores")) || [];
+
+  v.forEach(x => {
+    const card = document.createElement("div");
+    card.className = "card" + (x.nome === vendedorAtual ? " ativo" : "");
+    card.innerHTML = `<strong>${x.nome}</strong><br>Cotação: ${x.cotacao}`;
+    card.onclick = () => selecionarVendedor(x.nome);
+    listaVendedores.appendChild(card);
+  });
+}
+
+function salvarVendedor() {
+  const nome = nomeVendedor.value.trim();
+  const cot = parseFloat(cotacao.value);
+  if (!nome || isNaN(cot)) return alert("Preencha corretamente");
+
+  let v = JSON.parse(localStorage.getItem("vendedores")) || [];
+  if (v.some(x => x.nome === nome)) return alert("Já existe");
+
+  v.push({ nome, cotacao: cot });
+  localStorage.setItem("vendedores", JSON.stringify(v));
+  nomeVendedor.value = cotacao.value = "";
+  carregarVendedores();
+}
+
+function editarCotacao() {
+  if (!vendedorAtual) return;
+  const nova = parseFloat(prompt("Nova cotação:"));
+  if (isNaN(nova)) return;
+
+  let v = JSON.parse(localStorage.getItem("vendedores")) || [];
+  v = v.map(x => x.nome === vendedorAtual ? { ...x, cotacao: nova } : x);
+  localStorage.setItem("vendedores", JSON.stringify(v));
+  carregarVendedores();
+}
+
+function excluirVendedor() {
+  if (!vendedorAtual || !confirm("Excluir vendedor?")) return;
+  let v = JSON.parse(localStorage.getItem("vendedores")) || [];
+  v = v.filter(x => x.nome !== vendedorAtual);
+  localStorage.removeItem("vendas_" + vendedorAtual);
+  localStorage.setItem("vendedores", JSON.stringify(v));
+  vendedorAtual = null;
+  vendasBox.style.display = "none";
+  carregarVendedores();
+}
+
+/* ========= VENDAS ========= */
+function selecionarVendedor(nome) {
+  vendedorAtual = nome;
+  vendedorSelecionado.innerText = nome;
+  vendasBox.style.display = "block";
+  carregarVendedores();
+  carregarVendas();
+}
+
+function adicionarLinha(d = []) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><input type="date"></td>
+    <td><input></td>
+    <td><input type="number"></td>
+    <td><input type="number"></td>
+    <td><input disabled></td>
+    <td><input type="number"></td>
+    <td><input disabled></td>
+    <td><input disabled></td>
+    <td><input type="number"></td>
+    <td><input disabled></td>
+    <td><button onclick="excluirLinha(this)">🗑️</button></td>
+  `;
+  tabelaVendas.querySelector("tbody").appendChild(tr);
+
+  tr.querySelectorAll("input").forEach((i, idx) => {
+    if (d[idx]) i.value = d[idx];
+    i.oninput = () => calcularLinha(tr);
+  });
+
+  calcularLinha(tr);
+}
+
+function excluirLinha(btn) {
+  if (!confirm("Excluir esta venda?")) return;
+  btn.closest("tr").remove();
+  calcularTotais();
+}
+
+function calcularLinha(tr) {
+  const i = tr.querySelectorAll("input");
+  const ant = +i[2].value || 0;
+  const fin = +i[3].value || 0;
+  const dev = +i[5].value || 0;
+  const pag = +i[8].value || 0;
+
+  const recebido = fin - ant;
+  const vendido = recebido - dev;
+
+  const v = JSON.parse(localStorage.getItem("vendedores")) || [];
+  const cot = v.find(x => x.nome === vendedorAtual)?.cotacao || 0;
+
+  const ap = vendido * cot;
+  const devendo = ap - pag;
+
+  i[4].value = recebido;
+  i[6].value = vendido;
+  i[7].value = ap.toFixed(2);
+  i[9].value = devendo.toFixed(2);
+
+  calcularTotais();
+}
+
+function calcularTotais() {
+  let r=0,v=0,a=0,p=0,d=0;
+  document.querySelectorAll("#tabelaVendas tbody tr").forEach(tr=>{
+    const i=tr.querySelectorAll("input");
+    r+=+i[4].value||0;
+    v+=+i[6].value||0;
+    a+=+i[7].value||0;
+    p+=+i[8].value||0;
+    d+=+i[9].value||0;
+  });
+  tRecebido.innerText=r;
+  tVendido.innerText=v;
+  tApurado.innerText=a.toFixed(2);
+  tPago.innerText=p.toFixed(2);
+  tDevendo.innerText=d.toFixed(2);
+}
+
+function salvarVendas() {
+  const dados=[];
+  document.querySelectorAll("#tabelaVendas tbody tr").forEach(tr=>{
+    dados.push([...tr.querySelectorAll("input")].map(i=>i.value));
+  });
+  localStorage.setItem("vendas_"+vendedorAtual,JSON.stringify(dados));
+  alert("Vendas salvas");
+}
+
+function carregarVendas() {
+  tabelaVendas.querySelector("tbody").innerHTML="";
+  const v=JSON.parse(localStorage.getItem("vendas_"+vendedorAtual))||[];
+  v.forEach(l=>adicionarLinha(l));
+  calcularTotais();
+}
+
+/* ========= PDF PROFISSIONAL COM TABELA ========= */
+function gerarPDF() {
+  const pdf = new jsPDF();
+  pdf.setFontSize(14);
+  pdf.text("Relatório de Vendas", 14, 15);
+  pdf.setFontSize(10);
+  pdf.text("Vendedor: " + vendedorAtual, 14, 22);
+
+  const body = [];
+  document.querySelectorAll("#tabelaVendas tbody tr").forEach(tr=>{
+    const i = tr.querySelectorAll("input");
+    body.push([
+      i[0].value, i[1].value, i[2].value, i[3].value,
+      i[4].value, i[5].value, i[6].value,
+      i[7].value, i[8].value, i[9].value
+    ]);
+  });
+
+  pdf.autoTable({
+    startY: 28,
+    head: [[
+      "Data","Bloco","Anterior","Final","Recebido",
+      "Devolvido","Vendido","Apurado","Pago","Devendo"
+    ]],
+    body: body
+  });
+
+  const y = pdf.lastAutoTable.finalY + 8;
+  pdf.text(`Recebido: ${tRecebido.innerText}`,14,y);
+  pdf.text(`Vendido: ${tVendido.innerText}`,14,y+6);
+  pdf.text(`Apurado: R$ ${tApurado.innerText}`,14,y+12);
+  pdf.text(`Pago: R$ ${tPago.innerText}`,14,y+18);
+  pdf.text(`Devendo: R$ ${tDevendo.innerText}`,14,y+24);
+
+  pdf.save("relatorio_"+vendedorAtual+".pdf");
+}
+
+carregarVendedores();
+</script>
+
+</body>
+</html>

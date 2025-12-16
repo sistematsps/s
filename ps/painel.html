@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel do Sistema</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.painel {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 320px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.painel h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.botao {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #007bff;
+  color: #fff;
+}
+
+.botao:hover {
+  opacity: 0.9;
+}
+
+.sair {
+  background: #dc3545;
+}
+</style>
+</head>
+
+<body>
+
+<div class="painel">
+  <h2>Painel Principal</h2>
+
+  <button class="botao" onclick="irPara('cadastro.html')">Cadastro</button>
+  <button class="botao" onclick="irPara('relatorio.html')">Relatório</button>
+  <button class="botao" onclick="irPara('despesas.html')">Despesas</button>
+  <button class="botao" onclick="irPara('caixa.html')">Caixa</button>
+  <button class="botao sair" onclick="sair()">Sair</button>
+</div>
+
+<script>
+function irPara(pagina) {
+  window.location.href = pagina;
+}
+
+function sair() {
+  // Caso exista controle simples de login
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

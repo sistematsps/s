@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Controle de Despesas</title>
+
+<!-- jsPDF + AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+.box {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 6px;
+  margin: 4px;
+}
+
+button {
+  padding: 6px 10px;
+  margin: 3px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: #eee;
+}
+
+.totais {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Controle de Despesas</h2>
+
+<div class="box">
+  <input type="date" id="dataDespesa">
+  <input type="text" id="descricaoDespesa" placeholder="Descrição da despesa">
+  <input type="number" id="valorDespesa" placeholder="Valor">
+  <br>
+  <button onclick="salvarDespesa()">Salvar</button>
+  <button onclick="editarDespesa()">Editar</button>
+  <button onclick="excluirDespesa()">Excluir</button>
+</div>
+
+<div class="box">
+  <table id="tabelaDespesas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="totais">
+    Total de Despesas: R$ <span id="totalDespesas">0.00</span>
+  </div>
+
+  <br>
+  <button onclick="gerarPDF()">Gerar Relatório PDF</button>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+let indiceSelecionado = null;
+
+/* ===== DESPESAS ===== */
+function salvarDespesa() {
+  const data = dataDespesa.value;
+  const desc = descricaoDespesa.value.trim();
+  const valor = parseFloat(valorDespesa.value);
+
+  if (!data || !desc || isNaN(valor)) {
+    alert("Preencha todos os campos corretamente");
+    return;
+  }
+
+  let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+
+  if (indiceSelecionado !== null) {
+    despesas[indiceSelecionado] = { data, desc, valor };
+    indiceSelecionado = null;
+  } else {
+    despesas.push({ data, desc, valor });
+  }
+
+  localStorage.setItem("despesas", JSON.stringify(despesas));
+  limparCampos();
+  carregarDespesas();
+}
+
+function editarDespesa() {
+  if (indiceSelecionado === null) {
+    alert("Selecione uma despesa na tabela");
+    return;
+  }
+}
+
+function excluirDespesa() {
+  if (indiceSelecionado === null || !confirm("Excluir despesa?")) return;
+
+  let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+  despesas.splice(indiceSelecionado, 1);
+  localStorage.setItem("despesas", JSON.stringify(despesas));
+  indiceSelecionado = null;
+  limparCampos();
+  carregarDespesas();
+}
+
+function selecionarLinha(tr, index) {
+  document.querySelectorAll("#tabelaDespesas tbody tr").forEach(l => l.style.background = "");
+  tr.style.background = "#eaf3ff";
+
+  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+  dataDespesa.value = despesas[index].data;
+  descricaoDespesa.value = despesas[index].desc;
+  valorDespesa.value = despesas[index].valor;
+
+  indiceSelecionado = index;
+}
+
+function carregarDespesas() {
+  const tbody = document.querySelector("#tabelaDespesas tbody");
+  tbody.innerHTML = "";
+
+  let total = 0;
+  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+
+  despesas.forEach((d, i) => {
+    total += d.valor;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.data}</td>
+      <td>${d.desc}</td>
+      <td>R$ ${d.valor.toFixed(2)}</td>
+      <td><button onclick="selecionarLinha(this.parentNode.parentNode, ${i})">Selecionar</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  totalDespesas.innerText = total.toFixed(2);
+}
+
+function limparCampos() {
+  dataDespesa.value = "";
+  descricaoDespesa.value = "";
+  valorDespesa.value = "";
+}
+
+/* ===== PDF PROFISSIONAL ===== */
+function gerarPDF() {
+  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+  if (despesas.length === 0) return alert("Nenhuma despesa cadastrada");
+
+  const pdf = new jsPDF();
+  pdf.setFontSize(14);
+  pdf.text("Relatório de Despesas", 14, 15);
+
+  const body = despesas.map(d => [
+    d.data,
+    d.desc,
+    d.valor.toFixed(2)
+  ]);
+
+  pdf.autoTable({
+    startY: 25,
+    head: [["Data", "Descrição", "Valor"]],
+    body: body
+  });
+
+  const total = despesas.reduce((s, d) => s + d.valor, 0);
+  const y = pdf.lastAutoTable.finalY + 10;
+  pdf.text(`Total de Despesas: R$ ${total.toFixed(2)}`, 14, y);
+
+  pdf.save("relatorio_despesas.pdf");
+}
+
+carregarDespesas();
+</script>
+
+</body>
+</html>

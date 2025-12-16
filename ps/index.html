@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+  }
+
+  .login-box {
+    width: 300px;
+    margin: 120px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  input {
+    width: 92%;
+    padding: 10px;
+    margin: 8px 0;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  #erro {
+    color: red;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+  <h2>Acesso ao Sistema</h2>
+
+  <input type="text" id="usuario" placeholder="Usuário">
+  <input type="password" id="senha" placeholder="Senha">
+
+  <button onclick="login()">Entrar</button>
+
+  <p id="erro"></p>
+</div>
+
+<script>
+  // Cria usuário padrão se não existir
+  if (!localStorage.getItem("usuarioSistema")) {
+    localStorage.setItem("usuarioSistema", "admin");
+    localStorage.setItem("senhaSistema", "1234");
+  }
+
+  function login() {
+    const usuario = document.getElementById("usuario").value;
+    const senha = document.getElementById("senha").value;
+
+    const usuarioSalvo = localStorage.getItem("usuarioSistema");
+    const senhaSalva = localStorage.getItem("senhaSistema");
+
+    if (usuario === usuarioSalvo && senha === senhaSalva) {
+      localStorage.setItem("logado", "true");
+      window.location.href = "painel.html";
+    } else {
+      document.getElementById("erro").innerText = "Usuário ou senha inválidos";
+    }
+  }
+</script>
+
+</body>
+</html>
