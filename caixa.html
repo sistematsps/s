@@ -211,8 +211,8 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
     document.getElementById('pedro').textContent=formatar(saldoFinal*0.5);
   } else {
     document.getElementById('linhaJose').style.display="none";
-    document.getElementById('benedito').textContent=formatar(saldoFinal*0.1);
-    document.getElementById('pedro').textContent=formatar(saldoFinal*0.9);
+    document.getElementById('benedito').textContent=formatar(saldoFinal*0.15);
+    document.getElementById('pedro').textContent=formatar(saldoFinal*0.7);
   }
 }
 
@@ -254,3 +254,4 @@ window.onload = ()=>{ carregarCaixa(); }
 
 </body>
 </html>
+
