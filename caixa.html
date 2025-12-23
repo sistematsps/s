@@ -26,7 +26,6 @@ Sistema:
 <select id="sistemaSelect">
   <option value="pitimbu">Pitimbu da Sorte</option>
   <option value="timonha">Timonha da Sorte</option>
-  <option value"dezeba">Dezena da Sorte</option>
 </select>
 </label>
 
@@ -93,7 +92,6 @@ Sistema:
 <div class="total-box">
 <p>BENEDITO JUNIOR: R$ <span id="benedito">0.00</span></p>
 <p id="linhaJose">JOSE ROBERTO: R$ <span id="jose">0.00</span></p>
-  <p id"linhatata">TATA FORTUNA: R$ <span id="tata">0,00</span></p>
 <p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
 </div>
 
@@ -208,16 +206,13 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
   // ===== Partilha =====
   if(sistemaAtivo==='pitimbu'){
     document.getElementById('linhaJose').style.display="block";
-    document.getElementById('linhatata').style.display="none";
     document.getElementById('benedito').textContent=formatar(saldoFinal*0.25);
     document.getElementById('jose').textContent=formatar(saldoFinal*0.25);
     document.getElementById('pedro').textContent=formatar(saldoFinal*0.5);
   } else {
     document.getElementById('linhaJose').style.display="none";
-    document.getElementById('benedito').textContent=formatar(saldoFinal*0.15);
-    document.getElementById('linhatata').style.display="block"
-      document.getElementById('tata')textContent=formatar(saldoFinal*0,15);
-    document.getElementById('pedro').textContent=formatar(saldoFinal*0.7);
+    document.getElementById('benedito').textContent=formatar(saldoFinal*0.1);
+    document.getElementById('pedro').textContent=formatar(saldoFinal*0.9);
   }
 }
 
@@ -259,5 +254,3 @@ window.onload = ()=>{ carregarCaixa(); }
 
 </body>
 </html>
-
-
