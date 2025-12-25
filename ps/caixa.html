@@ -1,69 +1,27 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
- `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Caixa Geral</title>
 
-<!-- jsPDF + AutoTable -->
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  padding: 20px;
-}
-
-.box {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 6px;
-  margin: 4px;
-}
-
-button {
-  padding: 6px 10px;
-  margin: 3px;
-  cursor: pointer;
-}
-
-.cards {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.card {
-  padding: 15px;
-  border-radius: 8px;
-  background: #f9f9f9;
-  border: 2px solid #ccc;
-  min-width: 180px;
-  font-weight: bold;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: center;
-}
-
-th {
-  background: #eee;
-}
+body { font-family: Arial; background:#f2f2f2; padding:20px }
+.box { background:#fff; padding:15px; border-radius:8px; margin-bottom:15px }
+input, button { padding:6px; margin:4px }
+.cards { display:flex; gap:15px; flex-wrap:wrap }
+.card { background:#f9f9f9; border:2px solid #ccc; border-radius:8px; padding:15px; min-width:180px; font-weight:bold }
+table { width:100%; border-collapse:collapse }
+th, td { border:1px solid #ccc; padding:6px; text-align:center }
+th { background:#eee }
 </style>
 </head>
 
@@ -85,22 +43,23 @@ th {
 
 <div class="box">
   <h3>Vendas por Vendedor</h3>
-  <table id="tabelaVendas">
+  <table>
     <thead>
       <tr>
         <th>Vendedor</th>
         <th>Data</th>
+        <th>Bloco</th>
         <th>Vendido</th>
         <th>Apurado</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tabelaVendas"></tbody>
   </table>
 </div>
 
 <div class="box">
-  <h3>Despesas do Período</h3>
-  <table id="tabelaDespesas">
+  <h3>Despesas</h3>
+  <table>
     <thead>
       <tr>
         <th>Data</th>
@@ -108,82 +67,107 @@ th {
         <th>Valor</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tabelaDespesas"></tbody>
   </table>
 </div>
 
 <div class="box">
-  <button onclick="gerarPDF()">Gerar PDF do Caixa</button>
+  <button onclick="gerarPDF()">Gerar PDF</button>
 </div>
 
 <script>
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const { jsPDF } = window.jspdf;
 let dadosPDF = { vendas: [], despesas: [], totais: {} };
 
-function consultarPeriodo() {
+async function consultarPeriodo() {
   const ini = dataInicial.value;
   const fim = dataFinal.value;
 
   let totalAp = 0;
   let totalDesp = 0;
 
-  const vendasBody = document.querySelector("#tabelaVendas tbody");
-  const despesasBody = document.querySelector("#tabelaDespesas tbody");
-
-  vendasBody.innerHTML = "";
-  despesasBody.innerHTML = "";
-
+  tabelaVendas.innerHTML = "";
+  tabelaDespesas.innerHTML = "";
   dadosPDF = { vendas: [], despesas: [], totais: {} };
 
   /* ===== VENDAS ===== */
-  const vendedores = JSON.parse(localStorage.getItem("vendedores")) || [];
+  const vendedoresSnap = await db.collection("vendedores").get();
 
-  vendedores.forEach(v => {
-    const vendas = JSON.parse(localStorage.getItem("vendas_" + v.nome)) || [];
+  for (const vendDoc of vendedoresSnap.docs) {
+    const vendedor = vendDoc.data();
+    const nomeVendedor = vendedor.nome || "—";
 
-    vendas.forEach(l => {
-      const data = l[0];
-      if ((ini && data < ini) || (fim && data > fim)) return;
+    const vendasSnap = await db
+      .collection("vendedores")
+      .doc(vendDoc.id)
+      .collection("vendas")
+      .get();
 
-      const vendido = (l[3] - l[2]) - l[5];
-      const apurado = vendido * v.cotacao;
+    vendasSnap.forEach(vendaDoc => {
+      const v = vendaDoc.data();
+
+      if (!v.data || v.apurado == null || v.vendido == null) return;
+      if ((ini && v.data < ini) || (fim && v.data > fim)) return;
+
+      const vendido = Number(v.vendido);
+      const apurado = Number(v.apurado);
+      const bloco = v.bloco || "-";
 
       totalAp += apurado;
 
-      dadosPDF.vendas.push([
-        v.nome, data, vendido, apurado.toFixed(2)
-      ]);
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${v.nome}</td>
-        <td>${data}</td>
-        <td>${vendido}</td>
-        <td>R$ ${apurado.toFixed(2)}</td>
+      tabelaVendas.innerHTML += `
+        <tr>
+          <td>${nomeVendedor}</td>
+          <td>${v.data}</td>
+          <td>${bloco}</td>
+          <td>${vendido}</td>
+          <td>R$ ${apurado.toFixed(2)}</td>
+        </tr>
       `;
-      vendasBody.appendChild(tr);
+
+      dadosPDF.vendas.push([
+        nomeVendedor,
+        v.data,
+        bloco,
+        vendido,
+        apurado.toFixed(2)
+      ]);
     });
-  });
+  }
 
   /* ===== DESPESAS ===== */
-  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+  const despSnap = await db.collection("despesas").get();
+  despSnap.forEach(doc => {
+    const d = doc.data();
 
-  despesas.forEach(d => {
+    if (!d.data || d.valor == null) return;
     if ((ini && d.data < ini) || (fim && d.data > fim)) return;
 
-    totalDesp += d.valor;
+    const valor = Number(d.valor);
+    totalDesp += valor;
+
+    tabelaDespesas.innerHTML += `
+      <tr>
+        <td>${d.data}</td>
+        <td>${d.desc || ""}</td>
+        <td>R$ ${valor.toFixed(2)}</td>
+      </tr>
+    `;
 
     dadosPDF.despesas.push([
-      d.data, d.desc, d.valor.toFixed(2)
+      d.data,
+      d.desc || "",
+      valor.toFixed(2)
     ]);
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d.data}</td>
-      <td>${d.desc}</td>
-      <td>R$ ${d.valor.toFixed(2)}</td>
-    `;
-    despesasBody.appendChild(tr);
   });
 
   const saldo = totalAp - totalDesp;
@@ -192,30 +176,18 @@ function consultarPeriodo() {
   totalDespesas.innerText = totalDesp.toFixed(2);
   saldoFinal.innerText = saldo.toFixed(2);
 
-  dadosPDF.totais = {
-    apurado: totalAp,
-    despesas: totalDesp,
-    saldo: saldo
-  };
+  dadosPDF.totais = { apurado: totalAp, despesas: totalDesp, saldo };
 }
 
-/* ===== PDF CAIXA ===== */
+/* ===== PDF ===== */
 function gerarPDF() {
   const pdf = new jsPDF();
-
   pdf.setFontSize(14);
-  pdf.text("Relatório de Caixa", 14, 15);
-
-  pdf.setFontSize(10);
-  let periodo = "Período: ";
-  periodo += dataInicial.value || "...";
-  periodo += " até ";
-  periodo += dataFinal.value || "...";
-  pdf.text(periodo, 14, 22);
+  pdf.text("Relatório de Caixa Geral", 14, 15);
 
   pdf.autoTable({
-    startY: 28,
-    head: [["Vendedor", "Data", "Vendido", "Apurado"]],
+    startY: 22,
+    head: [["Vendedor","Data","Bloco","Vendido","Apurado"]],
     body: dadosPDF.vendas
   });
 
@@ -223,20 +195,18 @@ function gerarPDF() {
 
   pdf.autoTable({
     startY: y,
-    head: [["Data", "Descrição", "Valor"]],
+    head: [["Data","Descrição","Valor"]],
     body: dadosPDF.despesas
   });
 
   y = pdf.lastAutoTable.finalY + 8;
+  pdf.text(`Apurado: R$ ${dadosPDF.totais.apurado.toFixed(2)}`, 14, y);
+  pdf.text(`Despesas: R$ ${dadosPDF.totais.despesas.toFixed(2)}`, 14, y + 6);
+  pdf.text(`Saldo: R$ ${dadosPDF.totais.saldo.toFixed(2)}`, 14, y + 12);
 
-  pdf.text(`Total Apurado: R$ ${dadosPDF.totais.apurado.toFixed(2)}`, 14, y);
-  pdf.text(`Total Despesas: R$ ${dadosPDF.totais.despesas.toFixed(2)}`, 14, y + 6);
-  pdf.text(`Saldo Final: R$ ${dadosPDF.totais.saldo.toFixed(2)}`, 14, y + 12);
-
-  pdf.save("caixa_periodo.pdf");
+  pdf.save("caixa_geral.pdf");
 }
 </script>
 
 </body>
-</html>
-
+     </html>
