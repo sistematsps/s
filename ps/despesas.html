@@ -1,62 +1,27 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
- `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Controle de Despesas</title>
+
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <!-- jsPDF + AutoTable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  padding: 20px;
-}
-
-.box {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 6px;
-  margin: 4px;
-}
-
-button {
-  padding: 6px 10px;
-  margin: 3px;
-  cursor: pointer;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: center;
-}
-
-th {
-  background: #eee;
-}
-
-.totais {
-  margin-top: 10px;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 6px;
-  font-weight: bold;
-}
+body { font-family: Arial; background:#f2f2f2; padding:20px }
+.box { background:#fff; padding:15px; border-radius:8px; margin-bottom:20px }
+input, button { padding:6px; margin:4px }
+table { width:100%; border-collapse:collapse; margin-top:15px }
+th, td { border:1px solid #ccc; padding:6px; text-align:center }
+th { background:#eee }
+.totais { margin-top:10px; padding:10px; background:#f9f9f9; border-radius:6px; font-weight:bold }
+tr.selecionado { background:#eaf3ff }
 </style>
 </head>
 
@@ -75,7 +40,7 @@ th {
 </div>
 
 <div class="box">
-  <table id="tabelaDespesas">
+  <table>
     <thead>
       <tr>
         <th>Data</th>
@@ -84,7 +49,7 @@ th {
         <th>Ação</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tabelaDespesas"></tbody>
   </table>
 
   <div class="totais">
@@ -97,116 +62,130 @@ th {
 
 <script>
 const { jsPDF } = window.jspdf;
-let indiceSelecionado = null;
 
-/* ===== DESPESAS ===== */
-function salvarDespesa() {
+/* 🔥 FIREBASE CONFIG (MESMO PADRÃO DAS OUTRAS PÁGINAS) */
+const firebaseConfig = {
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let despesaSelecionadaId = null;
+
+/* ===== SALVAR / EDITAR ===== */
+async function salvarDespesa() {
   const data = dataDespesa.value;
   const desc = descricaoDespesa.value.trim();
-  const valor = parseFloat(valorDespesa.value);
+  const valor = Number(valorDespesa.value);
 
   if (!data || !desc || isNaN(valor)) {
     alert("Preencha todos os campos corretamente");
     return;
   }
 
-  let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
-
-  if (indiceSelecionado !== null) {
-    despesas[indiceSelecionado] = { data, desc, valor };
-    indiceSelecionado = null;
+  if (despesaSelecionadaId) {
+    await db.collection("despesas").doc(despesaSelecionadaId).update({
+      data, desc, valor
+    });
   } else {
-    despesas.push({ data, desc, valor });
+    await db.collection("despesas").add({
+      data, desc, valor
+    });
   }
 
-  localStorage.setItem("despesas", JSON.stringify(despesas));
   limparCampos();
   carregarDespesas();
 }
 
 function editarDespesa() {
-  if (indiceSelecionado === null) {
+  if (!despesaSelecionadaId) {
     alert("Selecione uma despesa na tabela");
     return;
   }
 }
 
-function excluirDespesa() {
-  if (indiceSelecionado === null || !confirm("Excluir despesa?")) return;
+/* ===== EXCLUIR ===== */
+async function excluirDespesa() {
+  if (!despesaSelecionadaId || !confirm("Excluir despesa?")) return;
 
-  let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
-  despesas.splice(indiceSelecionado, 1);
-  localStorage.setItem("despesas", JSON.stringify(despesas));
-  indiceSelecionado = null;
+  await db.collection("despesas").doc(despesaSelecionadaId).delete();
+  despesaSelecionadaId = null;
   limparCampos();
   carregarDespesas();
 }
 
-function selecionarLinha(tr, index) {
-  document.querySelectorAll("#tabelaDespesas tbody tr").forEach(l => l.style.background = "");
-  tr.style.background = "#eaf3ff";
+/* ===== SELECIONAR ===== */
+function selecionarLinha(tr, id, d) {
+  document.querySelectorAll("#tabelaDespesas tr").forEach(l => l.classList.remove("selecionado"));
+  tr.classList.add("selecionado");
 
-  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
-  dataDespesa.value = despesas[index].data;
-  descricaoDespesa.value = despesas[index].desc;
-  valorDespesa.value = despesas[index].valor;
+  dataDespesa.value = d.data;
+  descricaoDespesa.value = d.desc;
+  valorDespesa.value = d.valor;
 
-  indiceSelecionado = index;
+  despesaSelecionadaId = id;
 }
 
-function carregarDespesas() {
-  const tbody = document.querySelector("#tabelaDespesas tbody");
+/* ===== CARREGAR ===== */
+async function carregarDespesas() {
+  const tbody = document.getElementById("tabelaDespesas");
   tbody.innerHTML = "";
-
   let total = 0;
-  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
 
-  despesas.forEach((d, i) => {
-    total += d.valor;
+  const snap = await db.collection("despesas").orderBy("data").get();
+  snap.forEach(doc => {
+    const d = doc.data();
+    total += Number(d.valor);
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${d.data}</td>
       <td>${d.desc}</td>
-      <td>R$ ${d.valor.toFixed(2)}</td>
-      <td><button onclick="selecionarLinha(this.parentNode.parentNode, ${i})">Selecionar</button></td>
+      <td>R$ ${Number(d.valor).toFixed(2)}</td>
+      <td><button>Selecionar</button></td>
     `;
+    tr.querySelector("button").onclick = () => selecionarLinha(tr, doc.id, d);
     tbody.appendChild(tr);
   });
 
   totalDespesas.innerText = total.toFixed(2);
 }
 
+/* ===== LIMPAR ===== */
 function limparCampos() {
   dataDespesa.value = "";
   descricaoDespesa.value = "";
   valorDespesa.value = "";
+  despesaSelecionadaId = null;
 }
 
-/* ===== PDF PROFISSIONAL ===== */
+/* ===== PDF ===== */
 function gerarPDF() {
-  const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
-  if (despesas.length === 0) return alert("Nenhuma despesa cadastrada");
+  if (!totalDespesas.innerText || totalDespesas.innerText === "0.00") {
+    alert("Nenhuma despesa cadastrada");
+    return;
+  }
 
   const pdf = new jsPDF();
   pdf.setFontSize(14);
   pdf.text("Relatório de Despesas", 14, 15);
 
-  const body = despesas.map(d => [
-    d.data,
-    d.desc,
-    d.valor.toFixed(2)
-  ]);
+  const rows = [];
+  document.querySelectorAll("#tabelaDespesas tr").forEach(tr => {
+    const tds = tr.querySelectorAll("td");
+    rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText]);
+  });
 
   pdf.autoTable({
     startY: 25,
     head: [["Data", "Descrição", "Valor"]],
-    body: body
+    body: rows
   });
 
-  const total = despesas.reduce((s, d) => s + d.valor, 0);
   const y = pdf.lastAutoTable.finalY + 10;
-  pdf.text(`Total de Despesas: R$ ${total.toFixed(2)}`, 14, y);
+  pdf.text(`Total de Despesas: R$ ${totalDespesas.innerText}`, 14, y);
 
   pdf.save("relatorio_despesas.pdf");
 }
@@ -215,5 +194,4 @@ carregarDespesas();
 </script>
 
 </body>
-</html>
-
+ </html>
