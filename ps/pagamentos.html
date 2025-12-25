@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Lançamentos Diretos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<style>
+body { font-family: Arial; padding:20px; background:#f5f5f5; }
+h1 { text-align:center; }
+.vendedor {
+  background:#fff; padding:15px; margin-bottom:10px;
+  border-radius:8px; box-shadow:0 0 5px rgba(0,0,0,.1);
+}
+.vendedor h3 {
+  display:flex; justify-content:space-between; margin:0 0 10px;
+}
+input { padding:6px; width:120px; }
+button {
+  padding:6px 12px; background:green; color:#fff;
+  border:none; border-radius:5px; cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>DEVEDORES, CREDITAR PAGAMENTOS</h1>
+
+<div id="container"></div>
+<div id="msg"></div>
+
+<script>
+// FIREBASE
+firebase.initializeApp({
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5"
+});
+const db = firebase.firestore();
+
+// ID FIXO DO VENDEDOR (SEM LOGIN)
+const VENDEDOR_ID = "TOhFJqgLUn7Wigkmvaga";
+
+// CARREGAR VENDAS
+async function carregar() {
+  const container = document.getElementById('container');
+  container.innerHTML = '';
+
+  const snap = await db
+    .collection("vendedores")
+    .doc(VENDEDOR_ID)
+    .collection("vendas")
+    .get();
+
+  let totalDevendo = 0;
+
+  snap.forEach(doc => {
+    const v = doc.data();
+    totalDevendo += Number(v.devendo || 0);
+  });
+
+  const div = document.createElement('div');
+  div.className = 'vendedor';
+  div.innerHTML = `
+    <h3>
+      Teste
+      <span style="color:red">Devendo: R$ ${totalDevendo.toFixed(2)}</span>
+    </h3>
+    <input type="number" id="valor" placeholder="Valor pago">
+    <button onclick="pagar()">Lançar</button>
+  `;
+  container.appendChild(div);
+}
+
+// LANÇAR PAGAMENTO
+async function pagar() {
+  const valor = Number(document.getElementById('valor').value);
+  if (!valor || valor <= 0) return alert('Valor inválido');
+
+  const snap = await db
+    .collection("vendedores")
+    .doc(VENDEDOR_ID)
+    .collection("vendas")
+    .orderBy("data", "desc")
+    .get();
+
+  for (const d of snap.docs) {
+    const v = d.data();
+    if (v.devendo > 0) {
+      await d.ref.update({
+        pago: (v.pago || 0) + valor,
+        devendo: v.devendo - valor
+      });
+      document.getElementById('msg').innerText =
+        `Pagamento de R$ ${valor.toFixed(2)} lançado`;
+      carregar();
+      return;
+    }
+  }
+
+  alert("Nenhuma pendência encontrada");
+}
+
+carregar();
+</script>
+
+</body>
+</html>

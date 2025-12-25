@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Geral de Vendas</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  padding: 20px;
+}
+
+h2, h3 {
+  margin-top: 25px;
+}
+
+.filtros {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+select, input, button {
+  padding: 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #198754;
+  color: #fff;
+}
+
+.resumo {
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Relatório de Vendas</h2>
+
+<div class="filtros">
+  <select id="vendedorSelect"></select>
+  <input type="date" id="dataInicio">
+  <input type="date" id="dataFim">
+  <button onclick="consultar()">Consultar</button>
+  <button onclick="gerarPDF()">Gerar PDF</button>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>Vendedor</th>
+  <th>Data</th>
+  <th>Bloco</th>
+  <th>Vendido</th>
+  <th>Recebido</th>
+  <th>Apurado</th>
+</tr>
+</thead>
+<tbody id="tabelaVendas"></tbody>
+</table>
+
+<div class="resumo" id="resumoGeral"></div>
+
+<h3>Resumo por Vendedor</h3>
+<table>
+<thead>
+<tr>
+  <th>Vendedor</th>
+  <th>Total Apurado</th>
+</tr>
+</thead>
+<tbody id="resumoVendedor"></tbody>
+</table>
+
+<h3>Resumo por Bloco</h3>
+<table>
+<thead>
+<tr>
+  <th>Bloco</th>
+  <th>Total Apurado</th>
+</tr>
+</thead>
+<tbody id="resumoBloco"></tbody>
+</table>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+// ================= FIREBASE =================
+firebase.initializeApp({
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5",
+  storageBucket: "dasorte-66ec5.firebasestorage.app",
+  messagingSenderId: "606389335961",
+  appId: "1:606389335961:web:cf9df8efef813587684508"
+});
+const db = firebase.firestore();
+
+// ================= VARIÁVEIS =================
+let dadosPDF = [];
+let resumoVend = {};
+let resumoBloc = {};
+let resumoGeral = { vendido:0, recebido:0, apurado:0 };
+
+// ================= VENDEDORES =================
+async function carregarVendedores() {
+  const select = document.getElementById("vendedorSelect");
+  select.innerHTML = "<option value='todos'>Todos os vendedores</option>";
+
+  const snap = await db.collection("vendedores").get();
+  snap.forEach(doc => {
+    const opt = document.createElement("option");
+    opt.value = doc.id;
+    opt.textContent = doc.data().nome;
+    select.appendChild(opt);
+  });
+}
+
+// ================= CONSULTA =================
+async function consultar() {
+  document.getElementById("tabelaVendas").innerHTML = "";
+  document.getElementById("resumoVendedor").innerHTML = "";
+  document.getElementById("resumoBloco").innerHTML = "";
+
+  dadosPDF = [];
+  resumoVend = {};
+  resumoBloc = {};
+  resumoGeral = { vendido:0, recebido:0, apurado:0 };
+
+  const vendedorSel = vendedorSelect.value;
+  const inicio = dataInicio.value;
+  const fim = dataFim.value;
+
+  let vendedores = [];
+
+  if (vendedorSel === "todos") {
+    const snap = await db.collection("vendedores").get();
+    snap.forEach(d => vendedores.push({ id:d.id, nome:d.data().nome }));
+  } else {
+    const d = await db.collection("vendedores").doc(vendedorSel).get();
+    vendedores.push({ id:d.id, nome:d.data().nome });
+  }
+
+  for (const v of vendedores) {
+    const vendasSnap = await db.collection("vendedores").doc(v.id).collection("vendas").get();
+
+    vendasSnap.forEach(doc => {
+      const venda = doc.data();
+      if (inicio && venda.data < inicio) return;
+      if (fim && venda.data > fim) return;
+
+      resumoGeral.vendido += venda.vendido || 0;
+      resumoGeral.recebido += venda.recebido || 0;
+      resumoGeral.apurado += venda.apurado || 0;
+
+      resumoVend[v.nome] = (resumoVend[v.nome] || 0) + (venda.apurado || 0);
+      resumoBloc[venda.bloco] = (resumoBloc[venda.bloco] || 0) + (venda.apurado || 0);
+
+      dadosPDF.push([
+        v.nome,
+        venda.data,
+        venda.bloco,
+        venda.vendido,
+        venda.recebido,
+        venda.apurado
+      ]);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${v.nome}</td>
+        <td>${venda.data}</td>
+        <td>${venda.bloco}</td>
+        <td>${venda.vendido}</td>
+        <td>${venda.recebido}</td>
+        <td>${venda.apurado}</td>`;
+      tabelaVendas.appendChild(tr);
+    });
+  }
+
+  resumoGeralDiv();
+  resumoVendedorDiv();
+  resumoBlocoDiv();
+}
+
+// ================= RESUMOS =================
+function resumoGeralDiv() {
+  resumoGeralDiv = document.getElementById("resumoGeral");
+  resumoGeralDiv.innerHTML = `
+    Total Vendido: R$ ${resumoGeral.vendido}<br>
+    Total Recebido: R$ ${resumoGeral.recebido}<br>
+    Total Apurado: R$ ${resumoGeral.apurado}
+  `;
+}
+
+function resumoVendedorDiv() {
+  for (let v in resumoVend) {
+    resumoVendedor.innerHTML += `<tr><td>${v}</td><td>R$ ${resumoVend[v]}</td></tr>`;
+  }
+}
+
+function resumoBlocoDiv() {
+  for (let b in resumoBloc) {
+    resumoBloco.innerHTML += `<tr><td>${b}</td><td>R$ ${resumoBloc[b]}</td></tr>`;
+  }
+}
+
+// ================= PDF =================
+function gerarPDF() {
+  const pdf = new jsPDF();
+  pdf.text("Relatório Geral de Vendas", 14, 15);
+
+  pdf.autoTable({
+    startY: 20,
+    head: [["Vendedor","Data","Bloco","Vendido","Recebido","Apurado"]],
+    body: dadosPDF
+  });
+
+  let y = pdf.lastAutoTable.finalY + 10;
+  pdf.text(`Total Apurado: R$ ${resumoGeral.apurado}`, 14, y);
+
+  pdf.save("relatorio_vendas.pdf");
+}
+
+// ================= INIT =================
+carregarVendedores();
+consultar();
+</script>
+
+</body>
+</html>

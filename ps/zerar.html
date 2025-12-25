@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Zerar Vendas - Firestore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 30px;
+}
+.box {
+  max-width: 500px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  text-align: center;
+}
+button {
+  padding: 10px 20px;
+  background: red;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: darkred;
+}
+#status {
+  margin-top: 15px;
+  font-weight: bold;
+}
+.alerta {
+  color: #b30000;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>⚠️ Zerar Dados de Vendas</h2>
+
+  <p class="alerta">
+    Esta ação irá <strong>ZERAR todos os valores</strong> das vendas do vendedor.<br>
+    Esta ação <strong>NÃO pode ser desfeita</strong>.
+  </p>
+
+  <button onclick="zerarVendas()">ZERAR VENDAS</button>
+
+  <div id="status"></div>
+</div>
+
+<script>
+// ================= FIREBASE =================
+firebase.initializeApp({
+  apiKey: "AIzaSyAdwrOqN4-VQsiBByk4FVG-cDvfrR8ZYac",
+  authDomain: "dasorte-66ec5.firebaseapp.com",
+  projectId: "dasorte-66ec5"
+});
+
+const db = firebase.firestore();
+
+// ID FIXO DO VENDEDOR
+const VENDEDOR_ID = "TOhFJqgLUn7Wigkmvaga";
+
+// ================= ZERAR =================
+async function zerarVendas() {
+  if (!confirm("TEM CERTEZA que deseja zerar TODAS as vendas?")) return;
+
+  const status = document.getElementById('status');
+  status.style.color = 'black';
+  status.innerText = "Processando...";
+
+  try {
+    const snap = await db
+      .collection("vendedores")
+      .doc(VENDEDOR_ID)
+      .collection("vendas")
+      .get();
+
+    if (snap.empty) {
+      status.innerText = "Nenhuma venda encontrada.";
+      return;
+    }
+
+    const batch = db.batch();
+
+    snap.forEach(doc => {
+      batch.update(doc.ref, {
+        anterior: 0,
+        apurado: 0,
+        devendo: 0,
+        devolvido: 0,
+        final: 0,
+        pago: 0,
+        recebido: 0,
+        vendido: 0
+      });
+    });
+
+    await batch.commit();
+
+    status.style.color = "green";
+    status.innerText = "✅ Todas as vendas foram zeradas com sucesso!";
+  } catch (e) {
+    console.error(e);
+    status.style.color = "red";
+    status.innerText = "❌ Erro ao zerar vendas.";
+  }
+}
+</script>
+
+</body>
+</html>
