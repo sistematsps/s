@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Vendedores</title>
+
+<style>
+body {
+  background: #b30000;
+  margin: 0;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 780px;
+  min-width: 250px;
+  margin: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+}
+
+thead td {
+  background: #fff;
+  color: #b30000;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #ffd700;
+}
+
+tbody tr {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: 0.2s;
+}
+
+tbody tr:hover {
+  transform: scale(1.02);
+}
+
+tbody td {
+  padding: 15px;
+  border-top: 3px solid #ffd700;
+  border-bottom: 3px solid #ffd700;
+  vertical-align: middle;
+}
+
+tbody td:first-child {
+  border-left: 3px solid #ffd700;
+  border-radius: 12px 0 0 12px;
+  width: 40%;
+  text-align: center;
+}
+
+tbody td:last-child {
+  border-right: 3px solid #ffd700;
+  border-radius: 0 12px 12px 0;
+  text-align: center;
+}
+
+.vendedor-img {
+  width: 120px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #b30000;
+}
+
+.btn-comprar {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #25d366;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.btn-comprar:hover {
+  background: #1ebd5a;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<table>
+
+<thead>
+<tr>
+  <td colspan="2">ESCOLHA UM DOS NOSSOS VENDEDORES E COMPRE SUA CARTELA</td>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+  <td>
+    <img src="vendedor/Antonia.jpg" alt="Antonia" class="vendedor-img"><br>
+    <strong>Antônia</strong>
+  </td>
+  <td>
+    <a class="btn-comprar" href="https://wa.me/5588982355586" target="_blank">
+      Comprar no WhatsApp
+    </a>
+  </td>
+</tr>
+
+<tr>
+  <td>Vendedor 02</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+
+<tr>
+  <td>Vendedor 03</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+<tr>
+  <td>Vendedor 03</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+<tr>
+  <td>Vendedor 03</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+<tr>
+  <td>Vendedor 03</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+<tr>
+  <td>Vendedor 03</td>
+  <td><a class="btn-comprar" href="#">Comprar</a></td>
+</tr>
+
+</tbody>
+</table>
+</div>
+</body>
+</html>
