@@ -1,0 +1,99 @@
+sistema a ser construido
+
+
+o proximo sistema a ser construido tera as seguintes especificacoes
+
+pagina index, onde ficara a pagina de login, com usuario programado
+
+painel usuario. com função usuario logado e com nivel de acesso diferenciado
+
+* cadastro
+* historico de distribuição
+* relatorio de distribuição
+* historico de vendas
+* relatorio de vendas
+* relatorio final
+* despesas
+* caixa
+* relatorio de recebimentos
+* devedores
+* repasses
+* relatorio geral
+
+===============================================
+na pagina index sera o login. html, nele iremos
+usar usuario e senha fixos
+
+pagina painel, ao logar com a senha, mostrara
+apenas os dados referentes a aquele login. ou seja, 
+senha do master abre o painel com todos os botoes para todas as paginas
+
+ao logar com a senha normal, ficará disponivel apenas os relatorios e a pagina do caixa
+
+pagina cadastro. ira cadastrar os usuarios com: nome, cotação.
+pagina historico de distribuição, ira carregar a lista clicável dos vendedores cadastrados na pagina cadastro,e ao clicar, abrirá um modal para inserir o historico de recebimento com os seguintes campos; DATA DO RECEBIMENTO, BLOCO, ANTERIOR, FINAL. TOTAL RECEBIDO.
+
+ONDE, DATA DE RECEBIMENTO, BLOCO, ANTERIOR E FINAL SERAO INSERIDOS MANUALMENTE, TOTAL RECEBIDO = FINAL -  ANTERIOR
+ABAIXO DESTA TABELA, APARECERAO AS SOMAS DO TOTAL RECEBIDO
+
+A PAGINA RELATORIO DE DISTRIBUIÇÃO, IRA BUSCAR NA PAGINA HISTORICO DE DISTRIBUIÇÃO O NOME DO VENDEDOR, TOTAL RECEBIDO PELO MESMO, SE O VENDEDOR TIVER RECEBIDO POR MAIS DE UMA VEZ, MOSTRAR O TOTAL SOMADO DO QUE ELE RECEBEU. TIPO, JUNTAR OS TOTAIS RECEBIDOS POR CADA VENDEDOR E SOMAR TUDO, APRESENTANDO O TOTAL FINAL NA FRENTE DO NOME DO VENDEDOR. EXEMPLO: VENDEDOR JOSE, RECEBU 1000 E DEPOIS MAIS 300 SOMAR TUDO E APRESENTAR O TOTAL RECEBIDO COMO 1300.
+
+A PAGINA HISTORICO DE VENDAS, IRA FAZER O SEGUINTE, coletará o nome do vendedor, o total recebido pelo mesmo, e o total devolvido, por padrao fica igual ao recebido,mas será possivel editar e salvar o novo valor. entao teremos la os seguintes campos:
+lista clicável dos vendedores, ao clicar sera possivel editar as informações. data, recebido, devolvido, vendido, apurado, pago, devendo.
+onde os campos: data, recebido, devolvido e pago serao alterados manualmente. os campos: 
+vendido = recebido - devolvido. 
+apurado = vendido * cotação do vendedor
+devendo = apurado - pago
+
+botao salvar venda, editar venda, excluir venda e excluir vendedor.
+
+pagina relatorio de vendas deve conter um filtro por data inial e final, e um filtro por vendedor.
+deve apresentar nome do vendedor, vendido, apurado, pago e devendo, dentro de uma tabela com a soma total desses dados direto da pagina historico de vendas,
+
+botao consultar para aplicar os filtros e botao gerar pdf para impressao do pdf com os dados.
+
+
+a pagina relatorio final deve conter todos os resumos de todos os vendedores e todas as suas vendas
+ser capaz de exportar em pdf 
+
+a pagina despesas ira cadastrar as despesas correntes do sorteios.
+deve ter o campo filtro para exibir as despesas de determinadas datas, inicial e final, imputs para cadastrar as despesas como
+data, total da despesa, descrição da despesa, botao salvar despesa, botao excluir despesa.
+
+a pagina caixa deve ter as seguints informações
+no canto superior teremos
+
+APURADO:
+DESPESAS:
+TOTAL FINAL:
+FILTRO POR PERIODO INICIAL E FINAL
+<HR>
+HISTORICO DE VENDAS
+<HR>
+HISTORICO DE DESPESAS
+<HR>
+BOTAO PARA GERAR PDF DO CAIXA
+
+PAGINA RELATORIO DE RECEBIMENTOS, NESTA PAGINA, IREMOS CREDITAR OS RECEBIMENTOS DOS VALORES 
+DEVE APARECER: DATA, FORMA DE RECEBIMENTO, VALOR, RESPONSAVEL PELO RECEBIMENTO E QUEM PAGOU
+NO CAMPO, FORMA DE RECEBIMENTO, TERÁ UM SELECT COM AS OPÇÕES, PIX, EXPECIE. NO CAMPO VALOR, DEVE SER COLOCADO O VALOR RECEBIDO,
+NO CAMPO RESPONSAVEL PELO RECEBIMENTO, COLOCAR O NOME DE QUEM TA RECEBENDO. E NO CAMPO QUEM PAGOU, O NOME DO PAGADOR
+
+DEVE APARECER UMA PLANILHA COM O RECEBIMENTO DE CADA PESSOA QUE PAGOU E SEU RECEBEDOR, E A SOMA DO TOTAL RECEBIDO POR CADA RECEBEDOR.
+
+GERAR UM RELATORIO COM O NOME DO RECEBEDOR, O TOTAL RECEBIDO.
+E DEVE TER UM IFRAME COM PASTA PARA GOOGLE DRIVE, ONDE FICARAO OS RECIBOS DE COMPROVAÇÃO.
+
+A PAGINA DEVEDORES IRA COLETAR O NOME DE QUEM AINDA NAO PAGOU O QUE DEVE E FAZER UMA LISTA DE NOMES E O TOTAL QUE CADA UM DEVE
+DEVE APRESENTAR UM INPUT PARA LANÇAR VALORES RECEBIDOS, ESTES VALORES LANÇADOS DEVERAO SER DESCONTADO NO TOTAL DEVIDO PELO VENDEDOR DIRETO NO HISTORICO DE VENDAS NO CAMPO PAGOU, E OS VALORES DEVIDOS DEVERA SER BUSCADO DIRETAMENTE NO CAMPO DEVENDO DO HISTORICO DE VENDAS.
+
+REPASSES. DEVE TER APENAS UM FILTRO POR RECEBEDOR, E ABAIXO DEVE TER UMA TABELA COM AS SEGUINTES INFORMACOES.
+DATA, NOME DO RECEBEDOR, VALOR RECEBIDO, FORMA DE RECEBIMENTO, QUEM REPASSOU.
+DEVE TER UM BOTAO PARA SALVAR LANCAMENTOS E POR FIM UM BOTAO PARA GERAR RELATORIO DA PAGINA.
+
+
+A PAGINA RELATORIO FINAL DEVE MOSTRAR TODO O HISTORICO DE VENDAS, O TOTAL APURADO E O TOTAL PAGO E O TOTAL DEVENDO, DEVE MOSTRAR AINDA AS DESPESAS E FAZER UM RESUMO FINAL ENTRE APURADO E AS DESPESAS E DAR O TOTAL FINAL SUBTRAINDO AS DESPESAS DIRETO DO APURADO.
+
+
+TODOS OS DADOS DEVEM FUNCIONAR DIRETAMENTE INTEGRADOS COM O LOCALSTORAGE
+
