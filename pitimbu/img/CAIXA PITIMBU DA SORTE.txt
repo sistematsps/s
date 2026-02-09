@@ -1,0 +1,24 @@
+____________________________________
+=         GRUPO DA SORTE           =
+=             CAIXA                =
+=        PITIMBU DA SORTE          =
+====================================
+
+____________ ENTRADAS  _____________
+06/02 | APURADO         |R$   943,00
+08/02 | APURADO         |R$ 1.487,75
+====================================
+TOTAL APURADO: |R$  2.430,75
+
+============= DESPESAS =============
+30/01 | CARTELAS ANTES |R$    567,00
+06/02 | PREMIACAO      |R$  3.000,00
+07/02 | PEDAGIO        |R$    250,00
+08/02 | PREMIACAO      |R$  1.000,00
+====================================
+TOTAL DAS DESPESAS     |R$  4.817,00
+
+=========== CONSOLIDADO  ===========
+TOTAL DE ENTRADAS   | R$    2.430,75
+TOTAL DE SAIDAS     | R$    4.817,00
+SALDO FINAL         | R$  - 2.386,25
