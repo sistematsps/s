@@ -3,709 +3,791 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Controle de Colaboradores</title>
+<title>Controle de Colaboradores</title>
 
 
-    <!-- =====================================================
-         ESTILO
-    ====================================================== -->
+<style>
 
-    <style>
+/* =========================================================
+   RESET
+========================================================= */
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
 
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+body {
 
-            background: #f1f3f6;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-            color: #222;
+    background: #f1f3f6;
 
-            min-height: 100vh;
-        }
+    color: #222;
 
+    min-height: 100vh;
+}
 
-        .container {
 
-            width: 95%;
+.container {
 
-            max-width: 1200px;
+    width: 95%;
 
-            margin: auto;
+    max-width: 1200px;
 
-            padding:
-                20px
-                0
-                50px;
-        }
+    margin: auto;
 
+    padding:
+        20px 0 50px;
+}
 
-        header {
 
-            background:
-                #1f2937;
+/* =========================================================
+   CABEÇALHO
+========================================================= */
 
-            color: white;
+header {
 
-            padding: 25px;
+    background: #1f2937;
 
-            border-radius: 15px;
+    color: white;
 
-            margin-bottom: 20px;
+    padding: 25px;
 
-            text-align: center;
+    border-radius: 15px;
 
-            box-shadow:
-                0 5px 15px
-                rgba(0,0,0,0.12);
-        }
+    margin-bottom: 20px;
 
+    text-align: center;
 
-        header h1 {
+    box-shadow:
+        0 5px 15px
+        rgba(0,0,0,0.12);
+}
 
-            font-size: 28px;
 
-            margin-bottom: 8px;
-        }
+header h1 {
 
+    font-size: 28px;
 
-        header p {
+    margin-bottom: 8px;
+}
 
-            opacity: 0.8;
 
-            font-size: 14px;
-        }
+header p {
 
+    opacity: .8;
 
-        .card {
+    font-size: 14px;
+}
 
-            background: white;
 
-            border-radius: 15px;
+/* =========================================================
+   CARDS
+========================================================= */
 
-            padding: 20px;
+.card {
 
-            margin-bottom: 20px;
+    background: white;
 
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,0.08);
-        }
+    border-radius: 15px;
 
+    padding: 20px;
 
-        .card h2 {
+    margin-bottom: 20px;
 
-            margin-bottom: 15px;
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+}
 
-            color: #1f2937;
-        }
 
+.card h2 {
 
-        .cadastro {
+    margin-bottom: 15px;
 
-            display: flex;
+    color: #1f2937;
+}
 
-            gap: 10px;
-        }
 
+/* =========================================================
+   INPUTS
+========================================================= */
 
-        .cadastro input {
+input,
+select {
 
-            flex: 1;
-        }
+    width: 100%;
 
+    padding:
+        11px 12px;
 
-        input {
+    border:
+        1px solid #d1d5db;
 
-            width: 100%;
+    border-radius: 8px;
 
-            padding:
-                11px
-                12px;
+    font-size: 15px;
 
-            border:
-                1px solid
-                #d1d5db;
+    outline: none;
 
-            border-radius: 8px;
+    background: white;
+}
 
-            font-size: 15px;
 
-            outline: none;
-        }
+input:focus,
+select:focus {
 
+    border-color: #2563eb;
 
-        input:focus {
+    box-shadow:
+        0 0 0 2px
+        rgba(37,99,235,.12);
+}
 
-            border-color:
-                #2563eb;
 
-            box-shadow:
-                0 0 0 2px
-                rgba(37,99,235,0.12);
-        }
+/* =========================================================
+   BOTÕES
+========================================================= */
 
+button {
 
-        button {
+    border: none;
 
-            border: none;
+    border-radius: 8px;
 
-            border-radius: 8px;
+    padding:
+        11px 16px;
 
-            padding:
-                11px
-                16px;
+    cursor: pointer;
 
-            cursor: pointer;
+    font-size: 14px;
 
-            font-size: 14px;
+    font-weight: bold;
 
-            font-weight: bold;
+    transition: .2s;
+}
 
-            transition:
-                0.2s;
-        }
 
+button:hover {
 
-        button:hover {
+    transform:
+        translateY(-1px);
 
-            transform:
-                translateY(-1px);
+    opacity: .92;
+}
 
-            opacity: 0.92;
-        }
 
+.btn-cadastrar,
+.btn-salvar {
 
-        .btn-cadastrar {
+    background: #2563eb;
 
-            background:
-                #2563eb;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-adicionar {
 
-        .btn-adicionar {
+    background: #16a34a;
 
-            background:
-                #16a34a;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-excluir {
 
-        .btn-salvar {
+    background: #dc2626;
 
-            background:
-                #2563eb;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-pdf {
 
-        .btn-excluir {
+    background: #7c3aed;
 
-            background:
-                #dc2626;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-voltar {
 
-        .btn-pdf {
+    background: #6b7280;
 
-            background:
-                #7c3aed;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-editar {
 
-        .btn-voltar {
+    background: #f59e0b;
 
-            background:
-                #6b7280;
+    color: white;
+}
 
-            color: white;
-        }
 
+.btn-cancelar {
 
-        .btn-editar {
+    background: #6b7280;
 
-            background:
-                #f59e0b;
+    color: white;
+}
 
-            color: white;
-        }
 
+/* =========================================================
+   CADASTRO
+========================================================= */
 
-        .btn-cancelar {
+.cadastro {
 
-            background:
-                #6b7280;
+    display: flex;
 
-            color: white;
-        }
+    gap: 10px;
+}
 
 
-        .colaboradores {
+.cadastro input {
 
-            display: grid;
+    flex: 1;
+}
 
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(250px, 1fr)
-                );
 
-            gap: 15px;
-        }
+/* =========================================================
+   STATUS FIRESTORE
+========================================================= */
 
+.status-firestore {
 
-        .colaborador {
+    margin-bottom: 15px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #1d4ed8
-                );
+    padding: 10px;
 
-            color: white;
+    border-radius: 8px;
 
-            padding: 20px;
+    font-size: 13px;
 
-            border-radius: 14px;
+    background: #dcfce7;
 
-            box-shadow:
-                0 4px 12px
-                rgba(37,99,235,0.25);
+    color: #166534;
+}
 
-            position: relative;
-        }
 
+.status-erro {
 
-        .colaborador-conteudo {
+    background: #fee2e2;
 
-            cursor: pointer;
+    color: #991b1b;
+}
 
-            margin-bottom: 15px;
-        }
 
+/* =========================================================
+   COLABORADORES
+========================================================= */
 
-        .colaborador-conteudo:hover {
+.colaboradores {
 
-            opacity: 0.9;
-        }
+    display: grid;
 
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(250px,1fr)
+        );
 
-        .colaborador h3 {
+    gap: 15px;
+}
 
-            font-size: 18px;
 
-            margin-bottom: 8px;
-        }
+.colaborador {
 
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
 
-        .colaborador small {
+    color: white;
 
-            opacity: 0.8;
-        }
+    padding: 20px;
 
+    border-radius: 14px;
 
-        .acoes-colaborador {
+    box-shadow:
+        0 4px 12px
+        rgba(37,99,235,.25);
+}
 
-            display: flex;
 
-            gap: 7px;
+.colaborador-conteudo {
 
-            flex-wrap: wrap;
-        }
+    cursor: pointer;
 
+    margin-bottom: 15px;
+}
 
-        .acoes-colaborador button {
 
-            flex: 1;
+.colaborador-conteudo:hover {
 
-            min-width: 90px;
+    opacity: .9;
+}
 
-            padding:
-                8px
-                10px;
 
-            font-size: 12px;
-        }
+.colaborador h3 {
 
+    font-size: 18px;
 
-        .area-edicao-nome {
+    margin-bottom: 8px;
+}
 
-            display: none;
 
-            margin-top: 12px;
-        }
+.colaborador small {
 
+    opacity: .8;
+}
 
-        .area-edicao-nome.ativa {
 
-            display: block;
-        }
+.acoes-colaborador {
 
+    display: flex;
 
-        .area-edicao-nome input {
+    gap: 7px;
 
-            margin-bottom: 8px;
-        }
+    flex-wrap: wrap;
+}
 
 
-        .botoes-edicao {
+.acoes-colaborador button {
 
-            display: flex;
+    flex: 1;
 
-            gap: 7px;
-        }
+    min-width: 90px;
 
+    padding:
+        8px 10px;
 
-        .botoes-edicao button {
+    font-size: 12px;
+}
 
-            flex: 1;
 
-            padding:
-                8px
-                10px;
-        }
+/* =========================================================
+   EDIÇÃO DO NOME
+========================================================= */
 
+.area-edicao-nome {
 
-        .tabela-container {
+    display: none;
 
-            width: 100%;
+    margin-top: 12px;
+}
 
-            overflow-x: auto;
-        }
 
+.area-edicao-nome.ativa {
 
-        table {
+    display: block;
+}
 
-            width: 100%;
 
-            border-collapse:
-                collapse;
+.area-edicao-nome input {
 
-            min-width: 800px;
-        }
+    margin-bottom: 8px;
+}
 
 
-        th {
+.botoes-edicao {
 
-            background:
-                #1f2937;
+    display: flex;
 
-            color: white;
+    gap: 7px;
+}
 
-            padding:
-                11px
-                8px;
 
-            text-align: center;
+.botoes-edicao button {
 
-            font-size: 13px;
-        }
+    flex: 1;
 
+    padding:
+        8px 10px;
+}
 
-        td {
 
-            padding: 7px;
+/* =========================================================
+   TABELAS
+========================================================= */
 
-            border-bottom:
-                1px solid
-                #e5e7eb;
+.tabela-container {
 
-            text-align: center;
-        }
+    width: 100%;
 
+    overflow-x: auto;
+}
 
-        td input {
 
-            min-width: 100px;
+table {
 
-            text-align: center;
-        }
+    width: 100%;
 
+    border-collapse: collapse;
 
-        .vendido {
+    min-width: 800px;
+}
 
-            font-weight: bold;
 
-            color:
-                #16a34a;
+th {
 
-            background:
-                #f0fdf4;
+    background: #1f2937;
 
-            border-radius: 6px;
+    color: white;
 
-            padding: 10px;
+    padding:
+        11px 8px;
 
-            display: inline-block;
+    text-align: center;
 
-            min-width: 80px;
-        }
+    font-size: 13px;
+}
 
 
-        .acoes {
+td {
 
-            display: flex;
+    padding: 7px;
 
-            gap: 10px;
+    border-bottom:
+        1px solid #e5e7eb;
 
-            flex-wrap: wrap;
+    text-align: center;
+}
 
-            margin-top: 15px;
-        }
 
+td input {
 
-        .linha-acoes {
+    min-width: 100px;
 
-            display: flex;
+    text-align: center;
+}
 
-            justify-content:
-                space-between;
 
-            align-items: center;
+.vendido {
 
-            gap: 10px;
+    font-weight: bold;
 
-            margin-bottom: 15px;
-        }
+    color: #16a34a;
 
+    background: #f0fdf4;
 
-        .linha-acoes h2 {
+    border-radius: 6px;
 
-            margin: 0;
-        }
+    padding: 10px;
 
+    display: inline-block;
 
-        .mensagem {
+    min-width: 80px;
+}
 
-            padding: 12px;
 
-            border-radius: 8px;
+/* =========================================================
+   AÇÕES
+========================================================= */
 
-            margin-top: 10px;
+.acoes {
 
-            display: none;
+    display: flex;
 
-            font-size: 14px;
-        }
+    gap: 10px;
 
+    flex-wrap: wrap;
 
-        .sucesso {
+    margin-top: 15px;
+}
 
-            background:
-                #dcfce7;
 
-            color:
-                #166534;
-        }
+.linha-acoes {
 
+    display: flex;
 
-        .erro {
+    justify-content: space-between;
 
-            background:
-                #fee2e2;
+    align-items: center;
 
-            color:
-                #991b1b;
-        }
+    gap: 10px;
 
+    margin-bottom: 15px;
+}
 
-        .aviso {
 
-            background:
-                #fef3c7;
+.linha-acoes h2 {
 
-            color:
-                #92400e;
-        }
+    margin: 0;
+}
 
 
-        .vazio {
+/* =========================================================
+   FILTROS DO RELATÓRIO
+========================================================= */
 
-            text-align: center;
+.filtros-relatorio {
 
-            padding: 25px;
+    display: grid;
 
-            color:
-                #6b7280;
-        }
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px,1fr)
+        );
 
+    gap: 12px;
 
-        .relatorio-colaborador {
+    background: #f8fafc;
 
-            margin-bottom: 30px;
-        }
+    border:
+        1px solid #e5e7eb;
 
+    padding: 15px;
 
-        .relatorio-colaborador h3 {
+    border-radius: 10px;
 
-            background:
-                #e5e7eb;
+    margin-bottom: 15px;
+}
 
-            padding: 12px;
 
-            border-radius:
-                8px
-                8px
-                0
-                0;
-        }
+.filtro {
 
+    display: flex;
 
-        .relatorio-tabela {
+    flex-direction: column;
 
-            min-width: 650px;
-        }
+    gap: 6px;
+}
 
 
-        .total-row {
+.filtro label {
 
-            background:
-                #f3f4f6;
+    font-size: 13px;
 
-            font-weight: bold;
-        }
+    font-weight: bold;
 
+    color: #374151;
+}
 
-        .escondido {
 
-            display: none !important;
-        }
+.botoes-filtro {
 
+    display: flex;
 
-        .status-firestore {
+    align-items: end;
 
-            margin-bottom: 15px;
+    gap: 8px;
+}
 
-            padding: 10px;
 
-            border-radius: 8px;
+.botoes-filtro button {
 
-            font-size: 13px;
+    flex: 1;
 
-            background:
-                #dcfce7;
+    height: 42px;
+}
 
-            color:
-                #166534;
-        }
 
+/* =========================================================
+   RELATÓRIO
+========================================================= */
 
-        footer {
+.relatorio-colaborador {
 
-            text-align: center;
+    margin-bottom: 30px;
+}
 
-            color:
-                #6b7280;
 
-            font-size: 13px;
+.relatorio-colaborador h3 {
 
-            margin-top: 30px;
-        }
+    background: #e5e7eb;
 
+    padding: 12px;
 
-        @media (max-width: 600px) {
+    border-radius:
+        8px 8px 0 0;
+}
 
-            .container {
 
-                width: 94%;
-            }
+.relatorio-tabela {
 
+    min-width: 650px;
+}
 
-            header h1 {
 
-                font-size: 22px;
-            }
+.total-row {
 
+    background: #f3f4f6;
 
-            .cadastro {
+    font-weight: bold;
+}
 
-                flex-direction:
-                    column;
-            }
 
+/* =========================================================
+   MENSAGENS
+========================================================= */
 
-            .linha-acoes {
+.mensagem {
 
-                flex-direction:
-                    column;
+    padding: 12px;
 
-                align-items:
-                    stretch;
-            }
+    border-radius: 8px;
 
+    margin-top: 10px;
 
-            .acoes button {
+    display: none;
 
-                width: 100%;
-            }
+    font-size: 14px;
+}
 
-        }
 
+.sucesso {
 
-        @media print {
+    background: #dcfce7;
 
-            body {
+    color: #166534;
+}
 
-                background:
-                    white;
-            }
 
+.erro {
 
-            header,
-            #areaCadastro,
-            #areaColaboradores,
-            #areaEdicao,
-            .acoes,
-            footer {
+    background: #fee2e2;
 
-                display:
-                    none !important;
-            }
+    color: #991b1b;
+}
 
 
-            #areaRelatorio {
+.aviso {
 
-                display:
-                    block !important;
-            }
+    background: #fef3c7;
 
+    color: #92400e;
+}
 
-            .card {
 
-                box-shadow:
-                    none;
+.vazio {
 
-                padding:
-                    0;
-            }
+    text-align: center;
 
-        }
+    padding: 25px;
 
-    </style>
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   UTILITÁRIO
+========================================================= */
+
+.escondido {
+
+    display: none !important;
+}
+
+
+footer {
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-top: 30px;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .container {
+
+        width: 94%;
+    }
+
+
+    header h1 {
+
+        font-size: 22px;
+    }
+
+
+    .cadastro {
+
+        flex-direction: column;
+    }
+
+
+    .linha-acoes {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .acoes button {
+
+        width: 100%;
+    }
+
+
+    .botoes-filtro {
+
+        align-items: stretch;
+    }
+
+}
+
+
+/* =========================================================
+   IMPRESSÃO
+========================================================= */
+
+@media print {
+
+    body {
+
+        background: white;
+    }
+
+
+    header,
+    #areaCadastro,
+    #areaColaboradores,
+    #areaEdicao,
+    .filtros-relatorio,
+    .acoes,
+    footer,
+    #statusFirestore {
+
+        display: none !important;
+    }
+
+
+    #areaRelatorio {
+
+        display: block !important;
+
+        box-shadow: none;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -716,259 +798,332 @@
 <div class="container">
 
 
-    <!-- =====================================================
-         CABEÇALHO
-    ====================================================== -->
+<!-- =====================================================
+     CABEÇALHO
+====================================================== -->
 
-    <header>
+<header>
 
-        <h1>
-            Controle de Colaboradores
-        </h1>
+    <h1>
+        Controle de Colaboradores
+    </h1>
 
-        <p>
-            Cadastro, lançamentos e relatório
-        </p>
+    <p>
+        Cadastro, lançamentos e relatório
+    </p>
 
-    </header>
+</header>
 
 
-    <!-- =====================================================
-         STATUS FIRESTORE
-    ====================================================== -->
+<!-- =====================================================
+     STATUS
+====================================================== -->
 
-    <div
-        id="statusFirestore"
-        class="status-firestore"
-    >
+<div
+    id="statusFirestore"
+    class="status-firestore"
+>
 
-        Conectando ao Firestore...
+    Conectando ao Firestore...
+
+</div>
+
+
+<!-- =====================================================
+     CADASTRO
+====================================================== -->
+
+<section
+    class="card"
+    id="areaCadastro"
+>
+
+    <h2>
+        Cadastrar Colaborador
+    </h2>
+
+
+    <div class="cadastro">
+
+        <input
+            type="text"
+            id="nomeColaborador"
+            placeholder="Digite o nome do colaborador"
+            autocomplete="off"
+        >
+
+
+        <button
+            class="btn-cadastrar"
+            onclick="cadastrarColaborador()"
+        >
+
+            + Cadastrar
+
+        </button>
 
     </div>
 
 
-    <!-- =====================================================
-         CADASTRO
-    ====================================================== -->
+    <div
+        id="mensagemCadastro"
+        class="mensagem"
+    ></div>
 
-    <section
-        class="card"
-        id="areaCadastro"
-    >
+</section>
 
-        <h2>
-            Cadastrar Colaborador
+
+<!-- =====================================================
+     LISTA DE COLABORADORES
+====================================================== -->
+
+<section
+    class="card"
+    id="areaColaboradores"
+>
+
+    <h2>
+        Colaboradores
+    </h2>
+
+
+    <div
+        id="listaColaboradores"
+        class="colaboradores"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     LANÇAMENTOS
+====================================================== -->
+
+<section
+    class="card escondido"
+    id="areaEdicao"
+>
+
+    <div class="linha-acoes">
+
+        <h2 id="tituloColaborador">
+            Colaborador
         </h2>
 
 
-        <div class="cadastro">
+        <button
+            class="btn-voltar"
+            onclick="voltarParaColaboradores()"
+        >
+
+            ← Voltar
+
+        </button>
+
+    </div>
+
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>DATA</th>
+
+                    <th>INICIAL</th>
+
+                    <th>FINAL</th>
+
+                    <th>TOTAL</th>
+
+                    <th>DEVOLVIDO</th>
+
+                    <th>VENDIDO</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="tabelaLancamentos"
+            ></tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="acoes">
+
+        <button
+            class="btn-adicionar"
+            onclick="adicionarLinha()"
+        >
+
+            + Adicionar Linha
+
+        </button>
+
+
+        <button
+            class="btn-salvar"
+            onclick="salvarInformacoes()"
+        >
+
+            💾 Salvar Informações
+
+        </button>
+
+
+        <button
+            class="btn-excluir"
+            onclick="excluirInformacao()"
+        >
+
+            🗑️ Excluir Informação
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="mensagemEdicao"
+        class="mensagem"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     RELATÓRIO
+====================================================== -->
+
+<section
+    class="card"
+    id="areaRelatorio"
+>
+
+    <div class="linha-acoes">
+
+        <h2>
+            Relatório
+        </h2>
+
+
+        <button
+            class="btn-pdf"
+            onclick="exportarPDF()"
+        >
+
+            📄 Exportar PDF
+
+        </button>
+
+    </div>
+
+
+    <!-- FILTROS -->
+
+    <div class="filtros-relatorio">
+
+
+        <div class="filtro">
+
+            <label>
+                Data inicial
+            </label>
 
             <input
-                type="text"
-                id="nomeColaborador"
-                placeholder="Digite o nome do colaborador"
-                autocomplete="off"
+                type="date"
+                id="filtroDataInicial"
             >
-
-
-            <button
-                class="btn-cadastrar"
-                onclick="cadastrarColaborador()"
-            >
-
-                + Cadastrar
-
-            </button>
 
         </div>
 
 
-        <div
-            id="mensagemCadastro"
-            class="mensagem"
-        ></div>
+        <div class="filtro">
 
-    </section>
+            <label>
+                Data final
+            </label>
 
+            <input
+                type="date"
+                id="filtroDataFinal"
+            >
 
-    <!-- =====================================================
-         LISTA
-    ====================================================== -->
-
-    <section
-        class="card"
-        id="areaColaboradores"
-    >
-
-        <h2>
-            Colaboradores
-        </h2>
+        </div>
 
 
-        <div
-            id="listaColaboradores"
-            class="colaboradores"
-        ></div>
+        <div class="filtro">
 
-    </section>
-
-
-    <!-- =====================================================
-         ÁREA DE LANÇAMENTOS
-    ====================================================== -->
-
-    <section
-        class="card escondido"
-        id="areaEdicao"
-    >
-
-        <div class="linha-acoes">
-
-            <h2 id="tituloColaborador">
+            <label>
                 Colaborador
-            </h2>
+            </label>
+
+            <select
+                id="filtroColaborador"
+            >
+
+                <option value="">
+                    Todos os colaboradores
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="botoes-filtro">
+
+            <button
+                class="btn-salvar"
+                onclick="aplicarFiltros()"
+            >
+
+                🔎 Filtrar
+
+            </button>
 
 
             <button
                 class="btn-voltar"
-                onclick="voltarParaColaboradores()"
+                onclick="limparFiltros()"
             >
 
-                ← Voltar
+                🔄 Limpar
 
             </button>
 
         </div>
 
-
-        <div class="tabela-container">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            DATA
-                        </th>
-
-                        <th>
-                            INICIAL
-                        </th>
-
-                        <th>
-                            FINAL
-                        </th>
-
-                        <th>
-                            TOTAL
-                        </th>
-
-                        <th>
-                            DEVOLVIDO
-                        </th>
-
-                        <th>
-                            VENDIDO
-                        </th>
-
-                    </tr>
-
-                </thead>
+    </div>
 
 
-                <tbody
-                    id="tabelaLancamentos"
-                ></tbody>
-
-            </table>
-
-        </div>
+    <div
+        id="mensagemFiltro"
+        class="mensagem"
+    ></div>
 
 
-        <div class="acoes">
+    <div
+        id="conteudoRelatorio"
+    ></div>
 
-            <button
-                class="btn-adicionar"
-                onclick="adicionarLinha()"
-            >
-
-                + Adicionar Linha
-
-            </button>
+</section>
 
 
-            <button
-                class="btn-salvar"
-                onclick="salvarInformacoes()"
-            >
+<footer>
 
-                💾 Salvar Informações
+    Controle de Colaboradores —
+    Dados armazenados no Firebase Firestore
 
-            </button>
-
-
-            <button
-                class="btn-excluir"
-                onclick="excluirInformacao()"
-            >
-
-                🗑️ Excluir Informação
-
-            </button>
-
-        </div>
-
-
-        <div
-            id="mensagemEdicao"
-            class="mensagem"
-        ></div>
-
-    </section>
-
-
-    <!-- =====================================================
-         RELATÓRIO
-    ====================================================== -->
-
-    <section
-        class="card"
-        id="areaRelatorio"
-    >
-
-        <div class="linha-acoes">
-
-            <h2>
-                Relatório
-            </h2>
-
-
-            <button
-                class="btn-pdf"
-                onclick="exportarPDF()"
-            >
-
-                📄 Exportar PDF
-
-            </button>
-
-        </div>
-
-
-        <div
-            id="conteudoRelatorio"
-        ></div>
-
-    </section>
-
-
-    <footer>
-
-        Dados armazenados no Firebase Firestore
-
-    </footer>
+</footer>
 
 
 </div>
@@ -976,46 +1131,40 @@
 
 <!-- =====================================================
      FIREBASE
-     ====================================================== -->
+====================================================== -->
 
 <script type="module">
 
-    import {
-        initializeApp
-    } from
-    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        doc,
-        updateDoc,
-        deleteDoc,
-        getDocs,
-        query,
-        orderBy,
-        serverTimestamp
-    } from
-    "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-    /*
-    ========================================================
-    CONFIGURAÇÃO DO SEU FIREBASE
-    ========================================================
+/* ========================================================
+   CONFIGURAÇÃO FIREBASE
 
-    SUBSTITUA OS VALORES ABAIXO PELOS DADOS
-    DO SEU PROJETO FIREBASE.
+   COLOQUE AQUI OS DADOS DO SEU PROJETO
+======================================================== */
 
-    Firebase Console:
-    Configurações do projeto
-    → Seus apps
-    → Configuração do SDK
 
-    ========================================================
-    */
+const firebaseConfig = {
 
     const firebaseConfig = {
   apiKey: "AIzaSyBrHB8Defu0DrkV8POU4lAuAxCal6fqHM4",
@@ -1026,103 +1175,82 @@
   appId: "1:956873424564:web:583c8405d288883d71e1e1"
 
 };
+};
 
 
-    /*
-    ========================================================
-    INICIALIZAR FIREBASE
-    ========================================================
-    */
+/* ========================================================
+   INICIALIZAÇÃO
+======================================================== */
 
-    let app;
+let app;
 
-    let db;
+let db;
 
 
-    try {
+try {
 
-        app =
-            initializeApp(
-                firebaseConfig
-            );
-
-
-        db =
-            getFirestore(
-                app
-            );
-
-
-        document.getElementById(
-            "statusFirestore"
-        ).textContent =
-            "✓ Firestore conectado";
-
-
-    } catch (erro) {
-
-        console.error(
-            erro
+    app =
+        initializeApp(
+            firebaseConfig
         );
 
 
-        document.getElementById(
-            "statusFirestore"
-        ).textContent =
-            "⚠️ Erro ao conectar ao Firestore";
+    db =
+        getFirestore(
+            app
+        );
 
-
-        document.getElementById(
-            "statusFirestore"
-        ).className =
-            "status-firestore aviso";
-
-    }
-
-
-    /*
-    ========================================================
-    DISPONIBILIZAR FUNÇÕES PARA O HTML
-    ========================================================
-    */
 
     window.db =
         db;
 
+
     window.firestoreFunctions = {
 
         collection,
-
         addDoc,
-
         doc,
-
         updateDoc,
-
         deleteDoc,
-
         getDocs,
-
-        query,
-
-        orderBy,
-
         serverTimestamp
 
     };
 
 
-    /*
-    ========================================================
-    INICIAR SISTEMA
-    ========================================================
-    */
+    document.getElementById(
+        "statusFirestore"
+    ).textContent =
+        "✓ Firestore conectado";
 
-    if (db) {
 
-        await carregarColaboradores();
+    await carregarColaboradores();
 
-    }
+
+}
+catch (erro) {
+
+    console.error(
+        erro
+    );
+
+
+    const status =
+        document.getElementById(
+            "statusFirestore"
+        );
+
+
+    status.textContent =
+        "⚠️ Erro ao conectar ao Firestore";
+
+
+    status.classList.add(
+        "status-erro"
+    );
+
+}
+
 
 </script>
 
@@ -1138,22 +1266,18 @@
 
 <script>
 
-/*
-============================================================
-VARIÁVEIS
-============================================================
-*/
+/* =========================================================
+   VARIÁVEIS
+========================================================= */
 
 let colaboradores = [];
 
 let colaboradorSelecionado = null;
 
 
-/*
-============================================================
-REFERÊNCIA FIRESTORE
-============================================================
-*/
+/* =========================================================
+   REFERÊNCIA DA COLEÇÃO
+========================================================= */
 
 function colecaoColaboradores() {
 
@@ -1165,11 +1289,9 @@ function colecaoColaboradores() {
 }
 
 
-/*
-============================================================
-CARREGAR COLABORADORES
-============================================================
-*/
+/* =========================================================
+   CARREGAR COLABORADORES
+========================================================= */
 
 async function carregarColaboradores() {
 
@@ -1193,7 +1315,7 @@ async function carregarColaboradores() {
                         documento.id,
 
                     nome:
-                        documento.data().nome,
+                        documento.data().nome || "",
 
                     registros:
                         []
@@ -1203,10 +1325,6 @@ async function carregarColaboradores() {
             }
         );
 
-
-        /*
-        Carregar registros de cada colaborador.
-        */
 
         for (
             const colaborador
@@ -1222,21 +1340,15 @@ async function carregarColaboradores() {
 
         mostrarColaboradores();
 
+        carregarFiltroColaboradores();
+
         gerarRelatorio();
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
-            "Erro ao carregar colaboradores:",
             erro
-        );
-
-
-        mostrarMensagem(
-            "mensagemCadastro",
-            "Erro ao carregar dados do Firestore.",
-            "erro"
         );
 
     }
@@ -1244,11 +1356,9 @@ async function carregarColaboradores() {
 }
 
 
-/*
-============================================================
-CARREGAR REGISTROS
-============================================================
-*/
+/* =========================================================
+   CARREGAR REGISTROS
+========================================================= */
 
 async function carregarRegistros(
     colaborador
@@ -1295,42 +1405,39 @@ async function carregarRegistros(
                         dados.data || "",
 
                     inicial:
-                        dados.inicial || 0,
+                        Number(
+                            dados.inicial
+                        ) || 0,
 
                     final:
-                        dados.final || 0,
+                        Number(
+                            dados.final
+                        ) || 0,
 
                     total:
-                        dados.total || 0,
+                        Number(
+                            dados.total
+                        ) || 0,
 
                     devolvido:
-                        dados.devolvido || 0,
+                        Number(
+                            dados.devolvido
+                        ) || 0,
 
                     vendido:
-                        dados.vendido || 0
+                        Number(
+                            dados.vendido
+                        ) || 0
 
                 });
 
             }
         );
 
-
-        /*
-        Ordenar por data.
-        */
-
-        colaborador.registros.sort(
-            (a, b) =>
-                (a.data || "").localeCompare(
-                    b.data || ""
-                )
-        );
-
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
-            "Erro ao carregar registros:",
             erro
         );
 
@@ -1339,11 +1446,9 @@ async function carregarRegistros(
 }
 
 
-/*
-============================================================
-CADASTRAR COLABORADOR
-============================================================
-*/
+/* =========================================================
+   CADASTRAR COLABORADOR
+========================================================= */
 
 async function cadastrarColaborador() {
 
@@ -1430,6 +1535,8 @@ async function cadastrarColaborador() {
 
         mostrarColaboradores();
 
+        carregarFiltroColaboradores();
+
         gerarRelatorio();
 
 
@@ -1439,8 +1546,8 @@ async function cadastrarColaborador() {
             "sucesso"
         );
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
             erro
@@ -1458,11 +1565,9 @@ async function cadastrarColaborador() {
 }
 
 
-/*
-============================================================
-MOSTRAR COLABORADORES
-============================================================
-*/
+/* =========================================================
+   MOSTRAR COLABORADORES
+========================================================= */
 
 function mostrarColaboradores() {
 
@@ -1504,9 +1609,7 @@ function mostrarColaboradores() {
 
                         <div
                             class="colaborador"
-                            id="card-${colaborador.id}"
                         >
-
 
                             <div
                                 class="colaborador-conteudo"
@@ -1514,9 +1617,11 @@ function mostrarColaboradores() {
                             >
 
                                 <h3>
+
                                     ${escaparHTML(
                                         colaborador.nome
                                     )}
+
                                 </h3>
 
 
@@ -1538,7 +1643,7 @@ function mostrarColaboradores() {
 
                                 <button
                                     class="btn-editar"
-                                    onclick="editarColaborador('${colaborador.id}', event)"
+                                    onclick="editarColaborador('${colaborador.id}',event)"
                                 >
 
                                     ✏️ Editar
@@ -1548,7 +1653,7 @@ function mostrarColaboradores() {
 
                                 <button
                                     class="btn-excluir"
-                                    onclick="excluirColaborador('${colaborador.id}', event)"
+                                    onclick="excluirColaborador('${colaborador.id}',event)"
                                 >
 
                                     🗑️ Excluir
@@ -1578,7 +1683,7 @@ function mostrarColaboradores() {
 
                                     <button
                                         class="btn-salvar"
-                                        onclick="salvarNomeColaborador('${colaborador.id}', event)"
+                                        onclick="salvarNomeColaborador('${colaborador.id}',event)"
                                     >
 
                                         💾 Salvar
@@ -1588,7 +1693,7 @@ function mostrarColaboradores() {
 
                                     <button
                                         class="btn-cancelar"
-                                        onclick="cancelarEdicao('${colaborador.id}', event)"
+                                        onclick="cancelarEdicao('${colaborador.id}',event)"
                                     >
 
                                         Cancelar
@@ -1610,11 +1715,9 @@ function mostrarColaboradores() {
 }
 
 
-/*
-============================================================
-EDITAR COLABORADOR
-============================================================
-*/
+/* =========================================================
+   EDITAR COLABORADOR
+========================================================= */
 
 function editarColaborador(
     id,
@@ -1628,11 +1731,6 @@ function editarColaborador(
         document.getElementById(
             "edicao-" + id
         );
-
-
-    if (!area) {
-        return;
-    }
 
 
     area.classList.add(
@@ -1653,11 +1751,9 @@ function editarColaborador(
 }
 
 
-/*
-============================================================
-CANCELAR EDIÇÃO
-============================================================
-*/
+/* =========================================================
+   CANCELAR EDIÇÃO
+========================================================= */
 
 function cancelarEdicao(
     id,
@@ -1673,22 +1769,16 @@ function cancelarEdicao(
         );
 
 
-    if (area) {
-
-        area.classList.remove(
-            "ativa"
-        );
-
-    }
+    area.classList.remove(
+        "ativa"
+    );
 
 }
 
 
-/*
-============================================================
-SALVAR NOME
-============================================================
-*/
+/* =========================================================
+   SALVAR NOME
+========================================================= */
 
 async function salvarNomeColaborador(
     id,
@@ -1780,6 +1870,8 @@ async function salvarNomeColaborador(
 
         mostrarColaboradores();
 
+        carregarFiltroColaboradores();
+
         gerarRelatorio();
 
 
@@ -1789,8 +1881,8 @@ async function salvarNomeColaborador(
             "sucesso"
         );
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
             erro
@@ -1806,11 +1898,9 @@ async function salvarNomeColaborador(
 }
 
 
-/*
-============================================================
-EXCLUIR COLABORADOR
-============================================================
-*/
+/* =========================================================
+   EXCLUIR COLABORADOR
+========================================================= */
 
 async function excluirColaborador(
     id,
@@ -1855,10 +1945,6 @@ async function excluirColaborador(
 
     try {
 
-        /*
-        Primeiro excluir os registros.
-        */
-
         const registrosRef =
             window.firestoreFunctions.collection(
 
@@ -1891,10 +1977,6 @@ async function excluirColaborador(
         }
 
 
-        /*
-        Depois excluir o colaborador.
-        */
-
         await window.firestoreFunctions.deleteDoc(
 
             window.firestoreFunctions.doc(
@@ -1919,6 +2001,8 @@ async function excluirColaborador(
 
         mostrarColaboradores();
 
+        carregarFiltroColaboradores();
+
         gerarRelatorio();
 
 
@@ -1928,8 +2012,8 @@ async function excluirColaborador(
             "sucesso"
         );
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
             erro
@@ -1945,11 +2029,9 @@ async function excluirColaborador(
 }
 
 
-/*
-============================================================
-ABRIR COLABORADOR
-============================================================
-*/
+/* =========================================================
+   ABRIR COLABORADOR
+========================================================= */
 
 function abrirColaborador(
     id
@@ -1978,14 +2060,14 @@ function abrirColaborador(
 
 
     document.getElementById(
-        "areaColaboradores"
+        "areaCadastro"
     ).classList.add(
         "escondido"
     );
 
 
     document.getElementById(
-        "areaCadastro"
+        "areaColaboradores"
     ).classList.add(
         "escondido"
     );
@@ -2012,11 +2094,9 @@ function abrirColaborador(
 }
 
 
-/*
-============================================================
-CARREGAR TABELA
-============================================================
-*/
+/* =========================================================
+   CARREGAR TABELA
+========================================================= */
 
 function carregarTabelaDoColaborador(
     colaborador
@@ -2028,12 +2108,10 @@ function carregarTabelaDoColaborador(
         );
 
 
-    tabela.innerHTML =
-        "";
+    tabela.innerHTML = "";
 
 
     if (
-        !colaborador.registros ||
         colaborador.registros.length === 0
     ) {
 
@@ -2044,24 +2122,32 @@ function carregarTabelaDoColaborador(
     }
 
 
-    colaborador.registros.forEach(
-        registro => {
+    colaborador.registros
+        .slice()
+        .sort(
+            (a,b) =>
+                (
+                    a.data || ""
+                ).localeCompare(
+                    b.data || ""
+                )
+        )
+        .forEach(
+            registro => {
 
-            adicionarLinha(
-                registro
-            );
+                adicionarLinha(
+                    registro
+                );
 
-        }
-    );
+            }
+        );
 
 }
 
 
-/*
-============================================================
-ADICIONAR LINHA
-============================================================
-*/
+/* =========================================================
+   ADICIONAR LINHA
+========================================================= */
 
 function adicionarLinha(
     registro = null
@@ -2097,10 +2183,9 @@ function adicionarLinha(
             <input
                 type="number"
                 class="campo-inicial"
-                step="1"
                 min="0"
+                step="1"
                 value="${registro?.inicial ?? ""}"
-                placeholder="0"
             >
 
         </td>
@@ -2111,10 +2196,9 @@ function adicionarLinha(
             <input
                 type="number"
                 class="campo-final"
-                step="1"
                 min="0"
+                step="1"
                 value="${registro?.final ?? ""}"
-                placeholder="0"
             >
 
         </td>
@@ -2125,10 +2209,9 @@ function adicionarLinha(
             <input
                 type="number"
                 class="campo-total"
-                step="1"
                 min="0"
+                step="1"
                 value="${registro?.total ?? ""}"
-                placeholder="0"
             >
 
         </td>
@@ -2139,10 +2222,9 @@ function adicionarLinha(
             <input
                 type="number"
                 class="campo-devolvido"
-                step="1"
                 min="0"
+                step="1"
                 value="${registro?.devolvido ?? ""}"
-                placeholder="0"
             >
 
         </td>
@@ -2168,54 +2250,46 @@ function adicionarLinha(
     );
 
 
-    const campoTotal =
+    const total =
         tr.querySelector(
             ".campo-total"
         );
 
 
-    const campoDevolvido =
+    const devolvido =
         tr.querySelector(
             ".campo-devolvido"
         );
 
 
-    campoTotal.addEventListener(
+    total.addEventListener(
         "input",
-        function () {
-
+        () =>
             calcularVendido(
-                campoDevolvido
-            );
-
-        }
+                devolvido
+            )
     );
 
 
-    campoDevolvido.addEventListener(
+    devolvido.addEventListener(
         "input",
-        function () {
-
+        () =>
             calcularVendido(
-                campoDevolvido
-            );
-
-        }
+                devolvido
+            )
     );
 
 
     calcularVendido(
-        campoDevolvido
+        devolvido
     );
 
 }
 
 
-/*
-============================================================
-CALCULAR VENDIDO
-============================================================
-*/
+/* =========================================================
+   CALCULAR VENDIDO
+========================================================= */
 
 function calcularVendido(
     campoDevolvido
@@ -2227,21 +2301,11 @@ function calcularVendido(
         );
 
 
-    const campoTotal =
-        linha.querySelector(
-            ".campo-total"
-        );
-
-
-    const resultado =
-        linha.querySelector(
-            ".vendido"
-        );
-
-
     const total =
         parseInt(
-            campoTotal.value
+            linha.querySelector(
+                ".campo-total"
+            ).value
         ) || 0;
 
 
@@ -2256,7 +2320,9 @@ function calcularVendido(
         devolvido;
 
 
-    resultado.textContent =
+    linha.querySelector(
+        ".vendido"
+    ).textContent =
         formatarNumero(
             vendido
         );
@@ -2264,17 +2330,13 @@ function calcularVendido(
 }
 
 
-/*
-============================================================
-SALVAR INFORMAÇÕES NO FIRESTORE
-============================================================
-*/
+/* =========================================================
+   SALVAR INFORMAÇÕES
+========================================================= */
 
 async function salvarInformacoes() {
 
-    if (
-        !colaboradorSelecionado
-    ) {
+    if (!colaboradorSelecionado) {
         return;
     }
 
@@ -2294,12 +2356,6 @@ async function salvarInformacoes() {
 
     try {
 
-        /*
-        ----------------------------------------------------
-        Excluir registros antigos
-        ----------------------------------------------------
-        */
-
         const registrosRef =
             window.firestoreFunctions.collection(
 
@@ -2314,15 +2370,19 @@ async function salvarInformacoes() {
             );
 
 
-        const snapshot =
+        const antigos =
             await window.firestoreFunctions.getDocs(
                 registrosRef
             );
 
 
+        /*
+        Apaga os registros antigos
+        */
+
         for (
             const registro
-            of snapshot.docs
+            of antigos.docs
         ) {
 
             await window.firestoreFunctions.deleteDoc(
@@ -2331,12 +2391,6 @@ async function salvarInformacoes() {
 
         }
 
-
-        /*
-        ----------------------------------------------------
-        Ler tabela atual
-        ----------------------------------------------------
-        */
 
         const linhas =
             document.querySelectorAll(
@@ -2347,12 +2401,6 @@ async function salvarInformacoes() {
         const registros =
             [];
 
-
-        /*
-        ----------------------------------------------------
-        Salvar cada linha
-        ----------------------------------------------------
-        */
 
         for (
             const linha
@@ -2397,25 +2445,12 @@ async function salvarInformacoes() {
                 ) || 0;
 
 
-            const vendido =
-                total -
-                devolvido;
-
-
-            /*
-            Ignorar linha totalmente vazia.
-            */
-
             if (
 
                 !data &&
-
                 inicial === 0 &&
-
                 final === 0 &&
-
                 total === 0 &&
-
                 devolvido === 0
 
             ) {
@@ -2425,25 +2460,24 @@ async function salvarInformacoes() {
             }
 
 
-            const registro = {
+            const vendido =
+                total -
+                devolvido;
 
-                data:
-                    data,
 
-                inicial:
-                    inicial,
+            const novoRegistro = {
 
-                final:
-                    final,
+                data,
 
-                total:
-                    total,
+                inicial,
 
-                devolvido:
-                    devolvido,
+                final,
 
-                vendido:
-                    vendido,
+                total,
+
+                devolvido,
+
+                vendido,
 
                 criadoEm:
                     window.firestoreFunctions.serverTimestamp()
@@ -2456,7 +2490,7 @@ async function salvarInformacoes() {
 
                     registrosRef,
 
-                    registro
+                    novoRegistro
 
                 );
 
@@ -2466,10 +2500,17 @@ async function salvarInformacoes() {
                 id:
                     documento.id,
 
-                ...registro,
+                data,
 
-                criadoEm:
-                    null
+                inicial,
+
+                final,
+
+                total,
+
+                devolvido,
+
+                vendido
 
             });
 
@@ -2482,37 +2523,34 @@ async function salvarInformacoes() {
 
         mostrarColaboradores();
 
+        carregarFiltroColaboradores();
+
         gerarRelatorio();
 
 
         mostrarMensagem(
             "mensagemEdicao",
-            "Informações salvas no Firestore!",
+            "Informações salvas com sucesso!",
             "sucesso"
         );
 
 
         setTimeout(
-            function () {
-
-                voltarParaColaboradores();
-
-            },
+            voltarParaColaboradores,
             700
         );
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
-            "Erro ao salvar:",
             erro
         );
 
 
         mostrarMensagem(
             "mensagemEdicao",
-            "Erro ao salvar informações no Firestore.",
+            "Erro ao salvar informações.",
             "erro"
         );
 
@@ -2521,17 +2559,13 @@ async function salvarInformacoes() {
 }
 
 
-/*
-============================================================
-EXCLUIR INFORMAÇÕES
-============================================================
-*/
+/* =========================================================
+   EXCLUIR INFORMAÇÕES
+========================================================= */
 
 async function excluirInformacao() {
 
-    if (
-        !colaboradorSelecionado
-    ) {
+    if (!colaboradorSelecionado) {
         return;
     }
 
@@ -2549,20 +2583,16 @@ async function excluirInformacao() {
     }
 
 
-    const confirmar =
-        confirm(
-
+    if (
+        !confirm(
             "Deseja excluir TODOS os lançamentos de " +
-
             colaborador.nome +
-
             "?"
+        )
+    ) {
 
-        );
-
-
-    if (!confirmar) {
         return;
+
     }
 
 
@@ -2600,8 +2630,7 @@ async function excluirInformacao() {
         }
 
 
-        colaborador.registros =
-            [];
+        colaborador.registros = [];
 
 
         mostrarColaboradores();
@@ -2617,16 +2646,12 @@ async function excluirInformacao() {
 
 
         setTimeout(
-            function () {
-
-                voltarParaColaboradores();
-
-            },
+            voltarParaColaboradores,
             700
         );
 
-
-    } catch (erro) {
+    }
+    catch (erro) {
 
         console.error(
             erro
@@ -2644,11 +2669,9 @@ async function excluirInformacao() {
 }
 
 
-/*
-============================================================
-VOLTAR
-============================================================
-*/
+/* =========================================================
+   VOLTAR
+========================================================= */
 
 function voltarParaColaboradores() {
 
@@ -2689,13 +2712,170 @@ function voltarParaColaboradores() {
 }
 
 
-/*
-============================================================
-RELATÓRIO
-============================================================
-*/
+/* =========================================================
+   FILTRO DE COLABORADORES
+========================================================= */
 
-function gerarRelatorio() {
+function carregarFiltroColaboradores() {
+
+    const select =
+        document.getElementById(
+            "filtroColaborador"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    const valorAtual =
+        select.value;
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Todos os colaboradores
+        </option>
+
+    `;
+
+
+    colaboradores
+        .slice()
+        .sort(
+            (a,b) =>
+                a.nome.localeCompare(
+                    b.nome
+                )
+        )
+        .forEach(
+            colaborador => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    colaborador.id;
+
+
+                option.textContent =
+                    colaborador.nome;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    if (
+        colaboradores.some(
+            colaborador =>
+                colaborador.id ===
+                valorAtual
+        )
+    ) {
+
+        select.value =
+            valorAtual;
+
+    }
+
+}
+
+
+/* =========================================================
+   APLICAR FILTROS
+========================================================= */
+
+function aplicarFiltros() {
+
+    const dataInicial =
+        document.getElementById(
+            "filtroDataInicial"
+        ).value;
+
+
+    const dataFinal =
+        document.getElementById(
+            "filtroDataFinal"
+        ).value;
+
+
+    const colaboradorId =
+        document.getElementById(
+            "filtroColaborador"
+        ).value;
+
+
+    if (
+        dataInicial &&
+        dataFinal &&
+        dataInicial > dataFinal
+    ) {
+
+        mostrarMensagem(
+            "mensagemFiltro",
+            "A data inicial não pode ser maior que a data final.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    gerarRelatorio(
+        dataInicial,
+        dataFinal,
+        colaboradorId
+    );
+
+}
+
+
+/* =========================================================
+   LIMPAR FILTROS
+========================================================= */
+
+function limparFiltros() {
+
+    document.getElementById(
+        "filtroDataInicial"
+    ).value = "";
+
+
+    document.getElementById(
+        "filtroDataFinal"
+    ).value = "";
+
+
+    document.getElementById(
+        "filtroColaborador"
+    ).value = "";
+
+
+    gerarRelatorio();
+
+}
+
+
+/* =========================================================
+   GERAR RELATÓRIO
+========================================================= */
+
+function gerarRelatorio(
+    dataInicial = "",
+    dataFinal = "",
+    colaboradorId = ""
+) {
 
     const area =
         document.getElementById(
@@ -2703,35 +2883,83 @@ function gerarRelatorio() {
         );
 
 
-    if (
-        colaboradores.length === 0
-    ) {
+    carregarFiltroColaboradores();
 
-        area.innerHTML = `
 
-            <div class="vazio">
+    let lista =
+        colaboradores;
 
-                Nenhum dado cadastrado.
 
-            </div>
+    if (colaboradorId) {
 
-        `;
-
-        return;
+        lista =
+            colaboradores.filter(
+                colaborador =>
+                    colaborador.id ===
+                    colaboradorId
+            );
 
     }
 
 
-    let html =
-        "";
+    let html = "";
+
+    let encontrou =
+        false;
 
 
-    colaboradores.forEach(
+    lista.forEach(
         colaborador => {
 
+            let registros =
+                (
+                    colaborador.registros ||
+                    []
+                ).filter(
+                    registro => {
+
+                        const data =
+                            registro.data || "";
+
+
+                        if (
+                            dataInicial &&
+                            data < dataInicial
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            dataFinal &&
+                            data > dataFinal
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                );
+
+
+            registros.sort(
+                (a,b) =>
+                    (
+                        a.data || ""
+                    ).localeCompare(
+                        b.data || ""
+                    )
+            );
+
+
             if (
-                !colaborador.registros ||
-                colaborador.registros.length === 0
+                registros.length === 0
             ) {
 
                 return;
@@ -2739,16 +2967,47 @@ function gerarRelatorio() {
             }
 
 
-            const registros =
-                [...colaborador.registros]
-                    .sort(
-                        (a,b) =>
-                            (
-                                a.data || ""
-                            ).localeCompare(
-                                b.data || ""
-                            )
-                    );
+            encontrou =
+                true;
+
+
+            const totalGeral =
+                registros.reduce(
+                    (soma,r) =>
+                        soma +
+                        (
+                            Number(
+                                r.total
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const devolvidoGeral =
+                registros.reduce(
+                    (soma,r) =>
+                        soma +
+                        (
+                            Number(
+                                r.devolvido
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const vendidoGeral =
+                registros.reduce(
+                    (soma,r) =>
+                        soma +
+                        (
+                            Number(
+                                r.vendido
+                            ) || 0
+                        ),
+                    0
+                );
 
 
             html += `
@@ -2778,29 +3037,17 @@ function gerarRelatorio() {
 
                                 <tr>
 
-                                    <th>
-                                        DATA
-                                    </th>
+                                    <th>DATA</th>
 
-                                    <th>
-                                        INICIAL
-                                    </th>
+                                    <th>INICIAL</th>
 
-                                    <th>
-                                        FINAL
-                                    </th>
+                                    <th>FINAL</th>
 
-                                    <th>
-                                        TOTAL
-                                    </th>
+                                    <th>TOTAL</th>
 
-                                    <th>
-                                        DEVOLVIDO
-                                    </th>
+                                    <th>DEVOLVIDO</th>
 
-                                    <th>
-                                        VENDIDO
-                                    </th>
+                                    <th>VENDIDO</th>
 
                                 </tr>
 
@@ -2850,15 +3097,11 @@ function gerarRelatorio() {
                             </td>
 
                             <td>
-
                                 <strong>
-
                                     ${formatarNumero(
                                         registro.vendido
                                     )}
-
                                 </strong>
-
                             </td>
 
                         </tr>
@@ -2867,54 +3110,6 @@ function gerarRelatorio() {
 
                 }
             );
-
-
-            const totalGeral =
-                registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
-                        soma +
-                        (
-                            Number(
-                                registro.total
-                            ) || 0
-                        ),
-                    0
-                );
-
-
-            const devolvidoGeral =
-                registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
-                        soma +
-                        (
-                            Number(
-                                registro.devolvido
-                            ) || 0
-                        ),
-                    0
-                );
-
-
-            const vendidoGeral =
-                registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
-                        soma +
-                        (
-                            Number(
-                                registro.vendido
-                            ) || 0
-                        ),
-                    0
-                );
 
 
             html += `
@@ -2951,7 +3146,6 @@ function gerarRelatorio() {
 
                         </tr>
 
-
                             </tbody>
 
                         </table>
@@ -2966,14 +3160,14 @@ function gerarRelatorio() {
     );
 
 
-    if (!html) {
+    if (!encontrou) {
 
         html = `
 
             <div class="vazio">
 
-                Existem colaboradores cadastrados,
-                mas ainda não existem lançamentos.
+                Nenhum lançamento encontrado
+                para os filtros selecionados.
 
             </div>
 
@@ -2988,23 +3182,57 @@ function gerarRelatorio() {
 }
 
 
-/*
-============================================================
-EXPORTAR PDF
-============================================================
-*/
+/* =========================================================
+   EXPORTAR PDF
+========================================================= */
 
 function exportarPDF() {
 
+    const dataInicial =
+        document.getElementById(
+            "filtroDataInicial"
+        ).value;
+
+
+    const dataFinal =
+        document.getElementById(
+            "filtroDataFinal"
+        ).value;
+
+
+    const colaboradorId =
+        document.getElementById(
+            "filtroColaborador"
+        ).value;
+
+
     if (
-        colaboradores.length === 0
+        dataInicial &&
+        dataFinal &&
+        dataInicial > dataFinal
     ) {
 
         alert(
-            "Não existem dados para exportar."
+            "A data inicial não pode ser maior que a data final."
         );
 
         return;
+
+    }
+
+
+    let lista =
+        colaboradores;
+
+
+    if (colaboradorId) {
+
+        lista =
+            colaboradores.filter(
+                colaborador =>
+                    colaborador.id ===
+                    colaboradorId
+            );
 
     }
 
@@ -3034,17 +3262,70 @@ function exportarPDF() {
         true;
 
 
-    colaboradores.forEach(
+    let encontrou =
+        false;
+
+
+    lista.forEach(
         colaborador => {
 
+            const registros =
+                (
+                    colaborador.registros ||
+                    []
+                )
+                .filter(
+                    registro => {
+
+                        const data =
+                            registro.data || "";
+
+
+                        if (
+                            dataInicial &&
+                            data < dataInicial
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            dataFinal &&
+                            data > dataFinal
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                )
+                .sort(
+                    (a,b) =>
+                        (
+                            a.data || ""
+                        ).localeCompare(
+                            b.data || ""
+                        )
+                );
+
+
             if (
-                !colaborador.registros ||
-                colaborador.registros.length === 0
+                registros.length === 0
             ) {
 
                 return;
 
             }
+
+
+            encontrou =
+                true;
 
 
             if (
@@ -3078,26 +3359,47 @@ function exportarPDF() {
 
 
             doc.text(
-
                 "Colaborador: " +
                 colaborador.nome,
-
                 14,
                 24
-
             );
 
 
-            const registros =
-                [...colaborador.registros]
-                    .sort(
-                        (a,b) =>
-                            (
-                                a.data || ""
-                            ).localeCompare(
-                                b.data || ""
-                            )
-                    );
+            doc.setFontSize(
+                10
+            );
+
+
+            let periodo =
+                "Período: ";
+
+
+            periodo +=
+                dataInicial
+                    ? formatarData(
+                        dataInicial
+                    )
+                    : "Início";
+
+
+            periodo +=
+                " até ";
+
+
+            periodo +=
+                dataFinal
+                    ? formatarData(
+                        dataFinal
+                    )
+                    : "Fim";
+
+
+            doc.text(
+                periodo,
+                14,
+                30
+            );
 
 
             const dadosTabela =
@@ -3132,48 +3434,39 @@ function exportarPDF() {
                 );
 
 
-            const totalGeral =
+            const total =
                 registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
+                    (soma,r) =>
                         soma +
                         (
                             Number(
-                                registro.total
+                                r.total
                             ) || 0
                         ),
                     0
                 );
 
 
-            const devolvidoGeral =
+            const devolvido =
                 registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
+                    (soma,r) =>
                         soma +
                         (
                             Number(
-                                registro.devolvido
+                                r.devolvido
                             ) || 0
                         ),
                     0
                 );
 
 
-            const vendidoGeral =
+            const vendido =
                 registros.reduce(
-                    (
-                        soma,
-                        registro
-                    ) =>
+                    (soma,r) =>
                         soma +
                         (
                             Number(
-                                registro.vendido
+                                r.vendido
                             ) || 0
                         ),
                     0
@@ -3189,15 +3482,15 @@ function exportarPDF() {
                 "",
 
                 formatarNumero(
-                    totalGeral
+                    total
                 ),
 
                 formatarNumero(
-                    devolvidoGeral
+                    devolvido
                 ),
 
                 formatarNumero(
-                    vendidoGeral
+                    vendido
                 )
 
             ]);
@@ -3205,8 +3498,7 @@ function exportarPDF() {
 
             doc.autoTable({
 
-                startY:
-                    30,
+                startY: 35,
 
                 head: [[
 
@@ -3232,11 +3524,9 @@ function exportarPDF() {
 
                 styles: {
 
-                    fontSize:
-                        9,
+                    fontSize: 9,
 
-                    halign:
-                        "center"
+                    halign: "center"
 
                 },
 
@@ -3254,10 +3544,8 @@ function exportarPDF() {
                     function(data) {
 
                         if (
-
                             data.row.index ===
                             dadosTabela.length - 1
-
                         ) {
 
                             data.cell.styles.fontStyle =
@@ -3273,12 +3561,10 @@ function exportarPDF() {
     );
 
 
-    if (
-        primeiraPagina
-    ) {
+    if (!encontrou) {
 
         alert(
-            "Não existem lançamentos para exportar."
+            "Não existem lançamentos para os filtros selecionados."
         );
 
         return;
@@ -3286,33 +3572,57 @@ function exportarPDF() {
     }
 
 
-    const data =
+    const agora =
         new Date();
+
+
+    let nomeColaborador =
+        "todos-colaboradores";
+
+
+    if (colaboradorId) {
+
+        nomeColaborador =
+            lista[0]?.nome ||
+            "colaborador";
+
+    }
+
+
+    const nomeLimpo =
+        nomeColaborador
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /[^a-zA-Z0-9]+/g,
+                "_"
+            );
 
 
     const nomeArquivo =
 
         "relatorio_" +
 
-        data.getFullYear() +
+        nomeLimpo +
+
+        "_" +
+
+        agora.getFullYear() +
 
         "-" +
 
         String(
-            data.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
+            agora.getMonth() + 1
+        ).padStart(2,"0") +
 
         "-" +
 
         String(
-            data.getDate()
-        ).padStart(
-            2,
-            "0"
-        ) +
+            agora.getDate()
+        ).padStart(2,"0") +
 
         ".pdf";
 
@@ -3324,32 +3634,26 @@ function exportarPDF() {
 }
 
 
-/*
-============================================================
-FORMATAÇÃO NUMÉRICA
-============================================================
-*/
+/* =========================================================
+   FORMATAR NÚMERO
+========================================================= */
 
 function formatarNumero(
     valor
 ) {
 
-    const numero =
-        Number(valor) || 0;
-
-
-    return Math.round(
-        numero
-    ).toString();
+    return String(
+        Math.round(
+            Number(valor) || 0
+        )
+    );
 
 }
 
 
-/*
-============================================================
-FORMATAÇÃO DA DATA
-============================================================
-*/
+/* =========================================================
+   FORMATAR DATA
+========================================================= */
 
 function formatarData(
     data
@@ -3386,11 +3690,9 @@ function formatarData(
 }
 
 
-/*
-============================================================
-ESCAPAR HTML
-============================================================
-*/
+/* =========================================================
+   ESCAPAR HTML
+========================================================= */
 
 function escaparHTML(
     texto
@@ -3426,11 +3728,9 @@ function escaparHTML(
 }
 
 
-/*
-============================================================
-MENSAGENS
-============================================================
-*/
+/* =========================================================
+   MENSAGENS
+========================================================= */
 
 function mostrarMensagem(
     elementoId,
@@ -3442,6 +3742,11 @@ function mostrarMensagem(
         document.getElementById(
             elementoId
         );
+
+
+    if (!elemento) {
+        return;
+    }
 
 
     elemento.textContent =
@@ -3458,7 +3763,7 @@ function mostrarMensagem(
 
 
     setTimeout(
-        function () {
+        () => {
 
             elemento.style.display =
                 "none";
@@ -3470,11 +3775,9 @@ function mostrarMensagem(
 }
 
 
-/*
-============================================================
-ENTER NO CADASTRO
-============================================================
-*/
+/* =========================================================
+   ENTER NO CADASTRO
+========================================================= */
 
 document
     .getElementById(
@@ -3485,8 +3788,7 @@ document
         function(event) {
 
             if (
-                event.key ===
-                "Enter"
+                event.key === "Enter"
             ) {
 
                 cadastrarColaborador();
@@ -3500,4 +3802,5 @@ document
 
 
 </body>
-  </html>
+
+</html>
