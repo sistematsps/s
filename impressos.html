@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Controle de Produção</title>
+
+<style>
+
+/* =====================================================
+   CONFIGURAÇÃO GERAL
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f1f3f6;
+    color: #222;
+    min-height: 100vh;
+}
+
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px 0 50px;
+}
+
+
+/* =====================================================
+   CABEÇALHO
+===================================================== */
+
+header {
+    background: #1f2937;
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,.12);
+}
+
+header h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+header p {
+    opacity: .8;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.card h2 {
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+
+
+/* =====================================================
+   STATUS FIREBASE
+===================================================== */
+
+.status-firestore {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-erro {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* =====================================================
+   BOTÕES
+===================================================== */
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    opacity: .92;
+}
+
+.btn-salvar {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-adicionar {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-editar {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-excluir {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-pdf {
+    background: #7c3aed;
+    color: white;
+}
+
+.btn-limpar {
+    background: #6b7280;
+    color: white;
+}
+
+
+/* =====================================================
+   TABELAS
+===================================================== */
+
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+th {
+    background: #1f2937;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 13px;
+}
+
+td {
+    padding: 7px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+td input {
+    width: 100%;
+    min-width: 100px;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    text-align: center;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CAMPO TOTAL
+===================================================== */
+
+.campo-total {
+    background: #f3f4f6;
+    font-weight: bold;
+    color: #111827;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,.12);
+}
+
+
+/* =====================================================
+   AÇÕES
+===================================================== */
+
+.acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.linha-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.filtros {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 12px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+}
+
+.filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #374151;
+}
+
+.filtro input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+}
+
+
+/* =====================================================
+   TOTAL FINAL
+===================================================== */
+
+.total-final {
+    background: #1f2937;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.total-final td {
+    padding: 15px 8px;
+}
+
+
+/* =====================================================
+   MENSAGENS
+===================================================== */
+
+.mensagem {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    font-size: 14px;
+}
+
+.sucesso {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.erro {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.vazio {
+    text-align: center;
+    padding: 25px;
+    color: #6b7280;
+}
+
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 94%;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+    .linha-acoes {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acoes button {
+        width: 100%;
+    }
+}
+
+
+/* =====================================================
+   IMPRESSÃO
+===================================================== */
+
+@media print {
+
+    body {
+        background: white;
+    }
+
+    header,
+    #areaLancamentos,
+    #areaFiltros,
+    footer,
+    #statusFirestore {
+        display: none !important;
+    }
+
+    #areaRelatorio {
+        display: block !important;
+        box-shadow: none;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     CABEÇALHO
+===================================================== -->
+
+<header>
+
+    <h1>
+        Controle de Produção
+    </h1>
+
+    <p>
+        Registro de produção e relatório por período
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     STATUS FIRESTORE
+===================================================== -->
+
+<div
+    id="statusFirestore"
+    class="status-firestore"
+>
+    Conectando ao Firestore...
+</div>
+
+
+<!-- =====================================================
+     LANÇAMENTOS
+===================================================== -->
+
+<section
+    class="card"
+    id="areaLancamentos"
+>
+
+    <div class="linha-acoes">
+
+        <h2>
+            Lançamentos
+        </h2>
+
+    </div>
+
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        DATA
+                    </th>
+
+                    <th>
+                        INICIAL
+                    </th>
+
+                    <th>
+                        FINAL
+                    </th>
+
+                    <th>
+                        QUANTIDADE
+                    </th>
+
+                    <th>
+                        FOLHAS
+                    </th>
+
+                    <th>
+                        TOTAL
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="tabelaLancamentos"
+            >
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="acoes">
+
+        <button
+            class="btn-adicionar"
+            onclick="adicionarLinha()"
+        >
+            ➕ Adicionar Nova Linha
+        </button>
+
+
+        <button
+            class="btn-salvar"
+            onclick="salvarLancamentos()"
+        >
+            💾 Salvar
+        </button>
+
+
+        <button
+            class="btn-editar"
+            onclick="modoEdicao()"
+        >
+            ✏️ Editar
+        </button>
+
+
+        <button
+            class="btn-excluir"
+            onclick="excluirSelecionados()"
+        >
+            🗑️ Excluir
+        </button>
+
+    </div>
+
+
+    <div
+        id="mensagemLancamentos"
+        class="mensagem"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     FILTRO
+===================================================== -->
+
+<section
+    class="card"
+    id="areaFiltros"
+>
+
+    <h2>
+        Filtro do Relatório
+    </h2>
+
+
+    <div class="filtros">
+
+
+        <div class="filtro">
+
+            <label>
+                Data inicial
+            </label>
+
+            <input
+                type="date"
+                id="filtroDataInicial"
+            >
+
+        </div>
+
+
+        <div class="filtro">
+
+            <label>
+                Data final
+            </label>
+
+            <input
+                type="date"
+                id="filtroDataFinal"
+            >
+
+        </div>
+
+
+        <div class="acoes">
+
+            <button
+                class="btn-salvar"
+                onclick="filtrarRelatorio()"
+            >
+                🔎 Filtrar
+            </button>
+
+
+            <button
+                class="btn-limpar"
+                onclick="limparFiltro()"
+            >
+                🔄 Limpar
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RELATÓRIO
+===================================================== -->
+
+<section
+    class="card"
+    id="areaRelatorio"
+>
+
+    <div class="linha-acoes">
+
+        <h2>
+            Relatório
+        </h2>
+
+
+        <button
+            class="btn-pdf"
+            onclick="exportarPDF()"
+        >
+            📄 Baixar PDF
+        </button>
+
+    </div>
+
+
+    <div
+        id="conteudoRelatorio"
+        class="relatorio"
+    >
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    Controle de Produção —
+    Firestore
+
+</footer>
+
+
+</div>
+
+
+<!-- =====================================================
+     FIREBASE
+===================================================== -->
+
+<script type="module">
+
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* =====================================================
+   CONFIGURAÇÃO FIREBASE
+===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyBrHB8Defu0DrkV8POU4lAuAxCal6fqHM4",
+
+    authDomain:
+        "pitimbu-a09e3.firebaseapp.com",
+
+    projectId:
+        "pitimbu-a09e3",
+
+    storageBucket:
+        "pitimbu-a09e3.firebasestorage.app",
+
+    messagingSenderId:
+        "956873424564",
+
+    appId:
+        "1:956873424564:web:583c8405d288883d71e1e1"
+
+};
+
+
+/* =====================================================
+   INICIALIZA FIREBASE
+===================================================== */
+
+try {
+
+    const app =
+        initializeApp(
+            firebaseConfig
+        );
+
+
+    const db =
+        getFirestore(
+            app
+        );
+
+
+    window.db =
+        db;
+
+
+    window.firebaseFunctions = {
+
+        collection,
+        addDoc,
+        doc,
+        updateDoc,
+        deleteDoc,
+        getDocs,
+        serverTimestamp
+
+    };
+
+
+    document.getElementById(
+        "statusFirestore"
+    ).textContent =
+        "✓ Firestore conectado com sucesso";
+
+
+    await carregarDados();
+
+}
+catch (erro) {
+
+    console.error(
+        "Erro Firebase:",
+        erro
+    );
+
+
+    const status =
+        document.getElementById(
+            "statusFirestore"
+        );
+
+
+    status.textContent =
+        "⚠️ Erro ao conectar ao Firestore";
+
+
+    status.classList.add(
+        "status-erro"
+    );
+
+}
+
+</script>
+
+
+<!-- =====================================================
+     BIBLIOTECAS PDF
+===================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+
+<script>
+
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
+
+let registros = [];
+
+
+/*
+    REGRA DO SISTEMA
+
+    FOLHAS × 1,6 = TOTAL
+*/
+
+const FATOR_TOTAL =
+    1.6;
+
+
+/* =====================================================
+   COLEÇÃO FIRESTORE
+===================================================== */
+
+function obterColecao() {
+
+    return window.firebaseFunctions.collection(
+
+        window.db,
+
+        "controle_producao"
+
+    );
+
+}
+
+
+/* =====================================================
+   CARREGAR DADOS
+===================================================== */
+
+async function carregarDados() {
+
+    try {
+
+        const snapshot =
+            await window.firebaseFunctions.getDocs(
+                obterColecao()
+            );
+
+
+        registros = [];
+
+
+        snapshot.forEach(
+            documento => {
+
+                const dados =
+                    documento.data();
+
+
+                registros.push({
+
+                    id:
+                        documento.id,
+
+                    data:
+                        dados.data || "",
+
+                    inicial:
+                        Number(
+                            dados.inicial
+                        ) || 0,
+
+                    final:
+                        Number(
+                            dados.final
+                        ) || 0,
+
+                    quantidade:
+                        Number(
+                            dados.quantidade
+                        ) || 0,
+
+                    folhas:
+                        Number(
+                            dados.folhas
+                        ) || 0,
+
+                    total:
+                        Number(
+                            dados.total
+                        ) || 0
+
+                });
+
+            }
+        );
+
+
+        registros.sort(
+            (a,b) =>
+                (a.data || "")
+                .localeCompare(
+                    b.data || ""
+                )
+        );
+
+
+        mostrarTabela();
+
+        gerarRelatorio();
+
+    }
+    catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        mostrarMensagem(
+
+            "mensagemLancamentos",
+
+            "Erro ao carregar os dados do Firestore.",
+
+            "erro"
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MOSTRAR TABELA
+===================================================== */
+
+function mostrarTabela() {
+
+    const tabela =
+        document.getElementById(
+            "tabelaLancamentos"
+        );
+
+
+    tabela.innerHTML = "";
+
+
+    if (
+        registros.length === 0
+    ) {
+
+        adicionarLinha();
+
+        return;
+
+    }
+
+
+    registros.forEach(
+        registro =>
+            adicionarLinha(
+                registro
+            )
+    );
+
+}
+
+
+/* =====================================================
+   ADICIONAR LINHA
+===================================================== */
+
+function adicionarLinha(
+    registro = null
+) {
+
+    const tabela =
+        document.getElementById(
+            "tabelaLancamentos"
+        );
+
+
+    const tr =
+        document.createElement(
+            "tr"
+        );
+
+
+    if (registro) {
+
+        tr.dataset.id =
+            registro.id;
+
+    }
+
+
+    const folhas =
+        Number(
+            registro?.folhas
+        ) || 0;
+
+
+    const totalCalculado =
+        folhas * FATOR_TOTAL;
+
+
+    tr.innerHTML = `
+
+        <td>
+
+            <input
+                type="date"
+                class="campo-data"
+                value="${registro?.data || ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-inicial"
+                min="0"
+                step="1"
+                value="${registro?.inicial ?? ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-final"
+                min="0"
+                step="1"
+                value="${registro?.final ?? ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-quantidade"
+                min="0"
+                step="1"
+                value="${registro?.quantidade ?? ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-folhas"
+                min="0"
+                step="1"
+                value="${registro?.folhas ?? ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-total"
+                step="0.01"
+                readonly
+                value="${
+                    registro
+                    ? totalCalculado.toFixed(2)
+                    : ""
+                }"
+            >
+
+        </td>
+
+    `;
+
+
+    tabela.appendChild(
+        tr
+    );
+
+
+    /*
+        Sempre que Folhas for alterado,
+        o Total será recalculado.
+    */
+
+    const campoFolhas =
+        tr.querySelector(
+            ".campo-folhas"
+        );
+
+
+    campoFolhas.addEventListener(
+        "input",
+        function() {
+
+            calcularTotalLinha(
+                tr
+            );
+
+        }
+    );
+
+
+    /*
+        Calcula imediatamente se
+        houver um registro existente.
+    */
+
+    if (registro) {
+
+        calcularTotalLinha(
+            tr
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CALCULAR TOTAL DA LINHA
+===================================================== */
+
+function calcularTotalLinha(
+    linha
+) {
+
+    const folhas =
+        parseFloat(
+
+            linha.querySelector(
+                ".campo-folhas"
+            ).value
+
+        ) || 0;
+
+
+    const total =
+        folhas * FATOR_TOTAL;
+
+
+    linha.querySelector(
+        ".campo-total"
+    ).value =
+        total.toFixed(2);
+
+}
+
+
+/* =====================================================
+   SALVAR LANÇAMENTOS
+===================================================== */
+
+async function salvarLancamentos() {
+
+    try {
+
+        const linhas =
+            document.querySelectorAll(
+                "#tabelaLancamentos tr"
+            );
+
+
+        if (
+            linhas.length === 0
+        ) {
+
+            alert(
+                "Adicione pelo menos uma linha."
+            );
+
+            return;
+
+        }
+
+
+        let quantidadeSalva =
+            0;
+
+
+        for (
+            const linha
+            of linhas
+        ) {
+
+            const data =
+                linha.querySelector(
+                    ".campo-data"
+                ).value;
+
+
+            if (!data) {
+
+                continue;
+
+            }
+
+
+            const inicial =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-inicial"
+                    ).value
+                ) || 0;
+
+
+            const final =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-final"
+                    ).value
+                ) || 0;
+
+
+            const quantidade =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-quantidade"
+                    ).value
+                ) || 0;
+
+
+            const folhas =
+                parseFloat(
+                    linha.querySelector(
+                        ".campo-folhas"
+                    ).value
+                ) || 0;
+
+
+            /*
+                TOTAL = FOLHAS × 1,6
+            */
+
+            const total =
+                folhas * FATOR_TOTAL;
+
+
+            linha.querySelector(
+                ".campo-total"
+            ).value =
+                total.toFixed(2);
+
+
+            const dados = {
+
+                data,
+
+                inicial,
+
+                final,
+
+                quantidade,
+
+                folhas,
+
+                total:
+
+                    Number(
+                        total.toFixed(2)
+                    ),
+
+                fator:
+
+                    FATOR_TOTAL,
+
+                atualizadoEm:
+
+                    window.firebaseFunctions.serverTimestamp()
+
+            };
+
+
+            const id =
+                linha.dataset.id;
+
+
+            if (id) {
+
+                await window.firebaseFunctions.updateDoc(
+
+                    window.firebaseFunctions.doc(
+
+                        window.db,
+
+                        "controle_producao",
+
+                        id
+
+                    ),
+
+                    dados
+
+                );
+
+            }
+            else {
+
+                const novo =
+                    await window.firebaseFunctions.addDoc(
+
+                        obterColecao(),
+
+                        {
+
+                            ...dados,
+
+                            criadoEm:
+
+                                window.firebaseFunctions.serverTimestamp()
+
+                        }
+
+                    );
+
+
+                linha.dataset.id =
+                    novo.id;
+
+            }
+
+
+            quantidadeSalva++;
+
+        }
+
+
+        await carregarDados();
+
+
+        mostrarMensagem(
+
+            "mensagemLancamentos",
+
+            quantidadeSalva +
+            " registro(s) salvo(s) com sucesso!",
+
+            "sucesso"
+
+        );
+
+    }
+    catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        mostrarMensagem(
+
+            "mensagemLancamentos",
+
+            "Erro ao salvar os dados.",
+
+            "erro"
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MODO EDIÇÃO
+===================================================== */
+
+function modoEdicao() {
+
+    if (
+        registros.length === 0
+    ) {
+
+        alert(
+            "Não existem registros para editar."
+        );
+
+        return;
+
+    }
+
+
+    mostrarMensagem(
+
+        "mensagemLancamentos",
+
+        "Edite os dados diretamente na tabela e clique em Salvar.",
+
+        "sucesso"
+
+    );
+
+}
+
+
+/* =====================================================
+   EXCLUIR
+===================================================== */
+
+async function excluirSelecionados() {
+
+    const linhas =
+        document.querySelectorAll(
+            "#tabelaLancamentos tr"
+        );
+
+
+    const ids = [];
+
+
+    linhas.forEach(
+        linha => {
+
+            if (
+                linha.dataset.id
+            ) {
+
+                ids.push(
+                    linha.dataset.id
+                );
+
+            }
+
+        }
+    );
+
+
+    if (
+        ids.length === 0
+    ) {
+
+        alert(
+            "Não existem registros salvos para excluir."
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+
+            "Deseja excluir todos os registros exibidos na tabela?"
+
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        for (
+            const id
+            of ids
+        ) {
+
+            await window.firebaseFunctions.deleteDoc(
+
+                window.firebaseFunctions.doc(
+
+                    window.db,
+
+                    "controle_producao",
+
+                    id
+
+                )
+
+            );
+
+        }
+
+
+        await carregarDados();
+
+
+        mostrarMensagem(
+
+            "mensagemLancamentos",
+
+            "Registros excluídos com sucesso.",
+
+            "sucesso"
+
+        );
+
+    }
+    catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        mostrarMensagem(
+
+            "mensagemLancamentos",
+
+            "Erro ao excluir registros.",
+
+            "erro"
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   FILTRO
+===================================================== */
+
+function filtrarRelatorio() {
+
+    const dataInicial =
+        document.getElementById(
+            "filtroDataInicial"
+        ).value;
+
+
+    const dataFinal =
+        document.getElementById(
+            "filtroDataFinal"
+        ).value;
+
+
+    if (
+
+        dataInicial &&
+        dataFinal &&
+        dataInicial > dataFinal
+
+    ) {
+
+        alert(
+            "A data inicial não pode ser maior que a data final."
+        );
+
+        return;
+
+    }
+
+
+    gerarRelatorio(
+        dataInicial,
+        dataFinal
+    );
+
+}
+
+
+/* =====================================================
+   LIMPAR FILTRO
+===================================================== */
+
+function limparFiltro() {
+
+    document.getElementById(
+        "filtroDataInicial"
+    ).value = "";
+
+
+    document.getElementById(
+        "filtroDataFinal"
+    ).value = "";
+
+
+    gerarRelatorio();
+
+}
+
+
+/* =====================================================
+   GERAR RELATÓRIO
+===================================================== */
+
+function gerarRelatorio(
+
+    dataInicial = "",
+
+    dataFinal = ""
+
+) {
+
+    const area =
+        document.getElementById(
+            "conteudoRelatorio"
+        );
+
+
+    let lista =
+        registros.filter(
+            registro => {
+
+                const data =
+                    registro.data || "";
+
+
+                if (
+                    dataInicial &&
+                    data < dataInicial
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (
+                    dataFinal &&
+                    data > dataFinal
+                ) {
+
+                    return false;
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    lista.sort(
+        (a,b) =>
+            (a.data || "")
+            .localeCompare(
+                b.data || ""
+            )
+    );
+
+
+    if (
+        lista.length === 0
+    ) {
+
+        area.innerHTML = `
+
+            <div class="vazio">
+
+                Nenhum registro encontrado
+                para o período selecionado.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let totalQuantidade =
+        0;
+
+
+    let totalFolhas =
+        0;
+
+
+    let totalFinal =
+        0;
+
+
+    let html = `
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            DATA
+                        </th>
+
+                        <th>
+                            INICIAL
+                        </th>
+
+                        <th>
+                            FINAL
+                        </th>
+
+                        <th>
+                            QUANTIDADE
+                        </th>
+
+                        <th>
+                            FOLHAS
+                        </th>
+
+                        <th>
+                            TOTAL
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+    `;
+
+
+    lista.forEach(
+        registro => {
+
+            const folhas =
+                Number(
+                    registro.folhas
+                ) || 0;
+
+
+            /*
+                Recalcula usando
+                a regra atual.
+            */
+
+            const total =
+                folhas * FATOR_TOTAL;
+
+
+            totalQuantidade +=
+                Number(
+                    registro.quantidade
+                ) || 0;
+
+
+            totalFolhas +=
+                folhas;
+
+
+            totalFinal +=
+                total;
+
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        ${formatarData(
+                            registro.data
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarNumero(
+                            registro.inicial
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarNumero(
+                            registro.final
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarNumero(
+                            registro.quantidade
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarNumero(
+                            folhas
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarDecimal(
+                            total
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        <tr class="total-final">
+
+            <td colspan="3">
+                TOTAL FINAL
+            </td>
+
+            <td>
+                ${formatarNumero(
+                    totalQuantidade
+                )}
+            </td>
+
+            <td>
+                ${formatarNumero(
+                    totalFolhas
+                )}
+            </td>
+
+            <td>
+                ${formatarDecimal(
+                    totalFinal
+                )}
+            </td>
+
+        </tr>
+
+        </tbody>
+
+        </table>
+
+        </div>
+
+    `;
+
+
+    area.innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   EXPORTAR PDF
+===================================================== */
+
+function exportarPDF() {
+
+    const dataInicial =
+        document.getElementById(
+            "filtroDataInicial"
+        ).value;
+
+
+    const dataFinal =
+        document.getElementById(
+            "filtroDataFinal"
+        ).value;
+
+
+    if (
+
+        dataInicial &&
+        dataFinal &&
+        dataInicial > dataFinal
+
+    ) {
+
+        alert(
+            "A data inicial não pode ser maior que a data final."
+        );
+
+        return;
+
+    }
+
+
+    let lista =
+        registros.filter(
+            registro => {
+
+                const data =
+                    registro.data || "";
+
+
+                if (
+                    dataInicial &&
+                    data < dataInicial
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (
+                    dataFinal &&
+                    data > dataFinal
+                ) {
+
+                    return false;
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    lista.sort(
+        (a,b) =>
+            (a.data || "")
+            .localeCompare(
+                b.data || ""
+            )
+    );
+
+
+    if (
+        lista.length === 0
+    ) {
+
+        alert(
+            "Não existem registros para exportar."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        jsPDF
+    } =
+        window.jspdf;
+
+
+    const pdf =
+        new jsPDF({
+
+            orientation:
+                "landscape",
+
+            unit:
+                "mm",
+
+            format:
+                "a4"
+
+        });
+
+
+    pdf.setFontSize(
+        18
+    );
+
+
+    pdf.text(
+        "RELATÓRIO DE PRODUÇÃO",
+        14,
+        15
+    );
+
+
+    pdf.setFontSize(
+        10
+    );
+
+
+    let periodo =
+        "Período: ";
+
+
+    periodo +=
+        dataInicial
+        ? formatarData(
+            dataInicial
+        )
+        : "Início";
+
+
+    periodo +=
+        " até ";
+
+
+    periodo +=
+        dataFinal
+        ? formatarData(
+            dataFinal
+        )
+        : "Fim";
+
+
+    pdf.text(
+        periodo,
+        14,
+        23
+    );
+
+
+    pdf.text(
+        "Cálculo do total: Folhas × 1,6",
+        14,
+        29
+    );
+
+
+    const dados = [];
+
+
+    let totalQuantidade =
+        0;
+
+
+    let totalFolhas =
+        0;
+
+
+    let totalFinal =
+        0;
+
+
+    lista.forEach(
+        registro => {
+
+            const folhas =
+                Number(
+                    registro.folhas
+                ) || 0;
+
+
+            const total =
+                folhas * FATOR_TOTAL;
+
+
+            totalQuantidade +=
+                Number(
+                    registro.quantidade
+                ) || 0;
+
+
+            totalFolhas +=
+                folhas;
+
+
+            totalFinal +=
+                total;
+
+
+            dados.push([
+
+                formatarData(
+                    registro.data
+                ),
+
+                formatarNumero(
+                    registro.inicial
+                ),
+
+                formatarNumero(
+                    registro.final
+                ),
+
+                formatarNumero(
+                    registro.quantidade
+                ),
+
+                formatarNumero(
+                    folhas
+                ),
+
+                formatarDecimal(
+                    total
+                )
+
+            ]);
+
+        }
+    );
+
+
+    dados.push([
+
+        "TOTAL FINAL",
+
+        "",
+
+        "",
+
+        formatarNumero(
+            totalQuantidade
+        ),
+
+        formatarNumero(
+            totalFolhas
+        ),
+
+        formatarDecimal(
+            totalFinal
+        )
+
+    ]);
+
+
+    pdf.autoTable({
+
+        startY:
+            34,
+
+        head: [[
+
+            "DATA",
+
+            "INICIAL",
+
+            "FINAL",
+
+            "QUANTIDADE",
+
+            "FOLHAS",
+
+            "TOTAL"
+
+        ]],
+
+        body:
+            dados,
+
+        theme:
+            "grid",
+
+        styles: {
+
+            fontSize:
+                9,
+
+            halign:
+                "center"
+
+        },
+
+        headStyles: {
+
+            fillColor:
+                [31,41,55],
+
+            textColor:
+                255
+
+        },
+
+        didParseCell:
+            function(data) {
+
+                if (
+                    data.section ===
+                    "body" &&
+
+                    data.row.index ===
+                    dados.length - 1
+                ) {
+
+                    data.cell.styles.fontStyle =
+                        "bold";
+
+                }
+
+            }
+
+    });
+
+
+    const hoje =
+        new Date();
+
+
+    const nomeArquivo =
+
+        "relatorio_producao_" +
+
+        hoje.getFullYear() +
+
+        "-" +
+
+        String(
+            hoje.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        "-" +
+
+        String(
+            hoje.getDate()
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        ".pdf";
+
+
+    pdf.save(
+        nomeArquivo
+    );
+
+}
+
+
+/* =====================================================
+   FORMATAR NÚMERO INTEIRO
+===================================================== */
+
+function formatarNumero(
+    valor
+) {
+
+    return String(
+
+        Math.round(
+            Number(valor) || 0
+        )
+
+    );
+
+}
+
+
+/* =====================================================
+   FORMATAR DECIMAL
+===================================================== */
+
+function formatarDecimal(
+    valor
+) {
+
+    return Number(
+        valor || 0
+    ).toFixed(2);
+
+}
+
+
+/* =====================================================
+   FORMATAR DATA
+===================================================== */
+
+function formatarData(
+    data
+) {
+
+    if (!data) {
+
+        return "";
+
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return data;
+
+    }
+
+
+    return (
+
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+
+    );
+
+}
+
+
+/* =====================================================
+   MENSAGEM
+===================================================== */
+
+function mostrarMensagem(
+
+    id,
+
+    texto,
+
+    tipo
+
+) {
+
+    const elemento =
+        document.getElementById(
+            id
+        );
+
+
+    if (!elemento) {
+
+        return;
+
+    }
+
+
+    elemento.textContent =
+        texto;
+
+
+    elemento.className =
+        "mensagem " +
+        tipo;
+
+
+    elemento.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            elemento.style.display =
+                "none";
+
+        },
+        3500
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
