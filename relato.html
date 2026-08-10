@@ -1,0 +1,3503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Controle de Colaboradores</title>
+
+
+    <!-- =====================================================
+         ESTILO
+    ====================================================== -->
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f1f3f6;
+
+            color: #222;
+
+            min-height: 100vh;
+        }
+
+
+        .container {
+
+            width: 95%;
+
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding:
+                20px
+                0
+                50px;
+        }
+
+
+        header {
+
+            background:
+                #1f2937;
+
+            color: white;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            margin-bottom: 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0,0,0,0.12);
+        }
+
+
+        header h1 {
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+        }
+
+
+        header p {
+
+            opacity: 0.8;
+
+            font-size: 14px;
+        }
+
+
+        .card {
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,0.08);
+        }
+
+
+        .card h2 {
+
+            margin-bottom: 15px;
+
+            color: #1f2937;
+        }
+
+
+        .cadastro {
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+
+        .cadastro input {
+
+            flex: 1;
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding:
+                11px
+                12px;
+
+            border:
+                1px solid
+                #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+
+        input:focus {
+
+            border-color:
+                #2563eb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(37,99,235,0.12);
+        }
+
+
+        button {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding:
+                11px
+                16px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            transition:
+                0.2s;
+        }
+
+
+        button:hover {
+
+            transform:
+                translateY(-1px);
+
+            opacity: 0.92;
+        }
+
+
+        .btn-cadastrar {
+
+            background:
+                #2563eb;
+
+            color: white;
+        }
+
+
+        .btn-adicionar {
+
+            background:
+                #16a34a;
+
+            color: white;
+        }
+
+
+        .btn-salvar {
+
+            background:
+                #2563eb;
+
+            color: white;
+        }
+
+
+        .btn-excluir {
+
+            background:
+                #dc2626;
+
+            color: white;
+        }
+
+
+        .btn-pdf {
+
+            background:
+                #7c3aed;
+
+            color: white;
+        }
+
+
+        .btn-voltar {
+
+            background:
+                #6b7280;
+
+            color: white;
+        }
+
+
+        .btn-editar {
+
+            background:
+                #f59e0b;
+
+            color: white;
+        }
+
+
+        .btn-cancelar {
+
+            background:
+                #6b7280;
+
+            color: white;
+        }
+
+
+        .colaboradores {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(250px, 1fr)
+                );
+
+            gap: 15px;
+        }
+
+
+        .colaborador {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 12px
+                rgba(37,99,235,0.25);
+
+            position: relative;
+        }
+
+
+        .colaborador-conteudo {
+
+            cursor: pointer;
+
+            margin-bottom: 15px;
+        }
+
+
+        .colaborador-conteudo:hover {
+
+            opacity: 0.9;
+        }
+
+
+        .colaborador h3 {
+
+            font-size: 18px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .colaborador small {
+
+            opacity: 0.8;
+        }
+
+
+        .acoes-colaborador {
+
+            display: flex;
+
+            gap: 7px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .acoes-colaborador button {
+
+            flex: 1;
+
+            min-width: 90px;
+
+            padding:
+                8px
+                10px;
+
+            font-size: 12px;
+        }
+
+
+        .area-edicao-nome {
+
+            display: none;
+
+            margin-top: 12px;
+        }
+
+
+        .area-edicao-nome.ativa {
+
+            display: block;
+        }
+
+
+        .area-edicao-nome input {
+
+            margin-bottom: 8px;
+        }
+
+
+        .botoes-edicao {
+
+            display: flex;
+
+            gap: 7px;
+        }
+
+
+        .botoes-edicao button {
+
+            flex: 1;
+
+            padding:
+                8px
+                10px;
+        }
+
+
+        .tabela-container {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse:
+                collapse;
+
+            min-width: 800px;
+        }
+
+
+        th {
+
+            background:
+                #1f2937;
+
+            color: white;
+
+            padding:
+                11px
+                8px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        td {
+
+            padding: 7px;
+
+            border-bottom:
+                1px solid
+                #e5e7eb;
+
+            text-align: center;
+        }
+
+
+        td input {
+
+            min-width: 100px;
+
+            text-align: center;
+        }
+
+
+        .vendido {
+
+            font-weight: bold;
+
+            color:
+                #16a34a;
+
+            background:
+                #f0fdf4;
+
+            border-radius: 6px;
+
+            padding: 10px;
+
+            display: inline-block;
+
+            min-width: 80px;
+        }
+
+
+        .acoes {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 15px;
+        }
+
+
+        .linha-acoes {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .linha-acoes h2 {
+
+            margin: 0;
+        }
+
+
+        .mensagem {
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            margin-top: 10px;
+
+            display: none;
+
+            font-size: 14px;
+        }
+
+
+        .sucesso {
+
+            background:
+                #dcfce7;
+
+            color:
+                #166534;
+        }
+
+
+        .erro {
+
+            background:
+                #fee2e2;
+
+            color:
+                #991b1b;
+        }
+
+
+        .aviso {
+
+            background:
+                #fef3c7;
+
+            color:
+                #92400e;
+        }
+
+
+        .vazio {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color:
+                #6b7280;
+        }
+
+
+        .relatorio-colaborador {
+
+            margin-bottom: 30px;
+        }
+
+
+        .relatorio-colaborador h3 {
+
+            background:
+                #e5e7eb;
+
+            padding: 12px;
+
+            border-radius:
+                8px
+                8px
+                0
+                0;
+        }
+
+
+        .relatorio-tabela {
+
+            min-width: 650px;
+        }
+
+
+        .total-row {
+
+            background:
+                #f3f4f6;
+
+            font-weight: bold;
+        }
+
+
+        .escondido {
+
+            display: none !important;
+        }
+
+
+        .status-firestore {
+
+            margin-bottom: 15px;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            background:
+                #dcfce7;
+
+            color:
+                #166534;
+        }
+
+
+        footer {
+
+            text-align: center;
+
+            color:
+                #6b7280;
+
+            font-size: 13px;
+
+            margin-top: 30px;
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+
+                width: 94%;
+            }
+
+
+            header h1 {
+
+                font-size: 22px;
+            }
+
+
+            .cadastro {
+
+                flex-direction:
+                    column;
+            }
+
+
+            .linha-acoes {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+            }
+
+
+            .acoes button {
+
+                width: 100%;
+            }
+
+        }
+
+
+        @media print {
+
+            body {
+
+                background:
+                    white;
+            }
+
+
+            header,
+            #areaCadastro,
+            #areaColaboradores,
+            #areaEdicao,
+            .acoes,
+            footer {
+
+                display:
+                    none !important;
+            }
+
+
+            #areaRelatorio {
+
+                display:
+                    block !important;
+            }
+
+
+            .card {
+
+                box-shadow:
+                    none;
+
+                padding:
+                    0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
+    <header>
+
+        <h1>
+            Controle de Colaboradores
+        </h1>
+
+        <p>
+            Cadastro, lançamentos e relatório
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         STATUS FIRESTORE
+    ====================================================== -->
+
+    <div
+        id="statusFirestore"
+        class="status-firestore"
+    >
+
+        Conectando ao Firestore...
+
+    </div>
+
+
+    <!-- =====================================================
+         CADASTRO
+    ====================================================== -->
+
+    <section
+        class="card"
+        id="areaCadastro"
+    >
+
+        <h2>
+            Cadastrar Colaborador
+        </h2>
+
+
+        <div class="cadastro">
+
+            <input
+                type="text"
+                id="nomeColaborador"
+                placeholder="Digite o nome do colaborador"
+                autocomplete="off"
+            >
+
+
+            <button
+                class="btn-cadastrar"
+                onclick="cadastrarColaborador()"
+            >
+
+                + Cadastrar
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="mensagemCadastro"
+            class="mensagem"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LISTA
+    ====================================================== -->
+
+    <section
+        class="card"
+        id="areaColaboradores"
+    >
+
+        <h2>
+            Colaboradores
+        </h2>
+
+
+        <div
+            id="listaColaboradores"
+            class="colaboradores"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ÁREA DE LANÇAMENTOS
+    ====================================================== -->
+
+    <section
+        class="card escondido"
+        id="areaEdicao"
+    >
+
+        <div class="linha-acoes">
+
+            <h2 id="tituloColaborador">
+                Colaborador
+            </h2>
+
+
+            <button
+                class="btn-voltar"
+                onclick="voltarParaColaboradores()"
+            >
+
+                ← Voltar
+
+            </button>
+
+        </div>
+
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            DATA
+                        </th>
+
+                        <th>
+                            INICIAL
+                        </th>
+
+                        <th>
+                            FINAL
+                        </th>
+
+                        <th>
+                            TOTAL
+                        </th>
+
+                        <th>
+                            DEVOLVIDO
+                        </th>
+
+                        <th>
+                            VENDIDO
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="tabelaLancamentos"
+                ></tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="acoes">
+
+            <button
+                class="btn-adicionar"
+                onclick="adicionarLinha()"
+            >
+
+                + Adicionar Linha
+
+            </button>
+
+
+            <button
+                class="btn-salvar"
+                onclick="salvarInformacoes()"
+            >
+
+                💾 Salvar Informações
+
+            </button>
+
+
+            <button
+                class="btn-excluir"
+                onclick="excluirInformacao()"
+            >
+
+                🗑️ Excluir Informação
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="mensagemEdicao"
+            class="mensagem"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RELATÓRIO
+    ====================================================== -->
+
+    <section
+        class="card"
+        id="areaRelatorio"
+    >
+
+        <div class="linha-acoes">
+
+            <h2>
+                Relatório
+            </h2>
+
+
+            <button
+                class="btn-pdf"
+                onclick="exportarPDF()"
+            >
+
+                📄 Exportar PDF
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="conteudoRelatorio"
+        ></div>
+
+    </section>
+
+
+    <footer>
+
+        Dados armazenados no Firebase Firestore
+
+    </footer>
+
+
+</div>
+
+
+<!-- =====================================================
+     FIREBASE
+     ====================================================== -->
+
+<script type="module">
+
+    import {
+        initializeApp
+    } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        doc,
+        updateDoc,
+        deleteDoc,
+        getDocs,
+        query,
+        orderBy,
+        serverTimestamp
+    } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    /*
+    ========================================================
+    CONFIGURAÇÃO DO SEU FIREBASE
+    ========================================================
+
+    SUBSTITUA OS VALORES ABAIXO PELOS DADOS
+    DO SEU PROJETO FIREBASE.
+
+    Firebase Console:
+    Configurações do projeto
+    → Seus apps
+    → Configuração do SDK
+
+    ========================================================
+    */
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyBrHB8Defu0DrkV8POU4lAuAxCal6fqHM4",
+  authDomain: "pitimbu-a09e3.firebaseapp.com",
+  projectId: "pitimbu-a09e3",
+  storageBucket: "pitimbu-a09e3.firebasestorage.app",
+  messagingSenderId: "956873424564",
+  appId: "1:956873424564:web:583c8405d288883d71e1e1"
+
+};
+
+
+    /*
+    ========================================================
+    INICIALIZAR FIREBASE
+    ========================================================
+    */
+
+    let app;
+
+    let db;
+
+
+    try {
+
+        app =
+            initializeApp(
+                firebaseConfig
+            );
+
+
+        db =
+            getFirestore(
+                app
+            );
+
+
+        document.getElementById(
+            "statusFirestore"
+        ).textContent =
+            "✓ Firestore conectado";
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        document.getElementById(
+            "statusFirestore"
+        ).textContent =
+            "⚠️ Erro ao conectar ao Firestore";
+
+
+        document.getElementById(
+            "statusFirestore"
+        ).className =
+            "status-firestore aviso";
+
+    }
+
+
+    /*
+    ========================================================
+    DISPONIBILIZAR FUNÇÕES PARA O HTML
+    ========================================================
+    */
+
+    window.db =
+        db;
+
+    window.firestoreFunctions = {
+
+        collection,
+
+        addDoc,
+
+        doc,
+
+        updateDoc,
+
+        deleteDoc,
+
+        getDocs,
+
+        query,
+
+        orderBy,
+
+        serverTimestamp
+
+    };
+
+
+    /*
+    ========================================================
+    INICIAR SISTEMA
+    ========================================================
+    */
+
+    if (db) {
+
+        await carregarColaboradores();
+
+    }
+
+</script>
+
+
+<!-- =====================================================
+     BIBLIOTECAS PDF
+====================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+
+<script>
+
+/*
+============================================================
+VARIÁVEIS
+============================================================
+*/
+
+let colaboradores = [];
+
+let colaboradorSelecionado = null;
+
+
+/*
+============================================================
+REFERÊNCIA FIRESTORE
+============================================================
+*/
+
+function colecaoColaboradores() {
+
+    return window.firestoreFunctions.collection(
+        window.db,
+        "colaboradores"
+    );
+
+}
+
+
+/*
+============================================================
+CARREGAR COLABORADORES
+============================================================
+*/
+
+async function carregarColaboradores() {
+
+    try {
+
+        const snapshot =
+            await window.firestoreFunctions.getDocs(
+                colecaoColaboradores()
+            );
+
+
+        colaboradores = [];
+
+
+        snapshot.forEach(
+            documento => {
+
+                colaboradores.push({
+
+                    id:
+                        documento.id,
+
+                    nome:
+                        documento.data().nome,
+
+                    registros:
+                        []
+
+                });
+
+            }
+        );
+
+
+        /*
+        Carregar registros de cada colaborador.
+        */
+
+        for (
+            const colaborador
+            of colaboradores
+        ) {
+
+            await carregarRegistros(
+                colaborador
+            );
+
+        }
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar colaboradores:",
+            erro
+        );
+
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Erro ao carregar dados do Firestore.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+CARREGAR REGISTROS
+============================================================
+*/
+
+async function carregarRegistros(
+    colaborador
+) {
+
+    try {
+
+        const registrosRef =
+            window.firestoreFunctions.collection(
+
+                window.db,
+
+                "colaboradores",
+
+                colaborador.id,
+
+                "registros"
+
+            );
+
+
+        const snapshot =
+            await window.firestoreFunctions.getDocs(
+                registrosRef
+            );
+
+
+        colaborador.registros = [];
+
+
+        snapshot.forEach(
+            documento => {
+
+                const dados =
+                    documento.data();
+
+
+                colaborador.registros.push({
+
+                    id:
+                        documento.id,
+
+                    data:
+                        dados.data || "",
+
+                    inicial:
+                        dados.inicial || 0,
+
+                    final:
+                        dados.final || 0,
+
+                    total:
+                        dados.total || 0,
+
+                    devolvido:
+                        dados.devolvido || 0,
+
+                    vendido:
+                        dados.vendido || 0
+
+                });
+
+            }
+        );
+
+
+        /*
+        Ordenar por data.
+        */
+
+        colaborador.registros.sort(
+            (a, b) =>
+                (a.data || "").localeCompare(
+                    b.data || ""
+                )
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar registros:",
+            erro
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+CADASTRAR COLABORADOR
+============================================================
+*/
+
+async function cadastrarColaborador() {
+
+    const campo =
+        document.getElementById(
+            "nomeColaborador"
+        );
+
+
+    const nome =
+        campo.value.trim();
+
+
+    if (!nome) {
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Digite o nome do colaborador.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const existe =
+        colaboradores.some(
+            colaborador =>
+                colaborador.nome.toLowerCase() ===
+                nome.toLowerCase()
+        );
+
+
+    if (existe) {
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Este colaborador já está cadastrado.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const documento =
+            await window.firestoreFunctions.addDoc(
+
+                colecaoColaboradores(),
+
+                {
+
+                    nome:
+                        nome,
+
+                    criadoEm:
+                        window.firestoreFunctions.serverTimestamp()
+
+                }
+
+            );
+
+
+        colaboradores.push({
+
+            id:
+                documento.id,
+
+            nome:
+                nome,
+
+            registros:
+                []
+
+        });
+
+
+        campo.value = "";
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Colaborador cadastrado com sucesso!",
+            "sucesso"
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Erro ao cadastrar colaborador.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+MOSTRAR COLABORADORES
+============================================================
+*/
+
+function mostrarColaboradores() {
+
+    const lista =
+        document.getElementById(
+            "listaColaboradores"
+        );
+
+
+    if (
+        colaboradores.length === 0
+    ) {
+
+        lista.innerHTML = `
+
+            <div class="vazio">
+
+                Nenhum colaborador cadastrado.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    lista.innerHTML =
+        colaboradores
+            .map(
+                colaborador => {
+
+                    const quantidade =
+                        colaborador.registros.length;
+
+
+                    return `
+
+                        <div
+                            class="colaborador"
+                            id="card-${colaborador.id}"
+                        >
+
+
+                            <div
+                                class="colaborador-conteudo"
+                                onclick="abrirColaborador('${colaborador.id}')"
+                            >
+
+                                <h3>
+                                    ${escaparHTML(
+                                        colaborador.nome
+                                    )}
+                                </h3>
+
+
+                                <small>
+
+                                    ${quantidade}
+
+                                    registro
+                                    ${quantidade === 1 ? "" : "s"}
+
+                                </small>
+
+                            </div>
+
+
+                            <div
+                                class="acoes-colaborador"
+                            >
+
+                                <button
+                                    class="btn-editar"
+                                    onclick="editarColaborador('${colaborador.id}', event)"
+                                >
+
+                                    ✏️ Editar
+
+                                </button>
+
+
+                                <button
+                                    class="btn-excluir"
+                                    onclick="excluirColaborador('${colaborador.id}', event)"
+                                >
+
+                                    🗑️ Excluir
+
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                class="area-edicao-nome"
+                                id="edicao-${colaborador.id}"
+                            >
+
+                                <input
+                                    type="text"
+                                    id="nome-edicao-${colaborador.id}"
+                                    value="${escaparHTML(
+                                        colaborador.nome
+                                    )}"
+                                >
+
+
+                                <div
+                                    class="botoes-edicao"
+                                >
+
+                                    <button
+                                        class="btn-salvar"
+                                        onclick="salvarNomeColaborador('${colaborador.id}', event)"
+                                    >
+
+                                        💾 Salvar
+
+                                    </button>
+
+
+                                    <button
+                                        class="btn-cancelar"
+                                        onclick="cancelarEdicao('${colaborador.id}', event)"
+                                    >
+
+                                        Cancelar
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/*
+============================================================
+EDITAR COLABORADOR
+============================================================
+*/
+
+function editarColaborador(
+    id,
+    event
+) {
+
+    event.stopPropagation();
+
+
+    const area =
+        document.getElementById(
+            "edicao-" + id
+        );
+
+
+    if (!area) {
+        return;
+    }
+
+
+    area.classList.add(
+        "ativa"
+    );
+
+
+    const input =
+        document.getElementById(
+            "nome-edicao-" + id
+        );
+
+
+    input.focus();
+
+    input.select();
+
+}
+
+
+/*
+============================================================
+CANCELAR EDIÇÃO
+============================================================
+*/
+
+function cancelarEdicao(
+    id,
+    event
+) {
+
+    event.stopPropagation();
+
+
+    const area =
+        document.getElementById(
+            "edicao-" + id
+        );
+
+
+    if (area) {
+
+        area.classList.remove(
+            "ativa"
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+SALVAR NOME
+============================================================
+*/
+
+async function salvarNomeColaborador(
+    id,
+    event
+) {
+
+    event.stopPropagation();
+
+
+    const input =
+        document.getElementById(
+            "nome-edicao-" + id
+        );
+
+
+    const novoNome =
+        input.value.trim();
+
+
+    if (!novoNome) {
+
+        alert(
+            "Digite um nome válido."
+        );
+
+        return;
+
+    }
+
+
+    const duplicado =
+        colaboradores.some(
+            colaborador =>
+                colaborador.id !== id &&
+                colaborador.nome.toLowerCase() ===
+                novoNome.toLowerCase()
+        );
+
+
+    if (duplicado) {
+
+        alert(
+            "Já existe outro colaborador com esse nome."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await window.firestoreFunctions.updateDoc(
+
+            window.firestoreFunctions.doc(
+
+                window.db,
+
+                "colaboradores",
+
+                id
+
+            ),
+
+            {
+
+                nome:
+                    novoNome
+
+            }
+
+        );
+
+
+        const colaborador =
+            colaboradores.find(
+                item =>
+                    item.id === id
+            );
+
+
+        if (colaborador) {
+
+            colaborador.nome =
+                novoNome;
+
+        }
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Nome alterado com sucesso!",
+            "sucesso"
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "Erro ao salvar o nome."
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+EXCLUIR COLABORADOR
+============================================================
+*/
+
+async function excluirColaborador(
+    id,
+    event
+) {
+
+    event.stopPropagation();
+
+
+    const colaborador =
+        colaboradores.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!colaborador) {
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+
+            "ATENÇÃO!\n\n" +
+
+            "Deseja excluir o colaborador:\n\n" +
+
+            colaborador.nome +
+
+            "\n\n" +
+
+            "Todos os lançamentos desse colaborador também serão excluídos."
+
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        /*
+        Primeiro excluir os registros.
+        */
+
+        const registrosRef =
+            window.firestoreFunctions.collection(
+
+                window.db,
+
+                "colaboradores",
+
+                id,
+
+                "registros"
+
+            );
+
+
+        const snapshot =
+            await window.firestoreFunctions.getDocs(
+                registrosRef
+            );
+
+
+        for (
+            const registro
+            of snapshot.docs
+        ) {
+
+            await window.firestoreFunctions.deleteDoc(
+                registro.ref
+            );
+
+        }
+
+
+        /*
+        Depois excluir o colaborador.
+        */
+
+        await window.firestoreFunctions.deleteDoc(
+
+            window.firestoreFunctions.doc(
+
+                window.db,
+
+                "colaboradores",
+
+                id
+
+            )
+
+        );
+
+
+        colaboradores =
+            colaboradores.filter(
+                item =>
+                    item.id !== id
+            );
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+        mostrarMensagem(
+            "mensagemCadastro",
+            "Colaborador excluído com sucesso.",
+            "sucesso"
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "Erro ao excluir colaborador."
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+ABRIR COLABORADOR
+============================================================
+*/
+
+function abrirColaborador(
+    id
+) {
+
+    const colaborador =
+        colaboradores.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!colaborador) {
+        return;
+    }
+
+
+    colaboradorSelecionado =
+        id;
+
+
+    document.getElementById(
+        "tituloColaborador"
+    ).textContent =
+        colaborador.nome;
+
+
+    document.getElementById(
+        "areaColaboradores"
+    ).classList.add(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaCadastro"
+    ).classList.add(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaRelatorio"
+    ).classList.add(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaEdicao"
+    ).classList.remove(
+        "escondido"
+    );
+
+
+    carregarTabelaDoColaborador(
+        colaborador
+    );
+
+}
+
+
+/*
+============================================================
+CARREGAR TABELA
+============================================================
+*/
+
+function carregarTabelaDoColaborador(
+    colaborador
+) {
+
+    const tabela =
+        document.getElementById(
+            "tabelaLancamentos"
+        );
+
+
+    tabela.innerHTML =
+        "";
+
+
+    if (
+        !colaborador.registros ||
+        colaborador.registros.length === 0
+    ) {
+
+        adicionarLinha();
+
+        return;
+
+    }
+
+
+    colaborador.registros.forEach(
+        registro => {
+
+            adicionarLinha(
+                registro
+            );
+
+        }
+    );
+
+}
+
+
+/*
+============================================================
+ADICIONAR LINHA
+============================================================
+*/
+
+function adicionarLinha(
+    registro = null
+) {
+
+    const tabela =
+        document.getElementById(
+            "tabelaLancamentos"
+        );
+
+
+    const tr =
+        document.createElement(
+            "tr"
+        );
+
+
+    tr.innerHTML = `
+
+        <td>
+
+            <input
+                type="date"
+                class="campo-data"
+                value="${registro?.data || ""}"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-inicial"
+                step="1"
+                min="0"
+                value="${registro?.inicial ?? ""}"
+                placeholder="0"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-final"
+                step="1"
+                min="0"
+                value="${registro?.final ?? ""}"
+                placeholder="0"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-total"
+                step="1"
+                min="0"
+                value="${registro?.total ?? ""}"
+                placeholder="0"
+            >
+
+        </td>
+
+
+        <td>
+
+            <input
+                type="number"
+                class="campo-devolvido"
+                step="1"
+                min="0"
+                value="${registro?.devolvido ?? ""}"
+                placeholder="0"
+            >
+
+        </td>
+
+
+        <td>
+
+            <span class="vendido">
+
+                ${formatarNumero(
+                    registro?.vendido ?? 0
+                )}
+
+            </span>
+
+        </td>
+
+    `;
+
+
+    tabela.appendChild(
+        tr
+    );
+
+
+    const campoTotal =
+        tr.querySelector(
+            ".campo-total"
+        );
+
+
+    const campoDevolvido =
+        tr.querySelector(
+            ".campo-devolvido"
+        );
+
+
+    campoTotal.addEventListener(
+        "input",
+        function () {
+
+            calcularVendido(
+                campoDevolvido
+            );
+
+        }
+    );
+
+
+    campoDevolvido.addEventListener(
+        "input",
+        function () {
+
+            calcularVendido(
+                campoDevolvido
+            );
+
+        }
+    );
+
+
+    calcularVendido(
+        campoDevolvido
+    );
+
+}
+
+
+/*
+============================================================
+CALCULAR VENDIDO
+============================================================
+*/
+
+function calcularVendido(
+    campoDevolvido
+) {
+
+    const linha =
+        campoDevolvido.closest(
+            "tr"
+        );
+
+
+    const campoTotal =
+        linha.querySelector(
+            ".campo-total"
+        );
+
+
+    const resultado =
+        linha.querySelector(
+            ".vendido"
+        );
+
+
+    const total =
+        parseInt(
+            campoTotal.value
+        ) || 0;
+
+
+    const devolvido =
+        parseInt(
+            campoDevolvido.value
+        ) || 0;
+
+
+    const vendido =
+        total -
+        devolvido;
+
+
+    resultado.textContent =
+        formatarNumero(
+            vendido
+        );
+
+}
+
+
+/*
+============================================================
+SALVAR INFORMAÇÕES NO FIRESTORE
+============================================================
+*/
+
+async function salvarInformacoes() {
+
+    if (
+        !colaboradorSelecionado
+    ) {
+        return;
+    }
+
+
+    const colaborador =
+        colaboradores.find(
+            item =>
+                item.id ===
+                colaboradorSelecionado
+        );
+
+
+    if (!colaborador) {
+        return;
+    }
+
+
+    try {
+
+        /*
+        ----------------------------------------------------
+        Excluir registros antigos
+        ----------------------------------------------------
+        */
+
+        const registrosRef =
+            window.firestoreFunctions.collection(
+
+                window.db,
+
+                "colaboradores",
+
+                colaborador.id,
+
+                "registros"
+
+            );
+
+
+        const snapshot =
+            await window.firestoreFunctions.getDocs(
+                registrosRef
+            );
+
+
+        for (
+            const registro
+            of snapshot.docs
+        ) {
+
+            await window.firestoreFunctions.deleteDoc(
+                registro.ref
+            );
+
+        }
+
+
+        /*
+        ----------------------------------------------------
+        Ler tabela atual
+        ----------------------------------------------------
+        */
+
+        const linhas =
+            document.querySelectorAll(
+                "#tabelaLancamentos tr"
+            );
+
+
+        const registros =
+            [];
+
+
+        /*
+        ----------------------------------------------------
+        Salvar cada linha
+        ----------------------------------------------------
+        */
+
+        for (
+            const linha
+            of linhas
+        ) {
+
+            const data =
+                linha.querySelector(
+                    ".campo-data"
+                ).value;
+
+
+            const inicial =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-inicial"
+                    ).value
+                ) || 0;
+
+
+            const final =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-final"
+                    ).value
+                ) || 0;
+
+
+            const total =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-total"
+                    ).value
+                ) || 0;
+
+
+            const devolvido =
+                parseInt(
+                    linha.querySelector(
+                        ".campo-devolvido"
+                    ).value
+                ) || 0;
+
+
+            const vendido =
+                total -
+                devolvido;
+
+
+            /*
+            Ignorar linha totalmente vazia.
+            */
+
+            if (
+
+                !data &&
+
+                inicial === 0 &&
+
+                final === 0 &&
+
+                total === 0 &&
+
+                devolvido === 0
+
+            ) {
+
+                continue;
+
+            }
+
+
+            const registro = {
+
+                data:
+                    data,
+
+                inicial:
+                    inicial,
+
+                final:
+                    final,
+
+                total:
+                    total,
+
+                devolvido:
+                    devolvido,
+
+                vendido:
+                    vendido,
+
+                criadoEm:
+                    window.firestoreFunctions.serverTimestamp()
+
+            };
+
+
+            const documento =
+                await window.firestoreFunctions.addDoc(
+
+                    registrosRef,
+
+                    registro
+
+                );
+
+
+            registros.push({
+
+                id:
+                    documento.id,
+
+                ...registro,
+
+                criadoEm:
+                    null
+
+            });
+
+        }
+
+
+        colaborador.registros =
+            registros;
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+        mostrarMensagem(
+            "mensagemEdicao",
+            "Informações salvas no Firestore!",
+            "sucesso"
+        );
+
+
+        setTimeout(
+            function () {
+
+                voltarParaColaboradores();
+
+            },
+            700
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar:",
+            erro
+        );
+
+
+        mostrarMensagem(
+            "mensagemEdicao",
+            "Erro ao salvar informações no Firestore.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+EXCLUIR INFORMAÇÕES
+============================================================
+*/
+
+async function excluirInformacao() {
+
+    if (
+        !colaboradorSelecionado
+    ) {
+        return;
+    }
+
+
+    const colaborador =
+        colaboradores.find(
+            item =>
+                item.id ===
+                colaboradorSelecionado
+        );
+
+
+    if (!colaborador) {
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+
+            "Deseja excluir TODOS os lançamentos de " +
+
+            colaborador.nome +
+
+            "?"
+
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const registrosRef =
+            window.firestoreFunctions.collection(
+
+                window.db,
+
+                "colaboradores",
+
+                colaborador.id,
+
+                "registros"
+
+            );
+
+
+        const snapshot =
+            await window.firestoreFunctions.getDocs(
+                registrosRef
+            );
+
+
+        for (
+            const registro
+            of snapshot.docs
+        ) {
+
+            await window.firestoreFunctions.deleteDoc(
+                registro.ref
+            );
+
+        }
+
+
+        colaborador.registros =
+            [];
+
+
+        mostrarColaboradores();
+
+        gerarRelatorio();
+
+
+        mostrarMensagem(
+            "mensagemEdicao",
+            "Lançamentos excluídos.",
+            "sucesso"
+        );
+
+
+        setTimeout(
+            function () {
+
+                voltarParaColaboradores();
+
+            },
+            700
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        mostrarMensagem(
+            "mensagemEdicao",
+            "Erro ao excluir lançamentos.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/*
+============================================================
+VOLTAR
+============================================================
+*/
+
+function voltarParaColaboradores() {
+
+    colaboradorSelecionado =
+        null;
+
+
+    document.getElementById(
+        "areaEdicao"
+    ).classList.add(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaCadastro"
+    ).classList.remove(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaColaboradores"
+    ).classList.remove(
+        "escondido"
+    );
+
+
+    document.getElementById(
+        "areaRelatorio"
+    ).classList.remove(
+        "escondido"
+    );
+
+
+    gerarRelatorio();
+
+}
+
+
+/*
+============================================================
+RELATÓRIO
+============================================================
+*/
+
+function gerarRelatorio() {
+
+    const area =
+        document.getElementById(
+            "conteudoRelatorio"
+        );
+
+
+    if (
+        colaboradores.length === 0
+    ) {
+
+        area.innerHTML = `
+
+            <div class="vazio">
+
+                Nenhum dado cadastrado.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html =
+        "";
+
+
+    colaboradores.forEach(
+        colaborador => {
+
+            if (
+                !colaborador.registros ||
+                colaborador.registros.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const registros =
+                [...colaborador.registros]
+                    .sort(
+                        (a,b) =>
+                            (
+                                a.data || ""
+                            ).localeCompare(
+                                b.data || ""
+                            )
+                    );
+
+
+            html += `
+
+                <div
+                    class="relatorio-colaborador"
+                >
+
+                    <h3>
+
+                        ${escaparHTML(
+                            colaborador.nome
+                        )}
+
+                    </h3>
+
+
+                    <div
+                        class="tabela-container"
+                    >
+
+                        <table
+                            class="relatorio-tabela"
+                        >
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        DATA
+                                    </th>
+
+                                    <th>
+                                        INICIAL
+                                    </th>
+
+                                    <th>
+                                        FINAL
+                                    </th>
+
+                                    <th>
+                                        TOTAL
+                                    </th>
+
+                                    <th>
+                                        DEVOLVIDO
+                                    </th>
+
+                                    <th>
+                                        VENDIDO
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+            `;
+
+
+            registros.forEach(
+                registro => {
+
+                    html += `
+
+                        <tr>
+
+                            <td>
+                                ${formatarData(
+                                    registro.data
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    registro.inicial
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    registro.final
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    registro.total
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    registro.devolvido
+                                )}
+                            </td>
+
+                            <td>
+
+                                <strong>
+
+                                    ${formatarNumero(
+                                        registro.vendido
+                                    )}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+
+            const totalGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.total
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const devolvidoGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.devolvido
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const vendidoGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.vendido
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            html += `
+
+                        <tr
+                            class="total-row"
+                        >
+
+                            <td>
+                                TOTAL
+                            </td>
+
+                            <td></td>
+
+                            <td></td>
+
+                            <td>
+                                ${formatarNumero(
+                                    totalGeral
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    devolvidoGeral
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatarNumero(
+                                    vendidoGeral
+                                )}
+                            </td>
+
+                        </tr>
+
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    if (!html) {
+
+        html = `
+
+            <div class="vazio">
+
+                Existem colaboradores cadastrados,
+                mas ainda não existem lançamentos.
+
+            </div>
+
+        `;
+
+    }
+
+
+    area.innerHTML =
+        html;
+
+}
+
+
+/*
+============================================================
+EXPORTAR PDF
+============================================================
+*/
+
+function exportarPDF() {
+
+    if (
+        colaboradores.length === 0
+    ) {
+
+        alert(
+            "Não existem dados para exportar."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        jsPDF
+    } =
+        window.jspdf;
+
+
+    const doc =
+        new jsPDF({
+
+            orientation:
+                "landscape",
+
+            unit:
+                "mm",
+
+            format:
+                "a4"
+
+        });
+
+
+    let primeiraPagina =
+        true;
+
+
+    colaboradores.forEach(
+        colaborador => {
+
+            if (
+                !colaborador.registros ||
+                colaborador.registros.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                !primeiraPagina
+            ) {
+
+                doc.addPage();
+
+            }
+
+
+            primeiraPagina =
+                false;
+
+
+            doc.setFontSize(
+                18
+            );
+
+
+            doc.text(
+                "RELATÓRIO DE COLABORADOR",
+                14,
+                15
+            );
+
+
+            doc.setFontSize(
+                13
+            );
+
+
+            doc.text(
+
+                "Colaborador: " +
+                colaborador.nome,
+
+                14,
+                24
+
+            );
+
+
+            const registros =
+                [...colaborador.registros]
+                    .sort(
+                        (a,b) =>
+                            (
+                                a.data || ""
+                            ).localeCompare(
+                                b.data || ""
+                            )
+                    );
+
+
+            const dadosTabela =
+                registros.map(
+                    registro => [
+
+                        formatarData(
+                            registro.data
+                        ),
+
+                        formatarNumero(
+                            registro.inicial
+                        ),
+
+                        formatarNumero(
+                            registro.final
+                        ),
+
+                        formatarNumero(
+                            registro.total
+                        ),
+
+                        formatarNumero(
+                            registro.devolvido
+                        ),
+
+                        formatarNumero(
+                            registro.vendido
+                        )
+
+                    ]
+                );
+
+
+            const totalGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.total
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const devolvidoGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.devolvido
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            const vendidoGeral =
+                registros.reduce(
+                    (
+                        soma,
+                        registro
+                    ) =>
+                        soma +
+                        (
+                            Number(
+                                registro.vendido
+                            ) || 0
+                        ),
+                    0
+                );
+
+
+            dadosTabela.push([
+
+                "TOTAL",
+
+                "",
+
+                "",
+
+                formatarNumero(
+                    totalGeral
+                ),
+
+                formatarNumero(
+                    devolvidoGeral
+                ),
+
+                formatarNumero(
+                    vendidoGeral
+                )
+
+            ]);
+
+
+            doc.autoTable({
+
+                startY:
+                    30,
+
+                head: [[
+
+                    "DATA",
+
+                    "INICIAL",
+
+                    "FINAL",
+
+                    "TOTAL",
+
+                    "DEVOLVIDO",
+
+                    "VENDIDO"
+
+                ]],
+
+                body:
+                    dadosTabela,
+
+                theme:
+                    "grid",
+
+                styles: {
+
+                    fontSize:
+                        9,
+
+                    halign:
+                        "center"
+
+                },
+
+                headStyles: {
+
+                    fillColor:
+                        [31,41,55],
+
+                    textColor:
+                        255
+
+                },
+
+                didParseCell:
+                    function(data) {
+
+                        if (
+
+                            data.row.index ===
+                            dadosTabela.length - 1
+
+                        ) {
+
+                            data.cell.styles.fontStyle =
+                                "bold";
+
+                        }
+
+                    }
+
+            });
+
+        }
+    );
+
+
+    if (
+        primeiraPagina
+    ) {
+
+        alert(
+            "Não existem lançamentos para exportar."
+        );
+
+        return;
+
+    }
+
+
+    const data =
+        new Date();
+
+
+    const nomeArquivo =
+
+        "relatorio_" +
+
+        data.getFullYear() +
+
+        "-" +
+
+        String(
+            data.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        "-" +
+
+        String(
+            data.getDate()
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        ".pdf";
+
+
+    doc.save(
+        nomeArquivo
+    );
+
+}
+
+
+/*
+============================================================
+FORMATAÇÃO NUMÉRICA
+============================================================
+*/
+
+function formatarNumero(
+    valor
+) {
+
+    const numero =
+        Number(valor) || 0;
+
+
+    return Math.round(
+        numero
+    ).toString();
+
+}
+
+
+/*
+============================================================
+FORMATAÇÃO DA DATA
+============================================================
+*/
+
+function formatarData(
+    data
+) {
+
+    if (!data) {
+        return "";
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return data;
+
+    }
+
+
+    return (
+
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+
+    );
+
+}
+
+
+/*
+============================================================
+ESCAPAR HTML
+============================================================
+*/
+
+function escaparHTML(
+    texto
+) {
+
+    return String(texto)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/*
+============================================================
+MENSAGENS
+============================================================
+*/
+
+function mostrarMensagem(
+    elementoId,
+    texto,
+    tipo
+) {
+
+    const elemento =
+        document.getElementById(
+            elementoId
+        );
+
+
+    elemento.textContent =
+        texto;
+
+
+    elemento.className =
+        "mensagem " +
+        tipo;
+
+
+    elemento.style.display =
+        "block";
+
+
+    setTimeout(
+        function () {
+
+            elemento.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+/*
+============================================================
+ENTER NO CADASTRO
+============================================================
+*/
+
+document
+    .getElementById(
+        "nomeColaborador"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                cadastrarColaborador();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+  </html>
