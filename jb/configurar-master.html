@@ -1,1804 +1,522 @@
-```html
 <!DOCTYPE html>
+
 <html lang="pt-BR">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Painel Master</title>
+```
+<title>Configuração Inicial - MASTER</title>
 
 <style>
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f3f5f7;
-    color: #263238;
-}
-
-
-/* =========================
-   TOPO
-========================= */
-
-.topo {
-
-    height: 70px;
-
-    background: #172027;
-
-    color: white;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 25px;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 100;
-
-}
-
-.logo {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-}
-
-.logo-icon {
-
-    width: 42px;
-
-    height: 42px;
-
-    border-radius: 10px;
-
-    background: #37474f;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 21px;
-
-}
-
-.logo-text h1 {
-
-    font-size: 19px;
-
-}
-
-.logo-text span {
-
-    display: block;
-
-    font-size: 11px;
-
-    color: #aeb8bd;
-
-    margin-top: 3px;
-
-}
-
-.usuario-topo {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-}
-
-.usuario-info {
-
-    text-align: right;
-
-}
-
-.usuario-info strong {
-
-    display: block;
-
-    font-size: 14px;
-
-}
-
-.usuario-info span {
-
-    display: block;
-
-    font-size: 11px;
-
-    color: #aeb8bd;
-
-    margin-top: 3px;
-
-}
-
-.btn-sair {
-
-    border: 1px solid #546e7a;
-
-    background: transparent;
-
-    color: white;
-
-    padding: 9px 14px;
-
-    border-radius: 7px;
-
-    cursor: pointer;
-
-}
-
-.btn-sair:hover {
-
-    background: #37474f;
-
-}
-
-
-/* =========================
-   LAYOUT
-========================= */
-
-.layout {
-
-    display: flex;
-
-    min-height: calc(100vh - 70px);
-
-}
-
-
-/* =========================
-   MENU
-========================= */
-
-.menu {
-
-    width: 245px;
-
-    background: #202b31;
-
-    color: white;
-
-    padding: 20px 12px;
-
-}
-
-.menu-titulo {
-
-    font-size: 10px;
-
-    color: #89969c;
-
-    padding: 0 12px;
-
-    margin: 10px 0 8px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 1px;
-
-}
-
-.menu button {
-
-    width: 100%;
-
-    border: none;
-
-    background: transparent;
-
-    color: #cbd3d7;
-
-    padding: 12px;
-
-    text-align: left;
-
-    border-radius: 7px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    margin-bottom: 3px;
-
-}
-
-.menu button:hover,
-.menu button.ativo {
-
-    background: #37474f;
-
-    color: white;
-
-}
-
-.menu button span {
-
-    display: inline-block;
-
-    width: 27px;
-
-}
-
-
-/* =========================
-   CONTEUDO
-========================= */
-
-.conteudo {
-
-    flex: 1;
-
-    padding: 28px;
-
-    min-width: 0;
-
-}
-
-.cabecalho-pagina {
-
-    margin-bottom: 25px;
-
-}
-
-.cabecalho-pagina h2 {
-
-    font-size: 25px;
-
-    color: #263238;
-
-}
-
-.cabecalho-pagina p {
-
-    color: #718087;
-
-    margin-top: 5px;
-
-    font-size: 13px;
-
-}
-
-
-/* =========================
-   CARDS
-========================= */
-
-.cards {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, minmax(180px, 1fr));
-
-    gap: 18px;
-
-    margin-bottom: 28px;
-
-}
-
-.card {
-
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 20px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.06);
-
-    border: 1px solid #e4e8ea;
-
-}
-
-.card-topo {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-}
-
-.card-titulo {
-
-    color: #718087;
-
-    font-size: 12px;
-
-}
-
-.card-icone {
-
-    width: 38px;
-
-    height: 38px;
-
-    border-radius: 9px;
-
-    background: #eceff1;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-}
-
-.card-numero {
-
-    font-size: 29px;
-
-    font-weight: bold;
-
-    margin-top: 15px;
-
-}
-
-.card-legenda {
-
-    color: #89969c;
-
-    font-size: 11px;
-
-    margin-top: 4px;
-
-}
-
-
-/* =========================
-   PAINEIS
-========================= */
-
-.grid-paineis {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(280px, 1fr));
-
-    gap: 20px;
-
-}
-
-.painel {
-
-    background: white;
-
-    border: 1px solid #e4e8ea;
-
-    border-radius: 12px;
-
-    padding: 22px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.05);
-
-}
-
-.painel h3 {
-
-    font-size: 17px;
-
-    margin-bottom: 7px;
-
-}
-
-.painel-descricao {
-
-    color: #78858b;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
-    margin-bottom: 18px;
-
-}
-
-.acoes {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-}
-
-.btn {
-
-    border: none;
-
-    border-radius: 7px;
-
-    padding: 10px 14px;
-
-    cursor: pointer;
-
-    font-size: 12px;
-
-    font-weight: bold;
-
-}
-
-.btn-principal {
-
-    background: #37474f;
-
-    color: white;
-
-}
-
-.btn-secundario {
-
-    background: #eceff1;
-
-    color: #263238;
-
-}
-
-.btn:hover {
-
-    opacity: .85;
-
-}
-
-
-/* =========================
-   SEÇÕES
-========================= */
-
-.secao {
-
-    display: none;
-
-}
-
-.secao.ativa {
-
-    display: block;
-
-}
-
-
-/* =========================
-   TABELA
-========================= */
-
-.tabela-container {
-
-    background: white;
-
-    border: 1px solid #e4e8ea;
-
-    border-radius: 12px;
-
-    overflow-x: auto;
-
-}
-
-.tabela {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-}
-
-.tabela th {
-
-    background: #f5f7f8;
-
-    color: #65737a;
-
-    font-size: 11px;
-
-    text-align: left;
-
-    padding: 13px;
-
-}
-
-.tabela td {
-
-    padding: 13px;
-
-    border-top: 1px solid #edf0f1;
-
-    font-size: 12px;
-
-}
-
-.status {
-
-    display: inline-block;
-
-    padding: 5px 8px;
-
-    border-radius: 20px;
-
-    background: #e8f5e9;
-
-    color: #2e7d32;
-
-    font-size: 10px;
-
-    font-weight: bold;
-
-}
-
-
-/* =========================
-   VAZIO
-========================= */
-
-.vazio {
-
-    text-align: center;
-
-    padding: 40px 20px;
-
-    color: #89969c;
-
-    font-size: 13px;
-
-}
-
-
-/* =========================
-   RESPONSIVO
-========================= */
-
-@media (max-width: 1000px) {
-
-    .cards {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
-}
-
-@media (max-width: 750px) {
-
-    .menu {
-
-        width: 65px;
-
-        padding: 15px 7px;
-
+    body {
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #111827, #1e3a8a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
     }
 
-    .menu button {
+    .container {
+        width: 100%;
+        max-width: 450px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.30);
+    }
 
+    .logo {
         text-align: center;
-
-        font-size: 0;
-
+        font-size: 48px;
+        margin-bottom: 10px;
     }
 
-    .menu button span {
-
-        width: auto;
-
-        font-size: 18px;
-
+    h1 {
+        text-align: center;
+        color: #111827;
+        margin-bottom: 8px;
     }
 
-    .menu-titulo {
+    .subtitulo {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
 
+    .aviso {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 6px;
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 14px;
+        border: none;
+        border-radius: 9px;
+        background: #2563eb;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .mensagem {
         display: none;
-
+        margin-top: 18px;
+        padding: 12px;
+        border-radius: 9px;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
-    .logo-text {
-
-        display: none;
-
+    .sucesso {
+        display: block;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
     }
 
-    .usuario-info {
-
-        display: none;
-
+    .erro {
+        display: block;
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
     }
 
-    .conteudo {
-
-        padding: 18px;
-
+    .rodape {
+        text-align: center;
+        color: #9ca3af;
+        font-size: 12px;
+        margin-top: 20px;
     }
-
-    .grid-paineis {
-
-        grid-template-columns: 1fr;
-
-    }
-
-}
-
-@media (max-width: 500px) {
-
-    .cards {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .topo {
-
-        padding: 0 12px;
-
-    }
-
-}
-
 </style>
+```
 
 </head>
 
-
 <body>
 
+<div class="container">
 
-<!-- =========================
-     TOPO
-========================= -->
+```
+<div class="logo">👑</div>
 
-<header class="topo">
+<h1>Configuração Inicial</h1>
 
-    <div class="logo">
+<p class="subtitulo">
+    Criação do administrador MASTER
+</p>
 
-        <div class="logo-icon">
-            🎟️
-        </div>
+<div class="aviso">
+    <strong>Ambiente de estudo</strong><br>
+    Esta configuração cria o primeiro administrador do
+    sistema fictício. Não envolve dinheiro real.
+</div>
 
-        <div class="logo-text">
+<form id="formMaster">
 
-            <h1>SIMULADOR</h1>
-
-            <span>PAINEL MASTER</span>
-
-        </div>
-
-    </div>
-
-
-    <div class="usuario-topo">
-
-        <div class="usuario-info">
-
-            <strong id="nomeUsuario">
-                Carregando...
-            </strong>
-
-            <span>
-                GERENTE GERAL / MASTER
-            </span>
-
-        </div>
-
-
-        <button
-            class="btn-sair"
-            id="btnSair"
-        >
-            Sair
-        </button>
-
-    </div>
-
-</header>
-
-
-
-<div class="layout">
-
-
-<!-- =========================
-     MENU
-========================= -->
-
-<nav class="menu">
-
-
-    <div class="menu-titulo">
-        Principal
-    </div>
-
-
-    <button
-        class="menu-btn ativo"
-        data-secao="inicio"
+    <label for="nome">Nome do administrador</label>
+    <input
+        type="text"
+        id="nome"
+        placeholder="Digite o nome"
+        required
     >
-        <span>🏠</span>
-        Início
+
+    <label for="email">E-mail</label>
+    <input
+        type="email"
+        id="email"
+        placeholder="Digite o e-mail"
+        required
+    >
+
+    <label for="senha">Senha</label>
+    <input
+        type="password"
+        id="senha"
+        placeholder="Mínimo de 6 caracteres"
+        minlength="6"
+        required
+    >
+
+    <label for="confirmarSenha">Confirmar senha</label>
+    <input
+        type="password"
+        id="confirmarSenha"
+        placeholder="Digite a senha novamente"
+        minlength="6"
+        required
+    >
+
+    <button type="submit" id="btnCriar">
+        👑 Criar MASTER
     </button>
 
+</form>
 
-    <div class="menu-titulo">
-        Administração
-    </div>
+<div id="mensagem" class="mensagem"></div>
 
-
-    <button
-        class="menu-btn"
-        data-secao="gerentes"
-    >
-        <span>👥</span>
-        Gerentes
-    </button>
-
-
-    <button
-        class="menu-btn"
-        data-secao="vendedores"
-    >
-        <span>🧑‍💼</span>
-        Vendedores
-    </button>
-
-
-    <div class="menu-titulo">
-        Operação
-    </div>
-
-
-    <button
-        class="menu-btn"
-        data-secao="sorteios"
-    >
-        <span>🎲</span>
-        Sorteios
-    </button>
-
-
-    <button
-        class="menu-btn"
-        data-secao="apostas"
-    >
-        <span>🎫</span>
-        Apostas
-    </button>
-
-
-    <button
-        class="menu-btn"
-        data-secao="resultados"
-    >
-        <span>🏆</span>
-        Resultados
-    </button>
-
-
-    <div class="menu-titulo">
-        Sistema
-    </div>
-
-
-    <button
-        class="menu-btn"
-        data-secao="relatorios"
-    >
-        <span>📊</span>
-        Relatórios
-    </button>
-
-
-</nav>
-
-
-
-<!-- =========================
-     CONTEÚDO
-========================= -->
-
-<main class="conteudo">
-
-
-<!-- =========================
-     INÍCIO
-========================= -->
-
-<section
-    id="inicio"
-    class="secao ativa"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Painel Master
-        </h2>
-
-        <p>
-            Controle geral do simulador.
-        </p>
-
-    </div>
-
-
-    <div class="cards">
-
-
-        <div class="card">
-
-            <div class="card-topo">
-
-                <span class="card-titulo">
-                    GERENTES
-                </span>
-
-                <div class="card-icone">
-                    👥
-                </div>
-
-            </div>
-
-            <div
-                class="card-numero"
-                id="totalGerentes"
-            >
-                0
-            </div>
-
-            <div class="card-legenda">
-                Gerentes cadastrados
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-topo">
-
-                <span class="card-titulo">
-                    VENDEDORES
-                </span>
-
-                <div class="card-icone">
-                    🧑‍💼
-                </div>
-
-            </div>
-
-            <div
-                class="card-numero"
-                id="totalVendedores"
-            >
-                0
-            </div>
-
-            <div class="card-legenda">
-                Vendedores cadastrados
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-topo">
-
-                <span class="card-titulo">
-                    SORTEIOS
-                </span>
-
-                <div class="card-icone">
-                    🎲
-                </div>
-
-            </div>
-
-            <div
-                class="card-numero"
-                id="totalSorteios"
-            >
-                0
-            </div>
-
-            <div class="card-legenda">
-                Sorteios registrados
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-topo">
-
-                <span class="card-titulo">
-                    APOSTAS
-                </span>
-
-                <div class="card-icone">
-                    🎫
-                </div>
-
-            </div>
-
-            <div
-                class="card-numero"
-                id="totalApostas"
-            >
-                0
-            </div>
-
-            <div class="card-legenda">
-                Apostas registradas
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-
-    <div class="grid-paineis">
-
-
-        <div class="painel">
-
-            <h3>
-                👥 Gerenciamento
-            </h3>
-
-            <p class="painel-descricao">
-                Gerencie gerentes de área e vendedores
-                do sistema.
-            </p>
-
-            <div class="acoes">
-
-                <button
-                    class="btn btn-principal"
-                    onclick="abrirSecao('gerentes')"
-                >
-                    Gerentes
-                </button>
-
-                <button
-                    class="btn btn-secundario"
-                    onclick="abrirSecao('vendedores')"
-                >
-                    Vendedores
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="painel">
-
-            <h3>
-                🎲 Sorteios
-            </h3>
-
-            <p class="painel-descricao">
-                Crie sorteios fictícios e posteriormente
-                informe os resultados para apuração.
-            </p>
-
-            <div class="acoes">
-
-                <button
-                    class="btn btn-principal"
-                    onclick="abrirSecao('sorteios')"
-                >
-                    Gerenciar sorteios
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="painel">
-
-            <h3>
-                🎫 Apostas
-            </h3>
-
-            <p class="painel-descricao">
-                Consulte as apostas registradas pelos
-                vendedores.
-            </p>
-
-            <div class="acoes">
-
-                <button
-                    class="btn btn-principal"
-                    onclick="abrirSecao('apostas')"
-                >
-                    Ver apostas
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="painel">
-
-            <h3>
-                🏆 Resultados
-            </h3>
-
-            <p class="painel-descricao">
-                Informe resultados dos sorteios e faça
-                a apuração das apostas.
-            </p>
-
-            <div class="acoes">
-
-                <button
-                    class="btn btn-principal"
-                    onclick="abrirSecao('resultados')"
-                >
-                    Resultados
-                </button>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     GERENTES
-========================= -->
-
-<section
-    id="gerentes"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Gerentes de Área
-        </h2>
-
-        <p>
-            Administração dos gerentes vinculados à banca.
-        </p>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="acoes">
-
-            <button
-                class="btn btn-principal"
-                onclick="alert('Módulo de cadastro de gerente será implementado na próxima etapa.')"
-            >
-                + Novo Gerente
-            </button>
-
-        </div>
-
-        <br>
-
-
-        <div class="tabela-container">
-
-            <table class="tabela">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Nome</th>
-
-                        <th>E-mail</th>
-
-                        <th>Área</th>
-
-                        <th>Status</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="tabelaGerentes">
-
-                    <tr>
-
-                        <td
-                            colspan="4"
-                            class="vazio"
-                        >
-                            Nenhum gerente cadastrado.
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     VENDEDORES
-========================= -->
-
-<section
-    id="vendedores"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Vendedores
-        </h2>
-
-        <p>
-            Visualização geral dos vendedores do sistema.
-        </p>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="acoes">
-
-            <button
-                class="btn btn-principal"
-                onclick="alert('O cadastro de vendedor será implementado junto ao módulo de gerentes.')"
-            >
-                + Novo Vendedor
-            </button>
-
-        </div>
-
-        <br>
-
-
-        <div class="tabela-container">
-
-            <table class="tabela">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Nome</th>
-
-                        <th>E-mail</th>
-
-                        <th>Área</th>
-
-                        <th>Saldo Virtual</th>
-
-                        <th>Status</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="tabelaVendedores">
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            class="vazio"
-                        >
-                            Nenhum vendedor cadastrado.
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     SORTEIOS
-========================= -->
-
-<section
-    id="sorteios"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Sorteios
-        </h2>
-
-        <p>
-            Criação e gerenciamento dos sorteios fictícios.
-        </p>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="acoes">
-
-            <button
-                class="btn btn-principal"
-                onclick="alert('Módulo de criação de sorteios será implementado na próxima etapa.')"
-            >
-                + Novo Sorteio
-            </button>
-
-        </div>
-
-        <br>
-
-
-        <div class="vazio">
-
-            Nenhum sorteio cadastrado.
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     APOSTAS
-========================= -->
-
-<section
-    id="apostas"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Apostas
-        </h2>
-
-        <p>
-            Consulta geral das apostas registradas.
-        </p>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="vazio">
-
-            Nenhuma aposta registrada.
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     RESULTADOS
-========================= -->
-
-<section
-    id="resultados"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Resultados
-        </h2>
-
-        <p>
-            Informe e gerencie os resultados dos sorteios.
-        </p>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="acoes">
-
-            <button
-                class="btn btn-principal"
-                onclick="alert('Módulo de resultados será implementado após o módulo de sorteios.')"
-            >
-                Informar Resultado
-            </button>
-
-        </div>
-
-        <br>
-
-
-        <div class="vazio">
-
-            Nenhum resultado disponível.
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     RELATÓRIOS
-========================= -->
-
-<section
-    id="relatorios"
-    class="secao"
->
-
-    <div class="cabecalho-pagina">
-
-        <h2>
-            Relatórios
-        </h2>
-
-        <p>
-            Relatórios gerais do simulador.
-        </p>
-
-    </div>
-
-
-    <div class="grid-paineis">
-
-
-        <div class="painel">
-
-            <h3>
-                📊 Apostas
-            </h3>
-
-            <p class="painel-descricao">
-                Relatório geral das apostas realizadas.
-            </p>
-
-            <button
-                class="btn btn-principal"
-            >
-                Em breve
-            </button>
-
-        </div>
-
-
-        <div class="painel">
-
-            <h3>
-                👥 Vendedores
-            </h3>
-
-            <p class="painel-descricao">
-                Desempenho dos vendedores.
-            </p>
-
-            <button
-                class="btn btn-principal"
-            >
-                Em breve
-            </button>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-</main>
+<div class="rodape">
+    Sistema fictício para estudos e testes
+</div>
+```
 
 </div>
 
-
-
 <script type="module">
 
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
-// =====================================================
-// FIREBASE
-// =====================================================
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
-
-import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-
-import {
-    getFirestore,
-    collection,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+    import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+        doc,
+        setDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
+    // ==========================================
+    // FIREBASE
+    // ==========================================
 
-const firebaseConfig = {
-
-    apiKey: "AIzaSyAsOqTDBkSxO1I28WNmf3iB22M4MU_dU50",
-
-    authDomain: "meuappweb-65522.firebaseapp.com",
-
-    projectId: "meuappweb-65522",
-
-    storageBucket: "meuappweb-65522.firebasestorage.app",
-
-    messagingSenderId: "305368794616",
-
-    appId: "1:305368794616:web:f5c8800c7bf4694d6ac20d",
-
-    measurementId: "G-R3MQX6NPWB"
-
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyAsOqTDBSxO1I28WNmf3iB22M4MU_dU50",
+        authDomain: "meuappweb-65522.firebaseapp.com",
+        projectId: "meuappweb-65522",
+        storageBucket: "meuappweb-65522.firebasestorage.app",
+        messagingSenderId: "305368794616",
+        appId: "1:305368794616:web:f5c8800c7bf4694d6ac20d",
+        measurementId: "G-R3MQX6NPWB"
+    };
 
 
-const app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+    const auth = getAuth(app);
 
-const db = getFirestore(app);
-
-
-
-// =====================================================
-// SESSÃO
-// =====================================================
-
-let usuarioSessao = null;
+    const db = getFirestore(app);
 
 
+    // ==========================================
+    // ELEMENTOS
+    // ==========================================
 
-function obterSessao() {
+    const form = document.getElementById("formMaster");
+    const mensagem = document.getElementById("mensagem");
+    const btnCriar = document.getElementById("btnCriar");
 
-    const dados =
-        sessionStorage.getItem("usuarioSessao");
 
+    // ==========================================
+    // MENSAGEM
+    // ==========================================
 
-    if (!dados) {
+    function mostrarMensagem(texto, tipo) {
 
-        return null;
+        mensagem.textContent = texto;
 
+        mensagem.className = "mensagem " + tipo;
     }
 
 
-    try {
-
-        return JSON.parse(dados);
-
-    } catch {
-
-        return null;
-
-    }
-
-}
-
-
-
-// =====================================================
-// VERIFICAR ACESSO
-// =====================================================
-
-onAuthStateChanged(auth, async (user) => {
-
-    if (!user) {
-
-        window.location.href = "login.html";
-
-        return;
-
-    }
-
-
-    usuarioSessao = obterSessao();
-
-
-    if (!usuarioSessao) {
-
-        await signOut(auth);
-
-        window.location.href = "login.html";
-
-        return;
-
-    }
-
-
-    if (usuarioSessao.perfil !== "MASTER") {
-
-        alert(
-            "Acesso negado. Esta área é exclusiva do MASTER."
-        );
-
-        await signOut(auth);
-
-        sessionStorage.removeItem("usuarioSessao");
-
-        window.location.href = "login.html";
-
-        return;
-
-    }
-
-
-    document.getElementById("nomeUsuario").textContent =
-        usuarioSessao.nome || "Administrador";
-
-
-    carregarResumo();
-
-});
-
-
-
-// =====================================================
-// RESUMO
-// =====================================================
-
-async function carregarResumo() {
-
-    try {
-
-        const [
-            gerentes,
-            vendedores,
-            sorteios,
-            apostas
-        ] = await Promise.all([
-
-            getDocs(collection(db, "usuarios")),
-
-            getDocs(collection(db, "vendedores")),
-
-            getDocs(collection(db, "sorteios")),
-
-            getDocs(collection(db, "apostas"))
-
-        ]);
-
-
-        let totalGerentes = 0;
-
-        let totalVendedores = 0;
-
-
-        gerentes.forEach((doc) => {
-
-            const dados = doc.data();
-
-            if (dados.perfil === "GERENTE") {
-
-                totalGerentes++;
-
-            }
-
-        });
-
-
-        vendedores.forEach(() => {
-
-            totalVendedores++;
-
-        });
-
-
-        document.getElementById(
-            "totalGerentes"
-        ).textContent = totalGerentes;
-
-
-        document.getElementById(
-            "totalVendedores"
-        ).textContent = totalVendedores;
-
-
-        document.getElementById(
-            "totalSorteios"
-        ).textContent = sorteios.size;
-
-
-        document.getElementById(
-            "totalApostas"
-        ).textContent = apostas.size;
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar resumo:",
-            erro
-        );
-
-    }
-
-}
-
-
-
-// =====================================================
-// MENU
-// =====================================================
-
-const botoesMenu =
-    document.querySelectorAll(".menu-btn");
-
-
-botoesMenu.forEach((botao) => {
-
-    botao.addEventListener("click", () => {
-
-        abrirSecao(botao.dataset.secao);
-
-    });
-
-});
-
-
-
-window.abrirSecao = function(nome) {
-
-
-    document
-        .querySelectorAll(".secao")
-        .forEach((secao) => {
-
-            secao.classList.remove("ativa");
-
-        });
-
-
-    document
-        .querySelectorAll(".menu-btn")
-        .forEach((botao) => {
-
-            botao.classList.remove("ativo");
-
-        });
-
-
-    const secao =
-        document.getElementById(nome);
-
-
-    if (secao) {
-
-        secao.classList.add("ativa");
-
-    }
-
-
-    const botao =
-        document.querySelector(
-            `.menu-btn[data-secao="${nome}"]`
-        );
-
-
-    if (botao) {
-
-        botao.classList.add("ativo");
-
-    }
-
-};
-
-
-
-// =====================================================
-// SAIR
-// =====================================================
-
-document
-    .getElementById("btnSair")
-    .addEventListener("click", async () => {
+    // ==========================================
+    // VERIFICAR SE JÁ EXISTE MASTER
+    // ==========================================
+
+    async function verificarMaster() {
 
         try {
 
-            await signOut(auth);
-
-            sessionStorage.removeItem(
-                "usuarioSessao"
+            const q = query(
+                collection(db, "usuarios"),
+                where("perfil", "==", "MASTER")
             );
 
-            window.location.href =
-                "login.html";
+            const resultado = await getDocs(q);
+
+            if (!resultado.empty) {
+
+                mostrarMensagem(
+                    "Já existe um usuário MASTER cadastrado. Você será direcionado para o login.",
+                    "erro"
+                );
+
+                form.style.display = "none";
+
+                setTimeout(() => {
+
+                    window.location.href = "login.html";
+
+                }, 2500);
+
+                return true;
+            }
+
+            return false;
 
         } catch (erro) {
 
-            console.error(erro);
+            console.error("Erro ao verificar MASTER:", erro);
 
-            alert(
-                "Não foi possível sair do sistema."
+            mostrarMensagem(
+                "Não foi possível verificar o cadastro do MASTER. Verifique sua conexão com o Firebase e as regras do Firestore.",
+                "erro"
             );
+
+            return true;
+        }
+    }
+
+
+    // ==========================================
+    // CRIAR MASTER
+    // ==========================================
+
+    form.addEventListener("submit", async (event) => {
+
+        event.preventDefault();
+
+
+        const nome = document.getElementById("nome").value.trim();
+
+        const email = document.getElementById("email").value.trim();
+
+        const senha = document.getElementById("senha").value;
+
+        const confirmarSenha =
+            document.getElementById("confirmarSenha").value;
+
+
+        // Validações
+
+        if (!nome) {
+
+            mostrarMensagem(
+                "Digite o nome do administrador.",
+                "erro"
+            );
+
+            return;
+        }
+
+
+        if (senha.length < 6) {
+
+            mostrarMensagem(
+                "A senha precisa ter pelo menos 6 caracteres.",
+                "erro"
+            );
+
+            return;
+        }
+
+
+        if (senha !== confirmarSenha) {
+
+            mostrarMensagem(
+                "As senhas não são iguais.",
+                "erro"
+            );
+
+            return;
+        }
+
+
+        btnCriar.disabled = true;
+
+        btnCriar.textContent = "Criando MASTER...";
+
+
+        try {
+
+            // Verifica novamente antes de criar
+            const jaExiste = await verificarMaster();
+
+            if (jaExiste) {
+
+                btnCriar.disabled = false;
+
+                btnCriar.textContent = "👑 Criar MASTER";
+
+                return;
+            }
+
+
+            // ==========================================
+            // CRIA USUÁRIO NO FIREBASE AUTH
+            // ==========================================
+
+            const resultado =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    senha
+                );
+
+
+            const uid = resultado.user.uid;
+
+
+            // ==========================================
+            // CRIA PERFIL NO FIRESTORE
+            // ==========================================
+
+            await setDoc(
+                doc(db, "usuarios", uid),
+                {
+
+                    nome: nome,
+
+                    email: email,
+
+                    perfil: "MASTER",
+
+                    ativo: true,
+
+                    areaId: null,
+
+                    vendedorId: null,
+
+                    saldoVirtual: 0,
+
+                    criadoEm: serverTimestamp()
+
+                }
+            );
+
+
+            // Desloga para deixar o usuário entrar
+            // normalmente pela tela de login.
+
+            await signOut(auth);
+
+
+            mostrarMensagem(
+                "MASTER criado com sucesso! Redirecionando para o login...",
+                "sucesso"
+            );
+
+
+            form.style.display = "none";
+
+
+            setTimeout(() => {
+
+                window.location.href = "login.html";
+
+            }, 1800);
+
+
+        } catch (erro) {
+
+            console.error("Erro ao criar MASTER:", erro);
+
+
+            let texto = "Não foi possível criar o MASTER.";
+
+
+            if (erro.code === "auth/email-already-in-use") {
+
+                texto =
+                    "Este e-mail já está cadastrado no Firebase Authentication.";
+
+            } else if (erro.code === "auth/invalid-email") {
+
+                texto =
+                    "O e-mail informado não é válido.";
+
+            } else if (erro.code === "auth/weak-password") {
+
+                texto =
+                    "A senha é muito fraca. Use pelo menos 6 caracteres.";
+
+            } else if (erro.code === "permission-denied") {
+
+                texto =
+                    "O Firestore recusou a gravação. Verifique as regras do Firestore.";
+
+            }
+
+
+            mostrarMensagem(texto, "erro");
+
+
+            btnCriar.disabled = false;
+
+            btnCriar.textContent = "👑 Criar MASTER";
 
         }
 
     });
 
 
+    // ==========================================
+    // INÍCIO DA PÁGINA
+    // ==========================================
+
+    verificarMaster();
+
 </script>
 
-
 </body>
-
 </html>
-```
-
