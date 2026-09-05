@@ -1,18 +1,14 @@
+v
+```html
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-   content="width=device-width, initial-scale=1.0">
-
-<title>Painel Master</title>
+<title>Painel MASTER</title>
 
 <style>
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -20,1600 +16,706 @@
 }
 
 body {
-
-    font-family: Arial, sans-serif;
-
-    background: #f3f5f7;
-
-    color: #263238;
-
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
-
-/* TOPO */
-
 .topo {
-
-    height: 70px;
-
-    background: #172027;
-
+    height: 65px;
+    background: #111827;
     color: white;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     padding: 0 25px;
-
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .logo {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-}
-
-.logo-icon {
-
-    width: 42px;
-
-    height: 42px;
-
-    border-radius: 10px;
-
-    background: #37474f;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-}
-
-.logo-text h1 {
-
-    font-size: 18px;
-
-}
-
-.logo-text span {
-
-    font-size: 10px;
-
-    color: #aeb7bc;
-
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .usuario {
-
     display: flex;
-
     align-items: center;
-
     gap: 15px;
-
-}
-
-.usuario-info {
-
-    text-align: right;
-
-}
-
-.usuario-info strong {
-
-    display: block;
-
-    font-size: 13px;
-
-}
-
-.usuario-info span {
-
-    font-size: 10px;
-
-    color: #aeb7bc;
-
 }
 
 .btn-sair {
-
-    background: transparent;
-
+    background: #dc2626;
     color: white;
-
-    border: 1px solid #546e7a;
-
-    border-radius: 7px;
-
-    padding: 9px 14px;
-
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
     cursor: pointer;
-
 }
-
-
-/* LAYOUT */
-
-.layout {
-
-    display: flex;
-
-    min-height: calc(100vh - 70px);
-
-}
-
-
-/* MENU */
 
 .menu {
-
-    width: 235px;
-
-    background: #202b31;
-
-    padding: 18px 12px;
-
-}
-
-.menu-titulo {
-
-    color: #819097;
-
-    font-size: 10px;
-
-    margin: 12px;
-
-    text-transform: uppercase;
-
+    position: fixed;
+    top: 65px;
+    left: 0;
+    bottom: 0;
+    width: 230px;
+    background: #1e293b;
+    padding: 20px 10px;
 }
 
 .menu button {
-
     width: 100%;
-
-    border: none;
-
     background: transparent;
-
-    color: #cbd3d7;
-
-    padding: 12px;
-
+    color: #cbd5e1;
+    border: none;
+    padding: 13px;
     text-align: left;
-
-    border-radius: 7px;
-
+    border-radius: 6px;
+    margin-bottom: 5px;
     cursor: pointer;
-
-    margin-bottom: 3px;
-
+    font-size: 15px;
 }
 
 .menu button:hover,
 .menu button.ativo {
-
-    background: #37474f;
-
+    background: #334155;
     color: white;
-
 }
 
-
-/* CONTEUDO */
-
 .conteudo {
-
-    flex: 1;
-
-    padding: 28px;
-
+    margin-left: 230px;
+    padding: 90px 25px 30px;
 }
 
 .secao {
-
     display: none;
-
 }
 
 .secao.ativa {
-
     display: block;
-
 }
 
 .cabecalho {
-
-    margin-bottom: 22px;
-
+    margin-bottom: 25px;
 }
 
 .cabecalho h2 {
-
-    font-size: 25px;
-
-}
-
-.cabecalho p {
-
-    color: #718087;
-
-    font-size: 13px;
-
-    margin-top: 5px;
-
-}
-
-
-/* CARDS */
-
-.cards {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 17px;
-
-    margin-bottom: 25px;
-
-}
-
-.card {
-
-    background: white;
-
-    border: 1px solid #e1e6e8;
-
-    border-radius: 12px;
-
-    padding: 20px;
-
-}
-
-.card-titulo {
-
-    color: #718087;
-
-    font-size: 11px;
-
-}
-
-.card-numero {
-
-    font-size: 28px;
-
-    font-weight: bold;
-
-    margin-top: 12px;
-
-}
-
-
-/* PAINEL */
-
-.painel {
-
-    background: white;
-
-    border: 1px solid #e1e6e8;
-
-    border-radius: 12px;
-
-    padding: 22px;
-
-}
-
-.painel h3 {
-
-    margin-bottom: 7px;
-
+    margin-bottom: 5px;
 }
 
 .descricao {
-
-    color: #718087;
-
-    font-size: 12px;
-
-    margin-bottom: 20px;
-
+    color: #64748b;
 }
 
-
-/* BOTÕES */
-
-.btn {
-
-    border: none;
-
-    border-radius: 7px;
-
-    padding: 10px 14px;
-
-    cursor: pointer;
-
-    font-weight: bold;
-
-    font-size: 12px;
-
-}
-
-.btn-principal {
-
-    background: #37474f;
-
-    color: white;
-
-}
-
-.btn-danger {
-
-    background: #c62828;
-
-    color: white;
-
-}
-
-.btn-success {
-
-    background: #2e7d32;
-
-    color: white;
-
-}
-
-.btn-warning {
-
-    background: #ef6c00;
-
-    color: white;
-
-}
-
-.btn-secondary {
-
-    background: #607d8b;
-
-    color: white;
-
-}
-
-.btn:hover {
-
-    opacity: .85;
-
-}
-
-
-/* FORM */
-
-.form-grid {
-
+.cards {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
 
-    grid-template-columns:
-        repeat(2, 1fr);
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
 
+.card h3 {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.card .numero {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.painel {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.formulario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
-
 }
 
 .campo {
-
     display: flex;
-
     flex-direction: column;
-
+    gap: 6px;
 }
 
 .campo label {
-
-    font-size: 12px;
-
-    margin-bottom: 6px;
-
-    color: #546168;
-
+    font-size: 13px;
+    font-weight: bold;
 }
 
-.campo input {
-
-    height: 43px;
-
-    border: 1px solid #cfd8dc;
-
-    border-radius: 7px;
-
-    padding: 0 11px;
-
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
     outline: none;
-
 }
 
-.campo input:focus {
-
-    border-color: #607d8b;
-
+.campo input:focus,
+.campo select:focus {
+    border-color: #2563eb;
 }
 
+.botoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
 
-/* TABELA */
+.btn {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-principal {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-sucesso {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-perigo {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-secundario {
+    background: #64748b;
+    color: white;
+}
+
+.btn-aviso {
+    background: #d97706;
+    color: white;
+}
+
+.btn:hover {
+    opacity: .9;
+}
 
 .tabela-container {
-
     overflow-x: auto;
-
-    margin-top: 20px;
-
 }
 
 table {
-
     width: 100%;
-
     border-collapse: collapse;
+    margin-top: 15px;
+}
 
+th,
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    white-space: nowrap;
 }
 
 th {
-
-    background: #f5f7f8;
-
-    text-align: left;
-
-    padding: 12px;
-
-    font-size: 11px;
-
-    color: #607078;
-
+    background: #f8fafc;
+    font-size: 13px;
 }
-
-td {
-
-    padding: 12px;
-
-    border-top: 1px solid #edf0f1;
-
-    font-size: 12px;
-
-}
-
-
-/* STATUS */
 
 .status {
-
-    padding: 5px 8px;
-
+    display: inline-block;
+    padding: 5px 9px;
     border-radius: 20px;
-
-    font-size: 10px;
-
+    font-size: 12px;
     font-weight: bold;
-
 }
 
 .status-aberto {
-
-    background: #e8f5e9;
-
-    color: #2e7d32;
-
+    background: #dcfce7;
+    color: #166534;
 }
 
 .status-fechado {
-
-    background: #ffebee;
-
-    color: #c62828;
-
+    background: #fee2e2;
+    color: #991b1b;
 }
 
-
-/* AVISO */
-
-.aviso {
-
+.mensagem {
     padding: 12px;
-
-    border-radius: 7px;
-
-    margin-top: 15px;
-
-    font-size: 12px;
-
-    background: #eceff1;
-
-    color: #455a64;
-
-}
-
-
-/* MODAL */
-
-.modal {
-
-    position: fixed;
-
-    inset: 0;
-
-    background: rgba(0,0,0,.55);
-
+    border-radius: 6px;
+    margin-bottom: 15px;
     display: none;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 20px;
-
-    z-index: 1000;
-
 }
 
-.modal.aberto {
-
-    display: flex;
-
+.mensagem.sucesso {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
 }
 
-.modal-box {
-
-    width: 100%;
-
-    max-width: 550px;
-
-    background: white;
-
-    border-radius: 14px;
-
-    padding: 25px;
-
+.mensagem.erro {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
-.modal-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 20px;
-
-}
-
-.fechar {
-
-    border: none;
-
-    background: transparent;
-
-    font-size: 22px;
-
-    cursor: pointer;
-
-}
-
-.modal-acoes {
-
-    display: flex;
-
-    justify-content: flex-end;
-
-    gap: 8px;
-
-    margin-top: 20px;
-
-}
-
-#mensagem {
-
-    min-height: 20px;
-
-    margin-top: 15px;
-
-    text-align: center;
-
-    font-size: 12px;
-
-}
-
-.erro {
-
-    color: #c62828;
-
-}
-
-.sucesso {
-
-    color: #2e7d32;
-
-}
-
-
-@media(max-width:900px) {
-
-    .cards {
-
-        grid-template-columns:
-            repeat(2,1fr);
-
-    }
-
-}
-
-@media(max-width:700px) {
+@media (max-width: 800px) {
 
     .menu {
-
-        width: 65px;
-
+        width: 70px;
     }
 
     .menu button {
-
         font-size: 0;
-
         text-align: center;
-
     }
 
-    .menu button span {
-
-        font-size: 18px;
-
-    }
-
-    .menu-titulo {
-
-        display: none;
-
-    }
-
-    .logo-text {
-
-        display: none;
-
-    }
-
-    .usuario-info {
-
-        display: none;
-
-    }
-
-    .form-grid {
-
-        grid-template-columns: 1fr;
-
-    }
-
-}
-
-@media(max-width:500px) {
-
-    .cards {
-
-        grid-template-columns: 1fr;
-
+    .menu button::first-letter {
+        font-size: 20px;
     }
 
     .conteudo {
-
-        padding: 15px;
-
+        margin-left: 70px;
     }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header class="topo">
 
-<div class="logo">
+    <div class="logo">
+        SIMULADOR • MASTER
+    </div>
 
-<div class="logo-icon">
-🎟️
-</div>
-
-<div class="logo-text">
-
-<h1>SIMULADOR</h1>
-
-<span>PAINEL MASTER</span>
-
-</div>
-
-</div>
-
-<div class="usuario">
-
-<div class="usuario-info">
-
-<strong id="nomeUsuario">
-Carregando...
-</strong>
-
-<span>
-GERENTE GERAL / MASTER
-</span>
-
-</div>
-
-<button
-class="btn-sair"
-id="btnSair"
-
->
-
-Sair </button>
-
-</div>
+    <div class="usuario">
+        <span id="nomeUsuario">Carregando...</span>
+        <button class="btn-sair" id="btnSair">Sair</button>
+    </div>
 
 </header>
 
-<div class="layout">
 
 <nav class="menu">
 
-<div class="menu-titulo">
-Principal
-</div>
+    <button class="ativo" onclick="abrirSecao('inicio', this)">
+        🏠 Início
+    </button>
 
-<button
-class="menu-btn ativo"
-data-secao="inicio"
+    <button onclick="abrirSecao('gerentes', this)">
+        👨‍💼 Gerentes
+    </button>
 
->
+    <button onclick="abrirSecao('vendedores', this)">
+        👤 Vendedores
+    </button>
 
-<span>🏠</span>
-Início
+    <button onclick="abrirSecao('sorteios', this)">
+        🎯 Sorteios
+    </button>
 
-</button>
+    <button onclick="abrirSecao('apostas', this)">
+        🎟️ Apostas
+    </button>
 
-<div class="menu-titulo">
-Administração
-</div>
+    <button onclick="abrirSecao('resultados', this)">
+        🏆 Resultados
+    </button>
 
-<button
-class="menu-btn"
-data-secao="gerentes"
-
->
-
-<span>👥</span>
-Gerentes
-
-</button>
-
-<button
-class="menu-btn"
-data-secao="vendedores"
-
->
-
-<span>🧑‍💼</span>
-Vendedores
-
-</button>
-
-<div class="menu-titulo">
-Operação
-</div>
-
-<button
-class="menu-btn"
-data-secao="sorteios"
-
->
-
-<span>🎲</span>
-Sorteios
-
-</button>
-
-<button
-class="menu-btn"
-data-secao="apostas"
-
->
-
-<span>🎫</span>
-Apostas
-
-</button>
-
-<button
-class="menu-btn"
-data-secao="resultados"
-
->
-
-<span>🏆</span>
-Resultados
-
-</button>
-
-<div class="menu-titulo">
-Sistema
-</div>
-
-<button
-class="menu-btn"
-data-secao="relatorios"
-
->
-
-<span>📊</span>
-Relatórios
-
-</button>
+    <button onclick="abrirSecao('relatorios', this)">
+        📊 Relatórios
+    </button>
 
 </nav>
 
+
 <main class="conteudo">
+
 
 <!-- INÍCIO -->
 
-<section
-    id="inicio"
-    class="secao ativa"
->
+<section id="inicio" class="secao ativa">
 
-<div class="cabecalho">
+    <div class="cabecalho">
+        <h2>Dashboard</h2>
+        <p class="descricao">
+            Visão geral do sistema.
+        </p>
+    </div>
 
-<h2>
-Painel Master
-</h2>
+    <div class="cards">
 
-<p>
-Controle geral do simulador.
-</p>
+        <div class="card">
+            <h3>Gerentes</h3>
+            <div class="numero" id="totalGerentes">0</div>
+        </div>
 
-</div>
+        <div class="card">
+            <h3>Vendedores</h3>
+            <div class="numero" id="totalVendedores">0</div>
+        </div>
 
-<div class="cards">
+        <div class="card">
+            <h3>Sorteios</h3>
+            <div class="numero" id="totalSorteios">0</div>
+        </div>
 
-<div class="card">
+        <div class="card">
+            <h3>Apostas</h3>
+            <div class="numero" id="totalApostas">0</div>
+        </div>
 
-<div class="card-titulo">
-GERENTES
-</div>
-
-<div
-    class="card-numero"
-    id="totalGerentes"
->
-0
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-titulo">
-VENDEDORES
-</div>
-
-<div
-    class="card-numero"
-    id="totalVendedores"
->
-0
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-titulo">
-SORTEIOS
-</div>
-
-<div
-    class="card-numero"
-    id="totalSorteios"
->
-0
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-titulo">
-APOSTAS
-</div>
-
-<div
-    class="card-numero"
-    id="totalApostas"
->
-0
-</div>
-
-</div>
-
-</div>
-
-<div class="painel">
-
-<h3>
-Bem-vindo ao Painel Master
-</h3>
-
-<p class="descricao">
-
-Aqui será feito o controle geral do
-simulador.
-
-A partir deste painel serão administrados
-gerentes, vendedores, sorteios, resultados
-e apostas fictícias.
-
-</p>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- GERENTES -->
 
-<section
-    id="gerentes"
-    class="secao"
->
+<section id="gerentes" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
+        <h2>Gerentes</h2>
+        <p class="descricao">
+            Cadastro e gerenciamento dos gerentes.
+        </p>
+    </div>
 
-<h2>
-Gerentes de Área
-</h2>
+    <div id="mensagemGerente" class="mensagem"></div>
 
-<p>
-Cadastre e gerencie os gerentes.
-</p>
+    <div class="painel">
 
-</div>
+        <h3>Novo Gerente</h3>
 
-<div class="painel">
+        <br>
 
-<button
-class="btn btn-principal"
-id="btnNovoGerente"
+        <div class="formulario">
 
->
+            <div class="campo">
+                <label>Nome</label>
+                <input type="text" id="nomeGerente">
+            </div>
 
-* Novo Gerente
+            <div class="campo">
+                <label>E-mail</label>
+                <input type="email" id="emailGerente">
+            </div>
 
-</button>
+            <div class="campo">
+                <label>Senha</label>
+                <input type="password" id="senhaGerente">
+            </div>
 
-<div class="tabela-container">
+            <div class="campo">
+                <label>Área</label>
+                <input type="text" id="areaGerente">
+            </div>
 
-<table>
+        </div>
 
-<thead>
+        <div class="botoes">
 
-<tr>
+            <button class="btn btn-principal" id="btnSalvarGerente">
+                💾 Salvar Gerente
+            </button>
 
-<th>Nome</th>
+        </div>
 
-<th>E-mail</th>
+    </div>
 
-<th>Área</th>
 
-<th>Status</th>
+    <div class="painel">
 
-<th>Ações</th>
+        <h3>Gerentes cadastrados</h3>
 
-</tr>
+        <div class="tabela-container">
 
-</thead>
+            <table>
 
-<tbody id="tabelaGerentes">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Área</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-<tr>
+                <tbody id="listaGerentes"></tbody>
 
-<td colspan="5">
+            </table>
 
-Nenhum gerente cadastrado.
+        </div>
 
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- VENDEDORES -->
 
-<section
-    id="vendedores"
-    class="secao"
->
+<section id="vendedores" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
+        <h2>Vendedores</h2>
+        <p class="descricao">
+            Visualização dos vendedores cadastrados.
+        </p>
+    </div>
 
-<h2>
-Vendedores
-</h2>
+    <div class="painel">
 
-<p>
-Visualização geral dos vendedores.
-</p>
+        <div class="tabela-container">
 
-</div>
+            <table>
 
-<div class="painel">
+                <thead>
 
-<p class="descricao">
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Área</th>
+                        <th>Saldo Virtual</th>
+                        <th>Status</th>
+                    </tr>
 
-O cadastro de vendedores será feito
-através do gerenciamento das áreas.
+                </thead>
 
-</p>
+                <tbody id="listaVendedores"></tbody>
 
-<div class="tabela-container">
+            </table>
 
-<table>
+        </div>
 
-<thead>
-
-<tr>
-
-<th>Nome</th>
-
-<th>E-mail</th>
-
-<th>Área</th>
-
-<th>Saldo Virtual</th>
-
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tabelaVendedores">
-
-<tr>
-
-<td colspan="5">
-Nenhum vendedor cadastrado.
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- SORTEIOS -->
 
-<section
-    id="sorteios"
-    class="secao"
->
+<section id="sorteios" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
 
-<h2>
-Sorteios
-</h2>
+        <h2>Sorteios</h2>
 
-<p>
-Criação e controle dos sorteios fictícios.
-</p>
+        <p class="descricao">
+            Crie os sorteios e defina até que horário as apostas permanecerão abertas.
+        </p>
 
-</div>
+    </div>
 
-<div class="painel">
 
-<h3>
-Sorteios cadastrados
-</h3>
+    <div id="mensagemSorteio" class="mensagem"></div>
 
-<p class="descricao">
 
-O sorteio permanecerá aberto até o horário
-de fechamento definido pelo MASTER.
+    <div class="painel">
 
-</p>
+        <h3>Novo Sorteio</h3>
 
-<button
-class="btn btn-principal"
-id="btnNovoSorteio"
+        <br>
 
->
+        <div class="formulario">
 
-* Novo Sorteio
+            <div class="campo">
 
-</button>
+                <label for="nomeSorteio">
+                    Nome do Sorteio
+                </label>
 
-<div class="tabela-container">
+                <input
+                    type="text"
+                    id="nomeSorteio"
+                    placeholder="Ex.: Sorteio da Noite"
+                >
 
-<table>
+            </div>
 
-<thead>
 
-<tr>
+            <div class="campo">
 
-<th>Sorteio</th>
+                <label for="dataSorteio">
+                    Data do Sorteio
+                </label>
 
-<th>Data</th>
+                <input
+                    type="date"
+                    id="dataSorteio"
+                >
 
-<th>Horário</th>
+            </div>
 
-<th>Fechamento</th>
 
-<th>Status</th>
+            <div class="campo">
 
-<th>Ações</th>
+                <label for="horarioFechamento">
+                    Horário de Fechamento
+                </label>
 
-</tr>
+                <input
+                    type="time"
+                    id="horarioFechamento"
+                >
 
-</thead>
+            </div>
 
-<tbody id="tabelaSorteios">
+        </div>
 
-<tr>
 
-<td colspan="6">
+        <div class="botoes">
 
-Nenhum sorteio cadastrado.
+            <button
+                class="btn btn-principal"
+                id="btnSalvarSorteio"
+            >
+                💾 Criar Sorteio
+            </button>
 
-</td>
+            <button
+                class="btn btn-secundario"
+                id="btnLimparSorteio"
+            >
+                Limpar
+            </button>
 
-</tr>
+        </div>
 
-</tbody>
+    </div>
 
-</table>
 
-</div>
+    <div class="painel">
 
-</div>
+        <h3>Sorteios cadastrados</h3>
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Sorteio</th>
+                        <th>Data</th>
+                        <th>Fechamento</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaSorteios"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
 </section>
+
 
 <!-- APOSTAS -->
 
-<section
-    id="apostas"
-    class="secao"
->
+<section id="apostas" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
 
-<h2>
-Apostas
-</h2>
+        <h2>Apostas</h2>
 
-<p>
-Consulta geral das apostas fictícias.
-</p>
+        <p class="descricao">
+            Visualização das apostas fictícias registradas no sistema.
+        </p>
 
-</div>
+    </div>
 
-<div class="painel">
+    <div class="painel">
 
-<div class="tabela-container">
+        <p>
+            O módulo de apostas será integrado nesta etapa.
+        </p>
 
-<table>
-
-<thead>
-
-<tr>
-
-<th>Bilhete</th>
-
-<th>Vendedor</th>
-
-<th>Sorteio</th>
-
-<th>Valor</th>
-
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td colspan="5">
-Nenhuma aposta registrada.
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- RESULTADOS -->
 
-<section
-    id="resultados"
-    class="secao"
->
+<section id="resultados" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
 
-<h2>
-Resultados
-</h2>
+        <h2>Resultados</h2>
 
-<p>
-Gerenciamento dos resultados fictícios.
-</p>
+        <p class="descricao">
+            Gerenciamento dos resultados dos sorteios.
+        </p>
 
-</div>
+    </div>
 
-<div class="painel">
+    <div class="painel">
 
-<h3>
-Resultados
-</h3>
+        <p>
+            O módulo de resultados será integrado nesta etapa.
+        </p>
 
-<p class="descricao">
-
-Depois de criarmos o módulo de sorteios,
-o MASTER poderá informar os resultados
-e executar a apuração.
-
-</p>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- RELATÓRIOS -->
 
-<section
-    id="relatorios"
-    class="secao"
->
+<section id="relatorios" class="secao">
 
-<div class="cabecalho">
+    <div class="cabecalho">
 
-<h2>
-Relatórios
-</h2>
+        <h2>Relatórios</h2>
 
-<p>
-Informações gerais do sistema.
-</p>
+        <p class="descricao">
+            Relatórios gerais do simulador.
+        </p>
 
-</div>
+    </div>
 
-<div class="painel">
+    <div class="painel">
 
-<h3>
-Relatórios Gerais
-</h3>
+        <p>
+            O módulo de relatórios será integrado nas próximas etapas.
+        </p>
 
-<p class="descricao">
-
-Os relatórios serão implementados
-depois que apostas e sorteios estiverem
-funcionando.
-
-</p>
-
-</div>
+    </div>
 
 </section>
 
+
 </main>
 
-</div>
-
-<!-- MODAL GERENTE -->
-
-<div
-    class="modal"
-    id="modalGerente"
->
-
-<div class="modal-box">
-
-<div class="modal-header">
-
-<h3>
-Novo Gerente
-</h3>
-
-<button
-class="fechar"
-id="fecharModal"
-
->
-
-× </button>
-
-</div>
-
-<form id="formGerente">
-
-<div class="form-grid">
-
-<div class="campo">
-
-<label>
-Nome
-</label>
-
-<input
-type="text"
-id="gerenteNome"
-required
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-Área
-</label>
-
-<input
-type="text"
-id="gerenteArea"
-required
-placeholder="Ex.: Área Centro"
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-E-mail
-</label>
-
-<input
-type="email"
-id="gerenteEmail"
-required
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-Senha inicial
-</label>
-
-<input
-type="password"
-id="gerenteSenha"
-minlength="6"
-required
-
->
-
-</div>
-
-</div>
-
-<div id="mensagem"></div>
-
-<div class="modal-acoes">
-
-<button
-type="button"
-class="btn"
-id="cancelarModal"
-
->
-
-Cancelar
-
-</button>
-
-<button
-type="submit"
-class="btn btn-principal"
-id="btnSalvarGerente"
-
->
-
-Salvar Gerente
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-<!-- MODAL SORTEIO -->
-
-<div
-    class="modal"
-    id="modalSorteio"
->
-
-<div class="modal-box">
-
-<div class="modal-header">
-
-<h3>
-Novo Sorteio
-</h3>
-
-<button
-class="fechar"
-id="fecharModalSorteio"
-
->
-
-× </button>
-
-</div>
-
-<form id="formSorteio">
-
-<div class="form-grid">
-
-<div class="campo">
-
-<label>
-Nome do sorteio
-</label>
-
-<input
-type="text"
-id="sorteioNome"
-required
-placeholder="Ex.: Sorteio das 18h"
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-Data do sorteio
-</label>
-
-<input
-type="date"
-id="sorteioData"
-required
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-Horário do sorteio
-</label>
-
-<input
-type="time"
-id="sorteioHora"
-required
-
->
-
-</div>
-
-<div class="campo">
-
-<label>
-Horário de fechamento das apostas
-</label>
-
-<input
-type="time"
-id="sorteioFechamento"
-required
-
->
-
-</div>
-
-</div>
-
-<div class="aviso">
-
-As apostas ficarão abertas até o horário
-de fechamento informado acima.
-
-Ao atingir esse horário, o sorteio será
-considerado FECHADO.
-
-</div>
-
-<div
-    id="mensagemSorteio">
-</div>
-
-<div class="modal-acoes">
-
-<button
-type="button"
-class="btn btn-secondary"
-id="cancelarModalSorteio"
-
->
-
-Cancelar
-
-</button>
-
-<button
-type="submit"
-class="btn btn-principal"
-id="btnSalvarSorteio"
-
->
-
-Criar Sorteio
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
 
 <script type="module">
-
 
 import {
     initializeApp
@@ -1634,83 +736,75 @@ import {
     getDocs,
     doc,
     setDoc,
-    addDoc,
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
-/* =====================================================
-   FIREBASE
-===================================================== */
+
+/* =========================================================
+   FIREBASE CONFIG
+   NÃO ALTERADO
+========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:3199c6836a986d896ac20d",
-  measurementId: "G-QN7GFD99N0"
+    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12NmY7BKPjaSjumM",
+    authDomain: "meuappweb-65522.firebaseapp.com",
+    projectId: "meuappweb-65522",
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+    messagingSenderId: "305368794616",
+    appId: "1:305368794616:web:3199c6836a986d896ac20d",
+    measurementId: "G-QN7GFD99N0"
 };
 
 
-const app =
-    initializeApp(firebaseConfig);
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
 
 
-const auth =
-    getAuth(app);
+/*
+   Segunda instância somente para criação de gerente,
+   evitando derrubar a sessão do MASTER.
+*/
+
+const appCadastro = initializeApp(
+    firebaseConfig,
+    "cadastroGerente"
+);
+
+const authCadastro = getAuth(appCadastro);
 
 
-const db =
-    getFirestore(app);
-
-
-/* =====================================================
-   SEGUNDA INSTÂNCIA
-===================================================== */
-
-const appCadastro =
-    initializeApp(
-        firebaseConfig,
-        "cadastroGerente"
-    );
-
-
-const authCadastro =
-    getAuth(appCadastro);
-
-
-/* =====================================================
-   SESSÃO
-===================================================== */
 
 let usuarioSessao = null;
 
+let sorteios = [];
+
+
+
+/* =========================================================
+   SESSÃO
+========================================================= */
 
 function obterSessao() {
 
     const dados =
-        sessionStorage.getItem(
-            "usuarioSessao"
-        );
+        sessionStorage.getItem("usuarioSessao");
 
-
-    if (!dados) {
-
-        return null;
-
-    }
-
+    if (!dados) return null;
 
     try {
 
         return JSON.parse(dados);
 
-    }
-
-    catch {
+    } catch {
 
         return null;
 
@@ -1719,107 +813,183 @@ function obterSessao() {
 }
 
 
-/* =====================================================
-   VERIFICAÇÃO
-===================================================== */
 
-onAuthStateChanged(
-    auth,
-    (user) => {
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
 
-        if (!user) {
+window.abrirSecao = function(id, botao) {
 
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
+    document
+        .querySelectorAll(".secao")
+        .forEach(secao => {
+            secao.classList.remove("ativa");
+        });
 
 
-        usuarioSessao =
-            obterSessao();
+    const secao =
+        document.getElementById(id);
+
+    if (secao) {
+        secao.classList.add("ativa");
+    }
 
 
-        if (
-            !usuarioSessao ||
-            usuarioSessao.perfil !==
-            "MASTER"
-        ) {
-
-            alert(
-                "Acesso permitido somente ao MASTER."
-            );
+    document
+        .querySelectorAll(".menu button")
+        .forEach(btn => {
+            btn.classList.remove("ativo");
+        });
 
 
-            signOut(auth);
+    if (botao) {
+        botao.classList.add("ativo");
+    }
 
 
-            sessionStorage.removeItem(
-                "usuarioSessao"
-            );
-
-
-            window.location.href =
-                "login.html";
-
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "nomeUsuario"
-        ).textContent =
-            usuarioSessao.nome ||
-            "Administrador";
-
-
-        carregarResumo();
-
-        carregarGerentes();
-
-        carregarVendedores();
+    if (id === "sorteios") {
 
         carregarSorteios();
 
     }
-);
+
+};
 
 
-/* =====================================================
+
+/* =========================================================
+   MENSAGENS
+========================================================= */
+
+function mostrarMensagem(elemento, texto, tipo) {
+
+    const el =
+        document.getElementById(elemento);
+
+    if (!el) return;
+
+    el.textContent = texto;
+
+    el.className =
+        "mensagem " + tipo;
+
+
+    setTimeout(() => {
+
+        el.className = "mensagem";
+
+    }, 4000);
+
+}
+
+
+
+/* =========================================================
+   AUTENTICAÇÃO
+========================================================= */
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    usuarioSessao =
+        obterSessao();
+
+
+    if (
+        !usuarioSessao ||
+        usuarioSessao.perfil !== "MASTER"
+    ) {
+
+        alert(
+            "Acesso permitido somente ao MASTER."
+        );
+
+        await signOut(auth);
+
+        sessionStorage.removeItem(
+            "usuarioSessao"
+        );
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "nomeUsuario"
+    ).textContent =
+        usuarioSessao.nome ||
+        "Administrador";
+
+
+    carregarResumo();
+
+    carregarGerentes();
+
+    carregarVendedores();
+
+    carregarSorteios();
+
+});
+
+
+
+/* =========================================================
+   SAIR
+========================================================= */
+
+document
+    .getElementById("btnSair")
+    .addEventListener("click", async () => {
+
+        await signOut(auth);
+
+        sessionStorage.removeItem(
+            "usuarioSessao"
+        );
+
+        window.location.href =
+            "login.html";
+
+    });
+
+
+
+/* =========================================================
    RESUMO
-===================================================== */
+========================================================= */
 
 async function carregarResumo() {
 
     try {
 
-        const usuarios =
+        const usuariosSnapshot =
             await getDocs(
-                collection(
-                    db,
-                    "usuarios"
-                )
+                collection(db, "usuarios")
             );
 
 
-        const sorteios =
+        const sorteiosSnapshot =
             await getDocs(
-                collection(
-                    db,
-                    "sorteios"
-                )
+                collection(db, "sorteios")
             );
 
 
-        const apostas =
+        const apostasSnapshot =
             await getDocs(
-                collection(
-                    db,
-                    "apostas"
-                )
+                collection(db, "apostas")
             );
 
 
@@ -1828,66 +998,49 @@ async function carregarResumo() {
         let vendedores = 0;
 
 
-        usuarios.forEach(
-            (registro) => {
+        usuariosSnapshot.forEach(item => {
 
-                const dados =
-                    registro.data();
+            const dados = item.data();
 
 
-                if (
-                    dados.perfil ===
-                    "GERENTE"
-                ) {
-
-                    gerentes++;
-
-                }
-
-
-                if (
-                    dados.perfil ===
-                    "VENDEDOR"
-                ) {
-
-                    vendedores++;
-
-                }
-
+            if (dados.perfil === "GERENTE") {
+                gerentes++;
             }
-        );
+
+
+            if (dados.perfil === "VENDEDOR") {
+                vendedores++;
+            }
+
+        });
 
 
         document.getElementById(
             "totalGerentes"
-        ).textContent =
-            gerentes;
+        ).textContent = gerentes;
 
 
         document.getElementById(
             "totalVendedores"
-        ).textContent =
-            vendedores;
+        ).textContent = vendedores;
 
 
         document.getElementById(
             "totalSorteios"
         ).textContent =
-            sorteios.size;
+            sorteiosSnapshot.size;
 
 
         document.getElementById(
             "totalApostas"
         ).textContent =
-            apostas.size;
+            apostasSnapshot.size;
 
 
-    }
-
-    catch (erro) {
+    } catch (erro) {
 
         console.error(
-            "Erro no resumo:",
+            "Erro ao carregar resumo:",
             erro
         );
 
@@ -1896,386 +1049,423 @@ async function carregarResumo() {
 }
 
 
-/* =====================================================
+
+/* =========================================================
    GERENTES
-===================================================== */
+========================================================= */
 
 async function carregarGerentes() {
 
-    const tabela =
+    const lista =
         document.getElementById(
-            "tabelaGerentes"
+            "listaGerentes"
         );
 
 
-    tabela.innerHTML = "";
+    lista.innerHTML =
+        "<tr><td colspan='4'>Carregando...</td></tr>";
 
 
     try {
 
-        const resultado =
+        const snapshot =
             await getDocs(
-                collection(
-                    db,
-                    "usuarios"
-                )
+                collection(db, "usuarios")
             );
 
 
-        let encontrados = 0;
+        lista.innerHTML = "";
 
 
-        resultado.forEach(
-            (registro) => {
-
-                const dados =
-                    registro.data();
+        let encontrou = false;
 
 
-                if (
-                    dados.perfil !==
-                    "GERENTE"
-                ) {
+        snapshot.forEach(item => {
 
-                    return;
-
-                }
+            const dados = item.data();
 
 
-                encontrados++;
-
-
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        ${escapar(dados.nome)}
-                    </td>
-
-                    <td>
-                        ${escapar(dados.email)}
-                    </td>
-
-                    <td>
-                        ${escapar(
-                            dados.areaNome || "-"
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span class="status">
-
-                            ${
-                                dados.ativo === true
-                                ? "ATIVO"
-                                : "INATIVO"
-
-                            }
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            class="btn btn-danger"
-                            onclick="alert('A exclusão/desativação será implementada com as regras de segurança.')"
-                        >
-
-                            Gerenciar
-
-                        </button>
-
-                    </td>
-
-                `;
-
-
-                tabela.appendChild(tr);
-
+            if (dados.perfil !== "GERENTE") {
+                return;
             }
-        );
 
 
-        if (
-            encontrados === 0
-        ) {
+            encontrou = true;
 
-            tabela.innerHTML = `
 
-                <tr>
+            const tr =
+                document.createElement("tr");
 
-                    <td colspan="5">
 
-                        Nenhum gerente cadastrado.
+            tr.innerHTML = `
 
-                    </td>
+                <td>${escapar(dados.nome || "")}</td>
 
-                </tr>
+                <td>${escapar(dados.email || "")}</td>
+
+                <td>${escapar(dados.areaNome || "")}</td>
+
+                <td>
+                    <span class="status ${
+                        dados.ativo === false
+                        ? "status-fechado"
+                        : "status-aberto"
+                    }">
+                        ${
+                            dados.ativo === false
+                            ? "INATIVO"
+                            : "ATIVO"
+                        }
+                    </span>
+                </td>
 
             `;
 
+
+            lista.appendChild(tr);
+
+        });
+
+
+        if (!encontrou) {
+
+            lista.innerHTML =
+                "<tr><td colspan='4'>Nenhum gerente cadastrado.</td></tr>";
+
         }
 
-    }
 
-    catch (erro) {
+    } catch (erro) {
 
         console.error(erro);
 
-
-        tabela.innerHTML = `
-
-            <tr>
-
-                <td colspan="5">
-
-                    Erro ao carregar gerentes.
-
-                </td>
-
-            </tr>
-
-        `;
+        lista.innerHTML =
+            "<tr><td colspan='4'>Erro ao carregar gerentes.</td></tr>";
 
     }
 
 }
 
 
-/* =====================================================
+
+/* =========================================================
+   CADASTRO DE GERENTE
+========================================================= */
+
+document
+    .getElementById("btnSalvarGerente")
+    .addEventListener("click", async () => {
+
+        const nome =
+            document.getElementById(
+                "nomeGerente"
+            ).value.trim();
+
+
+        const email =
+            document.getElementById(
+                "emailGerente"
+            ).value.trim();
+
+
+        const senha =
+            document.getElementById(
+                "senhaGerente"
+            ).value;
+
+
+        const areaNome =
+            document.getElementById(
+                "areaGerente"
+            ).value.trim();
+
+
+        if (
+            !nome ||
+            !email ||
+            !senha ||
+            !areaNome
+        ) {
+
+            mostrarMensagem(
+                "mensagemGerente",
+                "Preencha todos os campos.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const credencial =
+                await createUserWithEmailAndPassword(
+                    authCadastro,
+                    email,
+                    senha
+                );
+
+
+            const uid =
+                credencial.user.uid;
+
+
+            await setDoc(
+                doc(db, "usuarios", uid),
+                {
+
+                    nome: nome,
+
+                    email: email,
+
+                    perfil: "GERENTE",
+
+                    ativo: true,
+
+                    areaNome: areaNome,
+
+                    areaId: uid,
+
+                    vendedorId: null,
+
+                    saldoVirtual: 0,
+
+                    criadoPor:
+                        usuarioSessao.uid,
+
+                    criadoEm:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            document.getElementById(
+                "nomeGerente"
+            ).value = "";
+
+
+            document.getElementById(
+                "emailGerente"
+            ).value = "";
+
+
+            document.getElementById(
+                "senhaGerente"
+            ).value = "";
+
+
+            document.getElementById(
+                "areaGerente"
+            ).value = "";
+
+
+            mostrarMensagem(
+                "mensagemGerente",
+                "Gerente cadastrado com sucesso.",
+                "sucesso"
+            );
+
+
+            carregarGerentes();
+
+            carregarResumo();
+
+
+        } catch (erro) {
+
+            console.error(erro);
+
+
+            let mensagem =
+                "Erro ao cadastrar gerente.";
+
+
+            if (
+                erro.code ===
+                "auth/email-already-in-use"
+            ) {
+
+                mensagem =
+                    "Este e-mail já está cadastrado.";
+
+            }
+
+
+            if (
+                erro.code ===
+                "auth/weak-password"
+            ) {
+
+                mensagem =
+                    "A senha precisa ter pelo menos 6 caracteres.";
+
+            }
+
+
+            mostrarMensagem(
+                "mensagemGerente",
+                mensagem,
+                "erro"
+            );
+
+        }
+
+    });
+
+
+
+/* =========================================================
    VENDEDORES
-===================================================== */
+========================================================= */
 
 async function carregarVendedores() {
 
-    const tabela =
+    const lista =
         document.getElementById(
-            "tabelaVendedores"
+            "listaVendedores"
         );
 
 
-    tabela.innerHTML = "";
+    lista.innerHTML =
+        "<tr><td colspan='5'>Carregando...</td></tr>";
 
 
     try {
 
-        const resultado =
+        const snapshot =
             await getDocs(
-                collection(
-                    db,
-                    "usuarios"
-                )
+                collection(db, "usuarios")
             );
 
 
-        let encontrados = 0;
+        lista.innerHTML = "";
 
 
-        resultado.forEach(
-            (registro) => {
-
-                const dados =
-                    registro.data();
+        let encontrou = false;
 
 
-                if (
-                    dados.perfil !==
-                    "VENDEDOR"
-                ) {
+        snapshot.forEach(item => {
 
-                    return;
-
-                }
+            const dados = item.data();
 
 
-                encontrados++;
-
-
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        ${escapar(dados.nome)}
-                    </td>
-
-                    <td>
-                        ${escapar(dados.email)}
-                    </td>
-
-                    <td>
-                        ${escapar(
-                            dados.areaNome || "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatarSaldo(
-                            dados.saldoVirtual || 0
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span class="status">
-
-                            ${
-                                dados.ativo === true
-                                ? "ATIVO"
-                                : "INATIVO"
-
-                            }
-
-                        </span>
-
-                    </td>
-
-                `;
-
-
-                tabela.appendChild(tr);
-
+            if (dados.perfil !== "VENDEDOR") {
+                return;
             }
-        );
 
 
-        if (
-            encontrados === 0
-        ) {
+            encontrou = true;
 
-            tabela.innerHTML = `
 
-                <tr>
+            const saldo =
+                Number(
+                    dados.saldoVirtual || 0
+                );
 
-                    <td colspan="5">
 
-                        Nenhum vendedor cadastrado.
+            const tr =
+                document.createElement("tr");
 
-                    </td>
 
-                </tr>
+            tr.innerHTML = `
+
+                <td>${escapar(dados.nome || "")}</td>
+
+                <td>${escapar(dados.email || "")}</td>
+
+                <td>${escapar(dados.areaNome || "")}</td>
+
+                <td>${saldo.toFixed(2)}</td>
+
+                <td>
+
+                    <span class="status ${
+                        dados.ativo === false
+                        ? "status-fechado"
+                        : "status-aberto"
+                    }">
+
+                        ${
+                            dados.ativo === false
+                            ? "INATIVO"
+                            : "ATIVO"
+                        }
+
+                    </span>
+
+                </td>
 
             `;
 
+
+            lista.appendChild(tr);
+
+        });
+
+
+        if (!encontrou) {
+
+            lista.innerHTML =
+                "<tr><td colspan='5'>Nenhum vendedor cadastrado.</td></tr>";
+
         }
 
-    }
 
-    catch (erro) {
+    } catch (erro) {
 
         console.error(erro);
+
+        lista.innerHTML =
+            "<tr><td colspan='5'>Erro ao carregar vendedores.</td></tr>";
 
     }
 
 }
 
 
-/* =====================================================
+
+/* =========================================================
    SORTEIOS
-===================================================== */
-
-let sorteiosCache = [];
-
+========================================================= */
 
 async function carregarSorteios() {
 
-    const tabela =
+    const lista =
         document.getElementById(
-            "tabelaSorteios"
+            "listaSorteios"
         );
 
 
-    if (!tabela) {
-
-        return;
-
-    }
-
-
-    tabela.innerHTML = `
-
-        <tr>
-
-            <td colspan="6">
-
-                Carregando sorteios...
-
-            </td>
-
-        </tr>
-
-    `;
+    lista.innerHTML =
+        "<tr><td colspan='5'>Carregando...</td></tr>";
 
 
     try {
 
-        const resultado =
+        const snapshot =
             await getDocs(
-                collection(
-                    db,
-                    "sorteios"
-                )
+                collection(db, "sorteios")
             );
 
 
-        sorteiosCache = [];
+        sorteios = [];
 
 
-        resultado.forEach(
-            (registro) => {
+        snapshot.forEach(item => {
 
-                sorteiosCache.push({
+            sorteios.push({
 
-                    id:
-                        registro.id,
+                id: item.id,
 
-                    ...registro.data()
+                ...item.data()
 
-                });
+            });
 
-            }
-        );
+        });
 
-
-        /*
-        Ordena pelo horário/data do sorteio.
-        */
-
-        sorteiosCache.sort(
-            (a,b) => {
-
-                const dataA =
-                    Number(
-                        a.dataHoraMs || 0
-                    );
-
-                const dataB =
-                    Number(
-                        b.dataHoraMs || 0
-                    );
-
-                return dataA - dataB;
-
-            }
-        );
-
-
-        /*
-        Atualiza os status com base
-        no horário atual.
-        */
 
         await atualizarStatusSorteios();
 
@@ -2286,12 +1476,10 @@ async function carregarSorteios() {
         document.getElementById(
             "totalSorteios"
         ).textContent =
-            sorteiosCache.length;
+            sorteios.length;
 
 
-    }
-
-    catch (erro) {
+    } catch (erro) {
 
         console.error(
             "Erro ao carregar sorteios:",
@@ -2299,830 +1487,62 @@ async function carregarSorteios() {
         );
 
 
-        tabela.innerHTML = `
-
-            <tr>
-
-                <td colspan="6">
-
-                    Erro ao carregar sorteios.
-
-                </td>
-
-            </tr>
-
-        `;
+        lista.innerHTML =
+            "<tr><td colspan='5'>Erro ao carregar sorteios.</td></tr>";
 
     }
 
 }
 
 
-/* =====================================================
-   ATUALIZAR STATUS DOS SORTEIOS
-===================================================== */
+
+/* =========================================================
+   ATUALIZAR STATUS AUTOMATICAMENTE
+========================================================= */
 
 async function atualizarStatusSorteios() {
 
     const agora =
-        Date.now();
+        new Date();
 
 
-    for (
-        const sorteio
-        of sorteiosCache
-    ) {
-
-        if (
-            sorteio.status ===
-            "FECHADO"
-        ) {
-
-            continue;
-
-        }
+    let alterou = false;
 
 
-        const fechamento =
-            Number(
-                sorteio.fechamentoMs || 0
-            );
-
+    for (const sorteio of sorteios) {
 
         if (
-            fechamento > 0 &&
-            agora >= fechamento
+            sorteio.status === "ABERTO" &&
+            sorteio.dataHoraFechamento
         ) {
-
-            try {
-
-                await updateDoc(
-
-                    doc(
-                        db,
-                        "sorteios",
-                        sorteio.id
-                    ),
-
-                    {
-
-                        status:
-                            "FECHADO",
-
-                        fechadoEmMs:
-                            agora,
-
-                        fechadoEm:
-                            serverTimestamp()
-
-                    }
-
-                );
-
-
-                sorteio.status =
-                    "FECHADO";
-
-
-            }
-
-            catch (erro) {
-
-                console.error(
-                    "Erro ao fechar sorteio:",
-                    erro
-                );
-
-            }
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   RENDERIZAR SORTEIOS
-===================================================== */
-
-function renderizarSorteios() {
-
-    const tabela =
-        document.getElementById(
-            "tabelaSorteios"
-        );
-
-
-    if (
-        sorteiosCache.length === 0
-    ) {
-
-        tabela.innerHTML = `
-
-            <tr>
-
-                <td colspan="6">
-
-                    Nenhum sorteio cadastrado.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    tabela.innerHTML = "";
-
-
-    sorteiosCache.forEach(
-        (sorteio) => {
-
-            const status =
-                obterStatusAtual(
-                    sorteio
-                );
-
-
-            const classe =
-                status === "ABERTO"
-                    ? "status-aberto"
-                    : "status-fechado";
-
-
-            const tr =
-                document.createElement(
-                    "tr"
-                );
-
-
-            tr.innerHTML = `
-
-                <td>
-
-                    <strong>
-                        ${escapar(
-                            sorteio.nome
-                        )}
-                    </strong>
-
-                </td>
-
-
-                <td>
-                    ${escapar(
-                        sorteio.data
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapar(
-                        sorteio.horario
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapar(
-                        sorteio.horarioFechamento
-                    )}
-                </td>
-
-
-                <td>
-
-                    <span
-                        class="status ${classe}"
-                    >
-
-                        ${status}
-
-                    </span>
-
-                </td>
-
-
-                <td>
-
-                    ${
-                        status === "ABERTO"
-                        ?
-
-                        `
-
-                        <button
-                            class="btn btn-danger"
-                            onclick="fecharSorteioManual('${sorteio.id}')"
-                        >
-
-                            Fechar
-
-                        </button>
-
-                        `
-
-                        :
-
-                        `
-
-                        <span>
-                            —
-                        </span>
-
-                        `
-                    }
-
-                </td>
-
-            `;
-
-
-            tabela.appendChild(tr);
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   STATUS ATUAL
-===================================================== */
-
-function obterStatusAtual(
-    sorteio
-) {
-
-    if (
-        sorteio.status ===
-        "FECHADO"
-    ) {
-
-        return "FECHADO";
-
-    }
-
-
-    const fechamento =
-        Number(
-            sorteio.fechamentoMs || 0
-        );
-
-
-    if (
-        fechamento > 0 &&
-        Date.now() >= fechamento
-    ) {
-
-        return "FECHADO";
-
-    }
-
-
-    return "ABERTO";
-
-}
-
-
-/* =====================================================
-   FECHAR SORTEIO MANUALMENTE
-===================================================== */
-
-window.fecharSorteioManual =
-async function(id) {
-
-    const confirmar =
-        confirm(
-            "Deseja fechar este sorteio agora? Depois disso, novas apostas não deverão ser aceitas."
-        );
-
-
-    if (!confirmar) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await updateDoc(
-
-            doc(
-                db,
-                "sorteios",
-                id
-            ),
-
-            {
-
-                status:
-                    "FECHADO",
-
-                fechadoEmMs:
-                    Date.now(),
-
-                fechadoEm:
-                    serverTimestamp()
-
-            }
-
-        );
-
-
-        alert(
-            "Sorteio fechado com sucesso."
-        );
-
-
-        await carregarSorteios();
-
-
-    }
-
-    catch (erro) {
-
-        console.error(
-            "Erro ao fechar sorteio:",
-            erro
-        );
-
-
-        alert(
-            "Não foi possível fechar o sorteio."
-        );
-
-    }
-
-};
-
-
-/* =====================================================
-   MODAL SORTEIO
-===================================================== */
-
-const modalSorteio =
-    document.getElementById(
-        "modalSorteio"
-    );
-
-
-document
-    .getElementById(
-        "btnNovoSorteio"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            document
-                .getElementById(
-                    "formSorteio"
-                )
-                .reset();
-
-
-            document
-                .getElementById(
-                    "mensagemSorteio"
-                )
-                .textContent =
-                "";
-
-
-            modalSorteio.classList.add(
-                "aberto"
-            );
-
-        }
-    );
-
-
-function fecharModalSorteio() {
-
-    modalSorteio.classList.remove(
-        "aberto"
-    );
-
-
-    document
-        .getElementById(
-            "formSorteio"
-        )
-        .reset();
-
-
-    document
-        .getElementById(
-            "mensagemSorteio"
-        )
-        .textContent =
-        "";
-
-}
-
-
-document
-    .getElementById(
-        "fecharModalSorteio"
-    )
-    .addEventListener(
-        "click",
-        fecharModalSorteio
-    );
-
-
-document
-    .getElementById(
-        "cancelarModalSorteio"
-    )
-    .addEventListener(
-        "click",
-        fecharModalSorteio
-    );
-
-
-/* =====================================================
-   CRIAR SORTEIO
-===================================================== */
-
-document
-    .getElementById(
-        "formSorteio"
-    )
-    .addEventListener(
-        "submit",
-        async (evento) => {
-
-            evento.preventDefault();
-
-
-            const nome =
-                document
-                    .getElementById(
-                        "sorteioNome"
-                    )
-                    .value
-                    .trim();
-
-
-            const data =
-                document
-                    .getElementById(
-                        "sorteioData"
-                    )
-                    .value;
-
-
-            const horario =
-                document
-                    .getElementById(
-                        "sorteioHora"
-                    )
-                    .value;
-
-
-            const horarioFechamento =
-                document
-                    .getElementById(
-                        "sorteioFechamento"
-                    )
-                    .value;
-
-
-            const mensagem =
-                document
-                    .getElementById(
-                        "mensagemSorteio"
-                    );
-
-
-            const botao =
-                document
-                    .getElementById(
-                        "btnSalvarSorteio"
-                    );
-
-
-            mensagem.textContent =
-                "";
-
-
-            /*
-            Validação básica.
-            */
-
-            if (
-                !nome ||
-                !data ||
-                !horario ||
-                !horarioFechamento
-            ) {
-
-                mensagem.textContent =
-                    "Preencha todos os campos.";
-
-                mensagem.className =
-                    "erro";
-
-                return;
-
-            }
-
-
-            /*
-            Monta a data/hora local do
-            fechamento.
-
-            O formato é:
-
-            AAAA-MM-DDTHH:MM
-            */
-
-            const dataFechamento =
-                new Date(
-                    `${data}T${horarioFechamento}:00`
-                );
-
-
-            const dataSorteio =
-                new Date(
-                    `${data}T${horario}:00`
-                );
-
-
-            if (
-                isNaN(
-                    dataFechamento.getTime()
-                )
-            ) {
-
-                mensagem.textContent =
-                    "Data ou horário de fechamento inválido.";
-
-                mensagem.className =
-                    "erro";
-
-                return;
-
-            }
-
-
-            if (
-                isNaN(
-                    dataSorteio.getTime()
-                )
-            ) {
-
-                mensagem.textContent =
-                    "Data ou horário do sorteio inválido.";
-
-                mensagem.className =
-                    "erro";
-
-                return;
-
-            }
-
-
-            /*
-            O fechamento não pode ser
-            depois do sorteio.
-
-            Normalmente o fechamento
-            deve acontecer antes do
-            horário do sorteio.
-            */
-
-            if (
-                dataFechamento.getTime() >
-                dataSorteio.getTime()
-            ) {
-
-                mensagem.textContent =
-                    "O horário de fechamento deve ser igual ou anterior ao horário do sorteio.";
-
-                mensagem.className =
-                    "erro";
-
-                return;
-
-            }
-
-
-            /*
-            O fechamento não pode estar
-            no passado.
-            */
-
-            if (
-                dataFechamento.getTime() <=
-                Date.now()
-            ) {
-
-                mensagem.textContent =
-                    "O horário de fechamento precisa ser futuro.";
-
-                mensagem.className =
-                    "erro";
-
-                return;
-
-            }
-
-
-            botao.disabled =
-                true;
-
-
-            botao.textContent =
-                "CRIANDO...";
-
-
-            try {
-
-                await addDoc(
-
-                    collection(
-                        db,
-                        "sorteios"
-                    ),
-
-                    {
-
-                        nome:
-
-                            nome,
-
-                        data:
-
-                            data,
-
-                        horario:
-
-                            horario,
-
-                        horarioFechamento:
-
-                            horarioFechamento,
-
-                        dataHoraMs:
-
-                            dataSorteio.getTime(),
-
-                        fechamentoMs:
-
-                            dataFechamento.getTime(),
-
-                        status:
-
-                            "ABERTO",
-
-                        resultadoInformado:
-
-                            false,
-
-                        criadoPor:
-
-                            usuarioSessao.uid,
-
-                        criadoEm:
-
-                            serverTimestamp()
-
-                    }
-
-                );
-
-
-                mensagem.textContent =
-                    "Sorteio criado com sucesso.";
-
-                mensagem.className =
-                    "sucesso";
-
-
-                await carregarSorteios();
-
-                await carregarResumo();
-
-
-                setTimeout(
-                    fecharModalSorteio,
-                    1000
-                );
-
-
-            }
-
-            catch (erro) {
-
-                console.error(
-                    "Erro ao criar sorteio:",
-                    erro
-                );
-
-
-                mensagem.textContent =
-                    "Não foi possível criar o sorteio.";
-
-                mensagem.className =
-                    "erro";
-
-            }
-
-
-            botao.disabled =
-                false;
-
-
-            botao.textContent =
-                "Criar Sorteio";
-
-        }
-    );
-
-
-/* =====================================================
-   VERIFICAÇÃO AUTOMÁTICA DO HORÁRIO
-===================================================== */
-
-setInterval(
-    async () => {
-
-        if (
-            sorteiosCache.length === 0
-        ) {
-
-            return;
-
-        }
-
-
-        let houveAlteracao =
-            false;
-
-
-        const agora =
-            Date.now();
-
-
-        for (
-            const sorteio
-            of sorteiosCache
-        ) {
-
-            if (
-                sorteio.status ===
-                "FECHADO"
-            ) {
-
-                continue;
-
-            }
-
 
             const fechamento =
-                Number(
-                    sorteio.fechamentoMs ||
-                    0
+                new Date(
+                    sorteio.dataHoraFechamento
                 );
 
 
             if (
-                fechamento > 0 &&
+                !isNaN(fechamento.getTime()) &&
                 agora >= fechamento
             ) {
 
                 try {
 
                     await updateDoc(
-
                         doc(
                             db,
                             "sorteios",
                             sorteio.id
                         ),
-
                         {
 
-                            status:
-                                "FECHADO",
-
-                            fechadoEmMs:
-                                agora,
+                            status: "FECHADO",
 
                             fechadoEm:
                                 serverTimestamp()
 
                         }
-
                     );
 
 
@@ -3130,15 +1550,12 @@ setInterval(
                         "FECHADO";
 
 
-                    houveAlteracao =
-                        true;
+                    alterou = true;
 
-                }
-
-                catch (erro) {
+                } catch (erro) {
 
                     console.error(
-                        "Erro ao fechar automaticamente:",
+                        "Erro ao fechar sorteio:",
                         erro
                     );
 
@@ -3148,161 +1565,365 @@ setInterval(
 
         }
 
+    }
 
-        if (houveAlteracao) {
 
-            renderizarSorteios();
+    return alterou;
+
+}
+
+
+
+/* =========================================================
+   RENDERIZAR SORTEIOS
+========================================================= */
+
+function renderizarSorteios() {
+
+    const lista =
+        document.getElementById(
+            "listaSorteios"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if (sorteios.length === 0) {
+
+        lista.innerHTML =
+            "<tr><td colspan='5'>Nenhum sorteio cadastrado.</td></tr>";
+
+        return;
+
+    }
+
+
+    sorteios.sort((a, b) => {
+
+        const dataA =
+            a.dataHoraFechamento || "";
+
+        const dataB =
+            b.dataHoraFechamento || "";
+
+        return dataA.localeCompare(dataB);
+
+    });
+
+
+    sorteios.forEach(sorteio => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        const status =
+            sorteio.status === "FECHADO"
+            ? "FECHADO"
+            : "ABERTO";
+
+
+        tr.innerHTML = `
+
+            <td>
+                ${escapar(sorteio.nome || "")}
+            </td>
+
+            <td>
+                ${formatarData(sorteio.data)}
+            </td>
+
+            <td>
+                ${sorteio.horarioFechamento || "--:--"}
+            </td>
+
+            <td>
+
+                <span class="status ${
+                    status === "ABERTO"
+                    ? "status-aberto"
+                    : "status-fechado"
+                }">
+
+                    ${status}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                ${
+                    status === "ABERTO"
+                    ? `
+                        <button
+                            class="btn btn-aviso"
+                            onclick="fecharSorteio('${sorteio.id}')"
+                        >
+                            🔒 Fechar
+                        </button>
+                    `
+                    : `
+                        <span style="color:#64748b;">
+                            Encerrado
+                        </span>
+                    `
+                }
+
+            </td>
+
+        `;
+
+
+        lista.appendChild(tr);
+
+    });
+
+}
+
+
+
+/* =========================================================
+   CRIAR SORTEIO
+========================================================= */
+
+document
+    .getElementById("btnSalvarSorteio")
+    .addEventListener("click", async () => {
+
+        const nome =
+            document.getElementById(
+                "nomeSorteio"
+            ).value.trim();
+
+
+        const data =
+            document.getElementById(
+                "dataSorteio"
+            ).value;
+
+
+        const horario =
+            document.getElementById(
+                "horarioFechamento"
+            ).value;
+
+
+        if (!nome || !data || !horario) {
+
+            mostrarMensagem(
+                "mensagemSorteio",
+                "Preencha o nome, a data e o horário de fechamento.",
+                "erro"
+            );
+
+            return;
 
         }
 
-    },
-    10000
-);
+
+        /*
+           O formato YYYY-MM-DDTHH:MM permite
+           comparar diretamente com a data/hora local.
+        */
+
+        const dataHoraFechamento =
+            `${data}T${horario}`;
 
 
-/* =====================================================
-   ESCAPAR HTML
-===================================================== */
-
-function escapar(valor) {
-
-    if (
-        valor === null ||
-        valor === undefined
-    ) {
-
-        return "";
-
-    }
+        const fechamento =
+            new Date(
+                dataHoraFechamento
+            );
 
 
-    return String(valor)
+        if (
+            isNaN(
+                fechamento.getTime()
+            )
+        ) {
 
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
+            mostrarMensagem(
+                "mensagemSorteio",
+                "Data ou horário inválido.",
+                "erro"
+            );
 
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
+            return;
 
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
+        }
 
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
 
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
+        const agora =
+            new Date();
+
+
+        const status =
+            agora >= fechamento
+            ? "FECHADO"
+            : "ABERTO";
+
+
+        try {
+
+            await setDoc(
+                doc(
+                    collection(
+                        db,
+                        "sorteios"
+                    )
+                ),
+                {
+
+                    nome: nome,
+
+                    data: data,
+
+                    horarioFechamento:
+                        horario,
+
+                    dataHoraFechamento:
+                        dataHoraFechamento,
+
+                    status: status,
+
+                    criadoPor:
+                        usuarioSessao.uid,
+
+                    criadoEm:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            mostrarMensagem(
+                "mensagemSorteio",
+                status === "ABERTO"
+                    ? "Sorteio criado e aberto para apostas."
+                    : "O horário informado já passou. O sorteio foi criado como fechado.",
+                "sucesso"
+            );
+
+
+            limparFormularioSorteio();
+
+
+            await carregarSorteios();
+
+            await carregarResumo();
+
+
+        } catch (erro) {
+
+            console.error(erro);
+
+
+            mostrarMensagem(
+                "mensagemSorteio",
+                "Erro ao criar sorteio. Verifique o console.",
+                "erro"
+            );
+
+        }
+
+    });
+
+
+
+/* =========================================================
+   LIMPAR FORMULÁRIO
+========================================================= */
+
+function limparFormularioSorteio() {
+
+    document.getElementById(
+        "nomeSorteio"
+    ).value = "";
+
+
+    document.getElementById(
+        "dataSorteio"
+    ).value = "";
+
+
+    document.getElementById(
+        "horarioFechamento"
+    ).value = "";
 
 }
 
 
-/* =====================================================
-   SALDO
-===================================================== */
-
-function formatarSaldo(valor) {
-
-    return Number(valor)
-        .toLocaleString(
-            "pt-BR",
-            {
-
-                minimumFractionDigits:
-                    2,
-
-                maximumFractionDigits:
-                    2
-
-            }
-        );
-
-}
-
-
-/* =====================================================
-   MENU
-===================================================== */
-
-const botoes =
-    document.querySelectorAll(
-        ".menu-btn"
+document
+    .getElementById("btnLimparSorteio")
+    .addEventListener(
+        "click",
+        limparFormularioSorteio
     );
 
 
-botoes.forEach(
-    (botao) => {
 
-        botao.addEventListener(
-            "click",
-            () => {
+/* =========================================================
+   FECHAMENTO MANUAL
+========================================================= */
 
-                abrirSecao(
-                    botao.dataset.secao
-                );
+window.fecharSorteio = async function(id) {
 
-            }
+    const confirmar =
+        confirm(
+            "Deseja realmente fechar este sorteio?\n\nDepois de fechado, novas apostas não deverão ser aceitas."
         );
 
+
+    if (!confirmar) {
+        return;
     }
-);
 
 
-window.abrirSecao =
-function(nome) {
+    try {
 
-    document
-        .querySelectorAll(".secao")
-        .forEach(
-            (secao) => {
+        await updateDoc(
+            doc(
+                db,
+                "sorteios",
+                id
+            ),
+            {
 
-                secao.classList.remove(
-                    "ativa"
-                );
+                status: "FECHADO",
 
-            }
-        );
+                fechadoEm:
+                    serverTimestamp(),
 
-
-    document
-        .querySelectorAll(".menu-btn")
-        .forEach(
-            (botao) => {
-
-                botao.classList.remove(
-                    "ativo"
-                );
+                fechadoManualmente:
+                    true
 
             }
         );
 
 
-    document
-        .getElementById(nome)
-        .classList.add(
-            "ativa"
+        mostrarMensagem(
+            "mensagemSorteio",
+            "Sorteio fechado com sucesso.",
+            "sucesso"
         );
 
 
-    const botao =
-        document.querySelector(
-            `.menu-btn[data-secao="${nome}"]`
-        );
+        await carregarSorteios();
+
+        await carregarResumo();
 
 
-    if (botao) {
+    } catch (erro) {
 
-        botao.classList.add(
-            "ativo"
+        console.error(erro);
+
+
+        mostrarMensagem(
+            "mensagemSorteio",
+            "Não foi possível fechar o sorteio.",
+            "erro"
         );
 
     }
@@ -3310,328 +1931,92 @@ function(nome) {
 };
 
 
-/* =====================================================
-   MODAL GERENTE
-===================================================== */
 
-const modal =
-    document.getElementById(
-        "modalGerente"
-    );
+/* =========================================================
+   FECHAMENTO AUTOMÁTICO
+========================================================= */
 
+/*
+   A cada 10 segundos verificamos os sorteios.
 
-document
-    .getElementById(
-        "btnNovoGerente"
-    )
-    .addEventListener(
-        "click",
-        () => {
+   Isso permite que, enquanto o painel MASTER estiver
+   aberto, o status seja atualizado automaticamente.
 
-            modal.classList.add(
-                "aberto"
-            );
+   O painel do vendedor também deverá validar
+   dataHoraFechamento antes de registrar uma aposta.
+*/
 
-        }
-    );
+setInterval(async () => {
+
+    if (!usuarioSessao) {
+        return;
+    }
 
 
-function fecharModal() {
-
-    modal.classList.remove(
-        "aberto"
-    );
+    if (sorteios.length === 0) {
+        return;
+    }
 
 
-    document
-        .getElementById(
-            "formGerente"
-        )
-        .reset();
+    const houveAlteracao =
+        await atualizarStatusSorteios();
 
 
-    document
-        .getElementById(
-            "mensagem"
-        )
-        .textContent =
-        "";
+    if (houveAlteracao) {
+
+        renderizarSorteios();
+
+        carregarResumo();
+
+    }
+
+}, 10000);
+
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+function formatarData(data) {
+
+    if (!data) {
+        return "";
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (partes.length !== 3) {
+        return data;
+    }
+
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
 
 }
 
 
-document
-    .getElementById(
-        "fecharModal"
-    )
-    .addEventListener(
-        "click",
-        fecharModal
-    );
 
+/* =========================================================
+   SEGURANÇA HTML
+========================================================= */
 
-document
-    .getElementById(
-        "cancelarModal"
-    )
-    .addEventListener(
-        "click",
-        fecharModal
-    );
+function escapar(valor) {
 
+    return String(valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-/* =====================================================
-   CRIAR GERENTE
-===================================================== */
-
-document
-    .getElementById(
-        "formGerente"
-    )
-    .addEventListener(
-        "submit",
-        async (evento) => {
-
-            evento.preventDefault();
-
-
-            const nome =
-                document
-                    .getElementById(
-                        "gerenteNome"
-                    )
-                    .value
-                    .trim();
-
-
-            const areaNome =
-                document
-                    .getElementById(
-                        "gerenteArea"
-                    )
-                    .value
-                    .trim();
-
-
-            const email =
-                document
-                    .getElementById(
-                        "gerenteEmail"
-                    )
-                    .value
-                    .trim();
-
-
-            const senha =
-                document
-                    .getElementById(
-                        "gerenteSenha"
-                    )
-                    .value;
-
-
-            const mensagem =
-                document
-                    .getElementById(
-                        "mensagem"
-                    );
-
-
-            const botao =
-                document
-                    .getElementById(
-                        "btnSalvarGerente"
-                    );
-
-
-            botao.disabled =
-                true;
-
-
-            botao.textContent =
-                "SALVANDO...";
-
-
-            mensagem.textContent =
-                "";
-
-
-            try {
-
-                /*
-                Criar conta Authentication.
-                */
-
-                const cadastro =
-                    await createUserWithEmailAndPassword(
-                        authCadastro,
-                        email,
-                        senha
-                    );
-
-
-                const gerenteUid =
-                    cadastro.user.uid;
-
-
-                /*
-                Criar perfil Firestore.
-                */
-
-                await setDoc(
-
-                    doc(
-                        db,
-                        "usuarios",
-                        gerenteUid
-                    ),
-
-                    {
-
-                        nome:
-                            nome,
-
-                        email:
-                            email,
-
-                        perfil:
-                            "GERENTE",
-
-                        ativo:
-                            true,
-
-                        areaNome:
-                            areaNome,
-
-                        areaId:
-                            gerenteUid,
-
-                        vendedorId:
-                            null,
-
-                        saldoVirtual:
-                            0,
-
-                        criadoPor:
-                            usuarioSessao.uid,
-
-                        criadoEm:
-                            serverTimestamp()
-
-                    }
-
-                );
-
-
-                mensagem.textContent =
-                    "Gerente criado com sucesso.";
-
-                mensagem.className =
-                    "sucesso";
-
-
-                document
-                    .getElementById(
-                        "formGerente"
-                    )
-                    .reset();
-
-
-                await carregarGerentes();
-
-                await carregarResumo();
-
-
-                setTimeout(
-                    fecharModal,
-                    1000
-                );
-
-
-            }
-
-            catch (erro) {
-
-                console.error(
-                    erro
-                );
-
-
-                let texto =
-                    "Não foi possível criar o gerente.";
-
-
-                if (
-                    erro.code ===
-                    "auth/email-already-in-use"
-                ) {
-
-                    texto =
-                        "Este e-mail já está cadastrado.";
-
-                }
-
-
-                if (
-                    erro.code ===
-                    "auth/weak-password"
-                ) {
-
-                    texto =
-                        "A senha precisa ter pelo menos 6 caracteres.";
-
-                }
-
-
-                mensagem.textContent =
-                    texto;
-
-                mensagem.className =
-                    "erro";
-
-            }
-
-
-            botao.disabled =
-                false;
-
-
-            botao.textContent =
-                "Salvar Gerente";
-
-        }
-    );
-
-
-/* =====================================================
-   SAIR
-===================================================== */
-
-document
-    .getElementById(
-        "btnSair"
-    )
-    .addEventListener(
-        "click",
-        async () => {
-
-            await signOut(auth);
-
-
-            sessionStorage.removeItem(
-                "usuarioSessao"
-            );
-
-
-            window.location.href =
-                "login.html";
-
-        }
-    );
-
+}
 
 </script>
 
 </body>
-
 </html>
+```
