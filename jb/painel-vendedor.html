@@ -1,556 +1,510 @@
-```html
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Vendedor - Simulador</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-
-        header {
-            height: 65px;
-            background: #0f172a;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .logo span {
-            color: #38bdf8;
-        }
-
-        .usuario-topo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 14px;
-        }
-
-        .btn-sair {
-            border: none;
-            background: #ef4444;
-            color: white;
-            padding: 9px 15px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        aside {
-            position: fixed;
-            top: 65px;
-            bottom: 0;
-            left: 0;
-            width: 230px;
-            background: #1e293b;
-            padding-top: 20px;
-        }
-
-        .menu-item {
-            color: #cbd5e1;
-            padding: 15px 22px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .menu-item:hover,
-        .menu-item.ativo {
-            background: #334155;
-            color: white;
-        }
-
-        main {
-            margin-left: 230px;
-            padding: 95px 30px 40px;
-        }
-
-        .topo-pagina {
-            margin-bottom: 25px;
-        }
-
-        .topo-pagina h1 {
-            font-size: 28px;
-            margin-bottom: 7px;
-        }
-
-        .topo-pagina p {
-            color: #64748b;
-        }
-
-        .aviso {
-            background: #fff7ed;
-            border: 1px solid #fdba74;
-            color: #9a3412;
-            padding: 14px 16px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 22px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .card .titulo {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .card .valor {
-            font-size: 27px;
-            font-weight: bold;
-            color: #0f172a;
-        }
-
-        .area {
-            display: none;
-        }
-
-        .area.ativa {
-            display: block;
-        }
-
-        .painel {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            margin-bottom: 25px;
-        }
-
-        .painel h2 {
-            margin-bottom: 20px;
-            font-size: 21px;
-        }
-
-        .botoes {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            padding: 11px 17px;
-            font-weight: bold;
-        }
-
-        .btn-principal {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-principal:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secundario {
-            background: #e2e8f0;
-            color: #334155;
-        }
-
-        .btn-verde {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-vermelho {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn-cinza {
-            background: #64748b;
-            color: white;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 17px;
-        }
-
-        .campo {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .campo label {
-            font-size: 14px;
-            font-weight: bold;
-            color: #475569;
-        }
-
-        .campo input,
-        .campo select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            outline: none;
-            font-size: 15px;
-        }
-
-        .campo input:focus,
-        .campo select:focus {
-            border-color: #2563eb;
-        }
-
-        .campo-completo {
-            grid-column: 1 / -1;
-        }
-
-        .tabela-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        th,
-        td {
-            padding: 13px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        th {
-            background: #f8fafc;
-            color: #475569;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-aberta {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-cancelada {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-vencedora {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-paga {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .sem-dados {
-            text-align: center;
-            color: #64748b;
-            padding: 30px;
-        }
-
-        .bilhete {
-            border: 2px dashed #94a3b8;
-            border-radius: 12px;
-            padding: 22px;
-            margin-top: 20px;
-            background: #f8fafc;
-        }
-
-        .bilhete-topo {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .numero-bilhete {
-            font-size: 25px;
-            font-weight: bold;
-            color: #2563eb;
-        }
-
-        .linha-bilhete {
-            padding: 9px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .linha-bilhete:last-child {
-            border-bottom: none;
-        }
-
-        .mensagem {
-            display: none;
-            padding: 13px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .mensagem.sucesso {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .mensagem.erro {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .resultado-consulta {
-            margin-top: 20px;
-        }
-
-        .vazio {
-            text-align: center;
-            padding: 35px;
-            color: #64748b;
-        }
-
-        .contador {
-            font-weight: bold;
-            color: #dc2626;
-        }
-
-        .modal-fundo {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,0.65);
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .modal-fundo.aberto {
-            display: flex;
-        }
-
-        .modal {
-            background: white;
-            width: 100%;
-            max-width: 550px;
-            border-radius: 13px;
-            padding: 25px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal h2 {
-            margin-bottom: 20px;
-        }
-
-        .modal-acoes {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 22px;
-        }
-
-        .item-aposta {
-            border: 1px solid #e2e8f0;
-            padding: 15px;
-            border-radius: 9px;
-            margin-bottom: 12px;
-        }
-
-        .item-aposta-topo {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 1000px) {
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 750px) {
-            aside {
-                width: 70px;
-            }
-
-            .menu-item {
-                font-size: 0;
-                text-align: center;
-                padding: 18px 5px;
-            }
-
-            .menu-item::first-letter {
-                font-size: 20px;
-            }
-
-            main {
-                margin-left: 70px;
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .campo-completo {
-                grid-column: auto;
-            }
-
-            .usuario-topo .dados-usuario {
-                display: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel do Vendedor</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f9;
+    color:#222;
+}
+
+header{
+    height:65px;
+    background:#111827;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+}
+
+header .titulo{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.usuario-topo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+}
+
+.btn-sair{
+    background:#dc2626;
+    color:white;
+    border:0;
+    padding:9px 15px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.layout{
+    display:flex;
+    min-height:calc(100vh - 65px);
+}
+
+.sidebar{
+    width:230px;
+    background:#1f2937;
+    color:white;
+    padding:20px 10px;
+}
+
+.sidebar h3{
+    margin:0 10px 20px;
+    font-size:16px;
+}
+
+.menu-btn{
+    width:100%;
+    background:transparent;
+    border:0;
+    color:white;
+    text-align:left;
+    padding:13px 15px;
+    margin-bottom:5px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.menu-btn:hover,
+.menu-btn.ativo{
+    background:#374151;
+}
+
+.conteudo{
+    flex:1;
+    padding:25px;
+    overflow:auto;
+}
+
+.pagina{
+    display:none;
+}
+
+.pagina.ativa{
+    display:block;
+}
+
+h1{
+    margin-top:0;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.card .titulo-card{
+    font-size:13px;
+    color:#6b7280;
+    margin-bottom:10px;
+}
+
+.card .valor{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.form-box{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+input,
+select{
+    width:100%;
+    padding:11px;
+    border:1px solid #d1d5db;
+    border-radius:6px;
+    font-size:14px;
+}
+
+.btn{
+    border:0;
+    padding:11px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-warning{
+    background:#d97706;
+    color:white;
+}
+
+.btn-secondary{
+    background:#6b7280;
+    color:white;
+}
+
+.acoes{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.tabela-box{
+    background:white;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:750px;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#f9fafb;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.badge-aberta{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.badge-cancelada{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.badge-vencedora{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.badge-paga{
+    background:#d1fae5;
+    color:#047857;
+}
+
+.badge-perdida{
+    background:#f3f4f6;
+    color:#4b5563;
+}
+
+.mensagem{
+    display:none;
+    padding:12px;
+    border-radius:6px;
+    margin-bottom:15px;
+}
+
+.mensagem.sucesso{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.mensagem.erro{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.lista-vazia{
+    padding:30px;
+    text-align:center;
+    color:#6b7280;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.modal.aberto{
+    display:flex;
+}
+
+.modal-conteudo{
+    background:white;
+    width:90%;
+    max-width:500px;
+    border-radius:10px;
+    padding:25px;
+}
+
+.modal-conteudo h2{
+    margin-top:0;
+}
+
+.detalhes{
+    background:#f9fafb;
+    border-radius:8px;
+    padding:15px;
+    margin:15px 0;
+    line-height:1.8;
+}
+
+.bilhete-numero{
+    font-size:22px;
+    font-weight:bold;
+    text-align:center;
+    padding:15px;
+    background:#eff6ff;
+    border-radius:8px;
+    color:#1d4ed8;
+}
+
+@media(max-width:700px){
+
+    .sidebar{
+        width:70px;
+    }
+
+    .sidebar h3{
+        display:none;
+    }
+
+    .menu-btn{
+        font-size:0;
+        text-align:center;
+    }
+
+    .menu-btn::first-letter{
+        font-size:20px;
+    }
+
+    .conteudo{
+        padding:15px;
+    }
+
+    header{
+        padding:0 12px;
+    }
+
+    header .titulo{
+        font-size:16px;
+    }
+
+    .usuario-topo{
+        font-size:12px;
+    }
+
+}
+
+</style>
+
 </head>
 
 <body>
 
 <header>
-    <div class="logo">
-        SIMULADOR <span>• VENDEDOR</span>
-    </div>
 
-    <div class="usuario-topo">
-        <div class="dados-usuario">
-            <strong id="nomeTopo">Carregando...</strong>
-            <span id="areaTopo"></span>
-        </div>
+```
+<div class="titulo">
+    SIMULADOR • VENDEDOR
+</div>
 
-        <button class="btn-sair" id="btnSair">Sair</button>
-    </div>
+<div class="usuario-topo">
+
+    <span id="nomeTopo">
+        Carregando...
+    </span>
+
+    <span id="areaTopo"></span>
+
+    <button
+        class="btn-sair"
+        id="btnSair">
+        Sair
+    </button>
+
+</div>
+```
+
 </header>
 
-<aside>
+<div class="layout">
 
-    <div class="menu-item ativo" data-area="inicio">
+```
+<aside class="sidebar">
+
+    <h3>MENU</h3>
+
+    <button
+        class="menu-btn ativo"
+        data-pagina="inicio">
         🏠 Início
-    </div>
+    </button>
 
-    <div class="menu-item" data-area="novaAposta">
-        🎫 Nova Aposta
-    </div>
+    <button
+        class="menu-btn"
+        data-pagina="novaAposta">
+        🎟️ Nova Aposta
+    </button>
 
-    <div class="menu-item" data-area="bilhetes">
+    <button
+        class="menu-btn"
+        data-pagina="bilhetes">
         📋 Meus Bilhetes
-    </div>
+    </button>
 
-    <div class="menu-item" data-area="consulta">
+    <button
+        class="menu-btn"
+        data-pagina="consultar">
         🔎 Consultar Bilhete
-    </div>
+    </button>
 
 </aside>
 
-<main>
+
+<main class="conteudo">
+
 
     <!-- INÍCIO -->
-    <section id="inicio" class="area ativa">
 
-        <div class="topo-pagina">
-            <h1>Painel do Vendedor</h1>
-            <p>Bem-vindo, <strong id="nomeInicio">---</strong>.</p>
-        </div>
+    <section
+        id="pagina-inicio"
+        class="pagina ativa">
 
-        <div class="aviso">
-            <strong>⚠️ Ambiente de Simulação</strong><br>
-            Este sistema é exclusivamente fictício para estudos e testes.
-            Não há dinheiro real, pagamentos reais ou apostas reais.
-        </div>
+        <h1>
+            Olá, <span id="nomeInicio">Vendedor</span>!
+        </h1>
+
+        <p>
+            Bem-vindo ao seu painel de apostas fictícias.
+        </p>
 
         <div class="cards">
 
             <div class="card">
-                <div class="titulo">Saldo Virtual</div>
-                <div class="valor" id="saldoVirtual">0,00</div>
+
+                <div class="titulo-card">
+                    Saldo Virtual
+                </div>
+
+                <div
+                    class="valor"
+                    id="saldoDashboard">
+                    R$ 0,00
+                </div>
+
             </div>
+
 
             <div class="card">
-                <div class="titulo">Bilhetes Gerados</div>
-                <div class="valor" id="totalBilhetes">0</div>
+
+                <div class="titulo-card">
+                    Bilhetes Gerados
+                </div>
+
+                <div
+                    class="valor"
+                    id="totalBilhetes">
+                    0
+                </div>
+
             </div>
+
 
             <div class="card">
-                <div class="titulo">Bilhetes Ativos</div>
-                <div class="valor" id="bilhetesAtivos">0</div>
+
+                <div class="titulo-card">
+                    Bilhetes Ativos
+                </div>
+
+                <div
+                    class="valor"
+                    id="bilhetesAtivos">
+                    0
+                </div>
+
             </div>
+
 
             <div class="card">
-                <div class="titulo">Vencedores</div>
-                <div class="valor" id="bilhetesVencedores">0</div>
-            </div>
 
-        </div>
+                <div class="titulo-card">
+                    Vencedores
+                </div>
 
-        <div class="painel">
-
-            <h2>Ações rápidas</h2>
-
-            <div class="botoes">
-
-                <button class="btn-principal" onclick="abrirArea('novaAposta')">
-                    🎫 Nova Aposta
-                </button>
-
-                <button class="btn-secundario" onclick="abrirArea('bilhetes')">
-                    📋 Meus Bilhetes
-                </button>
-
-                <button class="btn-secundario" onclick="abrirArea('consulta')">
-                    🔎 Consultar Bilhete
-                </button>
+                <div
+                    class="valor"
+                    id="bilhetesVencedores">
+                    0
+                </div>
 
             </div>
 
@@ -560,31 +514,42 @@
 
 
     <!-- NOVA APOSTA -->
-    <section id="novaAposta" class="area">
 
-        <div class="topo-pagina">
-            <h1>Nova Aposta Fictícia</h1>
-            <p>Registre um novo bilhete para simulação.</p>
+    <section
+        id="pagina-novaAposta"
+        class="pagina">
+
+        <h1>Nova Aposta</h1>
+
+        <div
+            id="mensagemAposta"
+            class="mensagem">
         </div>
 
-        <div id="mensagemAposta" class="mensagem"></div>
-
-        <div class="painel">
-
-            <h2>Dados da Aposta</h2>
+        <div class="form-box">
 
             <div class="form-grid">
 
-                <div class="campo campo-completo">
-                    <label>Sorteio</label>
+                <div>
+
+                    <label>
+                        Sorteio
+                    </label>
 
                     <select id="sorteio">
-                        <option value="">Carregando sorteios...</option>
+                        <option value="">
+                            Carregando sorteios...
+                        </option>
                     </select>
+
                 </div>
 
-                <div class="campo">
-                    <label>Modalidade</label>
+
+                <div>
+
+                    <label>
+                        Modalidade
+                    </label>
 
                     <select id="modalidade">
 
@@ -605,83 +570,88 @@
                         </option>
 
                     </select>
+
                 </div>
 
-                <div class="campo">
-                    <label>Número</label>
+
+                <div>
+
+                    <label>
+                        Número
+                    </label>
 
                     <input
                         type="text"
                         id="numero"
-                        placeholder="Ex.: 25"
-                        maxlength="4"
-                    >
+                        placeholder="Digite o número">
+
                 </div>
 
-                <div class="campo">
-                    <label>Valor Virtual</label>
+
+                <div>
+
+                    <label>
+                        Valor Virtual
+                    </label>
 
                     <input
                         type="number"
                         id="valor"
                         min="0.01"
                         step="0.01"
-                        placeholder="Ex.: 10.00"
-                    >
+                        placeholder="0,00">
+
                 </div>
 
-                <div class="campo">
-                    <label>Cotação da Simulação</label>
+
+                <div>
+
+                    <label>
+                        Cotação
+                    </label>
 
                     <input
                         type="number"
                         id="cotacao"
-                        min="1"
+                        min="0"
                         step="0.01"
-                        value="10"
-                    >
+                        placeholder="Ex.: 18">
+
                 </div>
 
             </div>
 
-            <div class="modal-acoes">
+
+            <div class="acoes">
 
                 <button
-                    class="btn-secundario"
-                    onclick="limparAposta()"
-                >
-                    Limpar
-                </button>
+                    class="btn btn-primary"
+                    id="btnGerarAposta">
 
-                <button
-                    class="btn-principal"
-                    onclick="gerarAposta()"
-                >
-                    🎫 Gerar Bilhete
+                    🎟️ Gerar Bilhete
+
                 </button>
 
             </div>
-
-            <div id="bilheteGerado"></div>
 
         </div>
 
     </section>
 
 
-    <!-- BILHETES -->
-    <section id="bilhetes" class="area">
+    <!-- MEUS BILHETES -->
 
-        <div class="topo-pagina">
-            <h1>Meus Bilhetes</h1>
-            <p>Histórico das apostas fictícias realizadas por você.</p>
-        </div>
+    <section
+        id="pagina-bilhetes"
+        class="pagina">
 
-        <div class="painel">
+        <h1>Meus Bilhetes</h1>
 
-            <h2>Histórico</h2>
+        <div
+            id="listaBilhetes"
+            class="tabela-box">
 
-            <div id="listaBilhetes" class="vazio">
+            <div class="lista-vazia">
                 Carregando bilhetes...
             </div>
 
@@ -690,88 +660,141 @@
     </section>
 
 
-    <!-- CONSULTA -->
-    <section id="consulta" class="area">
+    <!-- CONSULTAR -->
 
-        <div class="topo-pagina">
-            <h1>Consultar Bilhete</h1>
-            <p>Digite o número do bilhete para consultar sua situação.</p>
-        </div>
+    <section
+        id="pagina-consultar"
+        class="pagina">
 
-        <div class="painel">
+        <h1>Consultar Bilhete</h1>
 
-            <h2>Consulta</h2>
+        <div class="form-box">
 
             <div class="form-grid">
 
-                <div class="campo campo-completo">
+                <div>
 
-                    <label>Número do Bilhete</label>
+                    <label>
+                        Número do Bilhete
+                    </label>
 
                     <input
                         type="text"
-                        id="numeroConsulta"
-                        placeholder="Digite o número do bilhete"
-                    >
+                        id="codigoConsulta"
+                        placeholder="Digite o código">
 
                 </div>
 
             </div>
 
-            <div class="modal-acoes">
+            <div class="acoes">
 
                 <button
-                    class="btn-principal"
-                    onclick="consultarBilhete()"
-                >
+                    class="btn btn-primary"
+                    id="btnConsultar">
+
                     🔎 Consultar
+
                 </button>
 
             </div>
 
-            <div
-                id="resultadoConsulta"
-                class="resultado-consulta"
-            ></div>
+        </div>
 
+
+        <div
+            id="resultadoConsulta">
         </div>
 
     </section>
 
 </main>
+```
 
+</div>
 
-<!-- MODAL DE CONFIRMAÇÃO -->
-<div id="modalConfirmacao" class="modal-fundo">
+<!-- MODAL CONFIRMAÇÃO -->
 
-    <div class="modal">
+<div
+    id="modalConfirmacao"
+    class="modal">
 
-        <h2>Confirmar Bilhete</h2>
+```
+<div class="modal-conteudo">
 
-        <div id="resumoConfirmacao"></div>
+    <h2>
+        Confirmar Aposta
+    </h2>
 
-        <div class="modal-acoes">
+    <div
+        id="resumoAposta"
+        class="detalhes">
+    </div>
 
-            <button
-                class="btn-secundario"
-                onclick="fecharModal()"
-            >
-                Voltar
-            </button>
+    <div class="acoes">
 
-            <button
-                class="btn-verde"
-                onclick="confirmarGeracao()"
-            >
-                Confirmar Aposta
-            </button>
+        <button
+            class="btn btn-success"
+            id="btnConfirmarAposta">
 
-        </div>
+            Confirmar
+
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            id="btnFecharModal">
+
+            Cancelar
+
+        </button>
 
     </div>
 
 </div>
+```
 
+</div>
+
+<!-- MODAL BILHETE -->
+
+<div
+    id="modalBilhete"
+    class="modal">
+
+```
+<div class="modal-conteudo">
+
+    <h2>
+        Bilhete Gerado
+    </h2>
+
+    <div
+        id="numeroBilheteGerado"
+        class="bilhete-numero">
+    </div>
+
+    <div
+        id="detalhesBilheteGerado"
+        class="detalhes">
+    </div>
+
+    <div class="acoes">
+
+        <button
+            class="btn btn-primary"
+            id="btnFecharBilhete">
+
+            Fechar
+
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
 
 <script type="module">
 
@@ -787,276 +810,543 @@ import {
 
 import {
     getFirestore,
+    collection,
     doc,
     getDoc,
-    collection,
-    addDoc,
     getDocs,
+    addDoc,
+    updateDoc,
     query,
     where,
     orderBy,
     limit,
-    serverTimestamp,
-    updateDoc
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
+/* ==============================
+   FIREBASE
+============================== */
+
 const firebaseConfig = {
-    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-    authDomain: "meuappweb-65522.firebaseapp.com",
-    projectId: "meuappweb-65522",
-    storageBucket: "meuappweb-65522.firebasestorage.app",
-    messagingSenderId: "305368794616",
-    appId: "1:305368794616:web:3199c6836a986d896ac20d",
-    measurementId: "G-QN7GFD99N0"
+
+    apiKey:
+        "AIzaSyC4AAbC8vCFAmlPlur12NmY7BKPjaSjumM",
+
+    authDomain:
+        "meuappweb-65522.firebaseapp.com",
+
+    projectId:
+        "meuappweb-65522",
+
+    storageBucket:
+        "meuappweb-65522.firebasestorage.app",
+
+    messagingSenderId:
+        "305368794616",
+
+    appId:
+        "1:305368794616:web:3199c6836a986d896ac20d",
+
+    measurementId:
+        "G-QN7GFD99N0"
+
 };
 
 
-/*
-   OBSERVAÇÃO:
-   A API KEY acima precisa ser a mesma utilizada
-   nos demais arquivos do projeto.
-*/
+const app =
+    initializeApp(firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
+const auth =
+    getAuth(app);
 
-const auth = getAuth(app);
+const db =
+    getFirestore(app);
 
-const db = getFirestore(app);
 
+/* ==============================
+   VARIÁVEIS
+============================== */
 
 let usuarioAtual = null;
+
 let dadosUsuario = null;
+
+let bilhetes = [];
+
+let sorteios = [];
 
 let apostaPendente = null;
 
-let intervaloContador = null;
+let autenticacaoVerificada = false;
 
 
 /* ==============================
-   AUTENTICAÇÃO
+   ELEMENTOS
 ============================== */
 
-onAuthStateChanged(auth, async (user) => {
+const nomeTopo =
+    document.getElementById("nomeTopo");
 
-    if (!user) {
+const areaTopo =
+    document.getElementById("areaTopo");
 
-        window.location.href = "login.html";
+const nomeInicio =
+    document.getElementById("nomeInicio");
 
-        return;
-    }
+const saldoDashboard =
+    document.getElementById("saldoDashboard");
 
-    usuarioAtual = user;
+const totalBilhetes =
+    document.getElementById("totalBilhetes");
 
-    try {
+const bilhetesAtivos =
+    document.getElementById("bilhetesAtivos");
 
-        const refUsuario = doc(
-            db,
-            "usuarios",
-            user.uid
-        );
-
-        const snapUsuario = await getDoc(refUsuario);
-
-        if (!snapUsuario.exists()) {
-
-            alert("Usuário não encontrado.");
-
-            await signOut(auth);
-
-            window.location.href = "login.html";
-
-            return;
-        }
-
-        dadosUsuario = snapUsuario.data();
-
-        if (
-            dadosUsuario.perfil !== "VENDEDOR" ||
-            dadosUsuario.ativo !== true
-        ) {
-
-            alert("Acesso permitido somente para vendedores ativos.");
-
-            await signOut(auth);
-
-            window.location.href = "login.html";
-
-            return;
-        }
-
-
-        document.getElementById("nomeTopo").textContent =
-            dadosUsuario.nome || "Vendedor";
-
-        document.getElementById("areaTopo").textContent =
-            dadosUsuario.areaNome
-                ? " • " + dadosUsuario.areaNome
-                : "";
-
-        document.getElementById("nomeInicio").textContent =
-            dadosUsuario.nome || "Vendedor";
-
-
-        atualizarSaldo();
-
-        await carregarSorteios();
-
-        await carregarBilhetes();
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        alert(
-            "Erro ao carregar os dados do vendedor."
-        );
-    }
-
-});
+const bilhetesVencedores =
+    document.getElementById("bilhetesVencedores");
 
 
 /* ==============================
-   MENU
+   FORMATAÇÃO
 ============================== */
 
-document.querySelectorAll(".menu-item")
-.forEach(item => {
+function formatarValor(valor){
 
-    item.addEventListener("click", () => {
+    return Number(valor || 0)
+        .toLocaleString("pt-BR", {
+            style:"currency",
+            currency:"BRL"
+        });
 
-        abrirArea(
-            item.dataset.area
-        );
-
-    });
-
-});
+}
 
 
-window.abrirArea = function(nome) {
+/* ==============================
+   MENSAGEM
+============================== */
 
-    document.querySelectorAll(".area")
-    .forEach(area => {
+function mostrarMensagem(
+    elemento,
+    texto,
+    tipo
+){
 
-        area.classList.remove("ativa");
+    elemento.textContent = texto;
 
-    });
+    elemento.className =
+        "mensagem " + tipo;
 
-
-    const area = document.getElementById(nome);
-
-    if (area) {
-
-        area.classList.add("ativa");
-
-    }
-
-
-    document.querySelectorAll(".menu-item")
-    .forEach(item => {
-
-        item.classList.remove("ativo");
-
-        if (
-            item.dataset.area === nome
-        ) {
-
-            item.classList.add("ativo");
-
-        }
-
-    });
-
-
-    if (nome === "bilhetes") {
-
-        carregarBilhetes();
-
-    }
-
-};
+}
 
 
 /* ==============================
    SALDO
 ============================== */
 
-function atualizarSaldo() {
+function atualizarSaldo(){
 
     const saldo =
         Number(
             dadosUsuario?.saldoVirtual || 0
         );
 
-    document.getElementById(
-        "saldoVirtual"
-    ).textContent =
-        saldo.toLocaleString(
-            "pt-BR",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
+    saldoDashboard.textContent =
+        formatarValor(saldo);
 
 }
 
 
 /* ==============================
-   SORTEIOS
+   AUTENTICAÇÃO
 ============================== */
 
-async function carregarSorteios() {
+onAuthStateChanged(
+    auth,
+    async (user) => {
 
-    const select =
-        document.getElementById("sorteio");
+        /*
+        Não redirecionamos imediatamente
+        caso o Firebase ainda esteja
+        restaurando a sessão.
+        */
 
-    try {
+        if(!user){
 
-        const consulta = query(
-            collection(db, "sorteios"),
-            where("ativo", "==", true)
+            const sessaoSalva =
+                sessionStorage.getItem(
+                    "usuario"
+                );
+
+            if(sessaoSalva){
+
+                console.log(
+                    "Aguardando restauração da sessão Firebase..."
+                );
+
+                setTimeout(() => {
+
+                    if(!autenticacaoVerificada){
+
+                        console.warn(
+                            "Sessão Firebase não foi restaurada."
+                        );
+
+                        alert(
+                            "A sessão do vendedor não foi reconhecida pelo Firebase. Faça o login novamente."
+                        );
+
+                        window.location.href =
+                            "login.html";
+
+                    }
+
+                },3000);
+
+                return;
+
+            }
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        autenticacaoVerificada =
+            true;
+
+        usuarioAtual =
+            user;
+
+
+        try{
+
+            console.log(
+                "Usuário autenticado:",
+                user.uid
+            );
+
+
+            const refUsuario =
+                doc(
+                    db,
+                    "usuarios",
+                    user.uid
+                );
+
+
+            const snapUsuario =
+                await getDoc(
+                    refUsuario
+                );
+
+
+            if(!snapUsuario.exists()){
+
+                console.error(
+                    "Documento usuarios/" +
+                    user.uid +
+                    " não encontrado."
+                );
+
+                alert(
+                    "A conta foi autenticada, mas o cadastro do vendedor não foi encontrado no Firestore."
+                );
+
+                await signOut(auth);
+
+                sessionStorage.removeItem(
+                    "usuario"
+                );
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            dadosUsuario =
+                snapUsuario.data();
+
+
+            console.log(
+                "Dados do vendedor:",
+                dadosUsuario
+            );
+
+
+            if(
+                String(
+                    dadosUsuario.perfil || ""
+                ).toUpperCase() !==
+                "VENDEDOR"
+            ){
+
+                console.error(
+                    "Perfil encontrado:",
+                    dadosUsuario.perfil
+                );
+
+                alert(
+                    "O usuário autenticado não está cadastrado como VENDEDOR."
+                );
+
+                await signOut(auth);
+
+                sessionStorage.removeItem(
+                    "usuario"
+                );
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            if(
+                dadosUsuario.ativo !== true
+            ){
+
+                alert(
+                    "Este vendedor está desativado."
+                );
+
+                await signOut(auth);
+
+                sessionStorage.removeItem(
+                    "usuario"
+                );
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            nomeTopo.textContent =
+                dadosUsuario.nome ||
+                "Vendedor";
+
+
+            areaTopo.textContent =
+                dadosUsuario.areaNome
+                    ? " • " +
+                      dadosUsuario.areaNome
+                    : "";
+
+
+            nomeInicio.textContent =
+                dadosUsuario.nome ||
+                "Vendedor";
+
+
+            atualizarSaldo();
+
+
+            await carregarSorteios();
+
+            await carregarBilhetes();
+
+
+            console.log(
+                "Painel do vendedor carregado com sucesso."
+            );
+
+
+        }catch(erro){
+
+            console.error(
+                "ERRO AO CARREGAR VENDEDOR:",
+                erro
+            );
+
+            alert(
+                "Erro ao carregar o cadastro do vendedor.\n\n" +
+                "Veja o Console (F12) para identificar o problema."
+            );
+
+        }
+
+    }
+);
+
+
+/* ==============================
+   NAVEGAÇÃO
+============================== */
+
+document
+.querySelectorAll(".menu-btn")
+.forEach(botao => {
+
+    botao.addEventListener(
+        "click",
+        () => {
+
+            document
+            .querySelectorAll(".menu-btn")
+            .forEach(btn =>
+                btn.classList.remove("ativo")
+            );
+
+            botao.classList.add("ativo");
+
+
+            document
+            .querySelectorAll(".pagina")
+            .forEach(pagina =>
+                pagina.classList.remove("ativa")
+            );
+
+
+            const pagina =
+                document.getElementById(
+                    "pagina-" +
+                    botao.dataset.pagina
+                );
+
+
+            if(pagina){
+
+                pagina.classList.add(
+                    "ativa"
+                );
+
+            }
+
+        }
+    );
+
+});
+
+
+/* ==============================
+   SAIR
+============================== */
+
+document
+.getElementById("btnSair")
+.addEventListener(
+    "click",
+    async () => {
+
+        sessionStorage.removeItem(
+            "usuario"
         );
 
+        await signOut(auth);
+
+        window.location.href =
+            "login.html";
+
+    }
+);
+
+
+/* ==============================
+   CARREGAR SORTEIOS
+============================== */
+
+async function carregarSorteios(){
+
+    const select =
+        document.getElementById(
+            "sorteio"
+        );
+
+
+    try{
+
         const snap =
-            await getDocs(consulta);
+            await getDocs(
+                collection(
+                    db,
+                    "sorteios"
+                )
+            );
+
+
+        sorteios = [];
+
+
+        snap.forEach(docSnap => {
+
+            sorteios.push({
+                id:docSnap.id,
+                ...docSnap.data()
+            });
+
+        });
+
+
+        sorteios.sort(
+            (a,b) => {
+
+                const da =
+                    a.dataHora?.toMillis
+                        ? a.dataHora.toMillis()
+                        : 0;
+
+                const dbb =
+                    b.dataHora?.toMillis
+                        ? b.dataHora.toMillis()
+                        : 0;
+
+                return dbb - da;
+
+            }
+        );
 
 
         select.innerHTML =
             '<option value="">Selecione o sorteio</option>';
 
 
-        if (snap.empty) {
+        sorteios.forEach(
+            sorteio => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    sorteio.id;
+
+                option.textContent =
+                    sorteio.nome ||
+                    sorteio.titulo ||
+                    "Sorteio " +
+                    sorteio.id;
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        if(
+            sorteios.length === 0
+        ){
 
             select.innerHTML =
-                '<option value="">Nenhum sorteio disponível</option>';
+                '<option value="">Nenhum sorteio cadastrado</option>';
 
-            return;
         }
 
 
-        snap.forEach(docSnap => {
-
-            const dados =
-                docSnap.data();
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                docSnap.id;
-
-            option.textContent =
-                dados.nome ||
-                dados.descricao ||
-                "Sorteio " + docSnap.id;
-
-            select.appendChild(option);
-
-        });
-
-    } catch (erro) {
+    }catch(erro){
 
         console.error(
             "Erro ao carregar sorteios:",
@@ -1064,1031 +1354,713 @@ async function carregarSorteios() {
         );
 
         select.innerHTML =
-            '<option value="">Nenhum sorteio disponível</option>';
+            '<option value="">Erro ao carregar sorteios</option>';
+
     }
 
 }
 
 
 /* ==============================
-   GERAR APOSTA
+   VALIDAR NÚMERO
 ============================== */
 
-window.gerarAposta = async function() {
+function validarNumero(
+    modalidade,
+    numero
+){
 
-    const sorteioId =
-        document.getElementById("sorteio").value;
+    numero =
+        String(numero)
+        .replace(/\D/g,"");
 
-    const modalidade =
-        document.getElementById("modalidade").value;
 
-    const numero =
-        document.getElementById("numero").value.trim();
+    if(
+        modalidade === "grupo"
+    ){
 
-    const valor =
-        Number(
-            document.getElementById("valor").value
+        return (
+            numero.length >= 1 &&
+            numero.length <= 2
         );
-
-    const cotacao =
-        Number(
-            document.getElementById("cotacao").value
-        );
-
-
-    if (!sorteioId) {
-
-        mostrarMensagem(
-            "Selecione um sorteio.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    if (!numero) {
-
-        mostrarMensagem(
-            "Informe o número da aposta.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    if (valor <= 0) {
-
-        mostrarMensagem(
-            "Informe um valor virtual válido.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    if (cotacao <= 0) {
-
-        mostrarMensagem(
-            "Informe uma cotação válida.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    const saldoAtual =
-        Number(
-            dadosUsuario?.saldoVirtual || 0
-        );
-
-
-    if (valor > saldoAtual) {
-
-        mostrarMensagem(
-            "Saldo virtual insuficiente.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    let nomeSorteio =
-        "Sorteio";
-
-
-    const refSorteio =
-        doc(
-            db,
-            "sorteios",
-            sorteioId
-        );
-
-    const snapSorteio =
-        await getDoc(refSorteio);
-
-
-    if (snapSorteio.exists()) {
-
-        const dados =
-            snapSorteio.data();
-
-        nomeSorteio =
-            dados.nome ||
-            dados.descricao ||
-            "Sorteio";
 
     }
 
 
-    apostaPendente = {
+    if(
+        modalidade === "dezena"
+    ){
 
-        sorteioId,
+        return numero.length === 2;
 
-        sorteioNome:
-            nomeSorteio,
-
-        modalidade,
-
-        numero,
-
-        valor,
-
-        cotacao,
-
-        premioEstimado:
-            valor * cotacao
-
-    };
+    }
 
 
-    document.getElementById(
-        "resumoConfirmacao"
-    ).innerHTML = `
+    if(
+        modalidade === "centena"
+    ){
 
-        <div class="item-aposta">
+        return numero.length === 3;
 
-            <p>
-                <strong>Sorteio:</strong>
-                ${escapar(nomeSorteio)}
-            </p>
-
-            <p>
-                <strong>Modalidade:</strong>
-                ${escapar(modalidade)}
-            </p>
-
-            <p>
-                <strong>Número:</strong>
-                ${escapar(numero)}
-            </p>
-
-            <p>
-                <strong>Valor virtual:</strong>
-                ${formatarMoeda(valor)}
-            </p>
-
-            <p>
-                <strong>Cotação:</strong>
-                ${cotacao}
-            </p>
-
-            <p>
-                <strong>Prêmio estimado:</strong>
-                ${formatarMoeda(valor * cotacao)}
-            </p>
-
-        </div>
-
-        <p>
-            Esta operação é apenas uma simulação.
-        </p>
-    `;
+    }
 
 
-    document.getElementById(
-        "modalConfirmacao"
-    ).classList.add("aberto");
+    if(
+        modalidade === "milhar"
+    ){
 
-};
+        return numero.length === 4;
+
+    }
+
+
+    return false;
+
+}
 
 
 /* ==============================
-   CONFIRMAR APOSTA
+   GERAR NÚMERO BILHETE
 ============================== */
 
-window.confirmarGeracao = async function() {
+function gerarCodigoBilhete(){
 
-    if (!apostaPendente) {
-
-        return;
-    }
-
-
-    try {
-
-        const saldoAtual =
-            Number(
-                dadosUsuario?.saldoVirtual || 0
-            );
-
-
-        if (
-            apostaPendente.valor >
-            saldoAtual
-        ) {
-
-            fecharModal();
-
-            mostrarMensagem(
-                "O saldo virtual não é suficiente.",
-                "erro"
-            );
-
-            return;
-        }
-
-
-        /*
-           Gera um número único de bilhete.
-        */
-
-        const numeroBilhete =
-            gerarNumeroBilhete();
-
-
-        const aposta = {
-
-            bilhete:
-                numeroBilhete,
-
-            vendedorId:
-                usuarioAtual.uid,
-
-            vendedorNome:
-                dadosUsuario.nome || "",
-
-            areaId:
-                dadosUsuario.areaId || "",
-
-            areaNome:
-                dadosUsuario.areaNome || "",
-
-            sorteioId:
-                apostaPendente.sorteioId,
-
-            sorteioNome:
-                apostaPendente.sorteioNome,
-
-            modalidade:
-                apostaPendente.modalidade,
-
-            numero:
-                apostaPendente.numero,
-
-            valor:
-                apostaPendente.valor,
-
-            cotacao:
-                apostaPendente.cotacao,
-
-            premioEstimado:
-                apostaPendente.premioEstimado,
-
-            status:
-                "ABERTA",
-
-            pago:
-                false,
-
-            criadoEm:
-                serverTimestamp(),
-
-            criadoEmMs:
-                Date.now()
-
-        };
-
-
-        const referencia =
-            await addDoc(
-                collection(db, "apostas"),
-                aposta
-            );
-
-
-        /*
-           O saldo virtual é reservado/diminuído
-           somente dentro da simulação.
-        */
-
-        const novoSaldo =
-            saldoAtual -
-            apostaPendente.valor;
-
-
-        await updateDoc(
-            doc(
-                db,
-                "usuarios",
-                usuarioAtual.uid
-            ),
-            {
-                saldoVirtual:
-                    novoSaldo
-            }
-        );
-
-
-        dadosUsuario.saldoVirtual =
-            novoSaldo;
-
-
-        atualizarSaldo();
-
-
-        fecharModal();
-
-
-        exibirBilheteGerado(
-            numeroBilhete,
-            apostaPendente,
-            referencia.id
-        );
-
-
-        mostrarMensagem(
-            "Bilhete gerado com sucesso.",
-            "sucesso"
-        );
-
-
-        limparCamposAposta();
-
-        await carregarBilhetes();
-
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        mostrarMensagem(
-            "Erro ao gerar o bilhete.",
-            "erro"
-        );
-
-    }
-
-};
-
-
-/* ==============================
-   BILHETE GERADO
-============================== */
-
-function exibirBilheteGerado(
-    numeroBilhete,
-    aposta,
-    idFirestore
-) {
-
-    document.getElementById(
-        "bilheteGerado"
-    ).innerHTML = `
-
-        <div class="bilhete">
-
-            <div class="bilhete-topo">
-
-                <div>
-
-                    <div>
-                        BILHETE FICTÍCIO
-                    </div>
-
-                    <div class="numero-bilhete">
-                        ${numeroBilhete}
-                    </div>
-
-                </div>
-
-                <div>
-                    <strong>Gerado agora</strong>
-                </div>
-
-            </div>
-
-
-            <div class="linha-bilhete">
-                <strong>Sorteio:</strong>
-                ${escapar(aposta.sorteioNome)}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Modalidade:</strong>
-                ${escapar(aposta.modalidade)}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Número:</strong>
-                ${escapar(aposta.numero)}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Valor virtual:</strong>
-                ${formatarMoeda(aposta.valor)}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Cotação:</strong>
-                ${aposta.cotacao}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Prêmio estimado:</strong>
-                ${formatarMoeda(aposta.premioEstimado)}
-            </div>
-
-            <div class="linha-bilhete">
-                <strong>Status:</strong>
-                <span class="status status-aberta">
-                    ABERTA
-                </span>
-            </div>
-
-            <div style="margin-top:18px;">
-
-                <strong>
-                    Cancelamento disponível por 5 minutos.
-                </strong>
-
-                <div
-                    id="contadorNovoBilhete"
-                    class="contador"
-                    style="margin-top:7px;"
-                >
-                </div>
-
-            </div>
-
-        </div>
-    `;
-
-
-    iniciarContadorCancelamento(
-        idFirestore,
+    const agora =
         Date.now()
+        .toString(36)
+        .toUpperCase();
+
+    const aleatorio =
+        Math.random()
+        .toString(36)
+        .substring(2,7)
+        .toUpperCase();
+
+    return (
+        "B" +
+        agora +
+        aleatorio
     );
 
 }
 
 
 /* ==============================
-   CONTADOR 5 MINUTOS
+   BOTÃO GERAR
 ============================== */
 
-function iniciarContadorCancelamento(
-    apostaId,
-    criadoMs
-) {
+document
+.getElementById("btnGerarAposta")
+.addEventListener(
+    "click",
+    () => {
 
-    if (intervaloContador) {
+        const sorteioId =
+            document.getElementById(
+                "sorteio"
+            ).value;
 
-        clearInterval(
-            intervaloContador
+
+        const modalidade =
+            document.getElementById(
+                "modalidade"
+            ).value;
+
+
+        const numero =
+            document.getElementById(
+                "numero"
+            ).value.trim();
+
+
+        const valor =
+            Number(
+                document.getElementById(
+                    "valor"
+                ).value
+            );
+
+
+        const cotacao =
+            Number(
+                document.getElementById(
+                    "cotacao"
+                ).value
+            );
+
+
+        const mensagem =
+            document.getElementById(
+                "mensagemAposta"
+            );
+
+
+        if(!sorteioId){
+
+            mostrarMensagem(
+                mensagem,
+                "Selecione um sorteio.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !validarNumero(
+                modalidade,
+                numero
+            )
+        ){
+
+            mostrarMensagem(
+                mensagem,
+                "Número inválido para a modalidade selecionada.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !valor ||
+            valor <= 0
+        ){
+
+            mostrarMensagem(
+                mensagem,
+                "Informe um valor virtual válido.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !cotacao ||
+            cotacao <= 0
+        ){
+
+            mostrarMensagem(
+                mensagem,
+                "Informe uma cotação válida.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        const saldo =
+            Number(
+                dadosUsuario?.saldoVirtual || 0
+            );
+
+
+        if(valor > saldo){
+
+            mostrarMensagem(
+                mensagem,
+                "Saldo virtual insuficiente.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        const sorteio =
+            sorteios.find(
+                item =>
+                    item.id ===
+                    sorteioId
+            );
+
+
+        apostaPendente = {
+
+            sorteioId,
+
+            sorteioNome:
+                sorteio?.nome ||
+                sorteio?.titulo ||
+                "Sorteio",
+
+            modalidade,
+
+            numero,
+
+            valor,
+
+            cotacao,
+
+            possivelPremio:
+                valor * cotacao
+
+        };
+
+
+        document.getElementById(
+            "resumoAposta"
+        ).innerHTML = `
+
+            <strong>Sorteio:</strong>
+            ${apostaPendente.sorteioNome}
+            <br>
+
+            <strong>Modalidade:</strong>
+            ${apostaPendente.modalidade}
+            <br>
+
+            <strong>Número:</strong>
+            ${apostaPendente.numero}
+            <br>
+
+            <strong>Valor virtual:</strong>
+            ${formatarValor(apostaPendente.valor)}
+            <br>
+
+            <strong>Cotação:</strong>
+            ${apostaPendente.cotacao}
+            <br>
+
+            <strong>Possível prêmio:</strong>
+            ${formatarValor(apostaPendente.possivelPremio)}
+
+        `;
+
+
+        document
+        .getElementById(
+            "modalConfirmacao"
+        )
+        .classList.add(
+            "aberto"
         );
 
     }
+);
 
 
-    const limite =
-        criadoMs +
-        (5 * 60 * 1000);
+/* ==============================
+   FECHAR MODAL
+============================== */
+
+document
+.getElementById(
+    "btnFecharModal"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "modalConfirmacao"
+        )
+        .classList.remove(
+            "aberto"
+        );
+
+    }
+);
 
 
-    intervaloContador =
-        setInterval(async () => {
+/* ==============================
+   CONFIRMAR APOSTA
+============================== */
 
-            const restante =
-                limite -
-                Date.now();
+document
+.getElementById(
+    "btnConfirmarAposta"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        if(!apostaPendente){
+
+            return;
+
+        }
 
 
-            const elemento =
-                document.getElementById(
-                    "contadorNovoBilhete"
+        try{
+
+            const saldoAnterior =
+                Number(
+                    dadosUsuario.saldoVirtual ||
+                    0
                 );
 
 
-            if (!elemento) {
+            if(
+                apostaPendente.valor >
+                saldoAnterior
+            ){
 
-                clearInterval(
-                    intervaloContador
+                alert(
+                    "Saldo virtual insuficiente."
                 );
 
                 return;
+
             }
 
 
-            if (restante <= 0) {
-
-                elemento.textContent =
-                    "Prazo de cancelamento encerrado.";
-
-                clearInterval(
-                    intervaloContador
-                );
-
-                return;
-            }
+            const saldoPosterior =
+                saldoAnterior -
+                apostaPendente.valor;
 
 
-            const minutos =
-                Math.floor(
-                    restante / 60000
-                );
-
-            const segundos =
-                Math.floor(
-                    (restante % 60000) / 1000
-                );
+            const codigo =
+                gerarCodigoBilhete();
 
 
-            elemento.textContent =
-                `Pode cancelar por mais ${minutos}:${String(segundos).padStart(2, "0")}.`;
+            const dadosAposta = {
 
-        }, 1000);
+                bilhete:
+                    codigo,
 
-}
+                vendedorId:
+                    usuarioAtual.uid,
+
+                vendedorNome:
+                    dadosUsuario.nome ||
+                    "",
+
+                areaId:
+                    dadosUsuario.areaId ||
+                    null,
+
+                sorteioId:
+                    apostaPendente.sorteioId,
+
+                sorteioNome:
+                    apostaPendente.sorteioNome,
+
+                modalidade:
+                    apostaPendente.modalidade,
+
+                numero:
+                    apostaPendente.numero,
+
+                valor:
+                    apostaPendente.valor,
+
+                cotacao:
+                    apostaPendente.cotacao,
+
+                possivelPremio:
+                    apostaPendente.possivelPremio,
+
+                status:
+                    "ABERTA",
+
+                pago:
+                    false,
+
+                criadoEm:
+                    serverTimestamp(),
+
+                criadoEmMs:
+                    Date.now()
+
+            };
+
+
+            await addDoc(
+                collection(
+                    db,
+                    "apostas"
+                ),
+                dadosAposta
+            );
+
+
+            await updateDoc(
+                doc(
+                    db,
+                    "usuarios",
+                    usuarioAtual.uid
+                ),
+                {
+                    saldoVirtual:
+                        saldoPosterior
+                }
+            );
+
+
+            dadosUsuario.saldoVirtual =
+                saldoPosterior;
+
+
+            atualizarSaldo();
+
+
+            document
+            .getElementById(
+                "modalConfirmacao"
+            )
+            .classList.remove(
+                "aberto"
+            );
+
+
+            document
+            .getElementById(
+                "numeroBilheteGerado"
+            )
+            .textContent =
+                codigo;
+
+
+            document
+            .getElementById(
+                "detalhesBilheteGerado"
+            )
+            .innerHTML = `
+
+                <strong>Sorteio:</strong>
+                ${apostaPendente.sorteioNome}
+                <br>
+
+                <strong>Modalidade:</strong>
+                ${apostaPendente.modalidade}
+                <br>
+
+                <strong>Número:</strong>
+                ${apostaPendente.numero}
+                <br>
+
+                <strong>Valor:</strong>
+                ${formatarValor(apostaPendente.valor)}
+
+            `;
+
+
+            document
+            .getElementById(
+                "modalBilhete"
+            )
+            .classList.add(
+                "aberto"
+            );
+
+
+            apostaPendente = null;
+
+
+            document
+            .getElementById(
+                "numero"
+            ).value = "";
+
+
+            document
+            .getElementById(
+                "valor"
+            ).value = "";
+
+
+            document
+            .getElementById(
+                "cotacao"
+            ).value = "";
+
+
+            await carregarBilhetes();
+
+
+        }catch(erro){
+
+            console.error(
+                "Erro ao gerar aposta:",
+                erro
+            );
+
+            alert(
+                "Erro ao gerar o bilhete. Veja o Console (F12)."
+            );
+
+        }
+
+    }
+);
+
+
+/* ==============================
+   FECHAR BILHETE
+============================== */
+
+document
+.getElementById(
+    "btnFecharBilhete"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "modalBilhete"
+        )
+        .classList.remove(
+            "aberto"
+        );
+
+    }
+);
 
 
 /* ==============================
    CARREGAR BILHETES
 ============================== */
 
-async function carregarBilhetes() {
+async function carregarBilhetes(){
 
-    if (!usuarioAtual) {
+    if(!usuarioAtual){
 
         return;
+
     }
 
 
-    const lista =
+    const container =
         document.getElementById(
             "listaBilhetes"
         );
 
 
-    try {
+    try{
 
-        const consulta =
-            query(
-                collection(db, "apostas"),
-                where(
-                    "vendedorId",
-                    "==",
-                    usuarioAtual.uid
-                ),
-                orderBy(
-                    "criadoEm",
-                    "desc"
-                ),
-                limit(100)
-            );
+        let snap;
 
 
-        const snap =
-            await getDocs(
-                consulta
-            );
+        try{
 
-
-        document.getElementById(
-            "totalBilhetes"
-        ).textContent =
-            snap.size;
-
-
-        let ativos = 0;
-        let vencedores = 0;
-
-
-        if (snap.empty) {
-
-            lista.innerHTML =
-                '<div class="vazio">Nenhum bilhete encontrado.</div>';
-
-            document.getElementById(
-                "bilhetesAtivos"
-            ).textContent = "0";
-
-            document.getElementById(
-                "bilhetesVencedores"
-            ).textContent = "0";
-
-            return;
-        }
-
-
-        lista.innerHTML = "";
-
-
-        snap.forEach(docSnap => {
-
-            const aposta =
-                docSnap.data();
-
-
-            if (
-                aposta.status === "ABERTA"
-            ) {
-
-                ativos++;
-
-            }
-
-
-            if (
-                aposta.status === "VENCEDORA"
-            ) {
-
-                vencedores++;
-
-            }
-
-
-            const data =
-                formatarData(
-                    aposta.criadoEm
-                );
-
-
-            let statusClasse =
-                "status-aberta";
-
-
-            if (
-                aposta.status === "CANCELADA"
-            ) {
-
-                statusClasse =
-                    "status-cancelada";
-
-            }
-
-            if (
-                aposta.status === "VENCEDORA"
-            ) {
-
-                statusClasse =
-                    "status-vencedora";
-
-            }
-
-            if (
-                aposta.status === "PAGA"
-            ) {
-
-                statusClasse =
-                    "status-paga";
-
-            }
-
-
-            const podeCancelar =
-                aposta.status === "ABERTA" &&
-                podeCancelarAposta(aposta);
-
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-            div.className =
-                "item-aposta";
-
-
-            div.innerHTML = `
-
-                <div class="item-aposta-topo">
-
-                    <strong>
-                        Bilhete ${escapar(aposta.bilhete || "")}
-                    </strong>
-
-                    <span class="status ${statusClasse}">
-                        ${escapar(aposta.status || "ABERTA")}
-                    </span>
-
-                </div>
-
-                <p>
-                    <strong>Sorteio:</strong>
-                    ${escapar(aposta.sorteioNome || "")}
-                </p>
-
-                <p>
-                    <strong>Modalidade:</strong>
-                    ${escapar(aposta.modalidade || "")}
-                </p>
-
-                <p>
-                    <strong>Número:</strong>
-                    ${escapar(aposta.numero || "")}
-                </p>
-
-                <p>
-                    <strong>Valor:</strong>
-                    ${formatarMoeda(aposta.valor)}
-                </p>
-
-                <p>
-                    <strong>Prêmio estimado:</strong>
-                    ${formatarMoeda(aposta.premioEstimado)}
-                </p>
-
-                <p>
-                    <strong>Data:</strong>
-                    ${data}
-                </p>
-
-                <div
-                    style="margin-top:13px;"
-                    class="botoes"
-                >
-
-                    ${
-                        podeCancelar
-                        ?
-                        `
-                        <button
-                            class="btn-vermelho"
-                            onclick="cancelarAposta('${docSnap.id}')"
-                        >
-                            Cancelar
-                        </button>
-                        `
-                        :
-                        ""
-                    }
-
-                    ${
-                        aposta.status === "VENCEDORA"
-                        ?
-                        `
-                        <button
-                            class="btn-verde"
-                            onclick="validarPagamento('${docSnap.id}')"
-                        >
-                            Validar Pagamento Fictício
-                        </button>
-                        `
-                        :
-                        ""
-                    }
-
-                </div>
-
-            `;
-
-
-            lista.appendChild(
-                div
-            );
-
-        });
-
-
-        document.getElementById(
-            "bilhetesAtivos"
-        ).textContent =
-            ativos;
-
-
-        document.getElementById(
-            "bilhetesVencedores"
-        ).textContent =
-            vencedores;
-
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        /*
-           Se ainda não houver índice do Firestore
-           para orderBy + where, mostramos os dados
-           sem derrubar o painel.
-        */
-
-        try {
-
-            const consultaSimples =
+            const q =
                 query(
-                    collection(db, "apostas"),
+                    collection(
+                        db,
+                        "apostas"
+                    ),
+
                     where(
                         "vendedorId",
                         "==",
                         usuarioAtual.uid
-                    )
+                    ),
+
+                    orderBy(
+                        "criadoEm",
+                        "desc"
+                    ),
+
+                    limit(100)
                 );
 
 
-            const snap =
-                await getDocs(
-                    consultaSimples
-                );
+            snap =
+                await getDocs(q);
 
 
-            lista.innerHTML = "";
+        }catch(erroIndice){
 
-
-            if (snap.empty) {
-
-                lista.innerHTML =
-                    '<div class="vazio">Nenhum bilhete encontrado.</div>';
-
-                return;
-            }
-
-
-            const apostas =
-                [];
-
-
-            snap.forEach(docSnap => {
-
-                apostas.push({
-                    id: docSnap.id,
-                    ...docSnap.data()
-                });
-
-            });
-
-
-            apostas.sort(
-                (a, b) =>
-                    (b.criadoEmMs || 0) -
-                    (a.criadoEmMs || 0)
+            console.warn(
+                "Consulta com índice falhou. Tentando consulta simples.",
+                erroIndice
             );
 
 
-            let ativos = 0;
-            let vencedores = 0;
+            const q =
+                query(
+                    collection(
+                        db,
+                        "apostas"
+                    ),
 
+                    where(
+                        "vendedorId",
+                        "==",
+                        usuarioAtual.uid
+                    ),
 
-            apostas.forEach(aposta => {
-
-                if (
-                    aposta.status === "ABERTA"
-                ) {
-
-                    ativos++;
-
-                }
-
-                if (
-                    aposta.status === "VENCEDORA"
-                ) {
-
-                    vencedores++;
-
-                }
-
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-                div.className =
-                    "item-aposta";
-
-
-                let classe =
-                    "status-aberta";
-
-                if (
-                    aposta.status === "CANCELADA"
-                ) {
-
-                    classe =
-                        "status-cancelada";
-
-                }
-
-                if (
-                    aposta.status === "VENCEDORA"
-                ) {
-
-                    classe =
-                        "status-vencedora";
-
-                }
-
-                if (
-                    aposta.status === "PAGA"
-                ) {
-
-                    classe =
-                        "status-paga";
-
-                }
-
-
-                div.innerHTML = `
-
-                    <div class="item-aposta-topo">
-
-                        <strong>
-                            Bilhete ${escapar(aposta.bilhete || "")}
-                        </strong>
-
-                        <span class="status ${classe}">
-                            ${escapar(aposta.status || "")}
-                        </span>
-
-                    </div>
-
-                    <p>
-                        <strong>Sorteio:</strong>
-                        ${escapar(aposta.sorteioNome || "")}
-                    </p>
-
-                    <p>
-                        <strong>Número:</strong>
-                        ${escapar(aposta.numero || "")}
-                    </p>
-
-                    <p>
-                        <strong>Valor:</strong>
-                        ${formatarMoeda(aposta.valor)}
-                    </p>
-
-                    <p>
-                        <strong>Data:</strong>
-                        ${formatarData(aposta.criadoEm)}
-                    </p>
-
-                    <div
-                        class="botoes"
-                        style="margin-top:12px;"
-                    >
-
-                        ${
-                            aposta.status === "ABERTA" &&
-                            podeCancelarAposta(aposta)
-                            ?
-                            `
-                            <button
-                                class="btn-vermelho"
-                                onclick="cancelarAposta('${aposta.id}')"
-                            >
-                                Cancelar
-                            </button>
-                            `
-                            :
-                            ""
-                        }
-
-                        ${
-                            aposta.status === "VENCEDORA"
-                            ?
-                            `
-                            <button
-                                class="btn-verde"
-                                onclick="validarPagamento('${aposta.id}')"
-                            >
-                                Validar Pagamento Fictício
-                            </button>
-                            `
-                            :
-                            ""
-                        }
-
-                    </div>
-                `;
-
-
-                lista.appendChild(
-                    div
+                    limit(100)
                 );
 
-            });
 
-
-            document.getElementById(
-                "totalBilhetes"
-            ).textContent =
-                apostas.length;
-
-
-            document.getElementById(
-                "bilhetesAtivos"
-            ).textContent =
-                ativos;
-
-
-            document.getElementById(
-                "bilhetesVencedores"
-            ).textContent =
-                vencedores;
-
-
-        } catch (erro2) {
-
-            console.error(erro2);
-
-            lista.innerHTML =
-                '<div class="vazio">Não foi possível carregar os bilhetes.</div>';
+            snap =
+                await getDocs(q);
 
         }
+
+
+        bilhetes = [];
+
+
+        snap.forEach(
+            docSnap => {
+
+                bilhetes.push({
+
+                    id:
+                        docSnap.id,
+
+                    ...docSnap.data()
+
+                });
+
+            }
+        );
+
+
+        bilhetes.sort(
+            (a,b) =>
+                Number(
+                    b.criadoEmMs || 0
+                ) -
+                Number(
+                    a.criadoEmMs || 0
+                )
+        );
+
+
+        atualizarCards();
+
+
+        renderizarBilhetes();
+
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar bilhetes:",
+            erro
+        );
+
+
+        container.innerHTML = `
+
+            <div class="lista-vazia">
+
+                Erro ao carregar bilhetes.
+
+                <br><br>
+
+                Veja o Console (F12).
+
+            </div>
+
+        `;
 
     }
 
@@ -2096,96 +2068,388 @@ async function carregarBilhetes() {
 
 
 /* ==============================
-   CANCELAR APOSTA
+   ATUALIZAR CARDS
 ============================== */
 
-window.cancelarAposta = async function(
-    apostaId
-) {
+function atualizarCards(){
 
-    const confirmar =
-        confirm(
-            "Deseja realmente cancelar este bilhete fictício?"
+    totalBilhetes.textContent =
+        bilhetes.length;
+
+
+    bilhetesAtivos.textContent =
+        bilhetes.filter(
+            b =>
+                b.status ===
+                "ABERTA"
+        ).length;
+
+
+    bilhetesVencedores.textContent =
+        bilhetes.filter(
+            b =>
+                b.status ===
+                    "VENCEDORA" ||
+                b.status ===
+                    "PAGA"
+        ).length;
+
+}
+
+
+/* ==============================
+   RENDERIZAR BILHETES
+============================== */
+
+function renderizarBilhetes(){
+
+    const container =
+        document.getElementById(
+            "listaBilhetes"
         );
 
 
-    if (!confirmar) {
+    if(
+        bilhetes.length === 0
+    ){
+
+        container.innerHTML = `
+
+            <div class="lista-vazia">
+
+                Nenhum bilhete encontrado.
+
+            </div>
+
+        `;
 
         return;
+
     }
 
 
-    try {
+    let html = `
 
-        const ref =
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Bilhete</th>
+
+                    <th>Sorteio</th>
+
+                    <th>Modalidade</th>
+
+                    <th>Número</th>
+
+                    <th>Valor</th>
+
+                    <th>Status</th>
+
+                    <th>Ações</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+    `;
+
+
+    bilhetes.forEach(
+        bilhete => {
+
+            const status =
+                bilhete.status ||
+                "ABERTA";
+
+
+            let classe =
+                "badge-aberta";
+
+
+            if(
+                status ===
+                "CANCELADA"
+            ){
+
+                classe =
+                    "badge-cancelada";
+
+            }
+
+            if(
+                status ===
+                "VENCEDORA"
+            ){
+
+                classe =
+                    "badge-vencedora";
+
+            }
+
+            if(
+                status ===
+                "PAGA"
+            ){
+
+                classe =
+                    "badge-paga";
+
+            }
+
+            if(
+                status ===
+                "PERDIDA"
+            ){
+
+                classe =
+                    "badge-perdida";
+
+            }
+
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapar(
+                                bilhete.bilhete
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapar(
+                            bilhete.sorteioNome ||
+                            ""
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapar(
+                            bilhete.modalidade ||
+                            ""
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapar(
+                            bilhete.numero ||
+                            ""
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatarValor(
+                            bilhete.valor
+                        )}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${classe}">
+
+                            ${escapar(status)}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        ${
+                            status === "ABERTA"
+                            ? `
+                                <button
+                                    class="btn btn-danger"
+                                    onclick="cancelarBilhete('${bilhete.id}')">
+
+                                    Cancelar
+
+                                </button>
+                              `
+                            : ""
+                        }
+
+                        ${
+                            status === "VENCEDORA"
+                            ? `
+                                <button
+                                    class="btn btn-success"
+                                    onclick="pagarBilhete('${bilhete.id}')">
+
+                                    Validar Pagamento
+
+                                </button>
+                              `
+                            : ""
+                        }
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+/* ==============================
+   ESCAPAR HTML
+============================== */
+
+function escapar(valor){
+
+    return String(
+        valor ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* ==============================
+   CANCELAR BILHETE
+============================== */
+
+window.cancelarBilhete =
+async function(id){
+
+    const bilhete =
+        bilhetes.find(
+            b =>
+                b.id === id
+        );
+
+
+    if(!bilhete){
+
+        return;
+
+    }
+
+
+    if(
+        bilhete.vendedorId !==
+        usuarioAtual.uid
+    ){
+
+        alert(
+            "Este bilhete não pertence a este vendedor."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        bilhete.status !==
+        "ABERTA"
+    ){
+
+        alert(
+            "Este bilhete não pode mais ser cancelado."
+        );
+
+        return;
+
+    }
+
+
+    const criadoEm =
+        Number(
+            bilhete.criadoEmMs || 0
+        );
+
+
+    const agora =
+        Date.now();
+
+
+    const cincoMinutos =
+        5 * 60 * 1000;
+
+
+    if(
+        agora - criadoEm >
+        cincoMinutos
+    ){
+
+        alert(
+            "O prazo de 5 minutos para cancelamento terminou."
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+            "Deseja cancelar este bilhete?"
+        );
+
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+
+    try{
+
+        await updateDoc(
             doc(
                 db,
                 "apostas",
-                apostaId
-            );
-
-
-        const snap =
-            await getDoc(
-                ref
-            );
-
-
-        if (!snap.exists()) {
-
-            alert(
-                "Bilhete não encontrado."
-            );
-
-            return;
-        }
-
-
-        const aposta =
-            snap.data();
-
-
-        if (
-            aposta.vendedorId !==
-            usuarioAtual.uid
-        ) {
-
-            alert(
-                "Você não pode cancelar este bilhete."
-            );
-
-            return;
-        }
-
-
-        if (
-            aposta.status !==
-            "ABERTA"
-        ) {
-
-            alert(
-                "Este bilhete não está mais aberto para cancelamento."
-            );
-
-            return;
-        }
-
-
-        if (
-            !podeCancelarAposta(aposta)
-        ) {
-
-            alert(
-                "O prazo de 5 minutos para cancelamento já terminou."
-            );
-
-            return;
-        }
-
-
-        await updateDoc(
-            ref,
+                id
+            ),
             {
+
                 status:
                     "CANCELADA",
 
@@ -2194,23 +2458,23 @@ window.cancelarAposta = async function(
 
                 canceladoEmMs:
                     Date.now()
+
             }
         );
 
 
-        /*
-           Devolve o valor ao saldo virtual.
-        */
-
         const saldoAtual =
             Number(
-                dadosUsuario?.saldoVirtual || 0
+                dadosUsuario.saldoVirtual ||
+                0
             );
 
 
         const novoSaldo =
             saldoAtual +
-            Number(aposta.valor || 0);
+            Number(
+                bilhete.valor || 0
+            );
 
 
         await updateDoc(
@@ -2220,8 +2484,10 @@ window.cancelarAposta = async function(
                 usuarioAtual.uid
             ),
             {
+
                 saldoVirtual:
                     novoSaldo
+
             }
         );
 
@@ -2233,17 +2499,20 @@ window.cancelarAposta = async function(
         atualizarSaldo();
 
 
+        await carregarBilhetes();
+
+
         alert(
-            "Bilhete cancelado com sucesso."
+            "Bilhete cancelado. O valor virtual foi devolvido ao saldo."
         );
 
 
-        carregarBilhetes();
+    }catch(erro){
 
-
-    } catch (erro) {
-
-        console.error(erro);
+        console.error(
+            "Erro ao cancelar:",
+            erro
+        );
 
         alert(
             "Erro ao cancelar o bilhete."
@@ -2255,83 +2524,75 @@ window.cancelarAposta = async function(
 
 
 /* ==============================
-   VALIDAÇÃO DE PAGAMENTO
+   PAGAR BILHETE
 ============================== */
 
-window.validarPagamento = async function(
-    apostaId
-) {
+window.pagarBilhete =
+async function(id){
 
-    const confirmar =
-        confirm(
-            "Confirmar o pagamento FICTÍCIO deste bilhete vencedor?"
+    const bilhete =
+        bilhetes.find(
+            b =>
+                b.id === id
         );
 
 
-    if (!confirmar) {
+    if(!bilhete){
 
         return;
+
     }
 
 
-    try {
+    if(
+        bilhete.vendedorId !==
+        usuarioAtual.uid
+    ){
 
-        const ref =
+        alert(
+            "Este bilhete não pertence a este vendedor."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        bilhete.status !==
+        "VENCEDORA"
+    ){
+
+        alert(
+            "Somente bilhetes vencedores podem ser pagos."
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+            "Confirmar pagamento fictício deste bilhete?"
+        );
+
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+
+    try{
+
+        await updateDoc(
             doc(
                 db,
                 "apostas",
-                apostaId
-            );
-
-
-        const snap =
-            await getDoc(
-                ref
-            );
-
-
-        if (!snap.exists()) {
-
-            alert(
-                "Bilhete não encontrado."
-            );
-
-            return;
-        }
-
-
-        const aposta =
-            snap.data();
-
-
-        if (
-            aposta.vendedorId !==
-            usuarioAtual.uid
-        ) {
-
-            alert(
-                "Você não pode validar este bilhete."
-            );
-
-            return;
-        }
-
-
-        if (
-            aposta.status !==
-            "VENCEDORA"
-        ) {
-
-            alert(
-                "Este bilhete não está marcado como vencedor."
-            );
-
-            return;
-        }
-
-
-        await updateDoc(
-            ref,
+                id
+            ),
             {
 
                 status:
@@ -2350,20 +2611,23 @@ window.validarPagamento = async function(
         );
 
 
+        await carregarBilhetes();
+
+
         alert(
-            "Pagamento fictício registrado com sucesso."
+            "Pagamento fictício validado com sucesso."
         );
 
 
-        carregarBilhetes();
+    }catch(erro){
 
-
-    } catch (erro) {
-
-        console.error(erro);
+        console.error(
+            "Erro ao pagar:",
+            erro
+        );
 
         alert(
-            "Erro ao registrar pagamento fictício."
+            "Erro ao validar pagamento."
         );
 
     }
@@ -2375,435 +2639,232 @@ window.validarPagamento = async function(
    CONSULTAR BILHETE
 ============================== */
 
-window.consultarBilhete = async function() {
+document
+.getElementById(
+    "btnConsultar"
+)
+.addEventListener(
+    "click",
+    async () => {
 
-    const numero =
-        document
-            .getElementById("numeroConsulta")
+        const codigo =
+            document
+            .getElementById(
+                "codigoConsulta"
+            )
             .value
             .trim();
 
 
-    const resultado =
-        document.getElementById(
-            "resultadoConsulta"
-        );
-
-
-    if (!numero) {
-
-        resultado.innerHTML = `
-            <div class="mensagem erro">
-                Informe o número do bilhete.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    resultado.innerHTML =
-        "<p>Consultando...</p>";
-
-
-    try {
-
-        const consulta =
-            query(
-                collection(db, "apostas"),
-                where(
-                    "bilhete",
-                    "==",
-                    numero
-                ),
-                limit(1)
+        const resultado =
+            document.getElementById(
+                "resultadoConsulta"
             );
 
 
-        const snap =
-            await getDocs(
-                consulta
-            );
-
-
-        if (snap.empty) {
+        if(!codigo){
 
             resultado.innerHTML = `
+
                 <div class="mensagem erro">
-                    Bilhete não encontrado.
+
+                    Informe o número do bilhete.
+
                 </div>
+
             `;
 
             return;
-        }
-
-
-        let aposta = null;
-
-
-        snap.forEach(docSnap => {
-
-            aposta = {
-                id: docSnap.id,
-                ...docSnap.data()
-            };
-
-        });
-
-
-        let classe =
-            "status-aberta";
-
-
-        if (
-            aposta.status === "CANCELADA"
-        ) {
-
-            classe =
-                "status-cancelada";
-
-        }
-
-        if (
-            aposta.status === "VENCEDORA"
-        ) {
-
-            classe =
-                "status-vencedora";
-
-        }
-
-        if (
-            aposta.status === "PAGA"
-        ) {
-
-            classe =
-                "status-paga";
 
         }
 
 
         resultado.innerHTML = `
 
-            <div class="bilhete">
+            <div class="lista-vazia">
 
-                <div class="bilhete-topo">
+                Consultando...
 
-                    <div>
+            </div>
 
-                        <div>
-                            BILHETE
-                        </div>
+        `;
 
-                        <div class="numero-bilhete">
-                            ${escapar(aposta.bilhete)}
-                        </div>
+
+        try{
+
+            const q =
+                query(
+                    collection(
+                        db,
+                        "apostas"
+                    ),
+
+                    where(
+                        "bilhete",
+                        "==",
+                        codigo
+                    ),
+
+                    limit(1)
+                );
+
+
+            const snap =
+                await getDocs(q);
+
+
+            if(
+                snap.empty
+            ){
+
+                resultado.innerHTML = `
+
+                    <div class="mensagem erro">
+
+                        Bilhete não encontrado.
 
                     </div>
 
-                    <span
-                        class="status ${classe}"
-                    >
-                        ${escapar(aposta.status)}
-                    </span>
+                `;
+
+                return;
+
+            }
+
+
+            const docSnap =
+                snap.docs[0];
+
+
+            const b =
+                docSnap.data();
+
+
+            resultado.innerHTML = `
+
+                <div class="form-box">
+
+                    <h2>
+                        Bilhete encontrado
+                    </h2>
+
+                    <div class="detalhes">
+
+                        <strong>Bilhete:</strong>
+                        ${escapar(b.bilhete)}
+                        <br>
+
+                        <strong>Sorteio:</strong>
+                        ${escapar(b.sorteioNome || "")}
+                        <br>
+
+                        <strong>Modalidade:</strong>
+                        ${escapar(b.modalidade || "")}
+                        <br>
+
+                        <strong>Número:</strong>
+                        ${escapar(b.numero || "")}
+                        <br>
+
+                        <strong>Valor virtual:</strong>
+                        ${formatarValor(b.valor)}
+                        <br>
+
+                        <strong>Cotação:</strong>
+                        ${escapar(b.cotacao || "")}
+                        <br>
+
+                        <strong>Possível prêmio:</strong>
+                        ${formatarValor(b.possivelPremio)}
+                        <br>
+
+                        <strong>Status:</strong>
+                        ${escapar(b.status || "")}
+
+                    </div>
 
                 </div>
 
-
-                <div class="linha-bilhete">
-
-                    <strong>Sorteio:</strong>
-
-                    ${escapar(
-                        aposta.sorteioNome || ""
-                    )}
-
-                </div>
+            `;
 
 
-                <div class="linha-bilhete">
+        }catch(erro){
 
-                    <strong>Vendedor:</strong>
+            console.error(
+                "Erro na consulta:",
+                erro
+            );
 
-                    ${escapar(
-                        aposta.vendedorNome || ""
-                    )}
+
+            resultado.innerHTML = `
+
+                <div class="mensagem erro">
+
+                    Erro ao consultar o bilhete.
 
                 </div>
 
+            `;
 
-                <div class="linha-bilhete">
-
-                    <strong>Modalidade:</strong>
-
-                    ${escapar(
-                        aposta.modalidade || ""
-                    )}
-
-                </div>
-
-
-                <div class="linha-bilhete">
-
-                    <strong>Número:</strong>
-
-                    ${escapar(
-                        aposta.numero || ""
-                    )}
-
-                </div>
-
-
-                <div class="linha-bilhete">
-
-                    <strong>Valor virtual:</strong>
-
-                    ${formatarMoeda(
-                        aposta.valor
-                    )}
-
-                </div>
-
-
-                <div class="linha-bilhete">
-
-                    <strong>Prêmio estimado:</strong>
-
-                    ${formatarMoeda(
-                        aposta.premioEstimado
-                    )}
-
-                </div>
-
-            </div>
-        `;
-
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        resultado.innerHTML = `
-            <div class="mensagem erro">
-                Erro ao consultar o bilhete.
-            </div>
-        `;
-
-    }
-
-};
-
-
-/* ==============================
-   FUNÇÕES AUXILIARES
-============================== */
-
-function gerarNumeroBilhete() {
-
-    const agora =
-        Date.now()
-        .toString()
-        .slice(-8);
-
-
-    const aleatorio =
-        Math.floor(
-            Math.random() * 1000
-        )
-        .toString()
-        .padStart(3, "0");
-
-
-    return agora + aleatorio;
-
-}
-
-
-function podeCancelarAposta(
-    aposta
-) {
-
-    const criado =
-        Number(
-            aposta.criadoEmMs || 0
-        );
-
-
-    if (!criado) {
-
-        return false;
-
-    }
-
-
-    return (
-        Date.now() -
-        criado
-    ) <=
-    (5 * 60 * 1000);
-
-}
-
-
-function formatarMoeda(valor) {
-
-    return Number(
-        valor || 0
-    ).toLocaleString(
-        "pt-BR",
-        {
-            style: "currency",
-            currency: "BRL"
         }
-    );
-
-}
-
-
-function formatarData(timestamp) {
-
-    if (!timestamp) {
-
-        return "Agora";
 
     }
-
-
-    try {
-
-        const data =
-            timestamp.toDate
-                ? timestamp.toDate()
-                : new Date(timestamp);
-
-
-        return data.toLocaleString(
-            "pt-BR"
-        );
-
-    } catch {
-
-        return "Data não disponível";
-
-    }
-
-}
-
-
-function escapar(valor) {
-
-    return String(
-        valor ?? ""
-    )
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-function mostrarMensagem(
-    texto,
-    tipo
-) {
-
-    const elemento =
-        document.getElementById(
-            "mensagemAposta"
-        );
-
-
-    elemento.textContent =
-        texto;
-
-
-    elemento.className =
-        "mensagem " + tipo;
-
-
-    setTimeout(() => {
-
-        elemento.className =
-            "mensagem";
-
-    }, 5000);
-
-}
-
-
-function limparCamposAposta() {
-
-    document.getElementById(
-        "numero"
-    ).value = "";
-
-    document.getElementById(
-        "valor"
-    ).value = "";
-
-}
-
-
-window.limparAposta = function() {
-
-    limparCamposAposta();
-
-    document.getElementById(
-        "bilheteGerado"
-    ).innerHTML = "";
-
-};
+);
 
 
 /* ==============================
-   MODAL
+   ATUALIZAÇÃO AUTOMÁTICA
 ============================== */
 
-window.fecharModal = function() {
+setInterval(
+    async () => {
 
-    document.getElementById(
-        "modalConfirmacao"
-    ).classList.remove("aberto");
+        if(
+            autenticacaoVerificada &&
+            usuarioAtual
+        ){
 
-    apostaPendente = null;
+            try{
 
-};
+                const ref =
+                    doc(
+                        db,
+                        "usuarios",
+                        usuarioAtual.uid
+                    );
 
 
-/* ==============================
-   SAIR
-============================== */
+                const snap =
+                    await getDoc(ref);
 
-document
-    .getElementById("btnSair")
-    .addEventListener(
-        "click",
-        async () => {
 
-            try {
+                if(
+                    snap.exists()
+                ){
 
-                await signOut(auth);
+                    dadosUsuario =
+                        snap.data();
 
-                sessionStorage.removeItem(
-                    "usuario"
+                    atualizarSaldo();
+
+                }
+
+            }catch(erro){
+
+                console.warn(
+                    "Erro ao atualizar saldo:",
+                    erro
                 );
-
-                window.location.href =
-                    "login.html";
-
-            } catch (erro) {
-
-                console.error(erro);
 
             }
 
         }
-    );
+
+    },
+    15000
+);
 
 </script>
 
 </body>
 </html>
-```
