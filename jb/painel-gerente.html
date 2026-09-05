@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+```
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel do Gerente</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f3f4f6;
+        color: #111827;
+    }
+
+    /* =========================================
+       TOPO
+    ========================================= */
+
+    header {
+        height: 65px;
+        background: #111827;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 25px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+
+    .logo {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .usuario-topo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 14px;
+    }
+
+    .perfil {
+        background: #2563eb;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .btn-sair {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 8px 13px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-sair:hover {
+        background: #b91c1c;
+    }
+
+
+    /* =========================================
+       MENU
+    ========================================= */
+
+    aside {
+        position: fixed;
+        top: 65px;
+        left: 0;
+        bottom: 0;
+        width: 230px;
+        background: #1f2937;
+        padding-top: 20px;
+    }
+
+    .menu-item {
+        padding: 14px 22px;
+        color: #d1d5db;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .menu-item:hover,
+    .menu-item.ativo {
+        background: #374151;
+        color: white;
+    }
+
+
+    /* =========================================
+       CONTEÚDO
+    ========================================= */
+
+    main {
+        margin-left: 230px;
+        padding: 95px 25px 30px;
+    }
+
+    .secao {
+        display: none;
+    }
+
+    .secao.ativa {
+        display: block;
+    }
+
+    .titulo {
+        margin-bottom: 20px;
+    }
+
+    .titulo h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+
+    .titulo p {
+        color: #6b7280;
+    }
+
+
+    /* =========================================
+       CARDS
+    ========================================= */
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    }
+
+    .card .icone {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .card .numero {
+        font-size: 27px;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .card .descricao {
+        color: #6b7280;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+
+    /* =========================================
+       PAINEL
+    ========================================= */
+
+    .painel {
+        background: white;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+        margin-bottom: 20px;
+    }
+
+    .painel-topo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .painel h2 {
+        font-size: 19px;
+    }
+
+
+    /* =========================================
+       BOTÕES
+    ========================================= */
+
+    .btn {
+        border: none;
+        border-radius: 7px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #15803d;
+    }
+
+    .btn-warning {
+        background: #d97706;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background: #b45309;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+
+
+    /* =========================================
+       TABELA
+    ========================================= */
+
+    .tabela-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
+    }
+
+    th {
+        background: #f9fafb;
+        color: #374151;
+        text-align: left;
+        padding: 12px;
+        border-bottom: 2px solid #e5e7eb;
+        font-size: 13px;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background: #f9fafb;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .status-ativo {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-inativo {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .saldo {
+        font-weight: bold;
+        color: #166534;
+    }
+
+    .acoes {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .acoes button {
+        padding: 7px 9px;
+        font-size: 11px;
+    }
+
+
+    /* =========================================
+       MODAL
+    ========================================= */
+
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 500;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal.aberto {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-box h2 {
+        margin-bottom: 20px;
+    }
+
+    .campo {
+        margin-bottom: 15px;
+    }
+
+    .campo label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #374151;
+    }
+
+    .campo input {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .campo input:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .modal-acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+
+    /* =========================================
+       MENSAGEM
+    ========================================= */
+
+    #mensagem {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        max-width: 350px;
+        padding: 14px 18px;
+        border-radius: 9px;
+        display: none;
+        z-index: 1000;
+        font-size: 14px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    #mensagem.sucesso {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #86efac;
+    }
+
+    #mensagem.erro {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+
+
+    /* =========================================
+       RESPONSIVO
+    ========================================= */
+
+    @media (max-width: 750px) {
+
+        aside {
+            width: 65px;
+        }
+
+        .menu-item {
+            text-align: center;
+            padding: 15px 5px;
+            font-size: 0;
+        }
+
+        .menu-item::first-letter {
+            font-size: 20px;
+        }
+
+        main {
+            margin-left: 65px;
+        }
+
+        .usuario-topo .nome-topo {
+            display: none;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<!-- =========================================
+     TOPO
+========================================= -->
+
+<header>
+
+```
+<div class="logo">
+    🎯 Sistema Fictício
+</div>
+
+<div class="usuario-topo">
+
+    <span
+        class="nome-topo"
+        id="nomeUsuario"
+    >
+        Carregando...
+    </span>
+
+    <span class="perfil">
+        GERENTE
+    </span>
+
+    <button
+        class="btn-sair"
+        id="btnSair"
+    >
+        Sair
+    </button>
+
+</div>
+```
+
+</header>
+
+<!-- =========================================
+     MENU
+========================================= -->
+
+<aside>
+
+```
+<div
+    class="menu-item ativo"
+    data-secao="inicio"
+>
+    🏠 Início
+</div>
+
+<div
+    class="menu-item"
+    data-secao="vendedores"
+>
+    👥 Vendedores
+</div>
+
+<div
+    class="menu-item"
+    data-secao="movimentacoes"
+>
+    💰 Movimentações
+</div>
+```
+
+</aside>
+
+<!-- =========================================
+     CONTEÚDO
+========================================= -->
+
+<main>
+
+```
+<!-- ======================================
+     INÍCIO
+======================================= -->
+
+<section
+    id="inicio"
+    class="secao ativa"
+>
+
+    <div class="titulo">
+
+        <h1>
+            Painel do Gerente
+        </h1>
+
+        <p id="textoArea">
+            Área: carregando...
+        </p>
+
+    </div>
+
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="icone">
+                👥
+            </div>
+
+            <div
+                class="numero"
+                id="totalVendedores"
+            >
+                0
+            </div>
+
+            <div class="descricao">
+                Vendedores
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icone">
+                🟢
+            </div>
+
+            <div
+                class="numero"
+                id="vendedoresAtivos"
+            >
+                0
+            </div>
+
+            <div class="descricao">
+                Vendedores ativos
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icone">
+                💰
+            </div>
+
+            <div
+                class="numero"
+                id="saldoTotal"
+            >
+                0
+            </div>
+
+            <div class="descricao">
+                Saldo virtual dos vendedores
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icone">
+                📊
+            </div>
+
+            <div
+                class="numero"
+                id="movimentacoesTotal"
+            >
+                0
+            </div>
+
+            <div class="descricao">
+                Movimentações
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="painel">
+
+        <h2>
+            Resumo da área
+        </h2>
+
+        <br>
+
+        <p>
+            Este painel administra somente os vendedores
+            vinculados a esta área.
+        </p>
+
+        <br>
+
+        <p>
+            Os valores exibidos são exclusivamente
+            <strong>virtuais</strong>, para fins de estudo
+            e testes.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     VENDEDORES
+======================================= -->
+
+<section
+    id="vendedores"
+    class="secao"
+>
+
+    <div class="titulo">
+
+        <h1>
+            Vendedores
+        </h1>
+
+        <p>
+            Gerencie os vendedores da sua área.
+        </p>
+
+    </div>
+
+
+    <div class="painel">
+
+        <div class="painel-topo">
+
+            <h2>
+                Vendedores cadastrados
+            </h2>
+
+            <button
+                class="btn btn-primary"
+                id="btnNovoVendedor"
+            >
+                + Novo Vendedor
+            </button>
+
+        </div>
+
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nome
+                        </th>
+
+                        <th>
+                            E-mail
+                        </th>
+
+                        <th>
+                            Saldo virtual
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaVendedores">
+
+                    <tr>
+
+                        <td colspan="5">
+                            Carregando vendedores...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     MOVIMENTAÇÕES
+======================================= -->
+
+<section
+    id="movimentacoes"
+    class="secao"
+>
+
+    <div class="titulo">
+
+        <h1>
+            Movimentações
+        </h1>
+
+        <p>
+            Histórico de saldo virtual dos vendedores.
+        </p>
+
+    </div>
+
+
+    <div class="painel">
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Data
+                        </th>
+
+                        <th>
+                            Vendedor
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Valor
+                        </th>
+
+                        <th>
+                            Saldo anterior
+                        </th>
+
+                        <th>
+                            Saldo posterior
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaMovimentacoes">
+
+                    <tr>
+
+                        <td colspan="6">
+                            Nenhuma movimentação encontrada.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+```
+
+</main>
+
+<!-- =========================================
+     MODAL NOVO VENDEDOR
+========================================= -->
+
+<div
+    class="modal"
+    id="modalVendedor"
+>
+
+```
+<div class="modal-box">
+
+    <h2>
+        👤 Novo Vendedor
+    </h2>
+
+
+    <form id="formVendedor">
+
+        <div class="campo">
+
+            <label>
+                Nome
+            </label>
+
+            <input
+                type="text"
+                id="vendedorNome"
+                required
+                placeholder="Nome do vendedor"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                E-mail
+            </label>
+
+            <input
+                type="email"
+                id="vendedorEmail"
+                required
+                placeholder="E-mail do vendedor"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label>
+                Senha inicial
+            </label>
+
+            <input
+                type="password"
+                id="vendedorSenha"
+                minlength="6"
+                required
+                placeholder="Mínimo de 6 caracteres"
+            >
+
+        </div>
+
+
+        <div class="modal-acoes">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="btnCancelarVendedor"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="btnSalvarVendedor"
+            >
+                Criar Vendedor
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+```
+
+</div>
+
+<!-- =========================================
+     MODAL SALDO
+========================================= -->
+
+<div
+    class="modal"
+    id="modalSaldo"
+>
+
+```
+<div class="modal-box">
+
+    <h2 id="tituloSaldo">
+        💰 Saldo virtual
+    </h2>
+
+    <p
+        id="nomeVendedorSaldo"
+        style="margin-bottom:20px;color:#6b7280;"
+    ></p>
+
+
+    <form id="formSaldo">
+
+        <div class="campo">
+
+            <label>
+                Valor
+            </label>
+
+            <input
+                type="number"
+                id="valorSaldo"
+                min="0.01"
+                step="0.01"
+                required
+                placeholder="0,00"
+            >
+
+        </div>
+
+
+        <div class="modal-acoes">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="btnCancelarSaldo"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                class="btn btn-success"
+                id="btnConfirmarSaldo"
+            >
+                Confirmar
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+```
+
+</div>
+
+<!-- =========================================
+     MENSAGEM
+========================================= -->
+
+<div id="mensagem"></div>
+
+<script type="module">
+
+
+    // =========================================
+    // FIREBASE
+    // =========================================
+
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+    import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    import {
+        getFirestore,
+        collection,
+        doc,
+        getDoc,
+        getDocs,
+        query,
+        where,
+        setDoc,
+        updateDoc,
+        deleteDoc,
+        addDoc,
+        serverTimestamp,
+        orderBy
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+    // =========================================
+    // CONFIGURAÇÃO FIREBASE ATUAL
+    // =========================================
+
+    const firebaseConfig = {
+
+        apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
+
+        authDomain: "meuappweb-65522.firebaseapp.com",
+
+        projectId: "meuappweb-65522",
+
+        storageBucket: "meuappweb-65522.firebasestorage.app",
+
+        messagingSenderId: "305368794616",
+
+        appId: "1:305368794616:web:3199c6836a986d896ac20d",
+
+        measurementId: "G-QN7GFD99N0"
+
+    };
+
+
+    const app =
+        initializeApp(firebaseConfig);
+
+    const auth =
+        getAuth(app);
+
+    const db =
+        getFirestore(app);
+
+
+    // =========================================
+    // SEGUNDA INSTÂNCIA PARA CRIAR VENDEDORES
+    // =========================================
+
+    const appCadastro =
+        initializeApp(
+            firebaseConfig,
+            "cadastroVendedor"
+        );
+
+    const authCadastro =
+        getAuth(appCadastro);
+
+
+    // =========================================
+    // VARIÁVEIS
+    // =========================================
+
+    let usuarioAtual = null;
+
+    let vendedores = [];
+
+    let vendedorSaldoSelecionado = null;
+
+    let tipoMovimentacao = null;
+
+
+    // =========================================
+    // ELEMENTOS
+    // =========================================
+
+    const nomeUsuario =
+        document.getElementById("nomeUsuario");
+
+    const textoArea =
+        document.getElementById("textoArea");
+
+    const listaVendedores =
+        document.getElementById("listaVendedores");
+
+    const listaMovimentacoes =
+        document.getElementById("listaMovimentacoes");
+
+    const modalVendedor =
+        document.getElementById("modalVendedor");
+
+    const modalSaldo =
+        document.getElementById("modalSaldo");
+
+    const mensagem =
+        document.getElementById("mensagem");
+
+
+    // =========================================
+    // MENSAGEM
+    // =========================================
+
+    function mostrarMensagem(
+        texto,
+        tipo = "sucesso"
+    ) {
+
+        mensagem.textContent =
+            texto;
+
+        mensagem.className =
+            tipo;
+
+        setTimeout(() => {
+
+            mensagem.className = "";
+
+        }, 3500);
+
+    }
+
+
+    // =========================================
+    // FORMATAÇÃO
+    // =========================================
+
+    function formatarValor(valor) {
+
+        return Number(valor || 0)
+            .toLocaleString(
+                "pt-BR",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+    }
+
+
+    function escapar(valor) {
+
+        if (
+            valor === null ||
+            valor === undefined
+        ) {
+            return "";
+        }
+
+        return String(valor)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    // =========================================
+    // VERIFICAR LOGIN
+    // =========================================
+
+    onAuthStateChanged(
+        auth,
+        async (user) => {
+
+            if (!user) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            try {
+
+                const referencia =
+                    doc(
+                        db,
+                        "usuarios",
+                        user.uid
+                    );
+
+
+                const documento =
+                    await getDoc(referencia);
+
+
+                if (!documento.exists()) {
+
+                    await signOut(auth);
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                const dados =
+                    documento.data();
+
+
+                if (
+                    dados.perfil !==
+                    "GERENTE"
+                ) {
+
+                    await signOut(auth);
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                if (
+                    dados.ativo !== true
+                ) {
+
+                    await signOut(auth);
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                usuarioAtual = {
+
+                    uid: user.uid,
+
+                    ...dados
+
+                };
+
+
+                nomeUsuario.textContent =
+                    dados.nome || user.email;
+
+
+                textoArea.textContent =
+                    "Área: " +
+                    (
+                        dados.areaNome ||
+                        "Não definida"
+                    );
+
+
+                await carregarTudo();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mostrarMensagem(
+                    "Erro ao carregar o painel.",
+                    "erro"
+                );
+
+            }
+
+        }
+    );
+
+
+    // =========================================
+    // CARREGAR TUDO
+    // =========================================
+
+    async function carregarTudo() {
+
+        await carregarVendedores();
+
+        await carregarMovimentacoes();
+
+        atualizarResumo();
+
+    }
+
+
+    // =========================================
+    // CARREGAR VENDEDORES
+    // =========================================
+
+    async function carregarVendedores() {
+
+        vendedores = [];
+
+
+        try {
+
+            const q =
+                query(
+
+                    collection(
+                        db,
+                        "usuarios"
+                    ),
+
+                    where(
+                        "perfil",
+                        "==",
+                        "VENDEDOR"
+                    ),
+
+                    where(
+                        "areaId",
+                        "==",
+                        usuarioAtual.uid
+                    )
+
+                );
+
+
+            const resultado =
+                await getDocs(q);
+
+
+            resultado.forEach(
+                documento => {
+
+                    vendedores.push({
+
+                        id: documento.id,
+
+                        ...documento.data()
+
+                    });
+
+                }
+            );
+
+
+            renderizarVendedores();
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro vendedores:",
+                erro
+            );
+
+
+            listaVendedores.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+                        Erro ao carregar vendedores.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    // =========================================
+    // RENDERIZAR VENDEDORES
+    // =========================================
+
+    function renderizarVendedores() {
+
+        if (!vendedores.length) {
+
+            listaVendedores.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5"
+                        style="text-align:center;padding:30px;color:#6b7280;">
+
+                        Nenhum vendedor cadastrado.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        listaVendedores.innerHTML =
+            vendedores.map(
+                vendedor => {
+
+                    const ativo =
+                        vendedor.ativo === true;
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapar(vendedor.nome)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapar(vendedor.email)}
+                            </td>
+
+                            <td class="saldo">
+                                ${formatarValor(vendedor.saldoVirtual)}
+                            </td>
+
+                            <td>
+
+                                <span class="status ${
+                                    ativo
+                                    ? "status-ativo"
+                                    : "status-inativo"
+                                }">
+
+                                    ${
+                                        ativo
+                                        ? "ATIVO"
+                                        : "INATIVO"
+                                    }
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="acoes">
+
+                                    ${
+                                        ativo
+                                        ?
+
+                                        `
+
+                                        <button
+                                            class="btn btn-success"
+                                            onclick="abrirSaldo('${vendedor.id}','${vendedor.nome}','adicionar')"
+                                        >
+                                            + Saldo
+                                        </button>
+
+                                        <button
+                                            class="btn btn-warning"
+                                            onclick="abrirSaldo('${vendedor.id}','${vendedor.nome}','sangria')"
+                                        >
+                                            - Sangria
+                                        </button>
+
+                                        <button
+                                            class="btn btn-danger"
+                                            onclick="alternarVendedor('${vendedor.id}', false)"
+                                        >
+                                            Desativar
+                                        </button>
+
+                                        `
+
+                                        :
+
+                                        `
+
+                                        <button
+                                            class="btn btn-success"
+                                            onclick="alternarVendedor('${vendedor.id}', true)"
+                                        >
+                                            Ativar
+                                        </button>
+
+                                        `
+
+                                    }
+
+                                    <button
+                                        class="btn btn-danger"
+                                        onclick="excluirVendedor('${vendedor.id}')"
+                                    >
+                                        Excluir
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            ).join("");
+
+    }
+
+
+    // =========================================
+    // ATUALIZAR RESUMO
+    // =========================================
+
+    function atualizarResumo() {
+
+        const total =
+            vendedores.length;
+
+
+        const ativos =
+            vendedores.filter(
+                v => v.ativo === true
+            ).length;
+
+
+        const saldo =
+            vendedores.reduce(
+                (
+                    total,
+                    vendedor
+                ) =>
+                    total +
+                    Number(
+                        vendedor.saldoVirtual || 0
+                    ),
+                0
+            );
+
+
+        document.getElementById(
+            "totalVendedores"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "vendedoresAtivos"
+        ).textContent = ativos;
+
+
+        document.getElementById(
+            "saldoTotal"
+        ).textContent =
+            formatarValor(saldo);
+
+    }
+
+
+    // =========================================
+    // NOVO VENDEDOR
+    // =========================================
+
+    document.getElementById(
+        "btnNovoVendedor"
+    ).addEventListener(
+        "click",
+        () => {
+
+            document.getElementById(
+                "formVendedor"
+            ).reset();
+
+
+            modalVendedor.classList.add(
+                "aberto"
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "btnCancelarVendedor"
+    ).addEventListener(
+        "click",
+        () => {
+
+            modalVendedor.classList.remove(
+                "aberto"
+            );
+
+        }
+    );
+
+
+    // =========================================
+    // CRIAR VENDEDOR
+    // =========================================
+
+    document.getElementById(
+        "formVendedor"
+    ).addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            const nome =
+                document.getElementById(
+                    "vendedorNome"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "vendedorEmail"
+                ).value.trim();
+
+
+            const senha =
+                document.getElementById(
+                    "vendedorSenha"
+                ).value;
+
+
+            const botao =
+                document.getElementById(
+                    "btnSalvarVendedor"
+                );
+
+
+            botao.disabled = true;
+
+            botao.textContent =
+                "Criando...";
+
+
+            try {
+
+                const resultado =
+                    await createUserWithEmailAndPassword(
+
+                        authCadastro,
+
+                        email,
+
+                        senha
+
+                    );
+
+
+                const uid =
+                    resultado.user.uid;
+
+
+                await setDoc(
+
+                    doc(
+                        db,
+                        "usuarios",
+                        uid
+                    ),
+
+                    {
+
+                        nome: nome,
+
+                        email: email,
+
+                        perfil: "VENDEDOR",
+
+                        ativo: true,
+
+                        areaId:
+                            usuarioAtual.uid,
+
+                        areaNome:
+                            usuarioAtual.areaNome ||
+                            "",
+
+                        vendedorId:
+                            uid,
+
+                        saldoVirtual: 0,
+
+                        criadoPor:
+                            usuarioAtual.uid,
+
+                        criadoEm:
+                            serverTimestamp()
+
+                    }
+
+                );
+
+
+                await signOut(
+                    authCadastro
+                );
+
+
+                modalVendedor.classList.remove(
+                    "aberto"
+                );
+
+
+                mostrarMensagem(
+                    "Vendedor criado com sucesso!"
+                );
+
+
+                await carregarVendedores();
+
+                atualizarResumo();
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao criar vendedor:",
+                    erro
+                );
+
+
+                let texto =
+                    "Não foi possível criar o vendedor.";
+
+
+                if (
+                    erro.code ===
+                    "auth/email-already-in-use"
+                ) {
+
+                    texto =
+                        "Este e-mail já está cadastrado.";
+
+                }
+
+                else if (
+                    erro.code ===
+                    "auth/invalid-email"
+                ) {
+
+                    texto =
+                        "O e-mail informado é inválido.";
+
+                }
+
+                else if (
+                    erro.code ===
+                    "auth/weak-password"
+                ) {
+
+                    texto =
+                        "A senha precisa ter pelo menos 6 caracteres.";
+
+                }
+
+
+                mostrarMensagem(
+                    texto,
+                    "erro"
+                );
+
+            }
+
+
+            botao.disabled = false;
+
+            botao.textContent =
+                "Criar Vendedor";
+
+        }
+    );
+
+
+    // =========================================
+    // ABRIR SALDO
+    // =========================================
+
+    window.abrirSaldo =
+        function(
+            vendedorId,
+            nome,
+            tipo
+        ) {
+
+            vendedorSaldoSelecionado =
+                vendedorId;
+
+            tipoMovimentacao =
+                tipo;
+
+
+            document.getElementById(
+                "tituloSaldo"
+            ).textContent =
+                tipo === "adicionar"
+                ? "💰 Adicionar saldo virtual"
+                : "💸 Fazer sangria";
+
+
+            document.getElementById(
+                "nomeVendedorSaldo"
+            ).textContent =
+                "Vendedor: " + nome;
+
+
+            document.getElementById(
+                "valorSaldo"
+            ).value = "";
+
+
+            modalSaldo.classList.add(
+                "aberto"
+            );
+
+        };
+
+
+    document.getElementById(
+        "btnCancelarSaldo"
+    ).addEventListener(
+        "click",
+        () => {
+
+            modalSaldo.classList.remove(
+                "aberto"
+            );
+
+        }
+    );
+
+
+    // =========================================
+    // ALTERAR SALDO
+    // =========================================
+
+    document.getElementById(
+        "formSaldo"
+    ).addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            const valor =
+                Number(
+                    document.getElementById(
+                        "valorSaldo"
+                    ).value
+                );
+
+
+            if (
+                !valor ||
+                valor <= 0
+            ) {
+
+                mostrarMensagem(
+                    "Informe um valor válido.",
+                    "erro"
+                );
+
+                return;
+
+            }
+
+
+            const vendedor =
+                vendedores.find(
+                    v =>
+                        v.id ===
+                        vendedorSaldoSelecionado
+                );
+
+
+            if (!vendedor) {
+
+                mostrarMensagem(
+                    "Vendedor não encontrado.",
+                    "erro"
+                );
+
+                return;
+
+            }
+
+
+            const saldoAnterior =
+                Number(
+                    vendedor.saldoVirtual || 0
+                );
+
+
+            let saldoNovo;
+
+
+            if (
+                tipoMovimentacao ===
+                "adicionar"
+            ) {
+
+                saldoNovo =
+                    saldoAnterior +
+                    valor;
+
+            } else {
+
+                if (
+                    valor >
+                    saldoAnterior
+                ) {
+
+                    mostrarMensagem(
+                        "A sangria não pode ser maior que o saldo virtual disponível.",
+                        "erro"
+                    );
+
+                    return;
+
+                }
+
+
+                saldoNovo =
+                    saldoAnterior -
+                    valor;
+
+            }
+
+
+            const botao =
+                document.getElementById(
+                    "btnConfirmarSaldo"
+                );
+
+
+            botao.disabled = true;
+
+            botao.textContent =
+                "Salvando...";
+
+
+            try {
+
+                // Atualiza saldo
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "usuarios",
+                        vendedor.id
+                    ),
+
+                    {
+
+                        saldoVirtual:
+                            saldoNovo
+
+                    }
+
+                );
+
+
+                // Registra movimentação
+
+                await addDoc(
+
+                    collection(
+                        db,
+                        "movimentacoes"
+                    ),
+
+                    {
+
+                        vendedorId:
+                            vendedor.id,
+
+                        vendedorNome:
+                            vendedor.nome,
+
+                        gerenteId:
+                            usuarioAtual.uid,
+
+                        areaId:
+                            usuarioAtual.uid,
+
+                        tipo:
+                            tipoMovimentacao,
+
+                        valor:
+                            valor,
+
+                        saldoAnterior:
+                            saldoAnterior,
+
+                        saldoPosterior:
+                            saldoNovo,
+
+                        criadoEm:
+                            serverTimestamp()
+
+                    }
+
+                );
+
+
+                modalSaldo.classList.remove(
+                    "aberto"
+                );
+
+
+                mostrarMensagem(
+                    tipoMovimentacao ===
+                    "adicionar"
+                    ?
+                    "Saldo virtual adicionado."
+                    :
+                    "Sangria realizada."
+                );
+
+
+                await carregarTudo();
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro saldo:",
+                    erro
+                );
+
+
+                mostrarMensagem(
+                    "Erro ao atualizar o saldo.",
+                    "erro"
+                );
+
+            }
+
+
+            botao.disabled = false;
+
+            botao.textContent =
+                "Confirmar";
+
+        }
+    );
+
+
+    // =========================================
+    // ATIVAR / DESATIVAR
+    // =========================================
+
+    window.alternarVendedor =
+        async function(
+            id,
+            ativar
+        ) {
+
+            const vendedor =
+                vendedores.find(
+                    v => v.id === id
+                );
+
+
+            if (!vendedor) return;
+
+
+            const acao =
+                ativar
+                ? "ativar"
+                : "desativar";
+
+
+            if (
+                !confirm(
+                    `Deseja ${acao} o vendedor "${vendedor.nome}"?`
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "usuarios",
+                        id
+                    ),
+
+                    {
+
+                        ativo:
+                            ativar
+
+                    }
+
+                );
+
+
+                mostrarMensagem(
+                    ativar
+                    ? "Vendedor ativado."
+                    : "Vendedor desativado."
+                );
+
+
+                await carregarTudo();
+
+
+            } catch (erro) {
+
+                console.error(
+                    erro
+                );
+
+
+                mostrarMensagem(
+                    "Não foi possível alterar o vendedor.",
+                    "erro"
+                );
+
+            }
+
+        };
+
+
+    // =========================================
+    // EXCLUIR VENDEDOR
+    // =========================================
+
+    window.excluirVendedor =
+        async function(id) {
+
+            const vendedor =
+                vendedores.find(
+                    v => v.id === id
+                );
+
+
+            if (!vendedor) return;
+
+
+            const confirmar =
+                confirm(
+
+                    `ATENÇÃO!\n\n` +
+
+                    `Deseja realmente excluir o vendedor "${vendedor.nome}"?\n\n` +
+
+                    `Esta ação removerá o cadastro dele do Firestore.\n\n` +
+
+                    `O usuário do Firebase Authentication não é removido por esta página.`
+
+                );
+
+
+            if (!confirmar) return;
+
+
+            try {
+
+                await deleteDoc(
+
+                    doc(
+                        db,
+                        "usuarios",
+                        id
+                    )
+
+                );
+
+
+                mostrarMensagem(
+                    "Cadastro do vendedor excluído."
+                );
+
+
+                await carregarTudo();
+
+
+            } catch (erro) {
+
+                console.error(
+                    erro
+                );
+
+
+                mostrarMensagem(
+                    "Não foi possível excluir o vendedor.",
+                    "erro"
+                );
+
+            }
+
+        };
+
+
+    // =========================================
+    // MOVIMENTAÇÕES
+    // =========================================
+
+    async function carregarMovimentacoes() {
+
+        try {
+
+            const q =
+                query(
+
+                    collection(
+                        db,
+                        "movimentacoes"
+                    ),
+
+                    where(
+                        "gerenteId",
+                        "==",
+                        usuarioAtual.uid
+                    )
+
+                );
+
+
+            const resultado =
+                await getDocs(q);
+
+
+            const lista = [];
+
+
+            resultado.forEach(
+                documento => {
+
+                    lista.push({
+
+                        id: documento.id,
+
+                        ...documento.data()
+
+                    });
+
+                }
+            );
+
+
+            lista.sort(
+                (a, b) => {
+
+                    const aTempo =
+                        a.criadoEm?.seconds ||
+                        0;
+
+                    const bTempo =
+                        b.criadoEm?.seconds ||
+                        0;
+
+                    return bTempo - aTempo;
+
+                }
+            );
+
+
+            document.getElementById(
+                "movimentacoesTotal"
+            ).textContent =
+                lista.length;
+
+
+            if (!lista.length) {
+
+                listaMovimentacoes.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            style="text-align:center;padding:30px;color:#6b7280;"
+                        >
+
+                            Nenhuma movimentação encontrada.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            listaMovimentacoes.innerHTML =
+                lista.map(
+                    mov => {
+
+                        let data = "-";
+
+
+                        if (
+                            mov.criadoEm
+                        ) {
+
+                            const dataObj =
+                                mov.criadoEm
+                                .toDate();
+
+
+                            data =
+                                dataObj
+                                .toLocaleString(
+                                    "pt-BR"
+                                );
+
+                        }
+
+
+                        const tipo =
+                            mov.tipo ===
+                            "adicionar"
+                            ? "Entrada"
+                            : "Sangria";
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    ${data}
+                                </td>
+
+                                <td>
+                                    ${escapar(
+                                        mov.vendedorNome
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${tipo}
+                                </td>
+
+                                <td>
+                                    ${formatarValor(
+                                        mov.valor
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${formatarValor(
+                                        mov.saldoAnterior
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${formatarValor(
+                                        mov.saldoPosterior
+                                    )}
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro movimentações:",
+                erro
+            );
+
+
+            listaMovimentacoes.innerHTML = `
+
+                <tr>
+
+                    <td colspan="6">
+                        Não foi possível carregar as movimentações.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    // =========================================
+    // MENU
+    // =========================================
+
+    document.querySelectorAll(
+        ".menu-item"
+    ).forEach(
+        item => {
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    const secao =
+                        item.dataset.secao;
+
+
+                    document
+                        .querySelectorAll(
+                            ".menu-item"
+                        )
+                        .forEach(
+                            menu =>
+                                menu.classList.remove(
+                                    "ativo"
+                                )
+                        );
+
+
+                    item.classList.add(
+                        "ativo"
+                    );
+
+
+                    document
+                        .querySelectorAll(
+                            ".secao"
+                        )
+                        .forEach(
+                            elemento =>
+                                elemento.classList.remove(
+                                    "ativa"
+                                )
+                        );
+
+
+                    document
+                        .getElementById(
+                            secao
+                        )
+                        .classList.add(
+                            "ativa"
+                        );
+
+                }
+            );
+
+        }
+    );
+
+
+    // =========================================
+    // SAIR
+    // =========================================
+
+    document.getElementById(
+        "btnSair"
+    ).addEventListener(
+        "click",
+        async () => {
+
+            await signOut(auth);
+
+            sessionStorage.removeItem(
+                "usuarioSessao"
+            );
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+    // =========================================
+    // FECHAR MODAIS CLICANDO FORA
+    // =========================================
+
+    modalVendedor.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                modalVendedor
+            ) {
+
+                modalVendedor.classList.remove(
+                    "aberto"
+                );
+
+            }
+
+        }
+    );
+
+
+    modalSaldo.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                modalSaldo
+            ) {
+
+                modalSaldo.classList.remove(
+                    "aberto"
+                );
+
+            }
+
+        }
+    );
+
+
+</script>
+
+</body>
+</html>
