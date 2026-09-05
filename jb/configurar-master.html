@@ -2,2565 +2,519 @@
 
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel MASTER - Simulador</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Configuração Inicial - MASTER</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-    background:#f3f4f6;
-    color:#1f2937;
-}
-
-header{
-    height:64px;
-    background:#111827;
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 25px;
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    z-index:10;
-}
-
-.logo{
-    font-size:20px;
-    font-weight:bold;
-}
-
-.usuario{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-
-.btn-sair{
-    border:0;
-    background:#dc2626;
-    color:white;
-    padding:9px 15px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-aside{
-    position:fixed;
-    top:64px;
-    left:0;
-    bottom:0;
-    width:230px;
-    background:#1f2937;
-    padding:20px 12px;
-}
-
-aside button{
-    display:block;
-    width:100%;
-    border:0;
-    background:transparent;
-    color:#d1d5db;
-    text-align:left;
-    padding:13px 15px;
-    margin-bottom:5px;
-    border-radius:7px;
-    cursor:pointer;
-    font-size:15px;
-}
-
-aside button:hover,
-aside button.ativo{
-    background:#374151;
-    color:white;
-}
-
-main{
-    margin-left:230px;
-    padding:90px 25px 30px;
-}
-
-.secao{
-    display:none;
-}
-
-.secao.ativa{
-    display:block;
-}
-
-h1{
-    margin-bottom:8px;
-}
-
-.subtitulo{
-    color:#6b7280;
-    margin-bottom:25px;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-    gap:18px;
-    margin-bottom:25px;
-}
-
-.card{
-    background:white;
-    border-radius:12px;
-    padding:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.card h3{
-    color:#6b7280;
-    font-size:14px;
-    margin-bottom:10px;
-}
-
-.card .numero{
-    font-size:28px;
-    font-weight:bold;
-}
-
-.box{
-    background:white;
-    border-radius:12px;
-    padding:22px;
-    margin-bottom:25px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.box h2{
-    margin-bottom:18px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-}
-
-.campo{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-}
-
-.campo label{
-    font-size:13px;
-    font-weight:bold;
-}
-
-input,
-select{
-    width:100%;
-    padding:11px;
-    border:1px solid #d1d5db;
-    border-radius:7px;
-    outline:none;
-}
-
-input:focus,
-select:focus{
-    border-color:#2563eb;
-}
-
-.acoes{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:18px;
-}
-
-button.principal{
-    background:#2563eb;
-    color:white;
-    border:0;
-    padding:11px 17px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-button.secundario{
-    background:#6b7280;
-    color:white;
-    border:0;
-    padding:11px 17px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-button.verde{
-    background:#16a34a;
-    color:white;
-    border:0;
-    padding:9px 13px;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-button.amarelo{
-    background:#d97706;
-    color:white;
-    border:0;
-    padding:9px 13px;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-button.vermelho{
-    background:#dc2626;
-    color:white;
-    border:0;
-    padding:9px 13px;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.mensagem{
-    display:none;
-    padding:12px;
-    border-radius:7px;
-    margin-bottom:15px;
-}
-
-.mensagem.sucesso{
-    display:block;
-    background:#dcfce7;
-    color:#166534;
-}
-
-.mensagem.erro{
-    display:block;
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-.tabela-container{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th,
-td{
-    padding:12px 10px;
-    border-bottom:1px solid #e5e7eb;
-    text-align:left;
-    font-size:14px;
-}
-
-th{
-    background:#f9fafb;
-}
-
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.aberto{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.fechado{
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-.pendente{
-    background:#fef3c7;
-    color:#92400e;
-}
-
-.vencedor{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.perdedor{
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-.cancelada{
-    background:#e5e7eb;
-    color:#374151;
-}
-
-.resultado-box{
-    background:#eff6ff;
-    border:1px solid #bfdbfe;
-    padding:15px;
-    border-radius:8px;
-    margin-top:15px;
-}
-
-.numero-grande{
-    font-size:30px;
-    font-weight:bold;
-    color:#1d4ed8;
-}
-
-.lista-resultados{
-    margin-top:15px;
-}
-
-.item-resultado{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px;
-    border-bottom:1px solid #e5e7eb;
-}
-
-@media(max-width:750px){
-
-    header{
-        padding:0 12px;
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
-    .logo{
-        font-size:16px;
+    body {
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #111827, #1e3a8a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
     }
 
-    aside{
-        width:190px;
+    .container {
+        width: 100%;
+        max-width: 450px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.30);
     }
 
-    main{
-        margin-left:190px;
-        padding-left:15px;
-        padding-right:15px;
-    }
-}
-
-@media(max-width:550px){
-
-    aside{
-        position:static;
-        width:100%;
-        height:auto;
-        display:flex;
-        overflow-x:auto;
-        padding:8px;
-        margin-top:64px;
+    .logo {
+        text-align: center;
+        font-size: 48px;
+        margin-bottom: 10px;
     }
 
-    aside button{
-        min-width:max-content;
-        margin:0 3px;
+    h1 {
+        text-align: center;
+        color: #111827;
+        margin-bottom: 8px;
     }
 
-    main{
-        margin-left:0;
-        padding-top:20px;
+    .subtitulo {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 25px;
     }
-}
+
+    .aviso {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 6px;
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 14px;
+        border: none;
+        border-radius: 9px;
+        background: #2563eb;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .mensagem {
+        display: none;
+        margin-top: 18px;
+        padding: 12px;
+        border-radius: 9px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .sucesso {
+        display: block;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .erro {
+        display: block;
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .rodape {
+        text-align: center;
+        color: #9ca3af;
+        font-size: 12px;
+        margin-top: 20px;
+    }
 </style>
+```
 
 </head>
 
 <body>
 
-<header>
-    <div class="logo">SIMULADOR • MASTER</div>
+<div class="container">
 
 ```
-<div class="usuario">
-    <span id="nomeUsuario">Carregando...</span>
-    <button class="btn-sair" id="btnSair">Sair</button>
-</div>
-```
+<div class="logo">👑</div>
 
-</header>
-
-<aside>
-
-```
-<button class="menu-btn ativo" data-secao="inicio">
-    🏠 Início
-</button>
-
-<button class="menu-btn" data-secao="gerentes">
-    👔 Gerentes
-</button>
-
-<button class="menu-btn" data-secao="vendedores">
-    👤 Vendedores
-</button>
-
-<button class="menu-btn" data-secao="sorteios">
-    🎲 Sorteios
-</button>
-
-<button class="menu-btn" data-secao="apostas">
-    🎫 Apostas
-</button>
-
-<button class="menu-btn" data-secao="resultados">
-    🏆 Resultados
-</button>
-
-<button class="menu-btn" data-secao="relatorios">
-    📊 Relatórios
-</button>
-```
-
-</aside>
-
-<main>
-
-<!-- INÍCIO -->
-
-<section id="inicio" class="secao ativa">
-
-```
-<h1>Painel MASTER</h1>
-<p class="subtitulo">
-    Visão geral do simulador
-</p>
-
-<div class="cards">
-
-    <div class="card">
-        <h3>Gerentes</h3>
-        <div class="numero" id="totalGerentes">0</div>
-    </div>
-
-    <div class="card">
-        <h3>Vendedores</h3>
-        <div class="numero" id="totalVendedores">0</div>
-    </div>
-
-    <div class="card">
-        <h3>Sorteios</h3>
-        <div class="numero" id="totalSorteios">0</div>
-    </div>
-
-    <div class="card">
-        <h3>Apostas</h3>
-        <div class="numero" id="totalApostas">0</div>
-    </div>
-
-</div>
-
-<div class="box">
-
-    <h2>Informações</h2>
-
-    <p>
-        Este sistema é um simulador fictício para estudos e testes.
-        Não envolve dinheiro real ou pagamentos reais.
-    </p>
-
-</div>
-```
-
-</section>
-
-<!-- GERENTES -->
-
-<section id="gerentes" class="secao">
-
-```
-<h1>Gerentes</h1>
-<p class="subtitulo">
-    Cadastro e gerenciamento dos gerentes.
-</p>
-
-<div id="mensagemGerente" class="mensagem"></div>
-
-<div class="box">
-
-    <h2>Novo Gerente</h2>
-
-    <form id="formGerente">
-
-        <div class="form-grid">
-
-            <div class="campo">
-                <label>Nome</label>
-                <input type="text" id="gerenteNome" required>
-            </div>
-
-            <div class="campo">
-                <label>E-mail</label>
-                <input type="email" id="gerenteEmail" required>
-            </div>
-
-            <div class="campo">
-                <label>Senha</label>
-                <input type="password" id="gerenteSenha" required minlength="6">
-            </div>
-
-            <div class="campo">
-                <label>Área</label>
-                <input type="text" id="gerenteArea" required>
-            </div>
-
-        </div>
-
-        <div class="acoes">
-            <button class="principal" type="submit">
-                Salvar Gerente
-            </button>
-        </div>
-
-    </form>
-
-</div>
-
-<div class="box">
-
-    <h2>Gerentes cadastrados</h2>
-
-    <div class="tabela-container">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Área</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="tabelaGerentes"></tbody>
-
-        </table>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- VENDEDORES -->
-
-<section id="vendedores" class="secao">
-
-```
-<h1>Vendedores</h1>
-<p class="subtitulo">
-    Todos os vendedores cadastrados no sistema.
-</p>
-
-<div class="box">
-
-    <div class="tabela-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Gerente/Área</th>
-                    <th>Saldo Virtual</th>
-                    <th>Status</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="tabelaVendedores"></tbody>
-
-        </table>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- SORTEIOS -->
-
-<section id="sorteios" class="secao">
-
-```
-<h1>Sorteios</h1>
+<h1>Configuração Inicial</h1>
 
 <p class="subtitulo">
-    Criação e controle dos sorteios.
+    Criação do administrador MASTER
 </p>
 
-<div id="mensagemSorteio" class="mensagem"></div>
-
-<div class="box">
-
-    <h2>Novo Sorteio</h2>
-
-    <form id="formSorteio">
-
-        <div class="form-grid">
-
-            <div class="campo">
-
-                <label>Nome do sorteio</label>
-
-                <input
-                    type="text"
-                    id="sorteioNome"
-                    placeholder="Ex.: Sorteio das 18h"
-                    required
-                >
-
-            </div>
-
-            <div class="campo">
-
-                <label>Data</label>
-
-                <input
-                    type="date"
-                    id="sorteioData"
-                    required
-                >
-
-            </div>
-
-            <div class="campo">
-
-                <label>Horário de fechamento</label>
-
-                <input
-                    type="time"
-                    id="sorteioHorario"
-                    required
-                >
-
-            </div>
-
-        </div>
-
-        <div class="acoes">
-
-            <button
-                type="submit"
-                class="principal"
-            >
-                Criar Sorteio
-            </button>
-
-        </div>
-
-    </form>
-
+<div class="aviso">
+    <strong>Ambiente de estudo</strong><br>
+    Esta configuração cria o primeiro administrador do
+    sistema fictício. Não envolve dinheiro real.
 </div>
 
+<form id="formMaster">
 
-<div class="box">
+    <label for="nome">Nome do administrador</label>
+    <input
+        type="text"
+        id="nome"
+        placeholder="Digite o nome"
+        required
+    >
 
-    <h2>Sorteios cadastrados</h2>
+    <label for="email">E-mail</label>
+    <input
+        type="email"
+        id="email"
+        placeholder="Digite o e-mail"
+        required
+    >
 
-    <div class="tabela-container">
+    <label for="senha">Senha</label>
+    <input
+        type="password"
+        id="senha"
+        placeholder="Mínimo de 6 caracteres"
+        minlength="6"
+        required
+    >
 
-        <table>
+    <label for="confirmarSenha">Confirmar senha</label>
+    <input
+        type="password"
+        id="confirmarSenha"
+        placeholder="Digite a senha novamente"
+        minlength="6"
+        required
+    >
 
-            <thead>
+    <button type="submit" id="btnCriar">
+        👑 Criar MASTER
+    </button>
 
-                <tr>
-                    <th>Nome</th>
-                    <th>Data</th>
-                    <th>Fechamento</th>
-                    <th>Status</th>
-                    <th>Ação</th>
-                </tr>
+</form>
 
-            </thead>
+<div id="mensagem" class="mensagem"></div>
 
-            <tbody id="tabelaSorteios"></tbody>
-
-        </table>
-
-    </div>
-
+<div class="rodape">
+    Sistema fictício para estudos e testes
 </div>
 ```
 
-</section>
-
-<!-- APOSTAS -->
-
-<section id="apostas" class="secao">
-
-```
-<h1>Apostas</h1>
-
-<p class="subtitulo">
-    Visualização geral das apostas fictícias.
-</p>
-
-<div class="box">
-
-    <div class="tabela-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Bilhete</th>
-                    <th>Vendedor</th>
-                    <th>Sorteio</th>
-                    <th>Valor</th>
-                    <th>Status</th>
-                    <th>Resultado</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="tabelaApostas"></tbody>
-
-        </table>
-
-    </div>
-
 </div>
-```
-
-</section>
-
-<!-- RESULTADOS -->
-
-<section id="resultados" class="secao">
-
-```
-<h1>Resultados</h1>
-
-<p class="subtitulo">
-    Informe o resultado de um sorteio já encerrado e processe os bilhetes.
-</p>
-
-<div id="mensagemResultado" class="mensagem"></div>
-
-<div class="box">
-
-    <h2>Selecionar sorteio</h2>
-
-    <div class="form-grid">
-
-        <div class="campo">
-
-            <label>Sorteio</label>
-
-            <select id="resultadoSorteio">
-
-                <option value="">
-                    Selecione um sorteio
-                </option>
-
-            </select>
-
-        </div>
-
-    </div>
-
-    <div id="informacoesSorteioResultado"></div>
-
-</div>
-
-
-<div class="box" id="boxLancamentoResultado" style="display:none">
-
-    <h2>Lançar resultado</h2>
-
-    <p style="margin-bottom:18px;color:#6b7280;">
-        Informe o resultado numérico do sorteio.
-    </p>
-
-    <div class="form-grid">
-
-        <div class="campo">
-
-            <label>Resultado principal</label>
-
-            <input
-                type="text"
-                id="resultadoPrincipal"
-                placeholder="Ex.: 1234"
-                maxlength="10"
-            >
-
-        </div>
-
-    </div>
-
-    <div class="acoes">
-
-        <button
-            class="verde"
-            id="btnSalvarResultado"
-            type="button"
-        >
-            🏆 Salvar Resultado
-        </button>
-
-    </div>
-
-</div>
-
-
-<div class="box">
-
-    <h2>Resultados já lançados</h2>
-
-    <div class="tabela-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Sorteio</th>
-                    <th>Data</th>
-                    <th>Resultado</th>
-                    <th>Lançado em</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="tabelaResultados"></tbody>
-
-        </table>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- RELATÓRIOS -->
-
-<section id="relatorios" class="secao">
-
-```
-<h1>Relatórios</h1>
-
-<p class="subtitulo">
-    Informações gerais do simulador.
-</p>
-
-<div class="box">
-
-    <h2>Resumo</h2>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>Total de Gerentes</h3>
-            <div class="numero" id="relGerentes">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Total de Vendedores</h3>
-            <div class="numero" id="relVendedores">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Total de Sorteios</h3>
-            <div class="numero" id="relSorteios">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Total de Apostas</h3>
-            <div class="numero" id="relApostas">0</div>
-        </div>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-</main>
 
 <script type="module">
 
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
-import {
-    getAuth,
-    onAuthStateChanged,
-    signOut,
-    createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    doc,
-    getDoc,
-    setDoc,
-    updateDoc,
-    addDoc,
-    query,
-    where,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+    import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+        doc,
+        setDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
-/* =====================================================
-   FIREBASE
-===================================================== */
+    // ==========================================
+    // FIREBASE
+    // ==========================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:3199c6836a986d896ac20d",
-  measurementId: "G-QN7GFD99N0"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyAsOqTDBSxO1I28WNmf3iB22M4MU_dU50",
+        authDomain: "meuappweb-65522.firebaseapp.com",
+        projectId: "meuappweb-65522",
+        storageBucket: "meuappweb-65522.firebasestorage.app",
+        messagingSenderId: "305368794616",
+        appId: "1:305368794616:web:f5c8800c7bf4694d6ac20d",
+        measurementId: "G-R3MQX6NPWB"
+    };
 
 
+    const app = initializeApp(firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-const auth = getAuth(app);
+    const db = getFirestore(app);
 
-const db = getFirestore(app);
 
+    // ==========================================
+    // ELEMENTOS
+    // ==========================================
 
-/* =====================================================
-   SEGUNDA INSTÂNCIA PARA CADASTRO DE GERENTE
-===================================================== */
+    const form = document.getElementById("formMaster");
+    const mensagem = document.getElementById("mensagem");
+    const btnCriar = document.getElementById("btnCriar");
 
-const appCadastro = initializeApp(
-    firebaseConfig,
-    "cadastroGerente"
-);
 
-const authCadastro = getAuth(appCadastro);
+    // ==========================================
+    // MENSAGEM
+    // ==========================================
 
+    function mostrarMensagem(texto, tipo) {
 
-/* =====================================================
-   VARIÁVEIS
-===================================================== */
+        mensagem.textContent = texto;
 
-let usuarioSessao = null;
-
-let gerentes = [];
-
-let vendedores = [];
-
-let sorteios = [];
-
-let apostas = [];
-
-let resultados = [];
-
-
-/* =====================================================
-   SESSÃO
-===================================================== */
-
-function obterSessao(){
-
-    const dados =
-        sessionStorage.getItem("usuarioSessao");
-
-    if(!dados) return null;
-
-    try{
-
-        return JSON.parse(dados);
-
-    }catch{
-
-        return null;
-
-    }
-
-}
-
-
-/* =====================================================
-   MENSAGEM
-===================================================== */
-
-function mostrarMensagem(elemento,texto,tipo){
-
-    elemento.textContent = texto;
-
-    elemento.className =
-        "mensagem " + tipo;
-
-    setTimeout(()=>{
-
-        elemento.className = "mensagem";
-
-        elemento.textContent = "";
-
-    },5000);
-
-}
-
-
-/* =====================================================
-   ESCAPAR HTML
-===================================================== */
-
-function escapar(valor){
-
-    if(valor === null || valor === undefined)
-        return "";
-
-    return String(valor)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-
-/* =====================================================
-   MENU
-===================================================== */
-
-document.querySelectorAll(".menu-btn")
-.forEach(botao => {
-
-    botao.addEventListener("click",()=>{
-
-        document
-            .querySelectorAll(".menu-btn")
-            .forEach(b => b.classList.remove("ativo"));
-
-        document
-            .querySelectorAll(".secao")
-            .forEach(s => s.classList.remove("ativa"));
-
-        botao.classList.add("ativo");
-
-        const id = botao.dataset.secao;
-
-        document
-            .getElementById(id)
-            .classList.add("ativa");
-
-    });
-
-});
-
-
-/* =====================================================
-   SAIR
-===================================================== */
-
-document
-.getElementById("btnSair")
-.addEventListener("click",async()=>{
-
-    await signOut(auth);
-
-    sessionStorage.removeItem("usuarioSessao");
-
-    window.location.href = "login.html";
-
-});
-
-
-/* =====================================================
-   AUTENTICAÇÃO
-===================================================== */
-
-onAuthStateChanged(auth,async(user)=>{
-
-    if(!user){
-
-        window.location.href = "login.html";
-
-        return;
-
+        mensagem.className = "mensagem " + tipo;
     }
 
 
-    usuarioSessao = obterSessao();
+    // ==========================================
+    // VERIFICAR SE JÁ EXISTE MASTER
+    // ==========================================
 
+    async function verificarMaster() {
 
-    if(
-        !usuarioSessao ||
-        usuarioSessao.perfil !== "MASTER"
-    ){
+        try {
 
-        alert(
-            "Acesso permitido somente ao MASTER."
-        );
-
-        await signOut(auth);
-
-        sessionStorage.removeItem(
-            "usuarioSessao"
-        );
-
-        window.location.href = "login.html";
-
-        return;
-
-    }
-
-
-    document
-        .getElementById("nomeUsuario")
-        .textContent =
-        usuarioSessao.nome ||
-        "Administrador";
-
-
-    await carregarTudo();
-
-    iniciarVerificacaoSorteios();
-
-});
-
-
-/* =====================================================
-   CARREGAR TUDO
-===================================================== */
-
-async function carregarTudo(){
-
-    await carregarGerentes();
-
-    await carregarVendedores();
-
-    await carregarSorteios();
-
-    await carregarApostas();
-
-    await carregarResultados();
-
-    atualizarResumo();
-
-}
-
-
-/* =====================================================
-   GERENTES
-===================================================== */
-
-async function carregarGerentes(){
-
-    const snapshot =
-        await getDocs(collection(db,"usuarios"));
-
-    gerentes = [];
-
-    snapshot.forEach(item=>{
-
-        const dados = item.data();
-
-        if(dados.perfil === "GERENTE"){
-
-            gerentes.push({
-
-                id:item.id,
-                ...dados
-
-            });
-
-        }
-
-    });
-
-
-    renderizarGerentes();
-
-}
-
-
-function renderizarGerentes(){
-
-    const tbody =
-        document.getElementById(
-            "tabelaGerentes"
-        );
-
-    tbody.innerHTML = "";
-
-
-    gerentes.forEach(gerente=>{
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-            <td>${escapar(gerente.nome)}</td>
-
-            <td>${escapar(gerente.email)}</td>
-
-            <td>${escapar(gerente.areaNome)}</td>
-
-            <td>
-
-                <span class="badge ${
-                    gerente.ativo
-                    ? "aberto"
-                    : "fechado"
-                }">
-
-                    ${
-                        gerente.ativo
-                        ? "ATIVO"
-                        : "INATIVO"
-                    }
-
-                </span>
-
-            </td>
-
-        `;
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =====================================================
-   CADASTRO DE GERENTE
-===================================================== */
-
-document
-.getElementById("formGerente")
-.addEventListener("submit",async(event)=>{
-
-    event.preventDefault();
-
-
-    const mensagem =
-        document.getElementById(
-            "mensagemGerente"
-        );
-
-
-    const nome =
-        document.getElementById(
-            "gerenteNome"
-        ).value.trim();
-
-
-    const email =
-        document.getElementById(
-            "gerenteEmail"
-        ).value.trim();
-
-
-    const senha =
-        document.getElementById(
-            "gerenteSenha"
-        ).value;
-
-
-    const area =
-        document.getElementById(
-            "gerenteArea"
-        ).value.trim();
-
-
-    if(!nome || !email || !senha || !area){
-
-        mostrarMensagem(
-            mensagem,
-            "Preencha todos os campos.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        const credencial =
-            await createUserWithEmailAndPassword(
-                authCadastro,
-                email,
-                senha
+            const q = query(
+                collection(db, "usuarios"),
+                where("perfil", "==", "MASTER")
             );
 
+            const resultado = await getDocs(q);
 
-        const uid =
-            credencial.user.uid;
+            if (!resultado.empty) {
 
+                mostrarMensagem(
+                    "Já existe um usuário MASTER cadastrado. Você será direcionado para o login.",
+                    "erro"
+                );
 
-        await setDoc(
-            doc(db,"usuarios",uid),
-            {
+                form.style.display = "none";
 
-                nome,
+                setTimeout(() => {
 
-                email,
+                    window.location.href = "login.html";
 
-                perfil:"GERENTE",
+                }, 2500);
 
-                ativo:true,
-
-                areaNome:area,
-
-                areaId:uid,
-
-                vendedorId:null,
-
-                saldoVirtual:0,
-
-                criadoPor:usuarioSessao.uid,
-
-                criadoEm:serverTimestamp()
-
+                return true;
             }
-        );
 
+            return false;
 
-        await signOut(authCadastro);
+        } catch (erro) {
 
+            console.error("Erro ao verificar MASTER:", erro);
 
-        document
-            .getElementById("formGerente")
-            .reset();
-
-
-        mostrarMensagem(
-            mensagem,
-            "Gerente criado com sucesso.",
-            "sucesso"
-        );
-
-
-        await carregarGerentes();
-
-        atualizarResumo();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        mostrarMensagem(
-            mensagem,
-            "Erro ao criar gerente: " +
-            error.message,
-            "erro"
-        );
-
-    }
-
-});
-
-
-/* =====================================================
-   VENDEDORES
-===================================================== */
-
-async function carregarVendedores(){
-
-    const snapshot =
-        await getDocs(collection(db,"usuarios"));
-
-    vendedores = [];
-
-    snapshot.forEach(item=>{
-
-        const dados = item.data();
-
-        if(dados.perfil === "VENDEDOR"){
-
-            vendedores.push({
-
-                id:item.id,
-                ...dados
-
-            });
-
-        }
-
-    });
-
-
-    renderizarVendedores();
-
-}
-
-
-function renderizarVendedores(){
-
-    const tbody =
-        document.getElementById(
-            "tabelaVendedores"
-        );
-
-    tbody.innerHTML = "";
-
-
-    vendedores.forEach(vendedor=>{
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-            <td>${escapar(vendedor.nome)}</td>
-
-            <td>${escapar(vendedor.email)}</td>
-
-            <td>${escapar(vendedor.areaNome)}</td>
-
-            <td>
-                ${Number(vendedor.saldoVirtual || 0)
-                    .toFixed(2)}
-            </td>
-
-            <td>
-
-                <span class="badge ${
-                    vendedor.ativo
-                    ? "aberto"
-                    : "fechado"
-                }">
-
-                    ${
-                        vendedor.ativo
-                        ? "ATIVO"
-                        : "INATIVO"
-                    }
-
-                </span>
-
-            </td>
-
-        `;
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =====================================================
-   SORTEIOS
-===================================================== */
-
-document
-.getElementById("formSorteio")
-.addEventListener("submit",async(event)=>{
-
-    event.preventDefault();
-
-
-    const mensagem =
-        document.getElementById(
-            "mensagemSorteio"
-        );
-
-
-    const nome =
-        document.getElementById(
-            "sorteioNome"
-        ).value.trim();
-
-
-    const data =
-        document.getElementById(
-            "sorteioData"
-        ).value;
-
-
-    const horario =
-        document.getElementById(
-            "sorteioHorario"
-        ).value;
-
-
-    if(!nome || !data || !horario){
-
-        mostrarMensagem(
-            mensagem,
-            "Preencha todos os campos.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    const dataHoraFechamento =
-        new Date(
-            `${data}T${horario}:00`
-        );
-
-
-    try{
-
-        await addDoc(
-            collection(db,"sorteios"),
-            {
-
-                nome,
-
-                data,
-
-                horarioFechamento:horario,
-
-                dataHoraFechamento:
-                    dataHoraFechamento,
-
-                status:
-                    dataHoraFechamento.getTime()
-                    <= Date.now()
-                    ? "FECHADO"
-                    : "ABERTO",
-
-                criadoPor:
-                    usuarioSessao.uid,
-
-                criadoEm:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        document
-            .getElementById("formSorteio")
-            .reset();
-
-
-        mostrarMensagem(
-            mensagem,
-            "Sorteio criado com sucesso.",
-            "sucesso"
-        );
-
-
-        await carregarSorteios();
-
-        atualizarResumo();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        mostrarMensagem(
-            mensagem,
-            "Erro ao criar sorteio.",
-            "erro"
-        );
-
-    }
-
-});
-
-
-/* =====================================================
-   CARREGAR SORTEIOS
-===================================================== */
-
-async function carregarSorteios(){
-
-    const snapshot =
-        await getDocs(
-            collection(db,"sorteios")
-        );
-
-
-    sorteios = [];
-
-
-    snapshot.forEach(item=>{
-
-        sorteios.push({
-
-            id:item.id,
-            ...item.data()
-
-        });
-
-    });
-
-
-    sorteios.sort((a,b)=>{
-
-        const da =
-            a.dataHoraFechamento?.toDate
-            ? a.dataHoraFechamento.toDate()
-            : new Date(
-                `${a.data}T${a.horarioFechamento}:00`
+            mostrarMensagem(
+                "Não foi possível verificar o cadastro do MASTER. Verifique sua conexão com o Firebase e as regras do Firestore.",
+                "erro"
             );
 
-        const dbb =
-            b.dataHoraFechamento?.toDate
-            ? b.dataHoraFechamento.toDate()
-            : new Date(
-                `${b.data}T${b.horarioFechamento}:00`
+            return true;
+        }
+    }
+
+
+    // ==========================================
+    // CRIAR MASTER
+    // ==========================================
+
+    form.addEventListener("submit", async (event) => {
+
+        event.preventDefault();
+
+
+        const nome = document.getElementById("nome").value.trim();
+
+        const email = document.getElementById("email").value.trim();
+
+        const senha = document.getElementById("senha").value;
+
+        const confirmarSenha =
+            document.getElementById("confirmarSenha").value;
+
+
+        // Validações
+
+        if (!nome) {
+
+            mostrarMensagem(
+                "Digite o nome do administrador.",
+                "erro"
             );
 
-        return dbb - da;
-
-    });
-
-
-    await verificarFechamentos();
-
-    renderizarSorteios();
-
-    carregarSelectResultados();
-
-}
-
-
-async function verificarFechamentos(){
-
-    const agora = new Date();
-
-
-    for(const sorteio of sorteios){
-
-        if(sorteio.status !== "ABERTO")
-            continue;
-
-
-        let fechamento;
-
-
-        if(
-            sorteio.dataHoraFechamento &&
-            sorteio.dataHoraFechamento.toDate
-        ){
-
-            fechamento =
-                sorteio.dataHoraFechamento.toDate();
-
-        }else{
-
-            fechamento =
-                new Date(
-                    `${sorteio.data}T${sorteio.horarioFechamento}:00`
-                );
-
+            return;
         }
 
 
-        if(
-            fechamento.getTime() <=
-            agora.getTime()
-        ){
+        if (senha.length < 6) {
 
-            try{
+            mostrarMensagem(
+                "A senha precisa ter pelo menos 6 caracteres.",
+                "erro"
+            );
 
-                await updateDoc(
-                    doc(
-                        db,
-                        "sorteios",
-                        sorteio.id
-                    ),
-                    {
-                        status:"FECHADO"
-                    }
-                );
-
-                sorteio.status =
-                    "FECHADO";
-
-            }catch(error){
-
-                console.error(
-                    "Erro ao fechar sorteio:",
-                    error
-                );
-
-            }
-
+            return;
         }
 
-    }
 
-}
+        if (senha !== confirmarSenha) {
 
+            mostrarMensagem(
+                "As senhas não são iguais.",
+                "erro"
+            );
 
-function renderizarSorteios(){
-
-    const tbody =
-        document.getElementById(
-            "tabelaSorteios"
-        );
-
-    tbody.innerHTML = "";
+            return;
+        }
 
 
-    sorteios.forEach(sorteio=>{
+        btnCriar.disabled = true;
 
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-            <td>${escapar(sorteio.nome)}</td>
-
-            <td>${escapar(sorteio.data)}</td>
-
-            <td>
-                ${escapar(
-                    sorteio.horarioFechamento
-                )}
-            </td>
-
-            <td>
-
-                <span class="badge ${
-                    sorteio.status === "ABERTO"
-                    ? "aberto"
-                    : "fechado"
-                }">
-
-                    ${sorteio.status}
-
-                </span>
-
-            </td>
-
-            <td>
-
-                ${
-                    sorteio.status === "ABERTO"
-
-                    ?
-
-                    `<button
-                        class="amarelo"
-                        onclick="fecharSorteio('${sorteio.id}')"
-                    >
-                        Fechar
-                    </button>`
-
-                    :
-
-                    `<span style="color:#6b7280">
-                        Encerrado
-                    </span>`
-
-                }
-
-            </td>
-
-        `;
+        btnCriar.textContent = "Criando MASTER...";
 
 
-        tbody.appendChild(tr);
+        try {
 
-    });
+            // Verifica novamente antes de criar
+            const jaExiste = await verificarMaster();
 
-}
+            if (jaExiste) {
 
+                btnCriar.disabled = false;
 
-/* =====================================================
-   FECHAR SORTEIO MANUALMENTE
-===================================================== */
+                btnCriar.textContent = "👑 Criar MASTER";
 
-window.fecharSorteio =
-async function(id){
-
-    if(
-        !confirm(
-            "Deseja realmente fechar este sorteio?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    try{
-
-        await updateDoc(
-            doc(db,"sorteios",id),
-            {
-                status:"FECHADO"
+                return;
             }
-        );
 
 
-        await carregarSorteios();
+            // ==========================================
+            // CRIA USUÁRIO NO FIREBASE AUTH
+            // ==========================================
 
+            const resultado =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    senha
+                );
 
-    }catch(error){
 
-        console.error(error);
+            const uid = resultado.user.uid;
 
-        alert(
-            "Erro ao fechar o sorteio."
-        );
 
-    }
+            // ==========================================
+            // CRIA PERFIL NO FIRESTORE
+            // ==========================================
 
-};
-
-
-/* =====================================================
-   APOSTAS
-===================================================== */
-
-async function carregarApostas(){
-
-    const snapshot =
-        await getDocs(
-            collection(db,"apostas")
-        );
-
-
-    apostas = [];
-
-
-    snapshot.forEach(item=>{
-
-        apostas.push({
-
-            id:item.id,
-            ...item.data()
-
-        });
-
-    });
-
-
-    renderizarApostas();
-
-}
-
-
-function renderizarApostas(){
-
-    const tbody =
-        document.getElementById(
-            "tabelaApostas"
-        );
-
-    tbody.innerHTML = "";
-
-
-    apostas.forEach(aposta=>{
-
-        const tr =
-            document.createElement("tr");
-
-
-        const status =
-            aposta.status || "ATIVA";
-
-
-        const resultado =
-            aposta.resultadoStatus ||
-            "PENDENTE";
-
-
-        let classeResultado =
-            "pendente";
-
-
-        if(resultado === "VENCEDORA")
-            classeResultado = "vencedor";
-
-
-        if(resultado === "PERDEDORA")
-            classeResultado = "perdedor";
-
-
-        if(resultado === "CANCELADA")
-            classeResultado = "cancelada";
-
-
-        tr.innerHTML = `
-
-            <td>
-                ${escapar(
-                    aposta.codigo ||
-                    aposta.id
-                )}
-            </td>
-
-            <td>
-                ${escapar(
-                    aposta.vendedorNome ||
-                    "-"
-                )}
-            </td>
-
-            <td>
-                ${escapar(
-                    aposta.sorteioNome ||
-                    "-"
-                )}
-            </td>
-
-            <td>
-                ${Number(
-                    aposta.valor || 0
-                ).toFixed(2)}
-            </td>
-
-            <td>
-                <span class="badge">
-                    ${escapar(status)}
-                </span>
-            </td>
-
-            <td>
-
-                <span class="badge ${classeResultado}">
-                    ${escapar(resultado)}
-                </span>
-
-            </td>
-
-        `;
-
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =====================================================
-   RESULTADOS
-===================================================== */
-
-async function carregarResultados(){
-
-    const snapshot =
-        await getDocs(
-            collection(db,"resultados")
-        );
-
-
-    resultados = [];
-
-
-    snapshot.forEach(item=>{
-
-        resultados.push({
-
-            id:item.id,
-            ...item.data()
-
-        });
-
-    });
-
-
-    renderizarResultados();
-
-}
-
-
-function carregarSelectResultados(){
-
-    const select =
-        document.getElementById(
-            "resultadoSorteio"
-        );
-
-
-    select.innerHTML = `
-
-        <option value="">
-            Selecione um sorteio
-        </option>
-
-    `;
-
-
-    sorteios.forEach(sorteio=>{
-
-        const option =
-            document.createElement("option");
-
-
-        option.value =
-            sorteio.id;
-
-
-        option.textContent =
-            `${sorteio.nome} - ${sorteio.data}`;
-
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-document
-.getElementById("resultadoSorteio")
-.addEventListener("change",async()=>{
-
-    const id =
-        document.getElementById(
-            "resultadoSorteio"
-        ).value;
-
-
-    const box =
-        document.getElementById(
-            "boxLancamentoResultado"
-        );
-
-
-    const info =
-        document.getElementById(
-            "informacoesSorteioResultado"
-        );
-
-
-    info.innerHTML = "";
-
-
-    if(!id){
-
-        box.style.display = "none";
-
-        return;
-
-    }
-
-
-    const sorteio =
-        sorteios.find(
-            item => item.id === id
-        );
-
-
-    if(!sorteio){
-
-        box.style.display = "none";
-
-        return;
-
-    }
-
-
-    const resultadoExistente =
-        resultados.find(
-            item =>
-                item.sorteioId === id
-        );
-
-
-    if(resultadoExistente){
-
-        box.style.display = "none";
-
-
-        info.innerHTML = `
-
-            <div class="resultado-box">
-
-                <strong>
-                    Resultado já lançado
-                </strong>
-
-                <div class="numero-grande">
-                    ${escapar(
-                        resultadoExistente
-                        .resultadoPrincipal
-                    )}
-                </div>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    box.style.display = "block";
-
-
-    info.innerHTML = `
-
-        <div class="resultado-box">
-
-            <strong>
-                ${escapar(sorteio.nome)}
-            </strong>
-
-            <div>
-                Data: ${escapar(sorteio.data)}
-            </div>
-
-            <div>
-                Fechamento:
-                ${escapar(
-                    sorteio.horarioFechamento
-                )}
-            </div>
-
-            <div style="margin-top:8px">
-
-                Status:
-                <span class="badge ${
-                    sorteio.status === "ABERTO"
-                    ? "aberto"
-                    : "fechado"
-                }">
-                    ${sorteio.status}
-                </span>
-
-            </div>
-
-        </div>
-
-    `;
-
-});
-
-
-/* =====================================================
-   SALVAR RESULTADO
-===================================================== */
-
-document
-.getElementById("btnSalvarResultado")
-.addEventListener("click",async()=>{
-
-    const mensagem =
-        document.getElementById(
-            "mensagemResultado"
-        );
-
-
-    const sorteioId =
-        document.getElementById(
-            "resultadoSorteio"
-        ).value;
-
-
-    const resultadoPrincipal =
-        document.getElementById(
-            "resultadoPrincipal"
-        ).value.trim();
-
-
-    if(!sorteioId){
-
-        mostrarMensagem(
-            mensagem,
-            "Selecione um sorteio.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    if(!resultadoPrincipal){
-
-        mostrarMensagem(
-            mensagem,
-            "Informe o resultado.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    const sorteio =
-        sorteios.find(
-            item => item.id === sorteioId
-        );
-
-
-    if(!sorteio){
-
-        mostrarMensagem(
-            mensagem,
-            "Sorteio não encontrado.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    const resultadoExistente =
-        resultados.find(
-            item =>
-                item.sorteioId === sorteioId
-        );
-
-
-    if(resultadoExistente){
-
-        mostrarMensagem(
-            mensagem,
-            "Este sorteio já possui resultado.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        /*
-         * Primeiro grava o resultado.
-         */
-
-        const resultadoRef =
-            await addDoc(
-                collection(db,"resultados"),
+            await setDoc(
+                doc(db, "usuarios", uid),
                 {
 
-                    sorteioId,
+                    nome: nome,
 
-                    sorteioNome:
-                        sorteio.nome,
+                    email: email,
 
-                    data:
-                        sorteio.data,
+                    perfil: "MASTER",
 
-                    resultadoPrincipal,
+                    ativo: true,
 
-                    criadoPor:
-                        usuarioSessao.uid,
+                    areaId: null,
 
-                    criadoEm:
-                        serverTimestamp()
+                    vendedorId: null,
+
+                    saldoVirtual: 0,
+
+                    criadoEm: serverTimestamp()
 
                 }
             );
 
 
-        /*
-         * Depois identifica as apostas
-         * pertencentes ao sorteio.
-         */
+            // Desloga para deixar o usuário entrar
+            // normalmente pela tela de login.
 
-        const apostasDoSorteio =
-            apostas.filter(
-                aposta =>
-                    aposta.sorteioId ===
-                    sorteioId
+            await signOut(auth);
+
+
+            mostrarMensagem(
+                "MASTER criado com sucesso! Redirecionando para o login...",
+                "sucesso"
             );
 
 
-        /*
-         * Neste primeiro modelo,
-         * o sistema compara o campo
-         * numero da aposta com o
-         * resultado principal.
-         *
-         * Também aceita os nomes:
-         * numeroAposta ou palpite.
-         */
+            form.style.display = "none";
 
-        for(
-            const aposta
-            of apostasDoSorteio
-        ){
 
-            if(
-                aposta.status ===
-                "CANCELADA"
-            ){
+            setTimeout(() => {
 
-                continue;
+                window.location.href = "login.html";
+
+            }, 1800);
+
+
+        } catch (erro) {
+
+            console.error("Erro ao criar MASTER:", erro);
+
+
+            let texto = "Não foi possível criar o MASTER.";
+
+
+            if (erro.code === "auth/email-already-in-use") {
+
+                texto =
+                    "Este e-mail já está cadastrado no Firebase Authentication.";
+
+            } else if (erro.code === "auth/invalid-email") {
+
+                texto =
+                    "O e-mail informado não é válido.";
+
+            } else if (erro.code === "auth/weak-password") {
+
+                texto =
+                    "A senha é muito fraca. Use pelo menos 6 caracteres.";
+
+            } else if (erro.code === "permission-denied") {
+
+                texto =
+                    "O Firestore recusou a gravação. Verifique as regras do Firestore.";
 
             }
 
 
-            const numeroAposta =
-                String(
-                    aposta.numero ??
-                    aposta.numeroAposta ??
-                    aposta.palpite ??
-                    ""
-                ).trim();
+            mostrarMensagem(texto, "erro");
 
 
-            const acertou =
-                numeroAposta !== "" &&
-                numeroAposta ===
-                resultadoPrincipal;
+            btnCriar.disabled = false;
 
-
-            await updateDoc(
-                doc(
-                    db,
-                    "apostas",
-                    aposta.id
-                ),
-                {
-
-                    resultadoStatus:
-                        acertou
-                        ? "VENCEDORA"
-                        : "PERDEDORA",
-
-                    resultadoId:
-                        resultadoRef.id,
-
-                    resultado:
-                        resultadoPrincipal,
-
-                    processadoEm:
-                        serverTimestamp()
-
-                }
-            );
+            btnCriar.textContent = "👑 Criar MASTER";
 
         }
-
-
-        mostrarMensagem(
-            mensagem,
-            `Resultado salvo. ${apostasDoSorteio.length} aposta(s) processada(s).`,
-            "sucesso"
-        );
-
-
-        document
-            .getElementById(
-                "resultadoPrincipal"
-            )
-            .value = "";
-
-
-        await carregarApostas();
-
-        await carregarResultados();
-
-        document
-            .getElementById(
-                "resultadoSorteio"
-            )
-            .dispatchEvent(
-                new Event("change")
-            );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        mostrarMensagem(
-            mensagem,
-            "Erro ao salvar/processar resultado: " +
-            error.message,
-            "erro"
-        );
-
-    }
-
-});
-
-
-/* =====================================================
-   RENDERIZAR RESULTADOS
-===================================================== */
-
-function renderizarResultados(){
-
-    const tbody =
-        document.getElementById(
-            "tabelaResultados"
-        );
-
-
-    tbody.innerHTML = "";
-
-
-    resultados.forEach(resultado=>{
-
-        let dataCriacao = "-";
-
-
-        if(
-            resultado.criadoEm &&
-            resultado.criadoEm.toDate
-        ){
-
-            dataCriacao =
-                resultado.criadoEm
-                .toDate()
-                .toLocaleString("pt-BR");
-
-        }
-
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-            <td>
-                ${escapar(
-                    resultado.sorteioNome
-                )}
-            </td>
-
-            <td>
-                ${escapar(
-                    resultado.data
-                )}
-            </td>
-
-            <td>
-
-                <strong>
-                    ${escapar(
-                        resultado.resultadoPrincipal
-                    )}
-                </strong>
-
-            </td>
-
-            <td>
-                ${dataCriacao}
-            </td>
-
-        `;
-
-
-        tbody.appendChild(tr);
 
     });
 
-}
 
+    // ==========================================
+    // INÍCIO DA PÁGINA
+    // ==========================================
 
-/* =====================================================
-   RESUMO
-===================================================== */
-
-function atualizarResumo(){
-
-    document
-        .getElementById("totalGerentes")
-        .textContent =
-        gerentes.length;
-
-
-    document
-        .getElementById("totalVendedores")
-        .textContent =
-        vendedores.length;
-
-
-    document
-        .getElementById("totalSorteios")
-        .textContent =
-        sorteios.length;
-
-
-    document
-        .getElementById("totalApostas")
-        .textContent =
-        apostas.length;
-
-
-    document
-        .getElementById("relGerentes")
-        .textContent =
-        gerentes.length;
-
-
-    document
-        .getElementById("relVendedores")
-        .textContent =
-        vendedores.length;
-
-
-    document
-        .getElementById("relSorteios")
-        .textContent =
-        sorteios.length;
-
-
-    document
-        .getElementById("relApostas")
-        .textContent =
-        apostas.length;
-
-}
-
-
-/* =====================================================
-   VERIFICAÇÃO AUTOMÁTICA DE FECHAMENTO
-===================================================== */
-
-function iniciarVerificacaoSorteios(){
-
-    setInterval(async()=>{
-
-        try{
-
-            await carregarSorteios();
-
-            atualizarResumo();
-
-        }catch(error){
-
-            console.error(
-                "Erro na verificação:",
-                error
-            );
-
-        }
-
-    },10000);
-
-}
+    verificarMaster();
 
 </script>
 
