@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 
 <head>
@@ -6,10 +7,9 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>Painel Master</title>
-
 
 <style>
 
@@ -364,6 +364,30 @@ body {
 
 }
 
+.btn-success {
+
+    background: #2e7d32;
+
+    color: white;
+
+}
+
+.btn-warning {
+
+    background: #ef6c00;
+
+    color: white;
+
+}
+
+.btn-secondary {
+
+    background: #607d8b;
+
+    color: white;
+
+}
+
 .btn:hover {
 
     opacity: .85;
@@ -465,19 +489,53 @@ td {
 
 }
 
+
+/* STATUS */
+
 .status {
 
     padding: 5px 8px;
 
     border-radius: 20px;
 
+    font-size: 10px;
+
+    font-weight: bold;
+
+}
+
+.status-aberto {
+
     background: #e8f5e9;
 
     color: #2e7d32;
 
-    font-size: 10px;
+}
 
-    font-weight: bold;
+.status-fechado {
+
+    background: #ffebee;
+
+    color: #c62828;
+
+}
+
+
+/* AVISO */
+
+.aviso {
+
+    padding: 12px;
+
+    border-radius: 7px;
+
+    margin-top: 15px;
+
+    font-size: 12px;
+
+    background: #eceff1;
+
+    color: #455a64;
 
 }
 
@@ -514,7 +572,7 @@ td {
 
     width: 100%;
 
-    max-width: 500px;
+    max-width: 550px;
 
     background: white;
 
@@ -664,12 +722,9 @@ td {
 
 </head>
 
-
 <body>
 
-
 <header class="topo">
-
 
 <div class="logo">
 
@@ -687,7 +742,6 @@ td {
 
 </div>
 
-
 <div class="usuario">
 
 <div class="usuario-info">
@@ -702,34 +756,30 @@ GERENTE GERAL / MASTER
 
 </div>
 
-
 <button
-    class="btn-sair"
-    id="btnSair"
+class="btn-sair"
+id="btnSair"
+
 >
-Sair
-</button>
+
+Sair </button>
 
 </div>
 
-
 </header>
-
 
 <div class="layout">
 
-
 <nav class="menu">
-
 
 <div class="menu-titulo">
 Principal
 </div>
 
-
 <button
-    class="menu-btn ativo"
-    data-secao="inicio"
+class="menu-btn ativo"
+data-secao="inicio"
+
 >
 
 <span>🏠</span>
@@ -737,15 +787,14 @@ Início
 
 </button>
 
-
 <div class="menu-titulo">
 Administração
 </div>
 
-
 <button
-    class="menu-btn"
-    data-secao="gerentes"
+class="menu-btn"
+data-secao="gerentes"
+
 >
 
 <span>👥</span>
@@ -753,10 +802,10 @@ Gerentes
 
 </button>
 
-
 <button
-    class="menu-btn"
-    data-secao="vendedores"
+class="menu-btn"
+data-secao="vendedores"
+
 >
 
 <span>🧑‍💼</span>
@@ -764,15 +813,14 @@ Vendedores
 
 </button>
 
-
 <div class="menu-titulo">
 Operação
 </div>
 
-
 <button
-    class="menu-btn"
-    data-secao="sorteios"
+class="menu-btn"
+data-secao="sorteios"
+
 >
 
 <span>🎲</span>
@@ -780,10 +828,10 @@ Sorteios
 
 </button>
 
-
 <button
-    class="menu-btn"
-    data-secao="apostas"
+class="menu-btn"
+data-secao="apostas"
+
 >
 
 <span>🎫</span>
@@ -791,10 +839,10 @@ Apostas
 
 </button>
 
-
 <button
-    class="menu-btn"
-    data-secao="resultados"
+class="menu-btn"
+data-secao="resultados"
+
 >
 
 <span>🏆</span>
@@ -802,15 +850,14 @@ Resultados
 
 </button>
 
-
 <div class="menu-titulo">
 Sistema
 </div>
 
-
 <button
-    class="menu-btn"
-    data-secao="relatorios"
+class="menu-btn"
+data-secao="relatorios"
+
 >
 
 <span>📊</span>
@@ -818,12 +865,9 @@ Relatórios
 
 </button>
 
-
 </nav>
 
-
 <main class="conteudo">
-
 
 <!-- INÍCIO -->
 
@@ -831,7 +875,6 @@ Relatórios
     id="inicio"
     class="secao ativa"
 >
-
 
 <div class="cabecalho">
 
@@ -845,9 +888,7 @@ Controle geral do simulador.
 
 </div>
 
-
 <div class="cards">
-
 
 <div class="card">
 
@@ -864,7 +905,6 @@ GERENTES
 
 </div>
 
-
 <div class="card">
 
 <div class="card-titulo">
@@ -879,7 +919,6 @@ VENDEDORES
 </div>
 
 </div>
-
 
 <div class="card">
 
@@ -896,7 +935,6 @@ SORTEIOS
 
 </div>
 
-
 <div class="card">
 
 <div class="card-titulo">
@@ -912,9 +950,7 @@ APOSTAS
 
 </div>
 
-
 </div>
-
 
 <div class="painel">
 
@@ -935,10 +971,7 @@ e apostas fictícias.
 
 </div>
 
-
 </section>
-
-
 
 <!-- GERENTES -->
 
@@ -946,7 +979,6 @@ e apostas fictícias.
     id="gerentes"
     class="secao"
 >
-
 
 <div class="cabecalho">
 
@@ -960,22 +992,19 @@ Cadastre e gerencie os gerentes.
 
 </div>
 
-
 <div class="painel">
 
-
 <button
-    class="btn btn-principal"
-    id="btnNovoGerente"
+class="btn btn-principal"
+id="btnNovoGerente"
+
 >
 
-+ Novo Gerente
+* Novo Gerente
 
 </button>
 
-
 <div class="tabela-container">
-
 
 <table>
 
@@ -997,7 +1026,6 @@ Cadastre e gerencie os gerentes.
 
 </thead>
 
-
 <tbody id="tabelaGerentes">
 
 <tr>
@@ -1014,15 +1042,11 @@ Nenhum gerente cadastrado.
 
 </table>
 
-
 </div>
 
 </div>
-
 
 </section>
-
-
 
 <!-- VENDEDORES -->
 
@@ -1030,7 +1054,6 @@ Nenhum gerente cadastrado.
     id="vendedores"
     class="secao"
 >
-
 
 <div class="cabecalho">
 
@@ -1044,7 +1067,6 @@ Visualização geral dos vendedores.
 
 </div>
 
-
 <div class="painel">
 
 <p class="descricao">
@@ -1053,7 +1075,6 @@ O cadastro de vendedores será feito
 através do gerenciamento das áreas.
 
 </p>
-
 
 <div class="tabela-container">
 
@@ -1077,7 +1098,6 @@ através do gerenciamento das áreas.
 
 </thead>
 
-
 <tbody id="tabelaVendedores">
 
 <tr>
@@ -1096,10 +1116,7 @@ Nenhum vendedor cadastrado.
 
 </div>
 
-
 </section>
-
-
 
 <!-- SORTEIOS -->
 
@@ -1108,7 +1125,6 @@ Nenhum vendedor cadastrado.
     class="secao"
 >
 
-
 <div class="cabecalho">
 
 <h2>
@@ -1116,40 +1132,79 @@ Sorteios
 </h2>
 
 <p>
-Gerenciamento dos sorteios fictícios.
+Criação e controle dos sorteios fictícios.
 </p>
 
 </div>
-
 
 <div class="painel">
 
 <h3>
-Módulo de Sorteios
+Sorteios cadastrados
 </h3>
 
 <p class="descricao">
 
-Na próxima etapa o MASTER poderá
-criar sorteios, horários e status.
+O sorteio permanecerá aberto até o horário
+de fechamento definido pelo MASTER.
 
 </p>
 
 <button
-    class="btn btn-principal"
-    onclick="alert('Módulo será implementado na próxima etapa.')"
+class="btn btn-principal"
+id="btnNovoSorteio"
+
 >
 
-+ Novo Sorteio
+* Novo Sorteio
 
 </button>
 
+<div class="tabela-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Sorteio</th>
+
+<th>Data</th>
+
+<th>Horário</th>
+
+<th>Fechamento</th>
+
+<th>Status</th>
+
+<th>Ações</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabelaSorteios">
+
+<tr>
+
+<td colspan="6">
+
+Nenhum sorteio cadastrado.
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
 </div>
 
+</div>
 
 </section>
-
-
 
 <!-- APOSTAS -->
 
@@ -1157,7 +1212,6 @@ criar sorteios, horários e status.
     id="apostas"
     class="secao"
 >
-
 
 <div class="cabecalho">
 
@@ -1170,7 +1224,6 @@ Consulta geral das apostas fictícias.
 </p>
 
 </div>
-
 
 <div class="painel">
 
@@ -1214,10 +1267,7 @@ Nenhuma aposta registrada.
 
 </div>
 
-
 </section>
-
-
 
 <!-- RESULTADOS -->
 
@@ -1225,7 +1275,6 @@ Nenhuma aposta registrada.
     id="resultados"
     class="secao"
 >
-
 
 <div class="cabecalho">
 
@@ -1238,7 +1287,6 @@ Gerenciamento dos resultados fictícios.
 </p>
 
 </div>
-
 
 <div class="painel">
 
@@ -1256,10 +1304,7 @@ e executar a apuração.
 
 </div>
 
-
 </section>
-
-
 
 <!-- RELATÓRIOS -->
 
@@ -1267,7 +1312,6 @@ e executar a apuração.
     id="relatorios"
     class="secao"
 >
-
 
 <div class="cabecalho">
 
@@ -1280,7 +1324,6 @@ Informações gerais do sistema.
 </p>
 
 </div>
-
 
 <div class="painel">
 
@@ -1298,15 +1341,11 @@ funcionando.
 
 </div>
 
-
 </section>
-
 
 </main>
 
 </div>
-
-
 
 <!-- MODAL GERENTE -->
 
@@ -1315,9 +1354,7 @@ funcionando.
     id="modalGerente"
 >
 
-
 <div class="modal-box">
-
 
 <div class="modal-header">
 
@@ -1325,22 +1362,19 @@ funcionando.
 Novo Gerente
 </h3>
 
-
 <button
-    class="fechar"
-    id="fecharModal"
+class="fechar"
+id="fecharModal"
+
 >
-×
-</button>
+
+× </button>
 
 </div>
 
-
 <form id="formGerente">
 
-
 <div class="form-grid">
-
 
 <div class="campo">
 
@@ -1349,13 +1383,13 @@ Nome
 </label>
 
 <input
-    type="text"
-    id="gerenteNome"
-    required
+type="text"
+id="gerenteNome"
+required
+
 >
 
 </div>
-
 
 <div class="campo">
 
@@ -1364,14 +1398,14 @@ Nome
 </label>
 
 <input
-    type="text"
-    id="gerenteArea"
-    required
-    placeholder="Ex.: Área Centro"
+type="text"
+id="gerenteArea"
+required
+placeholder="Ex.: Área Centro"
+
 >
 
 </div>
-
 
 <div class="campo">
 
@@ -1380,13 +1414,13 @@ E-mail
 </label>
 
 <input
-    type="email"
-    id="gerenteEmail"
-    required
+type="email"
+id="gerenteEmail"
+required
+
 >
 
 </div>
-
 
 <div class="campo">
 
@@ -1395,57 +1429,188 @@ Senha inicial
 </label>
 
 <input
-    type="password"
-    id="gerenteSenha"
-    minlength="6"
-    required
+type="password"
+id="gerenteSenha"
+minlength="6"
+required
+
 >
 
 </div>
 
-
 </div>
-
 
 <div id="mensagem"></div>
 
-
 <div class="modal-acoes">
 
-
 <button
-    type="button"
-    class="btn"
-    id="cancelarModal"
+type="button"
+class="btn"
+id="cancelarModal"
+
 >
 
 Cancelar
 
 </button>
 
-
 <button
-    type="submit"
-    class="btn btn-principal"
-    id="btnSalvarGerente"
+type="submit"
+class="btn btn-principal"
+id="btnSalvarGerente"
+
 >
 
 Salvar Gerente
 
 </button>
 
-
 </div>
-
 
 </form>
 
+</div>
+
+</div>
+
+<!-- MODAL SORTEIO -->
+
+<div
+    class="modal"
+    id="modalSorteio"
+>
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h3>
+Novo Sorteio
+</h3>
+
+<button
+class="fechar"
+id="fecharModalSorteio"
+
+>
+
+× </button>
+
+</div>
+
+<form id="formSorteio">
+
+<div class="form-grid">
+
+<div class="campo">
+
+<label>
+Nome do sorteio
+</label>
+
+<input
+type="text"
+id="sorteioNome"
+required
+placeholder="Ex.: Sorteio das 18h"
+
+>
+
+</div>
+
+<div class="campo">
+
+<label>
+Data do sorteio
+</label>
+
+<input
+type="date"
+id="sorteioData"
+required
+
+>
+
+</div>
+
+<div class="campo">
+
+<label>
+Horário do sorteio
+</label>
+
+<input
+type="time"
+id="sorteioHora"
+required
+
+>
+
+</div>
+
+<div class="campo">
+
+<label>
+Horário de fechamento das apostas
+</label>
+
+<input
+type="time"
+id="sorteioFechamento"
+required
+
+>
 
 </div>
 
 </div>
 
+<div class="aviso">
 
+As apostas ficarão abertas até o horário
+de fechamento informado acima.
+
+Ao atingir esse horário, o sorteio será
+considerado FECHADO.
+
+</div>
+
+<div
+    id="mensagemSorteio">
+</div>
+
+<div class="modal-acoes">
+
+<button
+type="button"
+class="btn btn-secondary"
+id="cancelarModalSorteio"
+
+>
+
+Cancelar
+
+</button>
+
+<button
+type="submit"
+class="btn btn-principal"
+id="btnSalvarSorteio"
+
+>
+
+Criar Sorteio
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
 
 <script type="module">
 
@@ -1469,34 +1634,57 @@ import {
     getDocs,
     doc,
     setDoc,
+    addDoc,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
+/* =====================================================
+   FIREBASE
+===================================================== */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:3199c6836a986d896ac20d",
-  measurementId: "G-QN7GFD99N0"
+
+    apiKey:
+        "AIzaSyC4AAbC8vCFAmlPlur12NmY7BKPjaSjumM",
+
+    authDomain:
+        "meuappweb-65522.firebaseapp.com",
+
+    projectId:
+        "meuappweb-65522",
+
+    storageBucket:
+        "meuappweb-65522.firebasestorage.app",
+
+    messagingSenderId:
+        "305368794616",
+
+    appId:
+        "1:305368794616:web:3199c6836a986d896ac20d",
+
+    measurementId:
+        "G-QN7GFD99N0"
+
 };
 
 
 const app =
     initializeApp(firebaseConfig);
 
+
 const auth =
     getAuth(app);
+
 
 const db =
     getFirestore(app);
 
 
-// -----------------------------------------------------
-// SEGUNDA INSTÂNCIA DO FIREBASE
-// -----------------------------------------------------
+/* =====================================================
+   SEGUNDA INSTÂNCIA
+===================================================== */
 
 const appCadastro =
     initializeApp(
@@ -1504,13 +1692,14 @@ const appCadastro =
         "cadastroGerente"
     );
 
+
 const authCadastro =
     getAuth(appCadastro);
 
 
-// -----------------------------------------------------
-// SESSÃO
-// -----------------------------------------------------
+/* =====================================================
+   SESSÃO
+===================================================== */
 
 let usuarioSessao = null;
 
@@ -1522,24 +1711,32 @@ function obterSessao() {
             "usuarioSessao"
         );
 
+
     if (!dados) {
+
         return null;
+
     }
 
+
     try {
+
         return JSON.parse(dados);
+
     }
 
     catch {
+
         return null;
+
     }
 
 }
 
 
-// -----------------------------------------------------
-// VERIFICAÇÃO
-// -----------------------------------------------------
+/* =====================================================
+   VERIFICAÇÃO
+===================================================== */
 
 onAuthStateChanged(
     auth,
@@ -1561,21 +1758,26 @@ onAuthStateChanged(
 
         if (
             !usuarioSessao ||
-            usuarioSessao.perfil !== "MASTER"
+            usuarioSessao.perfil !==
+            "MASTER"
         ) {
 
             alert(
                 "Acesso permitido somente ao MASTER."
             );
 
+
             signOut(auth);
+
 
             sessionStorage.removeItem(
                 "usuarioSessao"
             );
 
+
             window.location.href =
                 "login.html";
+
 
             return;
 
@@ -1595,13 +1797,15 @@ onAuthStateChanged(
 
         carregarVendedores();
 
+        carregarSorteios();
+
     }
 );
 
 
-// -----------------------------------------------------
-// RESUMO
-// -----------------------------------------------------
+/* =====================================================
+   RESUMO
+===================================================== */
 
 async function carregarResumo() {
 
@@ -1707,9 +1911,9 @@ async function carregarResumo() {
 }
 
 
-// -----------------------------------------------------
-// GERENTES
-// -----------------------------------------------------
+/* =====================================================
+   GERENTES
+===================================================== */
 
 async function carregarGerentes() {
 
@@ -1815,7 +2019,9 @@ async function carregarGerentes() {
         );
 
 
-        if (encontrados === 0) {
+        if (
+            encontrados === 0
+        ) {
 
             tabela.innerHTML = `
 
@@ -1839,6 +2045,7 @@ async function carregarGerentes() {
 
         console.error(erro);
 
+
         tabela.innerHTML = `
 
             <tr>
@@ -1858,9 +2065,9 @@ async function carregarGerentes() {
 }
 
 
-// -----------------------------------------------------
-// VENDEDORES
-// -----------------------------------------------------
+/* =====================================================
+   VENDEDORES
+===================================================== */
 
 async function carregarVendedores() {
 
@@ -1959,7 +2166,9 @@ async function carregarVendedores() {
         );
 
 
-        if (encontrados === 0) {
+        if (
+            encontrados === 0
+        ) {
 
             tabela.innerHTML = `
 
@@ -1988,14 +2197,994 @@ async function carregarVendedores() {
 }
 
 
-// -----------------------------------------------------
-// ESCAPAR HTML
-// -----------------------------------------------------
+/* =====================================================
+   SORTEIOS
+===================================================== */
+
+let sorteiosCache = [];
+
+
+async function carregarSorteios() {
+
+    const tabela =
+        document.getElementById(
+            "tabelaSorteios"
+        );
+
+
+    if (!tabela) {
+
+        return;
+
+    }
+
+
+    tabela.innerHTML = `
+
+        <tr>
+
+            <td colspan="6">
+
+                Carregando sorteios...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const resultado =
+            await getDocs(
+                collection(
+                    db,
+                    "sorteios"
+                )
+            );
+
+
+        sorteiosCache = [];
+
+
+        resultado.forEach(
+            (registro) => {
+
+                sorteiosCache.push({
+
+                    id:
+                        registro.id,
+
+                    ...registro.data()
+
+                });
+
+            }
+        );
+
+
+        /*
+        Ordena pelo horário/data do sorteio.
+        */
+
+        sorteiosCache.sort(
+            (a,b) => {
+
+                const dataA =
+                    Number(
+                        a.dataHoraMs || 0
+                    );
+
+                const dataB =
+                    Number(
+                        b.dataHoraMs || 0
+                    );
+
+                return dataA - dataB;
+
+            }
+        );
+
+
+        /*
+        Atualiza os status com base
+        no horário atual.
+        */
+
+        await atualizarStatusSorteios();
+
+
+        renderizarSorteios();
+
+
+        document.getElementById(
+            "totalSorteios"
+        ).textContent =
+            sorteiosCache.length;
+
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao carregar sorteios:",
+            erro
+        );
+
+
+        tabela.innerHTML = `
+
+            <tr>
+
+                <td colspan="6">
+
+                    Erro ao carregar sorteios.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   ATUALIZAR STATUS DOS SORTEIOS
+===================================================== */
+
+async function atualizarStatusSorteios() {
+
+    const agora =
+        Date.now();
+
+
+    for (
+        const sorteio
+        of sorteiosCache
+    ) {
+
+        if (
+            sorteio.status ===
+            "FECHADO"
+        ) {
+
+            continue;
+
+        }
+
+
+        const fechamento =
+            Number(
+                sorteio.fechamentoMs || 0
+            );
+
+
+        if (
+            fechamento > 0 &&
+            agora >= fechamento
+        ) {
+
+            try {
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "sorteios",
+                        sorteio.id
+                    ),
+
+                    {
+
+                        status:
+                            "FECHADO",
+
+                        fechadoEmMs:
+                            agora,
+
+                        fechadoEm:
+                            serverTimestamp()
+
+                    }
+
+                );
+
+
+                sorteio.status =
+                    "FECHADO";
+
+
+            }
+
+            catch (erro) {
+
+                console.error(
+                    "Erro ao fechar sorteio:",
+                    erro
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   RENDERIZAR SORTEIOS
+===================================================== */
+
+function renderizarSorteios() {
+
+    const tabela =
+        document.getElementById(
+            "tabelaSorteios"
+        );
+
+
+    if (
+        sorteiosCache.length === 0
+    ) {
+
+        tabela.innerHTML = `
+
+            <tr>
+
+                <td colspan="6">
+
+                    Nenhum sorteio cadastrado.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tabela.innerHTML = "";
+
+
+    sorteiosCache.forEach(
+        (sorteio) => {
+
+            const status =
+                obterStatusAtual(
+                    sorteio
+                );
+
+
+            const classe =
+                status === "ABERTO"
+                    ? "status-aberto"
+                    : "status-fechado";
+
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+                <td>
+
+                    <strong>
+                        ${escapar(
+                            sorteio.nome
+                        )}
+                    </strong>
+
+                </td>
+
+
+                <td>
+                    ${escapar(
+                        sorteio.data
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapar(
+                        sorteio.horario
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapar(
+                        sorteio.horarioFechamento
+                    )}
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="status ${classe}"
+                    >
+
+                        ${status}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        status === "ABERTO"
+                        ?
+
+                        `
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="fecharSorteioManual('${sorteio.id}')"
+                        >
+
+                            Fechar
+
+                        </button>
+
+                        `
+
+                        :
+
+                        `
+
+                        <span>
+                            —
+                        </span>
+
+                        `
+                    }
+
+                </td>
+
+            `;
+
+
+            tabela.appendChild(tr);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   STATUS ATUAL
+===================================================== */
+
+function obterStatusAtual(
+    sorteio
+) {
+
+    if (
+        sorteio.status ===
+        "FECHADO"
+    ) {
+
+        return "FECHADO";
+
+    }
+
+
+    const fechamento =
+        Number(
+            sorteio.fechamentoMs || 0
+        );
+
+
+    if (
+        fechamento > 0 &&
+        Date.now() >= fechamento
+    ) {
+
+        return "FECHADO";
+
+    }
+
+
+    return "ABERTO";
+
+}
+
+
+/* =====================================================
+   FECHAR SORTEIO MANUALMENTE
+===================================================== */
+
+window.fecharSorteioManual =
+async function(id) {
+
+    const confirmar =
+        confirm(
+            "Deseja fechar este sorteio agora? Depois disso, novas apostas não deverão ser aceitas."
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await updateDoc(
+
+            doc(
+                db,
+                "sorteios",
+                id
+            ),
+
+            {
+
+                status:
+                    "FECHADO",
+
+                fechadoEmMs:
+                    Date.now(),
+
+                fechadoEm:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        alert(
+            "Sorteio fechado com sucesso."
+        );
+
+
+        await carregarSorteios();
+
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao fechar sorteio:",
+            erro
+        );
+
+
+        alert(
+            "Não foi possível fechar o sorteio."
+        );
+
+    }
+
+};
+
+
+/* =====================================================
+   MODAL SORTEIO
+===================================================== */
+
+const modalSorteio =
+    document.getElementById(
+        "modalSorteio"
+    );
+
+
+document
+    .getElementById(
+        "btnNovoSorteio"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            document
+                .getElementById(
+                    "formSorteio"
+                )
+                .reset();
+
+
+            document
+                .getElementById(
+                    "mensagemSorteio"
+                )
+                .textContent =
+                "";
+
+
+            modalSorteio.classList.add(
+                "aberto"
+            );
+
+        }
+    );
+
+
+function fecharModalSorteio() {
+
+    modalSorteio.classList.remove(
+        "aberto"
+    );
+
+
+    document
+        .getElementById(
+            "formSorteio"
+        )
+        .reset();
+
+
+    document
+        .getElementById(
+            "mensagemSorteio"
+        )
+        .textContent =
+        "";
+
+}
+
+
+document
+    .getElementById(
+        "fecharModalSorteio"
+    )
+    .addEventListener(
+        "click",
+        fecharModalSorteio
+    );
+
+
+document
+    .getElementById(
+        "cancelarModalSorteio"
+    )
+    .addEventListener(
+        "click",
+        fecharModalSorteio
+    );
+
+
+/* =====================================================
+   CRIAR SORTEIO
+===================================================== */
+
+document
+    .getElementById(
+        "formSorteio"
+    )
+    .addEventListener(
+        "submit",
+        async (evento) => {
+
+            evento.preventDefault();
+
+
+            const nome =
+                document
+                    .getElementById(
+                        "sorteioNome"
+                    )
+                    .value
+                    .trim();
+
+
+            const data =
+                document
+                    .getElementById(
+                        "sorteioData"
+                    )
+                    .value;
+
+
+            const horario =
+                document
+                    .getElementById(
+                        "sorteioHora"
+                    )
+                    .value;
+
+
+            const horarioFechamento =
+                document
+                    .getElementById(
+                        "sorteioFechamento"
+                    )
+                    .value;
+
+
+            const mensagem =
+                document
+                    .getElementById(
+                        "mensagemSorteio"
+                    );
+
+
+            const botao =
+                document
+                    .getElementById(
+                        "btnSalvarSorteio"
+                    );
+
+
+            mensagem.textContent =
+                "";
+
+
+            /*
+            Validação básica.
+            */
+
+            if (
+                !nome ||
+                !data ||
+                !horario ||
+                !horarioFechamento
+            ) {
+
+                mensagem.textContent =
+                    "Preencha todos os campos.";
+
+                mensagem.className =
+                    "erro";
+
+                return;
+
+            }
+
+
+            /*
+            Monta a data/hora local do
+            fechamento.
+
+            O formato é:
+
+            AAAA-MM-DDTHH:MM
+            */
+
+            const dataFechamento =
+                new Date(
+                    `${data}T${horarioFechamento}:00`
+                );
+
+
+            const dataSorteio =
+                new Date(
+                    `${data}T${horario}:00`
+                );
+
+
+            if (
+                isNaN(
+                    dataFechamento.getTime()
+                )
+            ) {
+
+                mensagem.textContent =
+                    "Data ou horário de fechamento inválido.";
+
+                mensagem.className =
+                    "erro";
+
+                return;
+
+            }
+
+
+            if (
+                isNaN(
+                    dataSorteio.getTime()
+                )
+            ) {
+
+                mensagem.textContent =
+                    "Data ou horário do sorteio inválido.";
+
+                mensagem.className =
+                    "erro";
+
+                return;
+
+            }
+
+
+            /*
+            O fechamento não pode ser
+            depois do sorteio.
+
+            Normalmente o fechamento
+            deve acontecer antes do
+            horário do sorteio.
+            */
+
+            if (
+                dataFechamento.getTime() >
+                dataSorteio.getTime()
+            ) {
+
+                mensagem.textContent =
+                    "O horário de fechamento deve ser igual ou anterior ao horário do sorteio.";
+
+                mensagem.className =
+                    "erro";
+
+                return;
+
+            }
+
+
+            /*
+            O fechamento não pode estar
+            no passado.
+            */
+
+            if (
+                dataFechamento.getTime() <=
+                Date.now()
+            ) {
+
+                mensagem.textContent =
+                    "O horário de fechamento precisa ser futuro.";
+
+                mensagem.className =
+                    "erro";
+
+                return;
+
+            }
+
+
+            botao.disabled =
+                true;
+
+
+            botao.textContent =
+                "CRIANDO...";
+
+
+            try {
+
+                await addDoc(
+
+                    collection(
+                        db,
+                        "sorteios"
+                    ),
+
+                    {
+
+                        nome:
+
+                            nome,
+
+                        data:
+
+                            data,
+
+                        horario:
+
+                            horario,
+
+                        horarioFechamento:
+
+                            horarioFechamento,
+
+                        dataHoraMs:
+
+                            dataSorteio.getTime(),
+
+                        fechamentoMs:
+
+                            dataFechamento.getTime(),
+
+                        status:
+
+                            "ABERTO",
+
+                        resultadoInformado:
+
+                            false,
+
+                        criadoPor:
+
+                            usuarioSessao.uid,
+
+                        criadoEm:
+
+                            serverTimestamp()
+
+                    }
+
+                );
+
+
+                mensagem.textContent =
+                    "Sorteio criado com sucesso.";
+
+                mensagem.className =
+                    "sucesso";
+
+
+                await carregarSorteios();
+
+                await carregarResumo();
+
+
+                setTimeout(
+                    fecharModalSorteio,
+                    1000
+                );
+
+
+            }
+
+            catch (erro) {
+
+                console.error(
+                    "Erro ao criar sorteio:",
+                    erro
+                );
+
+
+                mensagem.textContent =
+                    "Não foi possível criar o sorteio.";
+
+                mensagem.className =
+                    "erro";
+
+            }
+
+
+            botao.disabled =
+                false;
+
+
+            botao.textContent =
+                "Criar Sorteio";
+
+        }
+    );
+
+
+/* =====================================================
+   VERIFICAÇÃO AUTOMÁTICA DO HORÁRIO
+===================================================== */
+
+setInterval(
+    async () => {
+
+        if (
+            sorteiosCache.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        let houveAlteracao =
+            false;
+
+
+        const agora =
+            Date.now();
+
+
+        for (
+            const sorteio
+            of sorteiosCache
+        ) {
+
+            if (
+                sorteio.status ===
+                "FECHADO"
+            ) {
+
+                continue;
+
+            }
+
+
+            const fechamento =
+                Number(
+                    sorteio.fechamentoMs ||
+                    0
+                );
+
+
+            if (
+                fechamento > 0 &&
+                agora >= fechamento
+            ) {
+
+                try {
+
+                    await updateDoc(
+
+                        doc(
+                            db,
+                            "sorteios",
+                            sorteio.id
+                        ),
+
+                        {
+
+                            status:
+                                "FECHADO",
+
+                            fechadoEmMs:
+                                agora,
+
+                            fechadoEm:
+                                serverTimestamp()
+
+                        }
+
+                    );
+
+
+                    sorteio.status =
+                        "FECHADO";
+
+
+                    houveAlteracao =
+                        true;
+
+                }
+
+                catch (erro) {
+
+                    console.error(
+                        "Erro ao fechar automaticamente:",
+                        erro
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        if (houveAlteracao) {
+
+            renderizarSorteios();
+
+        }
+
+    },
+    10000
+);
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
 
 function escapar(valor) {
 
-    if (valor === null ||
-        valor === undefined) {
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
 
         return "";
 
@@ -2004,22 +3193,37 @@ function escapar(valor) {
 
     return String(valor)
 
-        .replaceAll("&", "&amp;")
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
 
-        .replaceAll("<", "&lt;")
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
 
-        .replaceAll(">", "&gt;")
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
 
-        .replaceAll('"', "&quot;")
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
 
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }
 
 
-// -----------------------------------------------------
-// SALDO
-// -----------------------------------------------------
+/* =====================================================
+   SALDO
+===================================================== */
 
 function formatarSaldo(valor) {
 
@@ -2027,17 +3231,22 @@ function formatarSaldo(valor) {
         .toLocaleString(
             "pt-BR",
             {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+
+                minimumFractionDigits:
+                    2,
+
+                maximumFractionDigits:
+                    2
+
             }
         );
 
 }
 
 
-// -----------------------------------------------------
-// MENU
-// -----------------------------------------------------
+/* =====================================================
+   MENU
+===================================================== */
 
 const botoes =
     document.querySelectorAll(
@@ -2094,7 +3303,9 @@ function(nome) {
 
     document
         .getElementById(nome)
-        .classList.add("ativa");
+        .classList.add(
+            "ativa"
+        );
 
 
     const botao =
@@ -2105,16 +3316,18 @@ function(nome) {
 
     if (botao) {
 
-        botao.classList.add("ativo");
+        botao.classList.add(
+            "ativo"
+        );
 
     }
 
 };
 
 
-// -----------------------------------------------------
-// MODAL
-// -----------------------------------------------------
+/* =====================================================
+   MODAL GERENTE
+===================================================== */
 
 const modal =
     document.getElementById(
@@ -2123,7 +3336,9 @@ const modal =
 
 
 document
-    .getElementById("btnNovoGerente")
+    .getElementById(
+        "btnNovoGerente"
+    )
     .addEventListener(
         "click",
         () => {
@@ -2142,17 +3357,20 @@ function fecharModal() {
         "aberto"
     );
 
+
     document
         .getElementById(
             "formGerente"
         )
         .reset();
 
+
     document
         .getElementById(
             "mensagem"
         )
-        .textContent = "";
+        .textContent =
+        "";
 
 }
 
@@ -2177,9 +3395,9 @@ document
     );
 
 
-// -----------------------------------------------------
-// CRIAR GERENTE
-// -----------------------------------------------------
+/* =====================================================
+   CRIAR GERENTE
+===================================================== */
 
 document
     .getElementById(
@@ -2194,54 +3412,56 @@ document
 
             const nome =
                 document
-                .getElementById(
-                    "gerenteNome"
-                )
-                .value
-                .trim();
+                    .getElementById(
+                        "gerenteNome"
+                    )
+                    .value
+                    .trim();
 
 
             const areaNome =
                 document
-                .getElementById(
-                    "gerenteArea"
-                )
-                .value
-                .trim();
+                    .getElementById(
+                        "gerenteArea"
+                    )
+                    .value
+                    .trim();
 
 
             const email =
                 document
-                .getElementById(
-                    "gerenteEmail"
-                )
-                .value
-                .trim();
+                    .getElementById(
+                        "gerenteEmail"
+                    )
+                    .value
+                    .trim();
 
 
             const senha =
                 document
-                .getElementById(
-                    "gerenteSenha"
-                )
-                .value;
+                    .getElementById(
+                        "gerenteSenha"
+                    )
+                    .value;
 
 
             const mensagem =
                 document
-                .getElementById(
-                    "mensagem"
-                );
+                    .getElementById(
+                        "mensagem"
+                    );
 
 
             const botao =
                 document
-                .getElementById(
-                    "btnSalvarGerente"
-                );
+                    .getElementById(
+                        "btnSalvarGerente"
+                    );
 
 
-            botao.disabled = true;
+            botao.disabled =
+                true;
+
 
             botao.textContent =
                 "SALVANDO...";
@@ -2253,9 +3473,9 @@ document
 
             try {
 
-                // -----------------------------------------
-                // CRIAR CONTA AUTHENTICATION
-                // -----------------------------------------
+                /*
+                Criar conta Authentication.
+                */
 
                 const cadastro =
                     await createUserWithEmailAndPassword(
@@ -2269,9 +3489,9 @@ document
                     cadastro.user.uid;
 
 
-                // -----------------------------------------
-                // CRIAR PERFIL NO FIRESTORE
-                // -----------------------------------------
+                /*
+                Criar perfil Firestore.
+                */
 
                 await setDoc(
 
@@ -2283,21 +3503,29 @@ document
 
                     {
 
-                        nome: nome,
+                        nome:
+                            nome,
 
-                        email: email,
+                        email:
+                            email,
 
-                        perfil: "GERENTE",
+                        perfil:
+                            "GERENTE",
 
-                        ativo: true,
+                        ativo:
+                            true,
 
-                        areaNome: areaNome,
+                        areaNome:
+                            areaNome,
 
-                        areaId: gerenteUid,
+                        areaId:
+                            gerenteUid,
 
-                        vendedorId: null,
+                        vendedorId:
+                            null,
 
-                        saldoVirtual: 0,
+                        saldoVirtual:
+                            0,
 
                         criadoPor:
                             usuarioSessao.uid,
@@ -2339,7 +3567,9 @@ document
 
             catch (erro) {
 
-                console.error(erro);
+                console.error(
+                    erro
+                );
 
 
                 let texto =
@@ -2374,11 +3604,12 @@ document
                 mensagem.className =
                     "erro";
 
-
             }
 
 
-            botao.disabled = false;
+            botao.disabled =
+                false;
+
 
             botao.textContent =
                 "Salvar Gerente";
@@ -2387,9 +3618,9 @@ document
     );
 
 
-// -----------------------------------------------------
-// SAIR
-// -----------------------------------------------------
+/* =====================================================
+   SAIR
+===================================================== */
 
 document
     .getElementById(
@@ -2401,9 +3632,11 @@ document
 
             await signOut(auth);
 
+
             sessionStorage.removeItem(
                 "usuarioSessao"
             );
+
 
             window.location.href =
                 "login.html";
