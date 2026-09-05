@@ -1,725 +1,908 @@
-
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Painel MASTER</title>
+<title>Painel MASTER - Simulador</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f1f5f9;
-    color: #1e293b;
+body{
+    background:#f3f4f6;
+    color:#1f2937;
 }
 
-.topo {
-    height: 65px;
-    background: #111827;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 25px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+header{
+    height:64px;
+    background:#111827;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:10;
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: bold;
+.logo{
+    font-size:20px;
+    font-weight:bold;
 }
 
-.usuario {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.usuario{
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.btn-sair {
-    background: #dc2626;
-    color: white;
-    border: none;
-    padding: 9px 15px;
-    border-radius: 6px;
-    cursor: pointer;
+.btn-sair{
+    border:0;
+    background:#dc2626;
+    color:white;
+    padding:9px 15px;
+    border-radius:7px;
+    cursor:pointer;
 }
 
-.menu {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    bottom: 0;
-    width: 230px;
-    background: #1e293b;
-    padding: 20px 10px;
+aside{
+    position:fixed;
+    top:64px;
+    left:0;
+    bottom:0;
+    width:230px;
+    background:#1f2937;
+    padding:20px 12px;
 }
 
-.menu button {
-    width: 100%;
-    background: transparent;
-    color: #cbd5e1;
-    border: none;
-    padding: 13px;
-    text-align: left;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    font-size: 15px;
+aside button{
+    display:block;
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#d1d5db;
+    text-align:left;
+    padding:13px 15px;
+    margin-bottom:5px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:15px;
 }
 
-.menu button:hover,
-.menu button.ativo {
-    background: #334155;
-    color: white;
+aside button:hover,
+aside button.ativo{
+    background:#374151;
+    color:white;
 }
 
-.conteudo {
-    margin-left: 230px;
-    padding: 90px 25px 30px;
+main{
+    margin-left:230px;
+    padding:90px 25px 30px;
 }
 
-.secao {
-    display: none;
+.secao{
+    display:none;
 }
 
-.secao.ativa {
-    display: block;
+.secao.ativa{
+    display:block;
 }
 
-.cabecalho {
-    margin-bottom: 25px;
+h1{
+    margin-bottom:8px;
 }
 
-.cabecalho h2 {
-    margin-bottom: 5px;
+.subtitulo{
+    color:#6b7280;
+    margin-bottom:25px;
 }
 
-.descricao {
-    color: #64748b;
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:18px;
+    margin-bottom:25px;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
-    margin-bottom: 25px;
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-.card {
-    background: white;
-    border-radius: 10px;
-    padding: 22px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+.card h3{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:10px;
 }
 
-.card h3 {
-    color: #64748b;
-    font-size: 14px;
-    margin-bottom: 10px;
+.card .numero{
+    font-size:28px;
+    font-weight:bold;
 }
 
-.card .numero {
-    font-size: 30px;
-    font-weight: bold;
+.box{
+    background:white;
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:25px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-.painel {
-    background: white;
-    border-radius: 10px;
-    padding: 22px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+.box h2{
+    margin-bottom:18px;
 }
 
-.formulario {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
 }
 
-.campo {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.campo{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
 }
 
-.campo label {
-    font-size: 13px;
-    font-weight: bold;
+.campo label{
+    font-size:13px;
+    font-weight:bold;
 }
 
-.campo input,
-.campo select {
-    width: 100%;
-    padding: 11px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    outline: none;
+input,
+select{
+    width:100%;
+    padding:11px;
+    border:1px solid #d1d5db;
+    border-radius:7px;
+    outline:none;
 }
 
-.campo input:focus,
-.campo select:focus {
-    border-color: #2563eb;
+input:focus,
+select:focus{
+    border-color:#2563eb;
 }
 
-.botoes {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-    flex-wrap: wrap;
+.acoes{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:18px;
 }
 
-.btn {
-    border: none;
-    border-radius: 6px;
-    padding: 10px 16px;
-    cursor: pointer;
-    font-weight: bold;
+button.principal{
+    background:#2563eb;
+    color:white;
+    border:0;
+    padding:11px 17px;
+    border-radius:7px;
+    cursor:pointer;
 }
 
-.btn-principal {
-    background: #2563eb;
-    color: white;
+button.secundario{
+    background:#6b7280;
+    color:white;
+    border:0;
+    padding:11px 17px;
+    border-radius:7px;
+    cursor:pointer;
 }
 
-.btn-sucesso {
-    background: #16a34a;
-    color: white;
+button.verde{
+    background:#16a34a;
+    color:white;
+    border:0;
+    padding:9px 13px;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-.btn-perigo {
-    background: #dc2626;
-    color: white;
+button.amarelo{
+    background:#d97706;
+    color:white;
+    border:0;
+    padding:9px 13px;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-.btn-secundario {
-    background: #64748b;
-    color: white;
+button.vermelho{
+    background:#dc2626;
+    color:white;
+    border:0;
+    padding:9px 13px;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-.btn-aviso {
-    background: #d97706;
-    color: white;
+.mensagem{
+    display:none;
+    padding:12px;
+    border-radius:7px;
+    margin-bottom:15px;
 }
 
-.btn:hover {
-    opacity: .9;
+.mensagem.sucesso{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
 }
 
-.tabela-container {
-    overflow-x: auto;
+.mensagem.erro{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+.tabela-container{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
 }
 
 th,
-td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #e2e8f0;
-    text-align: left;
-    white-space: nowrap;
+td{
+    padding:12px 10px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+    font-size:14px;
 }
 
-th {
-    background: #f8fafc;
-    font-size: 13px;
+th{
+    background:#f9fafb;
 }
 
-.status {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
 }
 
-.status-aberto {
-    background: #dcfce7;
-    color: #166534;
+.aberto{
+    background:#dcfce7;
+    color:#166534;
 }
 
-.status-fechado {
-    background: #fee2e2;
-    color: #991b1b;
+.fechado{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-.mensagem {
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    display: none;
+.pendente{
+    background:#fef3c7;
+    color:#92400e;
 }
 
-.mensagem.sucesso {
-    display: block;
-    background: #dcfce7;
-    color: #166534;
+.vencedor{
+    background:#dcfce7;
+    color:#166534;
 }
 
-.mensagem.erro {
-    display: block;
-    background: #fee2e2;
-    color: #991b1b;
+.perdedor{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-@media (max-width: 800px) {
+.cancelada{
+    background:#e5e7eb;
+    color:#374151;
+}
 
-    .menu {
-        width: 70px;
+.resultado-box{
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    padding:15px;
+    border-radius:8px;
+    margin-top:15px;
+}
+
+.numero-grande{
+    font-size:30px;
+    font-weight:bold;
+    color:#1d4ed8;
+}
+
+.lista-resultados{
+    margin-top:15px;
+}
+
+.item-resultado{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+@media(max-width:750px){
+
+    header{
+        padding:0 12px;
     }
 
-    .menu button {
-        font-size: 0;
-        text-align: center;
+    .logo{
+        font-size:16px;
     }
 
-    .menu button::first-letter {
-        font-size: 20px;
+    aside{
+        width:190px;
     }
 
-    .conteudo {
-        margin-left: 70px;
+    main{
+        margin-left:190px;
+        padding-left:15px;
+        padding-right:15px;
+    }
+}
+
+@media(max-width:550px){
+
+    aside{
+        position:static;
+        width:100%;
+        height:auto;
+        display:flex;
+        overflow-x:auto;
+        padding:8px;
+        margin-top:64px;
+    }
+
+    aside button{
+        min-width:max-content;
+        margin:0 3px;
+    }
+
+    main{
+        margin-left:0;
+        padding-top:20px;
     }
 }
 </style>
+
 </head>
 
 <body>
 
-<header class="topo">
+<header>
+    <div class="logo">SIMULADOR • MASTER</div>
 
-    <div class="logo">
-        SIMULADOR • MASTER
-    </div>
-
-    <div class="usuario">
-        <span id="nomeUsuario">Carregando...</span>
-        <button class="btn-sair" id="btnSair">Sair</button>
-    </div>
+```
+<div class="usuario">
+    <span id="nomeUsuario">Carregando...</span>
+    <button class="btn-sair" id="btnSair">Sair</button>
+</div>
+```
 
 </header>
 
+<aside>
 
-<nav class="menu">
+```
+<button class="menu-btn ativo" data-secao="inicio">
+    🏠 Início
+</button>
 
-    <button class="ativo" onclick="abrirSecao('inicio', this)">
-        🏠 Início
-    </button>
+<button class="menu-btn" data-secao="gerentes">
+    👔 Gerentes
+</button>
 
-    <button onclick="abrirSecao('gerentes', this)">
-        👨‍💼 Gerentes
-    </button>
+<button class="menu-btn" data-secao="vendedores">
+    👤 Vendedores
+</button>
 
-    <button onclick="abrirSecao('vendedores', this)">
-        👤 Vendedores
-    </button>
+<button class="menu-btn" data-secao="sorteios">
+    🎲 Sorteios
+</button>
 
-    <button onclick="abrirSecao('sorteios', this)">
-        🎯 Sorteios
-    </button>
+<button class="menu-btn" data-secao="apostas">
+    🎫 Apostas
+</button>
 
-    <button onclick="abrirSecao('apostas', this)">
-        🎟️ Apostas
-    </button>
+<button class="menu-btn" data-secao="resultados">
+    🏆 Resultados
+</button>
 
-    <button onclick="abrirSecao('resultados', this)">
-        🏆 Resultados
-    </button>
+<button class="menu-btn" data-secao="relatorios">
+    📊 Relatórios
+</button>
+```
 
-    <button onclick="abrirSecao('relatorios', this)">
-        📊 Relatórios
-    </button>
+</aside>
 
-</nav>
-
-
-<main class="conteudo">
-
+<main>
 
 <!-- INÍCIO -->
 
 <section id="inicio" class="secao ativa">
 
-    <div class="cabecalho">
-        <h2>Dashboard</h2>
-        <p class="descricao">
-            Visão geral do sistema.
-        </p>
+```
+<h1>Painel MASTER</h1>
+<p class="subtitulo">
+    Visão geral do simulador
+</p>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>Gerentes</h3>
+        <div class="numero" id="totalGerentes">0</div>
     </div>
 
-    <div class="cards">
-
-        <div class="card">
-            <h3>Gerentes</h3>
-            <div class="numero" id="totalGerentes">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Vendedores</h3>
-            <div class="numero" id="totalVendedores">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Sorteios</h3>
-            <div class="numero" id="totalSorteios">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Apostas</h3>
-            <div class="numero" id="totalApostas">0</div>
-        </div>
-
+    <div class="card">
+        <h3>Vendedores</h3>
+        <div class="numero" id="totalVendedores">0</div>
     </div>
+
+    <div class="card">
+        <h3>Sorteios</h3>
+        <div class="numero" id="totalSorteios">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Apostas</h3>
+        <div class="numero" id="totalApostas">0</div>
+    </div>
+
+</div>
+
+<div class="box">
+
+    <h2>Informações</h2>
+
+    <p>
+        Este sistema é um simulador fictício para estudos e testes.
+        Não envolve dinheiro real ou pagamentos reais.
+    </p>
+
+</div>
+```
 
 </section>
-
 
 <!-- GERENTES -->
 
 <section id="gerentes" class="secao">
 
-    <div class="cabecalho">
-        <h2>Gerentes</h2>
-        <p class="descricao">
-            Cadastro e gerenciamento dos gerentes.
-        </p>
-    </div>
+```
+<h1>Gerentes</h1>
+<p class="subtitulo">
+    Cadastro e gerenciamento dos gerentes.
+</p>
 
-    <div id="mensagemGerente" class="mensagem"></div>
+<div id="mensagemGerente" class="mensagem"></div>
 
-    <div class="painel">
+<div class="box">
 
-        <h3>Novo Gerente</h3>
+    <h2>Novo Gerente</h2>
 
-        <br>
+    <form id="formGerente">
 
-        <div class="formulario">
+        <div class="form-grid">
 
             <div class="campo">
                 <label>Nome</label>
-                <input type="text" id="nomeGerente">
+                <input type="text" id="gerenteNome" required>
             </div>
 
             <div class="campo">
                 <label>E-mail</label>
-                <input type="email" id="emailGerente">
+                <input type="email" id="gerenteEmail" required>
             </div>
 
             <div class="campo">
                 <label>Senha</label>
-                <input type="password" id="senhaGerente">
+                <input type="password" id="gerenteSenha" required minlength="6">
             </div>
 
             <div class="campo">
                 <label>Área</label>
-                <input type="text" id="areaGerente">
+                <input type="text" id="gerenteArea" required>
             </div>
 
         </div>
 
-        <div class="botoes">
-
-            <button class="btn btn-principal" id="btnSalvarGerente">
-                💾 Salvar Gerente
+        <div class="acoes">
+            <button class="principal" type="submit">
+                Salvar Gerente
             </button>
-
         </div>
+
+    </form>
+
+</div>
+
+<div class="box">
+
+    <h2>Gerentes cadastrados</h2>
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Área</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelaGerentes"></tbody>
+
+        </table>
 
     </div>
 
-
-    <div class="painel">
-
-        <h3>Gerentes cadastrados</h3>
-
-        <div class="tabela-container">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Área</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody id="listaGerentes"></tbody>
-
-            </table>
-
-        </div>
-
-    </div>
+</div>
+```
 
 </section>
-
 
 <!-- VENDEDORES -->
 
 <section id="vendedores" class="secao">
 
-    <div class="cabecalho">
-        <h2>Vendedores</h2>
-        <p class="descricao">
-            Visualização dos vendedores cadastrados.
-        </p>
-    </div>
+```
+<h1>Vendedores</h1>
+<p class="subtitulo">
+    Todos os vendedores cadastrados no sistema.
+</p>
 
-    <div class="painel">
+<div class="box">
 
-        <div class="tabela-container">
+    <div class="tabela-container">
 
-            <table>
+        <table>
 
-                <thead>
+            <thead>
 
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Área</th>
-                        <th>Saldo Virtual</th>
-                        <th>Status</th>
-                    </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Gerente/Área</th>
+                    <th>Saldo Virtual</th>
+                    <th>Status</th>
+                </tr>
 
-                </thead>
+            </thead>
 
-                <tbody id="listaVendedores"></tbody>
+            <tbody id="tabelaVendedores"></tbody>
 
-            </table>
-
-        </div>
+        </table>
 
     </div>
+
+</div>
+```
 
 </section>
-
 
 <!-- SORTEIOS -->
 
 <section id="sorteios" class="secao">
 
-    <div class="cabecalho">
+```
+<h1>Sorteios</h1>
 
-        <h2>Sorteios</h2>
+<p class="subtitulo">
+    Criação e controle dos sorteios.
+</p>
 
-        <p class="descricao">
-            Crie os sorteios e defina até que horário as apostas permanecerão abertas.
-        </p>
+<div id="mensagemSorteio" class="mensagem"></div>
 
-    </div>
+<div class="box">
 
+    <h2>Novo Sorteio</h2>
 
-    <div id="mensagemSorteio" class="mensagem"></div>
+    <form id="formSorteio">
 
-
-    <div class="painel">
-
-        <h3>Novo Sorteio</h3>
-
-        <br>
-
-        <div class="formulario">
+        <div class="form-grid">
 
             <div class="campo">
 
-                <label for="nomeSorteio">
-                    Nome do Sorteio
-                </label>
+                <label>Nome do sorteio</label>
 
                 <input
                     type="text"
-                    id="nomeSorteio"
-                    placeholder="Ex.: Sorteio da Noite"
+                    id="sorteioNome"
+                    placeholder="Ex.: Sorteio das 18h"
+                    required
                 >
 
             </div>
 
-
             <div class="campo">
 
-                <label for="dataSorteio">
-                    Data do Sorteio
-                </label>
+                <label>Data</label>
 
                 <input
                     type="date"
-                    id="dataSorteio"
+                    id="sorteioData"
+                    required
                 >
 
             </div>
-
 
             <div class="campo">
 
-                <label for="horarioFechamento">
-                    Horário de Fechamento
-                </label>
+                <label>Horário de fechamento</label>
 
                 <input
                     type="time"
-                    id="horarioFechamento"
+                    id="sorteioHorario"
+                    required
                 >
 
             </div>
 
         </div>
 
-
-        <div class="botoes">
-
-            <button
-                class="btn btn-principal"
-                id="btnSalvarSorteio"
-            >
-                💾 Criar Sorteio
-            </button>
+        <div class="acoes">
 
             <button
-                class="btn btn-secundario"
-                id="btnLimparSorteio"
+                type="submit"
+                class="principal"
             >
-                Limpar
+                Criar Sorteio
             </button>
 
         </div>
 
-    </div>
+    </form>
+
+</div>
 
 
-    <div class="painel">
+<div class="box">
 
-        <h3>Sorteios cadastrados</h3>
+    <h2>Sorteios cadastrados</h2>
 
-        <div class="tabela-container">
+    <div class="tabela-container">
 
-            <table>
+        <table>
 
-                <thead>
+            <thead>
 
-                    <tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Fechamento</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
 
-                        <th>Sorteio</th>
-                        <th>Data</th>
-                        <th>Fechamento</th>
-                        <th>Status</th>
-                        <th>Ação</th>
+            </thead>
 
-                    </tr>
+            <tbody id="tabelaSorteios"></tbody>
 
-                </thead>
-
-                <tbody id="listaSorteios"></tbody>
-
-            </table>
-
-        </div>
+        </table>
 
     </div>
+
+</div>
+```
 
 </section>
-
 
 <!-- APOSTAS -->
 
 <section id="apostas" class="secao">
 
-    <div class="cabecalho">
+```
+<h1>Apostas</h1>
 
-        <h2>Apostas</h2>
+<p class="subtitulo">
+    Visualização geral das apostas fictícias.
+</p>
 
-        <p class="descricao">
-            Visualização das apostas fictícias registradas no sistema.
-        </p>
+<div class="box">
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Bilhete</th>
+                    <th>Vendedor</th>
+                    <th>Sorteio</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Resultado</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tabelaApostas"></tbody>
+
+        </table>
 
     </div>
 
-    <div class="painel">
-
-        <p>
-            O módulo de apostas será integrado nesta etapa.
-        </p>
-
-    </div>
+</div>
+```
 
 </section>
-
 
 <!-- RESULTADOS -->
 
 <section id="resultados" class="secao">
 
-    <div class="cabecalho">
+```
+<h1>Resultados</h1>
 
-        <h2>Resultados</h2>
+<p class="subtitulo">
+    Informe o resultado de um sorteio já encerrado e processe os bilhetes.
+</p>
 
-        <p class="descricao">
-            Gerenciamento dos resultados dos sorteios.
-        </p>
+<div id="mensagemResultado" class="mensagem"></div>
+
+<div class="box">
+
+    <h2>Selecionar sorteio</h2>
+
+    <div class="form-grid">
+
+        <div class="campo">
+
+            <label>Sorteio</label>
+
+            <select id="resultadoSorteio">
+
+                <option value="">
+                    Selecione um sorteio
+                </option>
+
+            </select>
+
+        </div>
 
     </div>
 
-    <div class="painel">
+    <div id="informacoesSorteioResultado"></div>
 
-        <p>
-            O módulo de resultados será integrado nesta etapa.
-        </p>
+</div>
+
+
+<div class="box" id="boxLancamentoResultado" style="display:none">
+
+    <h2>Lançar resultado</h2>
+
+    <p style="margin-bottom:18px;color:#6b7280;">
+        Informe o resultado numérico do sorteio.
+    </p>
+
+    <div class="form-grid">
+
+        <div class="campo">
+
+            <label>Resultado principal</label>
+
+            <input
+                type="text"
+                id="resultadoPrincipal"
+                placeholder="Ex.: 1234"
+                maxlength="10"
+            >
+
+        </div>
 
     </div>
+
+    <div class="acoes">
+
+        <button
+            class="verde"
+            id="btnSalvarResultado"
+            type="button"
+        >
+            🏆 Salvar Resultado
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="box">
+
+    <h2>Resultados já lançados</h2>
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Sorteio</th>
+                    <th>Data</th>
+                    <th>Resultado</th>
+                    <th>Lançado em</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tabelaResultados"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+```
 
 </section>
-
 
 <!-- RELATÓRIOS -->
 
 <section id="relatorios" class="secao">
 
-    <div class="cabecalho">
+```
+<h1>Relatórios</h1>
 
-        <h2>Relatórios</h2>
+<p class="subtitulo">
+    Informações gerais do simulador.
+</p>
 
-        <p class="descricao">
-            Relatórios gerais do simulador.
-        </p>
+<div class="box">
+
+    <h2>Resumo</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total de Gerentes</h3>
+            <div class="numero" id="relGerentes">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Total de Vendedores</h3>
+            <div class="numero" id="relVendedores">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Total de Sorteios</h3>
+            <div class="numero" id="relSorteios">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Total de Apostas</h3>
+            <div class="numero" id="relApostas">0</div>
+        </div>
 
     </div>
 
-    <div class="painel">
-
-        <p>
-            O módulo de relatórios será integrado nas próximas etapas.
-        </p>
-
-    </div>
+</div>
+```
 
 </section>
 
-
 </main>
-
 
 <script type="module">
 
 import {
     initializeApp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
 
 import {
     getAuth,
@@ -728,23 +911,24 @@ import {
     createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
-
 import {
     getFirestore,
     collection,
     getDocs,
     doc,
+    getDoc,
     setDoc,
     updateDoc,
+    addDoc,
+    query,
+    where,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
-
-/* =========================================================
-   FIREBASE CONFIG
-   NÃO ALTERADO
-========================================================= */
+/* =====================================================
+   FIREBASE
+===================================================== */
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
@@ -757,9 +941,6 @@ const firebaseConfig = {
 };
 
 
-/* =========================================================
-   FIREBASE
-========================================================= */
 
 const app = initializeApp(firebaseConfig);
 
@@ -768,10 +949,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/*
-   Segunda instância somente para criação de gerente,
-   evitando derrubar a sessão do MASTER.
-*/
+/* =====================================================
+   SEGUNDA INSTÂNCIA PARA CADASTRO DE GERENTE
+===================================================== */
 
 const appCadastro = initializeApp(
     firebaseConfig,
@@ -781,29 +961,39 @@ const appCadastro = initializeApp(
 const authCadastro = getAuth(appCadastro);
 
 
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
 
 let usuarioSessao = null;
 
+let gerentes = [];
+
+let vendedores = [];
+
 let sorteios = [];
 
+let apostas = [];
+
+let resultados = [];
 
 
-/* =========================================================
+/* =====================================================
    SESSÃO
-========================================================= */
+===================================================== */
 
-function obterSessao() {
+function obterSessao(){
 
     const dados =
         sessionStorage.getItem("usuarioSessao");
 
-    if (!dados) return null;
+    if(!dados) return null;
 
-    try {
+    try{
 
         return JSON.parse(dados);
 
-    } catch {
+    }catch{
 
         return null;
 
@@ -812,101 +1002,116 @@ function obterSessao() {
 }
 
 
+/* =====================================================
+   MENSAGEM
+===================================================== */
 
-/* =========================================================
-   NAVEGAÇÃO
-========================================================= */
+function mostrarMensagem(elemento,texto,tipo){
 
-window.abrirSecao = function(id, botao) {
+    elemento.textContent = texto;
 
-    document
-        .querySelectorAll(".secao")
-        .forEach(secao => {
-            secao.classList.remove("ativa");
-        });
-
-
-    const secao =
-        document.getElementById(id);
-
-    if (secao) {
-        secao.classList.add("ativa");
-    }
-
-
-    document
-        .querySelectorAll(".menu button")
-        .forEach(btn => {
-            btn.classList.remove("ativo");
-        });
-
-
-    if (botao) {
-        botao.classList.add("ativo");
-    }
-
-
-    if (id === "sorteios") {
-
-        carregarSorteios();
-
-    }
-
-};
-
-
-
-/* =========================================================
-   MENSAGENS
-========================================================= */
-
-function mostrarMensagem(elemento, texto, tipo) {
-
-    const el =
-        document.getElementById(elemento);
-
-    if (!el) return;
-
-    el.textContent = texto;
-
-    el.className =
+    elemento.className =
         "mensagem " + tipo;
 
+    setTimeout(()=>{
 
-    setTimeout(() => {
+        elemento.className = "mensagem";
 
-        el.className = "mensagem";
+        elemento.textContent = "";
 
-    }, 4000);
+    },5000);
 
 }
 
 
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
 
-/* =========================================================
+function escapar(valor){
+
+    if(valor === null || valor === undefined)
+        return "";
+
+    return String(valor)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   MENU
+===================================================== */
+
+document.querySelectorAll(".menu-btn")
+.forEach(botao => {
+
+    botao.addEventListener("click",()=>{
+
+        document
+            .querySelectorAll(".menu-btn")
+            .forEach(b => b.classList.remove("ativo"));
+
+        document
+            .querySelectorAll(".secao")
+            .forEach(s => s.classList.remove("ativa"));
+
+        botao.classList.add("ativo");
+
+        const id = botao.dataset.secao;
+
+        document
+            .getElementById(id)
+            .classList.add("ativa");
+
+    });
+
+});
+
+
+/* =====================================================
+   SAIR
+===================================================== */
+
+document
+.getElementById("btnSair")
+.addEventListener("click",async()=>{
+
+    await signOut(auth);
+
+    sessionStorage.removeItem("usuarioSessao");
+
+    window.location.href = "login.html";
+
+});
+
+
+/* =====================================================
    AUTENTICAÇÃO
-========================================================= */
+===================================================== */
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth,async(user)=>{
 
-    if (!user) {
+    if(!user){
 
-        window.location.href =
-            "login.html";
+        window.location.href = "login.html";
 
         return;
 
     }
 
 
-    usuarioSessao =
-        obterSessao();
+    usuarioSessao = obterSessao();
 
 
-    if (
+    if(
         !usuarioSessao ||
         usuarioSessao.perfil !== "MASTER"
-    ) {
+    ){
 
         alert(
             "Acesso permitido somente ao MASTER."
@@ -918,734 +1123,635 @@ onAuthStateChanged(auth, async (user) => {
             "usuarioSessao"
         );
 
-        window.location.href =
-            "login.html";
+        window.location.href = "login.html";
 
         return;
 
     }
 
 
-    document.getElementById(
-        "nomeUsuario"
-    ).textContent =
+    document
+        .getElementById("nomeUsuario")
+        .textContent =
         usuarioSessao.nome ||
         "Administrador";
 
 
-    carregarResumo();
+    await carregarTudo();
 
-    carregarGerentes();
-
-    carregarVendedores();
-
-    carregarSorteios();
+    iniciarVerificacaoSorteios();
 
 });
 
 
+/* =====================================================
+   CARREGAR TUDO
+===================================================== */
 
-/* =========================================================
-   SAIR
-========================================================= */
+async function carregarTudo(){
 
-document
-    .getElementById("btnSair")
-    .addEventListener("click", async () => {
+    await carregarGerentes();
 
-        await signOut(auth);
+    await carregarVendedores();
 
-        sessionStorage.removeItem(
-            "usuarioSessao"
-        );
+    await carregarSorteios();
 
-        window.location.href =
-            "login.html";
+    await carregarApostas();
 
-    });
+    await carregarResultados();
 
-
-
-/* =========================================================
-   RESUMO
-========================================================= */
-
-async function carregarResumo() {
-
-    try {
-
-        const usuariosSnapshot =
-            await getDocs(
-                collection(db, "usuarios")
-            );
-
-
-        const sorteiosSnapshot =
-            await getDocs(
-                collection(db, "sorteios")
-            );
-
-
-        const apostasSnapshot =
-            await getDocs(
-                collection(db, "apostas")
-            );
-
-
-        let gerentes = 0;
-
-        let vendedores = 0;
-
-
-        usuariosSnapshot.forEach(item => {
-
-            const dados = item.data();
-
-
-            if (dados.perfil === "GERENTE") {
-                gerentes++;
-            }
-
-
-            if (dados.perfil === "VENDEDOR") {
-                vendedores++;
-            }
-
-        });
-
-
-        document.getElementById(
-            "totalGerentes"
-        ).textContent = gerentes;
-
-
-        document.getElementById(
-            "totalVendedores"
-        ).textContent = vendedores;
-
-
-        document.getElementById(
-            "totalSorteios"
-        ).textContent =
-            sorteiosSnapshot.size;
-
-
-        document.getElementById(
-            "totalApostas"
-        ).textContent =
-            apostasSnapshot.size;
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar resumo:",
-            erro
-        );
-
-    }
+    atualizarResumo();
 
 }
 
 
-
-/* =========================================================
+/* =====================================================
    GERENTES
-========================================================= */
+===================================================== */
 
-async function carregarGerentes() {
+async function carregarGerentes(){
 
-    const lista =
-        document.getElementById(
-            "listaGerentes"
-        );
+    const snapshot =
+        await getDocs(collection(db,"usuarios"));
 
+    gerentes = [];
 
-    lista.innerHTML =
-        "<tr><td colspan='4'>Carregando...</td></tr>";
+    snapshot.forEach(item=>{
 
+        const dados = item.data();
 
-    try {
+        if(dados.perfil === "GERENTE"){
 
-        const snapshot =
-            await getDocs(
-                collection(db, "usuarios")
-            );
+            gerentes.push({
 
-
-        lista.innerHTML = "";
-
-
-        let encontrou = false;
-
-
-        snapshot.forEach(item => {
-
-            const dados = item.data();
-
-
-            if (dados.perfil !== "GERENTE") {
-                return;
-            }
-
-
-            encontrou = true;
-
-
-            const tr =
-                document.createElement("tr");
-
-
-            tr.innerHTML = `
-
-                <td>${escapar(dados.nome || "")}</td>
-
-                <td>${escapar(dados.email || "")}</td>
-
-                <td>${escapar(dados.areaNome || "")}</td>
-
-                <td>
-                    <span class="status ${
-                        dados.ativo === false
-                        ? "status-fechado"
-                        : "status-aberto"
-                    }">
-                        ${
-                            dados.ativo === false
-                            ? "INATIVO"
-                            : "ATIVO"
-                        }
-                    </span>
-                </td>
-
-            `;
-
-
-            lista.appendChild(tr);
-
-        });
-
-
-        if (!encontrou) {
-
-            lista.innerHTML =
-                "<tr><td colspan='4'>Nenhum gerente cadastrado.</td></tr>";
-
-        }
-
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        lista.innerHTML =
-            "<tr><td colspan='4'>Erro ao carregar gerentes.</td></tr>";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   CADASTRO DE GERENTE
-========================================================= */
-
-document
-    .getElementById("btnSalvarGerente")
-    .addEventListener("click", async () => {
-
-        const nome =
-            document.getElementById(
-                "nomeGerente"
-            ).value.trim();
-
-
-        const email =
-            document.getElementById(
-                "emailGerente"
-            ).value.trim();
-
-
-        const senha =
-            document.getElementById(
-                "senhaGerente"
-            ).value;
-
-
-        const areaNome =
-            document.getElementById(
-                "areaGerente"
-            ).value.trim();
-
-
-        if (
-            !nome ||
-            !email ||
-            !senha ||
-            !areaNome
-        ) {
-
-            mostrarMensagem(
-                "mensagemGerente",
-                "Preencha todos os campos.",
-                "erro"
-            );
-
-            return;
-
-        }
-
-
-        try {
-
-            const credencial =
-                await createUserWithEmailAndPassword(
-                    authCadastro,
-                    email,
-                    senha
-                );
-
-
-            const uid =
-                credencial.user.uid;
-
-
-            await setDoc(
-                doc(db, "usuarios", uid),
-                {
-
-                    nome: nome,
-
-                    email: email,
-
-                    perfil: "GERENTE",
-
-                    ativo: true,
-
-                    areaNome: areaNome,
-
-                    areaId: uid,
-
-                    vendedorId: null,
-
-                    saldoVirtual: 0,
-
-                    criadoPor:
-                        usuarioSessao.uid,
-
-                    criadoEm:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            document.getElementById(
-                "nomeGerente"
-            ).value = "";
-
-
-            document.getElementById(
-                "emailGerente"
-            ).value = "";
-
-
-            document.getElementById(
-                "senhaGerente"
-            ).value = "";
-
-
-            document.getElementById(
-                "areaGerente"
-            ).value = "";
-
-
-            mostrarMensagem(
-                "mensagemGerente",
-                "Gerente cadastrado com sucesso.",
-                "sucesso"
-            );
-
-
-            carregarGerentes();
-
-            carregarResumo();
-
-
-        } catch (erro) {
-
-            console.error(erro);
-
-
-            let mensagem =
-                "Erro ao cadastrar gerente.";
-
-
-            if (
-                erro.code ===
-                "auth/email-already-in-use"
-            ) {
-
-                mensagem =
-                    "Este e-mail já está cadastrado.";
-
-            }
-
-
-            if (
-                erro.code ===
-                "auth/weak-password"
-            ) {
-
-                mensagem =
-                    "A senha precisa ter pelo menos 6 caracteres.";
-
-            }
-
-
-            mostrarMensagem(
-                "mensagemGerente",
-                mensagem,
-                "erro"
-            );
-
-        }
-
-    });
-
-
-
-/* =========================================================
-   VENDEDORES
-========================================================= */
-
-async function carregarVendedores() {
-
-    const lista =
-        document.getElementById(
-            "listaVendedores"
-        );
-
-
-    lista.innerHTML =
-        "<tr><td colspan='5'>Carregando...</td></tr>";
-
-
-    try {
-
-        const snapshot =
-            await getDocs(
-                collection(db, "usuarios")
-            );
-
-
-        lista.innerHTML = "";
-
-
-        let encontrou = false;
-
-
-        snapshot.forEach(item => {
-
-            const dados = item.data();
-
-
-            if (dados.perfil !== "VENDEDOR") {
-                return;
-            }
-
-
-            encontrou = true;
-
-
-            const saldo =
-                Number(
-                    dados.saldoVirtual || 0
-                );
-
-
-            const tr =
-                document.createElement("tr");
-
-
-            tr.innerHTML = `
-
-                <td>${escapar(dados.nome || "")}</td>
-
-                <td>${escapar(dados.email || "")}</td>
-
-                <td>${escapar(dados.areaNome || "")}</td>
-
-                <td>${saldo.toFixed(2)}</td>
-
-                <td>
-
-                    <span class="status ${
-                        dados.ativo === false
-                        ? "status-fechado"
-                        : "status-aberto"
-                    }">
-
-                        ${
-                            dados.ativo === false
-                            ? "INATIVO"
-                            : "ATIVO"
-                        }
-
-                    </span>
-
-                </td>
-
-            `;
-
-
-            lista.appendChild(tr);
-
-        });
-
-
-        if (!encontrou) {
-
-            lista.innerHTML =
-                "<tr><td colspan='5'>Nenhum vendedor cadastrado.</td></tr>";
-
-        }
-
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        lista.innerHTML =
-            "<tr><td colspan='5'>Erro ao carregar vendedores.</td></tr>";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   SORTEIOS
-========================================================= */
-
-async function carregarSorteios() {
-
-    const lista =
-        document.getElementById(
-            "listaSorteios"
-        );
-
-
-    lista.innerHTML =
-        "<tr><td colspan='5'>Carregando...</td></tr>";
-
-
-    try {
-
-        const snapshot =
-            await getDocs(
-                collection(db, "sorteios")
-            );
-
-
-        sorteios = [];
-
-
-        snapshot.forEach(item => {
-
-            sorteios.push({
-
-                id: item.id,
-
-                ...item.data()
+                id:item.id,
+                ...dados
 
             });
 
-        });
-
-
-        await atualizarStatusSorteios();
-
-
-        renderizarSorteios();
-
-
-        document.getElementById(
-            "totalSorteios"
-        ).textContent =
-            sorteios.length;
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar sorteios:",
-            erro
-        );
-
-
-        lista.innerHTML =
-            "<tr><td colspan='5'>Erro ao carregar sorteios.</td></tr>";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   ATUALIZAR STATUS AUTOMATICAMENTE
-========================================================= */
-
-async function atualizarStatusSorteios() {
-
-    const agora =
-        new Date();
-
-
-    let alterou = false;
-
-
-    for (const sorteio of sorteios) {
-
-        if (
-            sorteio.status === "ABERTO" &&
-            sorteio.dataHoraFechamento
-        ) {
-
-            const fechamento =
-                new Date(
-                    sorteio.dataHoraFechamento
-                );
-
-
-            if (
-                !isNaN(fechamento.getTime()) &&
-                agora >= fechamento
-            ) {
-
-                try {
-
-                    await updateDoc(
-                        doc(
-                            db,
-                            "sorteios",
-                            sorteio.id
-                        ),
-                        {
-
-                            status: "FECHADO",
-
-                            fechadoEm:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    sorteio.status =
-                        "FECHADO";
-
-
-                    alterou = true;
-
-                } catch (erro) {
-
-                    console.error(
-                        "Erro ao fechar sorteio:",
-                        erro
-                    );
-
-                }
-
-            }
-
         }
-
-    }
-
-
-    return alterou;
-
-}
-
-
-
-/* =========================================================
-   RENDERIZAR SORTEIOS
-========================================================= */
-
-function renderizarSorteios() {
-
-    const lista =
-        document.getElementById(
-            "listaSorteios"
-        );
-
-
-    lista.innerHTML = "";
-
-
-    if (sorteios.length === 0) {
-
-        lista.innerHTML =
-            "<tr><td colspan='5'>Nenhum sorteio cadastrado.</td></tr>";
-
-        return;
-
-    }
-
-
-    sorteios.sort((a, b) => {
-
-        const dataA =
-            a.dataHoraFechamento || "";
-
-        const dataB =
-            b.dataHoraFechamento || "";
-
-        return dataA.localeCompare(dataB);
 
     });
 
 
-    sorteios.forEach(sorteio => {
+    renderizarGerentes();
+
+}
+
+
+function renderizarGerentes(){
+
+    const tbody =
+        document.getElementById(
+            "tabelaGerentes"
+        );
+
+    tbody.innerHTML = "";
+
+
+    gerentes.forEach(gerente=>{
 
         const tr =
             document.createElement("tr");
 
 
-        const status =
-            sorteio.status === "FECHADO"
-            ? "FECHADO"
-            : "ABERTO";
+        tr.innerHTML = `
+
+            <td>${escapar(gerente.nome)}</td>
+
+            <td>${escapar(gerente.email)}</td>
+
+            <td>${escapar(gerente.areaNome)}</td>
+
+            <td>
+
+                <span class="badge ${
+                    gerente.ativo
+                    ? "aberto"
+                    : "fechado"
+                }">
+
+                    ${
+                        gerente.ativo
+                        ? "ATIVO"
+                        : "INATIVO"
+                    }
+
+                </span>
+
+            </td>
+
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =====================================================
+   CADASTRO DE GERENTE
+===================================================== */
+
+document
+.getElementById("formGerente")
+.addEventListener("submit",async(event)=>{
+
+    event.preventDefault();
+
+
+    const mensagem =
+        document.getElementById(
+            "mensagemGerente"
+        );
+
+
+    const nome =
+        document.getElementById(
+            "gerenteNome"
+        ).value.trim();
+
+
+    const email =
+        document.getElementById(
+            "gerenteEmail"
+        ).value.trim();
+
+
+    const senha =
+        document.getElementById(
+            "gerenteSenha"
+        ).value;
+
+
+    const area =
+        document.getElementById(
+            "gerenteArea"
+        ).value.trim();
+
+
+    if(!nome || !email || !senha || !area){
+
+        mostrarMensagem(
+            mensagem,
+            "Preencha todos os campos.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const credencial =
+            await createUserWithEmailAndPassword(
+                authCadastro,
+                email,
+                senha
+            );
+
+
+        const uid =
+            credencial.user.uid;
+
+
+        await setDoc(
+            doc(db,"usuarios",uid),
+            {
+
+                nome,
+
+                email,
+
+                perfil:"GERENTE",
+
+                ativo:true,
+
+                areaNome:area,
+
+                areaId:uid,
+
+                vendedorId:null,
+
+                saldoVirtual:0,
+
+                criadoPor:usuarioSessao.uid,
+
+                criadoEm:serverTimestamp()
+
+            }
+        );
+
+
+        await signOut(authCadastro);
+
+
+        document
+            .getElementById("formGerente")
+            .reset();
+
+
+        mostrarMensagem(
+            mensagem,
+            "Gerente criado com sucesso.",
+            "sucesso"
+        );
+
+
+        await carregarGerentes();
+
+        atualizarResumo();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        mostrarMensagem(
+            mensagem,
+            "Erro ao criar gerente: " +
+            error.message,
+            "erro"
+        );
+
+    }
+
+});
+
+
+/* =====================================================
+   VENDEDORES
+===================================================== */
+
+async function carregarVendedores(){
+
+    const snapshot =
+        await getDocs(collection(db,"usuarios"));
+
+    vendedores = [];
+
+    snapshot.forEach(item=>{
+
+        const dados = item.data();
+
+        if(dados.perfil === "VENDEDOR"){
+
+            vendedores.push({
+
+                id:item.id,
+                ...dados
+
+            });
+
+        }
+
+    });
+
+
+    renderizarVendedores();
+
+}
+
+
+function renderizarVendedores(){
+
+    const tbody =
+        document.getElementById(
+            "tabelaVendedores"
+        );
+
+    tbody.innerHTML = "";
+
+
+    vendedores.forEach(vendedor=>{
+
+        const tr =
+            document.createElement("tr");
 
 
         tr.innerHTML = `
 
+            <td>${escapar(vendedor.nome)}</td>
+
+            <td>${escapar(vendedor.email)}</td>
+
+            <td>${escapar(vendedor.areaNome)}</td>
+
             <td>
-                ${escapar(sorteio.nome || "")}
+                ${Number(vendedor.saldoVirtual || 0)
+                    .toFixed(2)}
             </td>
 
             <td>
-                ${formatarData(sorteio.data)}
-            </td>
 
-            <td>
-                ${sorteio.horarioFechamento || "--:--"}
-            </td>
-
-            <td>
-
-                <span class="status ${
-                    status === "ABERTO"
-                    ? "status-aberto"
-                    : "status-fechado"
+                <span class="badge ${
+                    vendedor.ativo
+                    ? "aberto"
+                    : "fechado"
                 }">
 
-                    ${status}
+                    ${
+                        vendedor.ativo
+                        ? "ATIVO"
+                        : "INATIVO"
+                    }
+
+                </span>
+
+            </td>
+
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =====================================================
+   SORTEIOS
+===================================================== */
+
+document
+.getElementById("formSorteio")
+.addEventListener("submit",async(event)=>{
+
+    event.preventDefault();
+
+
+    const mensagem =
+        document.getElementById(
+            "mensagemSorteio"
+        );
+
+
+    const nome =
+        document.getElementById(
+            "sorteioNome"
+        ).value.trim();
+
+
+    const data =
+        document.getElementById(
+            "sorteioData"
+        ).value;
+
+
+    const horario =
+        document.getElementById(
+            "sorteioHorario"
+        ).value;
+
+
+    if(!nome || !data || !horario){
+
+        mostrarMensagem(
+            mensagem,
+            "Preencha todos os campos.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const dataHoraFechamento =
+        new Date(
+            `${data}T${horario}:00`
+        );
+
+
+    try{
+
+        await addDoc(
+            collection(db,"sorteios"),
+            {
+
+                nome,
+
+                data,
+
+                horarioFechamento:horario,
+
+                dataHoraFechamento:
+                    dataHoraFechamento,
+
+                status:
+                    dataHoraFechamento.getTime()
+                    <= Date.now()
+                    ? "FECHADO"
+                    : "ABERTO",
+
+                criadoPor:
+                    usuarioSessao.uid,
+
+                criadoEm:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        document
+            .getElementById("formSorteio")
+            .reset();
+
+
+        mostrarMensagem(
+            mensagem,
+            "Sorteio criado com sucesso.",
+            "sucesso"
+        );
+
+
+        await carregarSorteios();
+
+        atualizarResumo();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        mostrarMensagem(
+            mensagem,
+            "Erro ao criar sorteio.",
+            "erro"
+        );
+
+    }
+
+});
+
+
+/* =====================================================
+   CARREGAR SORTEIOS
+===================================================== */
+
+async function carregarSorteios(){
+
+    const snapshot =
+        await getDocs(
+            collection(db,"sorteios")
+        );
+
+
+    sorteios = [];
+
+
+    snapshot.forEach(item=>{
+
+        sorteios.push({
+
+            id:item.id,
+            ...item.data()
+
+        });
+
+    });
+
+
+    sorteios.sort((a,b)=>{
+
+        const da =
+            a.dataHoraFechamento?.toDate
+            ? a.dataHoraFechamento.toDate()
+            : new Date(
+                `${a.data}T${a.horarioFechamento}:00`
+            );
+
+        const dbb =
+            b.dataHoraFechamento?.toDate
+            ? b.dataHoraFechamento.toDate()
+            : new Date(
+                `${b.data}T${b.horarioFechamento}:00`
+            );
+
+        return dbb - da;
+
+    });
+
+
+    await verificarFechamentos();
+
+    renderizarSorteios();
+
+    carregarSelectResultados();
+
+}
+
+
+async function verificarFechamentos(){
+
+    const agora = new Date();
+
+
+    for(const sorteio of sorteios){
+
+        if(sorteio.status !== "ABERTO")
+            continue;
+
+
+        let fechamento;
+
+
+        if(
+            sorteio.dataHoraFechamento &&
+            sorteio.dataHoraFechamento.toDate
+        ){
+
+            fechamento =
+                sorteio.dataHoraFechamento.toDate();
+
+        }else{
+
+            fechamento =
+                new Date(
+                    `${sorteio.data}T${sorteio.horarioFechamento}:00`
+                );
+
+        }
+
+
+        if(
+            fechamento.getTime() <=
+            agora.getTime()
+        ){
+
+            try{
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "sorteios",
+                        sorteio.id
+                    ),
+                    {
+                        status:"FECHADO"
+                    }
+                );
+
+                sorteio.status =
+                    "FECHADO";
+
+            }catch(error){
+
+                console.error(
+                    "Erro ao fechar sorteio:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+function renderizarSorteios(){
+
+    const tbody =
+        document.getElementById(
+            "tabelaSorteios"
+        );
+
+    tbody.innerHTML = "";
+
+
+    sorteios.forEach(sorteio=>{
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>${escapar(sorteio.nome)}</td>
+
+            <td>${escapar(sorteio.data)}</td>
+
+            <td>
+                ${escapar(
+                    sorteio.horarioFechamento
+                )}
+            </td>
+
+            <td>
+
+                <span class="badge ${
+                    sorteio.status === "ABERTO"
+                    ? "aberto"
+                    : "fechado"
+                }">
+
+                    ${sorteio.status}
 
                 </span>
 
@@ -1654,20 +1760,23 @@ function renderizarSorteios() {
             <td>
 
                 ${
-                    status === "ABERTO"
-                    ? `
-                        <button
-                            class="btn btn-aviso"
-                            onclick="fecharSorteio('${sorteio.id}')"
-                        >
-                            🔒 Fechar
-                        </button>
-                    `
-                    : `
-                        <span style="color:#64748b;">
-                            Encerrado
-                        </span>
-                    `
+                    sorteio.status === "ABERTO"
+
+                    ?
+
+                    `<button
+                        class="amarelo"
+                        onclick="fecharSorteio('${sorteio.id}')"
+                    >
+                        Fechar
+                    </button>`
+
+                    :
+
+                    `<span style="color:#6b7280">
+                        Encerrado
+                    </span>`
+
                 }
 
             </td>
@@ -1675,117 +1784,491 @@ function renderizarSorteios() {
         `;
 
 
-        lista.appendChild(tr);
+        tbody.appendChild(tr);
 
     });
 
 }
 
 
+/* =====================================================
+   FECHAR SORTEIO MANUALMENTE
+===================================================== */
 
-/* =========================================================
-   CRIAR SORTEIO
-========================================================= */
+window.fecharSorteio =
+async function(id){
 
-document
-    .getElementById("btnSalvarSorteio")
-    .addEventListener("click", async () => {
+    if(
+        !confirm(
+            "Deseja realmente fechar este sorteio?"
+        )
+    ){
 
-        const nome =
-            document.getElementById(
-                "nomeSorteio"
-            ).value.trim();
+        return;
 
-
-        const data =
-            document.getElementById(
-                "dataSorteio"
-            ).value;
+    }
 
 
-        const horario =
-            document.getElementById(
-                "horarioFechamento"
-            ).value;
+    try{
+
+        await updateDoc(
+            doc(db,"sorteios",id),
+            {
+                status:"FECHADO"
+            }
+        );
 
 
-        if (!nome || !data || !horario) {
-
-            mostrarMensagem(
-                "mensagemSorteio",
-                "Preencha o nome, a data e o horário de fechamento.",
-                "erro"
-            );
-
-            return;
-
-        }
+        await carregarSorteios();
 
 
-        /*
-           O formato YYYY-MM-DDTHH:MM permite
-           comparar diretamente com a data/hora local.
-        */
+    }catch(error){
 
-        const dataHoraFechamento =
-            `${data}T${horario}`;
+        console.error(error);
 
+        alert(
+            "Erro ao fechar o sorteio."
+        );
 
-        const fechamento =
-            new Date(
-                dataHoraFechamento
-            );
+    }
+
+};
 
 
-        if (
-            isNaN(
-                fechamento.getTime()
-            )
-        ) {
+/* =====================================================
+   APOSTAS
+===================================================== */
 
-            mostrarMensagem(
-                "mensagemSorteio",
-                "Data ou horário inválido.",
-                "erro"
-            );
+async function carregarApostas(){
 
-            return;
-
-        }
+    const snapshot =
+        await getDocs(
+            collection(db,"apostas")
+        );
 
 
-        const agora =
-            new Date();
+    apostas = [];
+
+
+    snapshot.forEach(item=>{
+
+        apostas.push({
+
+            id:item.id,
+            ...item.data()
+
+        });
+
+    });
+
+
+    renderizarApostas();
+
+}
+
+
+function renderizarApostas(){
+
+    const tbody =
+        document.getElementById(
+            "tabelaApostas"
+        );
+
+    tbody.innerHTML = "";
+
+
+    apostas.forEach(aposta=>{
+
+        const tr =
+            document.createElement("tr");
 
 
         const status =
-            agora >= fechamento
-            ? "FECHADO"
-            : "ABERTO";
+            aposta.status || "ATIVA";
 
 
-        try {
+        const resultado =
+            aposta.resultadoStatus ||
+            "PENDENTE";
 
-            await setDoc(
-                doc(
-                    collection(
-                        db,
-                        "sorteios"
-                    )
-                ),
+
+        let classeResultado =
+            "pendente";
+
+
+        if(resultado === "VENCEDORA")
+            classeResultado = "vencedor";
+
+
+        if(resultado === "PERDEDORA")
+            classeResultado = "perdedor";
+
+
+        if(resultado === "CANCELADA")
+            classeResultado = "cancelada";
+
+
+        tr.innerHTML = `
+
+            <td>
+                ${escapar(
+                    aposta.codigo ||
+                    aposta.id
+                )}
+            </td>
+
+            <td>
+                ${escapar(
+                    aposta.vendedorNome ||
+                    "-"
+                )}
+            </td>
+
+            <td>
+                ${escapar(
+                    aposta.sorteioNome ||
+                    "-"
+                )}
+            </td>
+
+            <td>
+                ${Number(
+                    aposta.valor || 0
+                ).toFixed(2)}
+            </td>
+
+            <td>
+                <span class="badge">
+                    ${escapar(status)}
+                </span>
+            </td>
+
+            <td>
+
+                <span class="badge ${classeResultado}">
+                    ${escapar(resultado)}
+                </span>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =====================================================
+   RESULTADOS
+===================================================== */
+
+async function carregarResultados(){
+
+    const snapshot =
+        await getDocs(
+            collection(db,"resultados")
+        );
+
+
+    resultados = [];
+
+
+    snapshot.forEach(item=>{
+
+        resultados.push({
+
+            id:item.id,
+            ...item.data()
+
+        });
+
+    });
+
+
+    renderizarResultados();
+
+}
+
+
+function carregarSelectResultados(){
+
+    const select =
+        document.getElementById(
+            "resultadoSorteio"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Selecione um sorteio
+        </option>
+
+    `;
+
+
+    sorteios.forEach(sorteio=>{
+
+        const option =
+            document.createElement("option");
+
+
+        option.value =
+            sorteio.id;
+
+
+        option.textContent =
+            `${sorteio.nome} - ${sorteio.data}`;
+
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+document
+.getElementById("resultadoSorteio")
+.addEventListener("change",async()=>{
+
+    const id =
+        document.getElementById(
+            "resultadoSorteio"
+        ).value;
+
+
+    const box =
+        document.getElementById(
+            "boxLancamentoResultado"
+        );
+
+
+    const info =
+        document.getElementById(
+            "informacoesSorteioResultado"
+        );
+
+
+    info.innerHTML = "";
+
+
+    if(!id){
+
+        box.style.display = "none";
+
+        return;
+
+    }
+
+
+    const sorteio =
+        sorteios.find(
+            item => item.id === id
+        );
+
+
+    if(!sorteio){
+
+        box.style.display = "none";
+
+        return;
+
+    }
+
+
+    const resultadoExistente =
+        resultados.find(
+            item =>
+                item.sorteioId === id
+        );
+
+
+    if(resultadoExistente){
+
+        box.style.display = "none";
+
+
+        info.innerHTML = `
+
+            <div class="resultado-box">
+
+                <strong>
+                    Resultado já lançado
+                </strong>
+
+                <div class="numero-grande">
+                    ${escapar(
+                        resultadoExistente
+                        .resultadoPrincipal
+                    )}
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    box.style.display = "block";
+
+
+    info.innerHTML = `
+
+        <div class="resultado-box">
+
+            <strong>
+                ${escapar(sorteio.nome)}
+            </strong>
+
+            <div>
+                Data: ${escapar(sorteio.data)}
+            </div>
+
+            <div>
+                Fechamento:
+                ${escapar(
+                    sorteio.horarioFechamento
+                )}
+            </div>
+
+            <div style="margin-top:8px">
+
+                Status:
+                <span class="badge ${
+                    sorteio.status === "ABERTO"
+                    ? "aberto"
+                    : "fechado"
+                }">
+                    ${sorteio.status}
+                </span>
+
+            </div>
+
+        </div>
+
+    `;
+
+});
+
+
+/* =====================================================
+   SALVAR RESULTADO
+===================================================== */
+
+document
+.getElementById("btnSalvarResultado")
+.addEventListener("click",async()=>{
+
+    const mensagem =
+        document.getElementById(
+            "mensagemResultado"
+        );
+
+
+    const sorteioId =
+        document.getElementById(
+            "resultadoSorteio"
+        ).value;
+
+
+    const resultadoPrincipal =
+        document.getElementById(
+            "resultadoPrincipal"
+        ).value.trim();
+
+
+    if(!sorteioId){
+
+        mostrarMensagem(
+            mensagem,
+            "Selecione um sorteio.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    if(!resultadoPrincipal){
+
+        mostrarMensagem(
+            mensagem,
+            "Informe o resultado.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const sorteio =
+        sorteios.find(
+            item => item.id === sorteioId
+        );
+
+
+    if(!sorteio){
+
+        mostrarMensagem(
+            mensagem,
+            "Sorteio não encontrado.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const resultadoExistente =
+        resultados.find(
+            item =>
+                item.sorteioId === sorteioId
+        );
+
+
+    if(resultadoExistente){
+
+        mostrarMensagem(
+            mensagem,
+            "Este sorteio já possui resultado.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+         * Primeiro grava o resultado.
+         */
+
+        const resultadoRef =
+            await addDoc(
+                collection(db,"resultados"),
                 {
 
-                    nome: nome,
+                    sorteioId,
 
-                    data: data,
+                    sorteioNome:
+                        sorteio.nome,
 
-                    horarioFechamento:
-                        horario,
+                    data:
+                        sorteio.data,
 
-                    dataHoraFechamento:
-                        dataHoraFechamento,
-
-                    status: status,
+                    resultadoPrincipal,
 
                     criadoPor:
                         usuarioSessao.uid,
@@ -1797,220 +2280,285 @@ document
             );
 
 
-            mostrarMensagem(
-                "mensagemSorteio",
-                status === "ABERTO"
-                    ? "Sorteio criado e aberto para apostas."
-                    : "O horário informado já passou. O sorteio foi criado como fechado.",
-                "sucesso"
+        /*
+         * Depois identifica as apostas
+         * pertencentes ao sorteio.
+         */
+
+        const apostasDoSorteio =
+            apostas.filter(
+                aposta =>
+                    aposta.sorteioId ===
+                    sorteioId
             );
 
 
-            limparFormularioSorteio();
+        /*
+         * Neste primeiro modelo,
+         * o sistema compara o campo
+         * numero da aposta com o
+         * resultado principal.
+         *
+         * Também aceita os nomes:
+         * numeroAposta ou palpite.
+         */
+
+        for(
+            const aposta
+            of apostasDoSorteio
+        ){
+
+            if(
+                aposta.status ===
+                "CANCELADA"
+            ){
+
+                continue;
+
+            }
 
 
-            await carregarSorteios();
+            const numeroAposta =
+                String(
+                    aposta.numero ??
+                    aposta.numeroAposta ??
+                    aposta.palpite ??
+                    ""
+                ).trim();
 
-            await carregarResumo();
+
+            const acertou =
+                numeroAposta !== "" &&
+                numeroAposta ===
+                resultadoPrincipal;
 
 
-        } catch (erro) {
+            await updateDoc(
+                doc(
+                    db,
+                    "apostas",
+                    aposta.id
+                ),
+                {
 
-            console.error(erro);
+                    resultadoStatus:
+                        acertou
+                        ? "VENCEDORA"
+                        : "PERDEDORA",
 
+                    resultadoId:
+                        resultadoRef.id,
 
-            mostrarMensagem(
-                "mensagemSorteio",
-                "Erro ao criar sorteio. Verifique o console.",
-                "erro"
+                    resultado:
+                        resultadoPrincipal,
+
+                    processadoEm:
+                        serverTimestamp()
+
+                }
             );
 
         }
 
-    });
-
-
-
-/* =========================================================
-   LIMPAR FORMULÁRIO
-========================================================= */
-
-function limparFormularioSorteio() {
-
-    document.getElementById(
-        "nomeSorteio"
-    ).value = "";
-
-
-    document.getElementById(
-        "dataSorteio"
-    ).value = "";
-
-
-    document.getElementById(
-        "horarioFechamento"
-    ).value = "";
-
-}
-
-
-document
-    .getElementById("btnLimparSorteio")
-    .addEventListener(
-        "click",
-        limparFormularioSorteio
-    );
-
-
-
-/* =========================================================
-   FECHAMENTO MANUAL
-========================================================= */
-
-window.fecharSorteio = async function(id) {
-
-    const confirmar =
-        confirm(
-            "Deseja realmente fechar este sorteio?\n\nDepois de fechado, novas apostas não deverão ser aceitas."
-        );
-
-
-    if (!confirmar) {
-        return;
-    }
-
-
-    try {
-
-        await updateDoc(
-            doc(
-                db,
-                "sorteios",
-                id
-            ),
-            {
-
-                status: "FECHADO",
-
-                fechadoEm:
-                    serverTimestamp(),
-
-                fechadoManualmente:
-                    true
-
-            }
-        );
-
 
         mostrarMensagem(
-            "mensagemSorteio",
-            "Sorteio fechado com sucesso.",
+            mensagem,
+            `Resultado salvo. ${apostasDoSorteio.length} aposta(s) processada(s).`,
             "sucesso"
         );
 
 
-        await carregarSorteios();
+        document
+            .getElementById(
+                "resultadoPrincipal"
+            )
+            .value = "";
 
-        await carregarResumo();
+
+        await carregarApostas();
+
+        await carregarResultados();
+
+        document
+            .getElementById(
+                "resultadoSorteio"
+            )
+            .dispatchEvent(
+                new Event("change")
+            );
 
 
-    } catch (erro) {
+    }catch(error){
 
-        console.error(erro);
-
+        console.error(error);
 
         mostrarMensagem(
-            "mensagemSorteio",
-            "Não foi possível fechar o sorteio.",
+            mensagem,
+            "Erro ao salvar/processar resultado: " +
+            error.message,
             "erro"
         );
 
     }
 
-};
+});
 
 
+/* =====================================================
+   RENDERIZAR RESULTADOS
+===================================================== */
 
-/* =========================================================
-   FECHAMENTO AUTOMÁTICO
-========================================================= */
+function renderizarResultados(){
 
-/*
-   A cada 10 segundos verificamos os sorteios.
-
-   Isso permite que, enquanto o painel MASTER estiver
-   aberto, o status seja atualizado automaticamente.
-
-   O painel do vendedor também deverá validar
-   dataHoraFechamento antes de registrar uma aposta.
-*/
-
-setInterval(async () => {
-
-    if (!usuarioSessao) {
-        return;
-    }
+    const tbody =
+        document.getElementById(
+            "tabelaResultados"
+        );
 
 
-    if (sorteios.length === 0) {
-        return;
-    }
+    tbody.innerHTML = "";
 
 
-    const houveAlteracao =
-        await atualizarStatusSorteios();
+    resultados.forEach(resultado=>{
+
+        let dataCriacao = "-";
 
 
-    if (houveAlteracao) {
+        if(
+            resultado.criadoEm &&
+            resultado.criadoEm.toDate
+        ){
 
-        renderizarSorteios();
+            dataCriacao =
+                resultado.criadoEm
+                .toDate()
+                .toLocaleString("pt-BR");
 
-        carregarResumo();
-
-    }
-
-}, 10000);
-
-
-
-/* =========================================================
-   DATA
-========================================================= */
-
-function formatarData(data) {
-
-    if (!data) {
-        return "";
-    }
+        }
 
 
-    const partes =
-        data.split("-");
+        const tr =
+            document.createElement("tr");
 
 
-    if (partes.length !== 3) {
-        return data;
-    }
+        tr.innerHTML = `
+
+            <td>
+                ${escapar(
+                    resultado.sorteioNome
+                )}
+            </td>
+
+            <td>
+                ${escapar(
+                    resultado.data
+                )}
+            </td>
+
+            <td>
+
+                <strong>
+                    ${escapar(
+                        resultado.resultadoPrincipal
+                    )}
+                </strong>
+
+            </td>
+
+            <td>
+                ${dataCriacao}
+            </td>
+
+        `;
 
 
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        tbody.appendChild(tr);
+
+    });
 
 }
 
 
+/* =====================================================
+   RESUMO
+===================================================== */
 
-/* =========================================================
-   SEGURANÇA HTML
-========================================================= */
+function atualizarResumo(){
 
-function escapar(valor) {
+    document
+        .getElementById("totalGerentes")
+        .textContent =
+        gerentes.length;
 
-    return String(valor)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+    document
+        .getElementById("totalVendedores")
+        .textContent =
+        vendedores.length;
+
+
+    document
+        .getElementById("totalSorteios")
+        .textContent =
+        sorteios.length;
+
+
+    document
+        .getElementById("totalApostas")
+        .textContent =
+        apostas.length;
+
+
+    document
+        .getElementById("relGerentes")
+        .textContent =
+        gerentes.length;
+
+
+    document
+        .getElementById("relVendedores")
+        .textContent =
+        vendedores.length;
+
+
+    document
+        .getElementById("relSorteios")
+        .textContent =
+        sorteios.length;
+
+
+    document
+        .getElementById("relApostas")
+        .textContent =
+        apostas.length;
+
+}
+
+
+/* =====================================================
+   VERIFICAÇÃO AUTOMÁTICA DE FECHAMENTO
+===================================================== */
+
+function iniciarVerificacaoSorteios(){
+
+    setInterval(async()=>{
+
+        try{
+
+            await carregarSorteios();
+
+            atualizarResumo();
+
+        }catch(error){
+
+            console.error(
+                "Erro na verificação:",
+                error
+            );
+
+        }
+
+    },10000);
 
 }
 
@@ -2018,4 +2566,3 @@ function escapar(valor) {
 
 </body>
 </html>
-```
