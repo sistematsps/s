@@ -1,10 +1,2962 @@
+2.0
 <!DOCTYPE html>
 
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel MASTER - Simulador</title>
+<title>Painel MASTER - Simulador</title>```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel MASTER</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#f1f5f9;
+    color:#1e293b;
+}
+
+header{
+    background:#0f172a;
+    color:white;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+header h1{
+    font-size:22px;
+}
+
+.usuario{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    font-size:14px;
+}
+
+.btn-sair{
+    background:#ef4444;
+    border:0;
+    color:white;
+    padding:9px 15px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.layout{
+    display:flex;
+    min-height:calc(100vh - 70px);
+}
+
+aside{
+    width:230px;
+    background:#1e293b;
+    color:white;
+    padding:20px 10px;
+}
+
+aside button{
+    width:100%;
+    padding:13px;
+    margin-bottom:8px;
+    border:0;
+    border-radius:7px;
+    background:transparent;
+    color:#cbd5e1;
+    text-align:left;
+    cursor:pointer;
+    font-size:15px;
+}
+
+aside button:hover,
+aside button.ativo{
+    background:#334155;
+    color:white;
+}
+
+main{
+    flex:1;
+    padding:25px;
+    overflow:auto;
+}
+
+.secao{
+    display:none;
+}
+
+.secao.ativa{
+    display:block;
+}
+
+.titulo{
+    margin-bottom:20px;
+}
+
+.titulo h2{
+    font-size:25px;
+    margin-bottom:5px;
+}
+
+.titulo p{
+    color:#64748b;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.card small{
+    color:#64748b;
+}
+
+.card strong{
+    display:block;
+    font-size:28px;
+    margin-top:8px;
+}
+
+.box{
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    margin-bottom:20px;
+}
+
+.box h3{
+    margin-bottom:18px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.campo label{
+    font-size:13px;
+    font-weight:bold;
+    color:#475569;
+}
+
+.campo input,
+.campo select{
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+    outline:none;
+    width:100%;
+}
+
+.campo input:focus,
+.campo select:focus{
+    border-color:#2563eb;
+}
+
+.botoes{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+button{
+    cursor:pointer;
+}
+
+.btn{
+    border:0;
+    padding:10px 15px;
+    border-radius:7px;
+    font-weight:bold;
+}
+
+.btn-principal{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-secundario{
+    background:#64748b;
+    color:white;
+}
+
+.btn-verde{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-vermelho{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-amarelo{
+    background:#d97706;
+    color:white;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px 10px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+    font-size:14px;
+}
+
+th{
+    background:#f8fafc;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.badge-ativo{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-inativo{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.badge-fechado{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-aberto{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.resultados{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+.resultado-box{
+    text-align:center;
+}
+
+.resultado-box label{
+    display:block;
+    font-weight:bold;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.resultado-box input{
+    width:100%;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    padding:12px 5px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+}
+
+.apuracao{
+    margin-top:20px;
+    padding:15px;
+    background:#f8fafc;
+    border-radius:8px;
+}
+
+.apuracao strong{
+    font-size:20px;
+}
+
+.mensagem{
+    padding:12px 15px;
+    border-radius:7px;
+    margin-bottom:15px;
+    display:none;
+}
+
+.mensagem.sucesso{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.mensagem.erro{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.vazio{
+    text-align:center;
+    padding:30px;
+    color:#64748b;
+}
+
+@media(max-width:800px){
+
+    .layout{
+        flex-direction:column;
+    }
+
+    aside{
+        width:100%;
+        display:flex;
+        overflow-x:auto;
+        gap:5px;
+    }
+
+    aside button{
+        min-width:130px;
+    }
+
+    .resultados{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    main{
+        padding:15px;
+    }
+}
+
+@media(max-width:500px){
+
+    .resultados{
+        grid-template-columns:1fr;
+    }
+
+    th,td{
+        font-size:12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>🎯 SIMULADOR • MASTER</h1>
+
+    <div class="usuario">
+        <span id="nomeUsuario">Carregando...</span>
+        <button class="btn-sair" id="btnSair">Sair</button>
+    </div>
+
+</header>
+
+
+<div class="layout">
+
+<aside>
+
+    <button class="menu ativo" data-secao="inicio">
+        🏠 Início
+    </button>
+
+    <button class="menu" data-secao="sorteios">
+        🎯 Sorteios
+    </button>
+
+    <button class="menu" data-secao="resultados">
+        🏆 Resultados
+    </button>
+
+    <button class="menu" data-secao="apostas">
+        🎟️ Apostas
+    </button>
+
+</aside>
+
+
+<main>
+
+<!-- ================= INÍCIO ================= -->
+
+<section id="inicio" class="secao ativa">
+
+    <div class="titulo">
+        <h2>Visão geral</h2>
+        <p>Controle dos sorteios, resultados e apuração.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <small>Sorteios cadastrados</small>
+            <strong id="totalSorteios">0</strong>
+        </div>
+
+        <div class="card">
+            <small>Sorteios ativos</small>
+            <strong id="sorteiosAtivos">0</strong>
+        </div>
+
+        <div class="card">
+            <small>Resultados de hoje</small>
+            <strong id="resultadosHoje">0</strong>
+        </div>
+
+        <div class="card">
+            <small>Apostas registradas</small>
+            <strong id="totalApostas">0</strong>
+        </div>
+
+    </div>
+
+    <div class="box">
+
+        <h3>Regras atuais da apuração</h3>
+
+        <p>
+            O sorteio é recorrente e permanece disponível diariamente
+            até ser desativado pelo MASTER.
+        </p>
+
+        <br>
+
+        <p>
+            O resultado pode possuir até <strong>5 prêmios</strong>,
+            porém somente o <strong>1º prêmio</strong> participa da
+            apuração de apostas neste teste.
+        </p>
+
+        <br>
+
+        <p>
+            Cotações:
+            <strong>Grupo 20x</strong> |
+            <strong>Dezena 70x</strong> |
+            <strong>Centena 500x</strong> |
+            <strong>Milhar 5.000x</strong>
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= SORTEIOS ================= -->
+
+<section id="sorteios" class="secao">
+
+    <div class="titulo">
+
+        <h2>Sorteios</h2>
+
+        <p>
+            Cadastre uma vez e deixe o sorteio disponível todos os dias
+            no horário definido.
+        </p>
+
+    </div>
+
+    <div id="mensagemSorteio" class="mensagem"></div>
+
+
+    <div class="box">
+
+        <h3 id="tituloFormSorteio">Novo sorteio</h3>
+
+        <form id="formSorteio">
+
+            <div class="form-grid">
+
+                <div class="campo">
+                    <label>Nome do sorteio</label>
+                    <input
+                        type="text"
+                        id="nomeSorteio"
+                        placeholder="Ex.: Sorteio das 18 Horas"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label>Horário de fechamento</label>
+                    <input
+                        type="time"
+                        id="horarioFechamento"
+                        required
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="botoes">
+
+                <button
+                    type="submit"
+                    class="btn btn-principal"
+                >
+                    💾 Salvar sorteio
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secundario"
+                    id="btnCancelarEdicao"
+                    style="display:none"
+                >
+                    Cancelar edição
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="box">
+
+        <h3>Sorteios cadastrados</h3>
+
+        <div style="overflow-x:auto">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Nome</th>
+                        <th>Fechamento</th>
+                        <th>Status</th>
+                        <th>Situação hoje</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaSorteios"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= RESULTADOS ================= -->
+
+<section id="resultados" class="secao">
+
+    <div class="titulo">
+
+        <h2>Lançamento de resultados</h2>
+
+        <p>
+            Informe até cinco prêmios. Apenas o 1º será utilizado
+            na apuração dos premiados.
+        </p>
+
+    </div>
+
+    <div id="mensagemResultado" class="mensagem"></div>
+
+
+    <div class="box">
+
+        <h3>Lançar resultado</h3>
+
+        <form id="formResultado">
+
+            <div class="form-grid">
+
+                <div class="campo">
+
+                    <label>Sorteio</label>
+
+                    <select id="sorteioResultado" required>
+                        <option value="">
+                            Selecione o sorteio
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="campo">
+
+                    <label>Data do resultado</label>
+
+                    <input
+                        type="date"
+                        id="dataResultado"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <br>
+
+
+            <div class="resultados">
+
+                <div class="resultado-box">
+                    <label>1º PRÊMIO *</label>
+                    <input
+                        type="text"
+                        id="premio1"
+                        maxlength="4"
+                        inputmode="numeric"
+                        placeholder="0000"
+                        required
+                    >
+                </div>
+
+                <div class="resultado-box">
+                    <label>2º PRÊMIO</label>
+                    <input
+                        type="text"
+                        id="premio2"
+                        maxlength="4"
+                        inputmode="numeric"
+                        placeholder="0000"
+                    >
+                </div>
+
+                <div class="resultado-box">
+                    <label>3º PRÊMIO</label>
+                    <input
+                        type="text"
+                        id="premio3"
+                        maxlength="4"
+                        inputmode="numeric"
+                        placeholder="0000"
+                    >
+                </div>
+
+                <div class="resultado-box">
+                    <label>4º PRÊMIO</label>
+                    <input
+                        type="text"
+                        id="premio4"
+                        maxlength="4"
+                        inputmode="numeric"
+                        placeholder="0000"
+                    >
+                </div>
+
+                <div class="resultado-box">
+                    <label>5º PRÊMIO</label>
+                    <input
+                        type="text"
+                        id="premio5"
+                        maxlength="4"
+                        inputmode="numeric"
+                        placeholder="0000"
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="apuracao">
+
+                <p>O sistema identificará automaticamente o 1º prêmio.</p>
+
+                <br>
+
+                <div id="informacaoResultado">
+                    Digite o 1º prêmio para visualizar a apuração.
+                </div>
+
+            </div>
+
+
+            <div class="botoes">
+
+                <button
+                    type="submit"
+                    class="btn btn-verde"
+                >
+                    🏆 Salvar resultado e apurar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secundario"
+                    id="btnLimparResultado"
+                >
+                    Limpar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="box">
+
+        <h3>Resultados lançados</h3>
+
+        <div style="overflow-x:auto">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Data</th>
+                        <th>Sorteio</th>
+                        <th>1º</th>
+                        <th>2º</th>
+                        <th>3º</th>
+                        <th>4º</th>
+                        <th>5º</th>
+                        <th>Ação</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaResultados"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= APOSTAS ================= -->
+
+<section id="apostas" class="secao">
+
+    <div class="titulo">
+
+        <h2>Apostas</h2>
+
+        <p>
+            Consulta das apostas registradas pelos vendedores.
+        </p>
+
+    </div>
+
+    <div class="box">
+
+        <h3>Estrutura preparada para apuração</h3>
+
+        <p>
+            Nesta etapa o MASTER já poderá consultar as apostas
+            que forem registradas pelo painel do vendedor.
+        </p>
+
+        <br>
+
+        <p>
+            A apuração utilizará somente o resultado do
+            <strong>1º prêmio</strong>.
+        </p>
+
+        <br>
+
+        <div style="overflow-x:auto">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Bilhete</th>
+                        <th>Vendedor</th>
+                        <th>Sorteio</th>
+                        <th>Modalidade</th>
+                        <th>Número</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaApostas">
+
+                    <tr>
+                        <td colspan="7" class="vazio">
+                            Nenhuma aposta registrada.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    getDoc,
+    doc,
+    addDoc,
+    setDoc,
+    updateDoc,
+    query,
+    orderBy,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA4AAbC8vCFAmlPlur12NmY7BKPjaSjumM",
+    authDomain: "meuappweb-65522.firebaseapp.com",
+    projectId: "meuappweb-65522",
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+    messagingSenderId: "305368794616",
+    appId: "1:305368794616:web:3199c6836a986d896ac20d",
+    measurementId: "G-QN7GFD99N0"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+/* =========================================================
+   VARIÁVEIS
+========================================================= */
+
+let usuarioAtual = null;
+
+let sorteios = [];
+
+let resultados = [];
+
+let sorteioEditando = null;
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const nomeUsuario =
+    document.getElementById("nomeUsuario");
+
+const listaSorteios =
+    document.getElementById("listaSorteios");
+
+const listaResultados =
+    document.getElementById("listaResultados");
+
+const sorteioResultado =
+    document.getElementById("sorteioResultado");
+
+const formSorteio =
+    document.getElementById("formSorteio");
+
+const formResultado =
+    document.getElementById("formResultado");
+
+const dataResultado =
+    document.getElementById("dataResultado");
+
+const mensagemSorteio =
+    document.getElementById("mensagemSorteio");
+
+const mensagemResultado =
+    document.getElementById("mensagemResultado");
+
+
+/* =========================================================
+   DATA DE HOJE
+========================================================= */
+
+function dataHoje(){
+
+    const agora = new Date();
+
+    const ano = agora.getFullYear();
+
+    const mes = String(
+        agora.getMonth() + 1
+    ).padStart(2,"0");
+
+    const dia = String(
+        agora.getDate()
+    ).padStart(2,"0");
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+dataResultado.value = dataHoje();
+
+
+/* =========================================================
+   ESCAPAR HTML
+========================================================= */
+
+function escapar(valor){
+
+    if(valor === null || valor === undefined){
+        return "";
+    }
+
+    return String(valor)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* =========================================================
+   MENSAGENS
+========================================================= */
+
+function mensagem(elemento,texto,tipo){
+
+    elemento.textContent = texto;
+
+    elemento.className =
+        "mensagem " + tipo;
+
+    setTimeout(() => {
+
+        elemento.className = "mensagem";
+
+    },5000);
+}
+
+
+/* =========================================================
+   LOGIN / AUTORIZAÇÃO
+========================================================= */
+
+onAuthStateChanged(auth, async user => {
+
+    if(!user){
+
+        window.location.href = "login.html";
+
+        return;
+    }
+
+    try{
+
+        const ref =
+            doc(db,"usuarios",user.uid);
+
+        const snap =
+            await getDoc(ref);
+
+        if(!snap.exists()){
+
+            await signOut(auth);
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        usuarioAtual = {
+            uid:user.uid,
+            ...snap.data()
+        };
+
+        if(
+            usuarioAtual.perfil !== "MASTER" ||
+            usuarioAtual.ativo !== true
+        ){
+
+            alert(
+                "Acesso permitido somente ao MASTER."
+            );
+
+            await signOut(auth);
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        nomeUsuario.textContent =
+            usuarioAtual.nome ||
+            usuarioAtual.email ||
+            "MASTER";
+
+        await carregarTudo();
+
+    }catch(erro){
+
+        console.error(erro);
+
+        alert(
+            "Erro ao verificar usuário."
+        );
+
+    }
+
+});
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+document.querySelectorAll(".menu")
+.forEach(botao => {
+
+    botao.addEventListener("click", () => {
+
+        document.querySelectorAll(".menu")
+        .forEach(b => b.classList.remove("ativo"));
+
+        document.querySelectorAll(".secao")
+        .forEach(s => s.classList.remove("ativa"));
+
+        botao.classList.add("ativo");
+
+        const id =
+            botao.dataset.secao;
+
+        document
+            .getElementById(id)
+            .classList.add("ativa");
+
+    });
+
+});
+
+
+/* =========================================================
+   SAIR
+========================================================= */
+
+document.getElementById("btnSair")
+.addEventListener("click", async () => {
+
+    await signOut(auth);
+
+    sessionStorage.removeItem("usuarioSessao");
+
+    window.location.href = "login.html";
+
+});
+
+
+/* =========================================================
+   CARREGAR TUDO
+========================================================= */
+
+async function carregarTudo(){
+
+    await carregarSorteios();
+
+    await carregarResultados();
+
+    await carregarApostas();
+
+    atualizarDashboard();
+
+}
+
+
+/* =========================================================
+   SORTEIOS
+========================================================= */
+
+async function carregarSorteios(){
+
+    try{
+
+        const snap =
+            await getDocs(
+                collection(db,"sorteios")
+            );
+
+        sorteios = [];
+
+        snap.forEach(item => {
+
+            sorteios.push({
+                id:item.id,
+                ...item.data()
+            });
+
+        });
+
+        sorteios.sort((a,b) =>
+            String(a.nome || "")
+            .localeCompare(
+                String(b.nome || "")
+            )
+        );
+
+        renderizarSorteios();
+
+        preencherSelectSorteios();
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar sorteios:",
+            erro
+        );
+
+        mensagem(
+            mensagemSorteio,
+            "Erro ao carregar os sorteios.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDERIZAR SORTEIOS
+========================================================= */
+
+function renderizarSorteios(){
+
+    if(sorteios.length === 0){
+
+        listaSorteios.innerHTML = `
+            <tr>
+                <td colspan="5" class="vazio">
+                    Nenhum sorteio cadastrado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    listaSorteios.innerHTML =
+        sorteios.map(sorteio => {
+
+            const situacao =
+                calcularSituacaoHoje(sorteio);
+
+            const status =
+                sorteio.ativo === true
+                ? `<span class="badge badge-ativo">
+                    ATIVO
+                   </span>`
+                : `<span class="badge badge-inativo">
+                    INATIVO
+                   </span>`;
+
+            const classeSituacao =
+                situacao.aberto
+                ? "badge-aberto"
+                : "badge-fechado";
+
+            const textoSituacao =
+                situacao.aberto
+                ? "ABERTO"
+                : "FECHADO";
+
+            return `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapar(sorteio.nome)}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapar(
+                            sorteio.horarioFechamento
+                        )}
+                    </td>
+
+                    <td>
+                        ${status}
+                    </td>
+
+                    <td>
+                        <span class="badge ${classeSituacao}">
+                            ${textoSituacao}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-amarelo"
+                            onclick="editarSorteio('${sorteio.id}')"
+                        >
+                            ✏️ Editar
+                        </button>
+
+                        <button
+                            class="btn ${
+                                sorteio.ativo
+                                ? "btn-vermelho"
+                                : "btn-verde"
+                            }"
+                            onclick="alternarSorteio('${sorteio.id}')"
+                        >
+                            ${
+                                sorteio.ativo
+                                ? "Desativar"
+                                : "Ativar"
+                            }
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================================================
+   SITUAÇÃO DIÁRIA DO SORTEIO
+========================================================= */
+
+function calcularSituacaoHoje(sorteio){
+
+    if(sorteio.ativo !== true){
+
+        return {
+            aberto:false,
+            motivo:"inativo"
+        };
+
+    }
+
+    const agora = new Date();
+
+    const horaAtual =
+        agora.getHours() * 60 +
+        agora.getMinutes();
+
+    const horario =
+        String(
+            sorteio.horarioFechamento || "23:59"
+        );
+
+    const partes =
+        horario.split(":");
+
+    const hora =
+        Number(partes[0] || 0);
+
+    const minuto =
+        Number(partes[1] || 0);
+
+    const fechamento =
+        hora * 60 + minuto;
+
+    return {
+        aberto:horaAtual < fechamento,
+        motivo:
+            horaAtual < fechamento
+            ? "aberto"
+            : "fechado"
+    };
+
+}
+
+
+/* =========================================================
+   CADASTRAR / EDITAR SORTEIO
+========================================================= */
+
+formSorteio.addEventListener(
+    "submit",
+    async evento => {
+
+        evento.preventDefault();
+
+        const nome =
+            document
+            .getElementById("nomeSorteio")
+            .value.trim();
+
+        const horario =
+            document
+            .getElementById("horarioFechamento")
+            .value;
+
+        if(!nome || !horario){
+
+            mensagem(
+                mensagemSorteio,
+                "Preencha todos os campos.",
+                "erro"
+            );
+
+            return;
+        }
+
+        try{
+
+            if(sorteioEditando){
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "sorteios",
+                        sorteioEditando
+                    ),
+                    {
+                        nome,
+                        horarioFechamento:horario,
+                        recorrente:true,
+                        atualizadoEm:
+                            serverTimestamp(),
+                        atualizadoPor:
+                            usuarioAtual.uid
+                    }
+                );
+
+                mensagem(
+                    mensagemSorteio,
+                    "Sorteio atualizado com sucesso.",
+                    "sucesso"
+                );
+
+            }else{
+
+                await addDoc(
+                    collection(db,"sorteios"),
+                    {
+                        nome,
+                        horarioFechamento:horario,
+                        ativo:true,
+                        recorrente:true,
+                        criadoPor:
+                            usuarioAtual.uid,
+                        criadoEm:
+                            serverTimestamp()
+                    }
+                );
+
+                mensagem(
+                    mensagemSorteio,
+                    "Sorteio criado com sucesso.",
+                    "sucesso"
+                );
+
+            }
+
+            limparFormularioSorteio();
+
+            await carregarSorteios();
+
+            atualizarDashboard();
+
+        }catch(erro){
+
+            console.error(erro);
+
+            mensagem(
+                mensagemSorteio,
+                "Não foi possível salvar o sorteio.",
+                "erro"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   EDITAR SORTEIO
+========================================================= */
+
+window.editarSorteio = function(id){
+
+    const sorteio =
+        sorteios.find(s => s.id === id);
+
+    if(!sorteio) return;
+
+    sorteioEditando = id;
+
+    document
+        .getElementById("nomeSorteio")
+        .value =
+            sorteio.nome || "";
+
+    document
+        .getElementById("horarioFechamento")
+        .value =
+            sorteio.horarioFechamento || "";
+
+    document
+        .getElementById("tituloFormSorteio")
+        .textContent =
+            "Editar sorteio";
+
+    document
+        .getElementById("btnCancelarEdicao")
+        .style.display =
+            "inline-block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+};
+
+
+/* =========================================================
+   ATIVAR / DESATIVAR
+========================================================= */
+
+window.alternarSorteio = async function(id){
+
+    const sorteio =
+        sorteios.find(s => s.id === id);
+
+    if(!sorteio) return;
+
+    const novoStatus =
+        sorteio.ativo !== true;
+
+    const texto =
+        novoStatus
+        ? "ativar"
+        : "desativar";
+
+    const confirmar =
+        confirm(
+            `Deseja ${texto} o sorteio "${sorteio.nome}"?`
+        );
+
+    if(!confirmar) return;
+
+    try{
+
+        await updateDoc(
+            doc(db,"sorteios",id),
+            {
+                ativo:novoStatus,
+                atualizadoEm:
+                    serverTimestamp(),
+                atualizadoPor:
+                    usuarioAtual.uid
+            }
+        );
+
+        await carregarSorteios();
+
+        mensagem(
+            mensagemSorteio,
+            novoStatus
+            ? "Sorteio ativado."
+            : "Sorteio desativado.",
+            "sucesso"
+        );
+
+        atualizarDashboard();
+
+    }catch(erro){
+
+        console.error(erro);
+
+        mensagem(
+            mensagemSorteio,
+            "Erro ao alterar o status.",
+            "erro"
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   CANCELAR EDIÇÃO
+========================================================= */
+
+document
+.getElementById("btnCancelarEdicao")
+.addEventListener("click", () => {
+
+    limparFormularioSorteio();
+
+});
+
+
+function limparFormularioSorteio(){
+
+    formSorteio.reset();
+
+    sorteioEditando = null;
+
+    document
+        .getElementById("tituloFormSorteio")
+        .textContent =
+            "Novo sorteio";
+
+    document
+        .getElementById("btnCancelarEdicao")
+        .style.display =
+            "none";
+
+}
+
+
+/* =========================================================
+   SELECT DE SORTEIOS
+========================================================= */
+
+function preencherSelectSorteios(){
+
+    sorteioResultado.innerHTML = `
+        <option value="">
+            Selecione o sorteio
+        </option>
+    `;
+
+    sorteios
+    .filter(s => s.ativo === true)
+    .forEach(sorteio => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            sorteio.id;
+
+        option.textContent =
+            `${sorteio.nome} — fecha ${sorteio.horarioFechamento}`;
+
+        sorteioResultado.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================================
+   RESULTADOS
+========================================================= */
+
+async function carregarResultados(){
+
+    try{
+
+        const snap =
+            await getDocs(
+                collection(db,"resultados")
+            );
+
+        resultados = [];
+
+        snap.forEach(item => {
+
+            resultados.push({
+                id:item.id,
+                ...item.data()
+            });
+
+        });
+
+        resultados.sort((a,b) => {
+
+            const da =
+                String(a.data || "");
+
+            const dbb =
+                String(b.data || "");
+
+            return dbb.localeCompare(da);
+
+        });
+
+        renderizarResultados();
+
+    }catch(erro){
+
+        console.error(erro);
+
+        mensagem(
+            mensagemResultado,
+            "Erro ao carregar os resultados.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDERIZAR RESULTADOS
+========================================================= */
+
+function renderizarResultados(){
+
+    if(resultados.length === 0){
+
+        listaResultados.innerHTML = `
+            <tr>
+                <td colspan="8" class="vazio">
+                    Nenhum resultado lançado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    listaResultados.innerHTML =
+        resultados.map(resultado => {
+
+            const sorteio =
+                sorteios.find(
+                    s => s.id === resultado.sorteioId
+                );
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${formatarData(
+                            resultado.data
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapar(
+                            sorteio?.nome ||
+                            resultado.sorteioNome ||
+                            "Sorteio"
+                        )}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${escapar(resultado.premio1)}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapar(resultado.premio2 || "-")}
+                    </td>
+
+                    <td>
+                        ${escapar(resultado.premio3 || "-")}
+                    </td>
+
+                    <td>
+                        ${escapar(resultado.premio4 || "-")}
+                    </td>
+
+                    <td>
+                        ${escapar(resultado.premio5 || "-")}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-verde"
+                            onclick="verApuracao('${resultado.id}')"
+                        >
+                            🔎 Apuração
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================================================
+   FORMATA DATA
+========================================================= */
+
+function formatarData(data){
+
+    if(!data) return "";
+
+    const partes =
+        String(data).split("-");
+
+    if(partes.length !== 3){
+
+        return data;
+
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+/* =========================================================
+   NORMALIZAR MILHAR
+========================================================= */
+
+function normalizarMilhar(valor){
+
+    const somenteNumeros =
+        String(valor || "")
+        .replace(/\D/g,"");
+
+    return somenteNumeros
+        .padStart(4,"0")
+        .slice(-4);
+
+}
+
+
+/* =========================================================
+   GRUPOS OFICIAIS
+========================================================= */
+
+const grupos = [
+
+    {
+        numero:1,
+        nome:"Avestruz",
+        dezenas:["01","02","03","04"]
+    },
+
+    {
+        numero:2,
+        nome:"Águia",
+        dezenas:["05","06","07","08"]
+    },
+
+    {
+        numero:3,
+        nome:"Burro",
+        dezenas:["09","10","11","12"]
+    },
+
+    {
+        numero:4,
+        nome:"Borboleta",
+        dezenas:["13","14","15","16"]
+    },
+
+    {
+        numero:5,
+        nome:"Cachorro",
+        dezenas:["17","18","19","20"]
+    },
+
+    {
+        numero:6,
+        nome:"Cabra",
+        dezenas:["21","22","23","24"]
+    },
+
+    {
+        numero:7,
+        nome:"Carneiro",
+        dezenas:["25","26","27","28"]
+    },
+
+    {
+        numero:8,
+        nome:"Camelo",
+        dezenas:["29","30","31","32"]
+    },
+
+    {
+        numero:9,
+        nome:"Cobra",
+        dezenas:["33","34","35","36"]
+    },
+
+    {
+        numero:10,
+        nome:"Coelho",
+        dezenas:["37","38","39","40"]
+    },
+
+    {
+        numero:11,
+        nome:"Cavalo",
+        dezenas:["41","42","43","44"]
+    },
+
+    {
+        numero:12,
+        nome:"Elefante",
+        dezenas:["45","46","47","48"]
+    },
+
+    {
+        numero:13,
+        nome:"Galo",
+        dezenas:["49","50","51","52"]
+    },
+
+    {
+        numero:14,
+        nome:"Gato",
+        dezenas:["53","54","55","56"]
+    },
+
+    {
+        numero:15,
+        nome:"Jacaré",
+        dezenas:["57","58","59","60"]
+    },
+
+    {
+        numero:16,
+        nome:"Leão",
+        dezenas:["61","62","63","64"]
+    },
+
+    {
+        numero:17,
+        nome:"Macaco",
+        dezenas:["65","66","67","68"]
+    },
+
+    {
+        numero:18,
+        nome:"Porco",
+        dezenas:["69","70","71","72"]
+    },
+
+    {
+        numero:19,
+        nome:"Pavão",
+        dezenas:["73","74","75","76"]
+    },
+
+    {
+        numero:20,
+        nome:"Peru",
+        dezenas:["77","78","79","80"]
+    },
+
+    {
+        numero:21,
+        nome:"Touro",
+        dezenas:["81","82","83","84"]
+    },
+
+    {
+        numero:22,
+        nome:"Tigre",
+        dezenas:["85","86","87","88"]
+    },
+
+    {
+        numero:23,
+        nome:"Urso",
+        dezenas:["89","90","91","92"]
+    },
+
+    {
+        numero:24,
+        nome:"Veado",
+        dezenas:["93","94","95","96"]
+    },
+
+    {
+        numero:25,
+        nome:"Vaca",
+        dezenas:["97","98","99","00"]
+    }
+
+];
+
+
+/* =========================================================
+   IDENTIFICAR RESULTADO
+========================================================= */
+
+function identificarResultado(numero){
+
+    const milhar =
+        normalizarMilhar(numero);
+
+    const centena =
+        milhar.slice(1);
+
+    const dezena =
+        milhar.slice(2);
+
+    const grupo =
+        grupos.find(
+            g => g.dezenas.includes(dezena)
+        );
+
+    return {
+
+        milhar,
+
+        centena,
+
+        dezena,
+
+        grupoNumero:
+            grupo?.numero || null,
+
+        grupoNome:
+            grupo?.nome || ""
+
+    };
+
+}
+
+
+/* =========================================================
+   PREVIEW DO RESULTADO
+========================================================= */
+
+document
+.getElementById("premio1")
+.addEventListener("input", () => {
+
+    const valor =
+        document
+        .getElementById("premio1")
+        .value;
+
+    const campo =
+        document
+        .getElementById("informacaoResultado");
+
+    if(!valor){
+
+        campo.innerHTML =
+            "Digite o 1º prêmio para visualizar a apuração.";
+
+        return;
+    }
+
+    const numero =
+        normalizarMilhar(valor);
+
+    if(numero.length !== 4){
+
+        campo.innerHTML =
+            "Informe uma milhar com 4 dígitos.";
+
+        return;
+    }
+
+    const resultado =
+        identificarResultado(numero);
+
+    campo.innerHTML = `
+
+        <strong>
+            1º prêmio: ${resultado.milhar}
+        </strong>
+
+        <br><br>
+
+        Milhar:
+        <strong>${resultado.milhar}</strong>
+
+        <br>
+
+        Centena:
+        <strong>${resultado.centena}</strong>
+
+        <br>
+
+        Dezena:
+        <strong>${resultado.dezena}</strong>
+
+        <br>
+
+        Grupo:
+        <strong>
+            ${resultado.grupoNumero}
+            -
+            ${resultado.grupoNome}
+        </strong>
+
+        <br><br>
+
+        <small>
+            Somente estes derivados do 1º prêmio
+            serão utilizados na apuração.
+        </small>
+
+    `;
+
+});
+
+
+/* =========================================================
+   SALVAR RESULTADO
+========================================================= */
+
+formResultado.addEventListener(
+    "submit",
+    async evento => {
+
+        evento.preventDefault();
+
+        const sorteioId =
+            sorteioResultado.value;
+
+        const data =
+            dataResultado.value;
+
+        if(!sorteioId || !data){
+
+            mensagem(
+                mensagemResultado,
+                "Selecione o sorteio e a data.",
+                "erro"
+            );
+
+            return;
+        }
+
+        const sorteio =
+            sorteios.find(
+                s => s.id === sorteioId
+            );
+
+        if(!sorteio){
+
+            mensagem(
+                mensagemResultado,
+                "Sorteio não encontrado.",
+                "erro"
+            );
+
+            return;
+        }
+
+
+        const premio1 =
+            normalizarMilhar(
+                document
+                .getElementById("premio1")
+                .value
+            );
+
+        if(!/^\d{4}$/.test(premio1)){
+
+            mensagem(
+                mensagemResultado,
+                "O 1º prêmio deve possuir 4 dígitos.",
+                "erro"
+            );
+
+            return;
+        }
+
+
+        const premios = [
+
+            premio1,
+
+            normalizarOpcional(
+                document
+                .getElementById("premio2")
+                .value
+            ),
+
+            normalizarOpcional(
+                document
+                .getElementById("premio3")
+                .value
+            ),
+
+            normalizarOpcional(
+                document
+                .getElementById("premio4")
+                .value
+            ),
+
+            normalizarOpcional(
+                document
+                .getElementById("premio5")
+                .value
+            )
+
+        ];
+
+
+        try{
+
+            /*
+             * O ID do resultado é formado pelo
+             * sorteio + data.
+             *
+             * Assim só existe um resultado
+             * daquele sorteio naquele dia.
+             */
+
+            const resultadoId =
+                `${sorteioId}_${data}`;
+
+
+            const dados =
+                identificarResultado(premio1);
+
+
+            await setDoc(
+                doc(
+                    db,
+                    "resultados",
+                    resultadoId
+                ),
+                {
+
+                    sorteioId,
+
+                    sorteioNome:
+                        sorteio.nome,
+
+                    data,
+
+                    premio1:
+                        premios[0],
+
+                    premio2:
+                        premios[1],
+
+                    premio3:
+                        premios[2],
+
+                    premio4:
+                        premios[3],
+
+                    premio5:
+                        premios[4],
+
+                    /*
+                     * Dados derivados do 1º prêmio.
+                     * São estes que a apuração usará.
+                     */
+
+                    milhar:
+                        dados.milhar,
+
+                    centena:
+                        dados.centena,
+
+                    dezena:
+                        dados.dezena,
+
+                    grupoNumero:
+                        dados.grupoNumero,
+
+                    grupoNome:
+                        dados.grupoNome,
+
+                    /*
+                     * Controle de apuração
+                     */
+
+                    apurado:false,
+
+                    criadoPor:
+                        usuarioAtual.uid,
+
+                    criadoEm:
+                        serverTimestamp(),
+
+                    atualizadoEm:
+                        serverTimestamp()
+
+                },
+                {
+                    merge:true
+                }
+            );
+
+
+            /*
+             * Executa a apuração imediatamente.
+             */
+
+            const quantidadePremiados =
+                await apurarResultado(
+                    resultadoId,
+                    dados
+                );
+
+
+            mensagem(
+                mensagemResultado,
+                `Resultado salvo. ${quantidadePremiados} aposta(s) premiada(s).`,
+                "sucesso"
+            );
+
+
+            await carregarResultados();
+
+            await carregarApostas();
+
+            atualizarDashboard();
+
+        }catch(erro){
+
+            console.error(erro);
+
+            mensagem(
+                mensagemResultado,
+                "Erro ao salvar/apurar o resultado.",
+                "erro"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   NORMALIZAR RESULTADO OPCIONAL
+========================================================= */
+
+function normalizarOpcional(valor){
+
+    if(!valor){
+
+        return "";
+
+    }
+
+    const numero =
+        String(valor)
+        .replace(/\D/g,"");
+
+    if(!numero){
+
+        return "";
+
+    }
+
+    return numero
+        .padStart(4,"0")
+        .slice(-4);
+
+}
+
+
+/* =========================================================
+   APURAÇÃO
+========================================================= */
+
+async function apurarResultado(
+    resultadoId,
+    dadosResultado
+){
+
+    /*
+     * Neste momento buscamos todas as apostas.
+     *
+     * Quando a tela de apostas estiver concluída,
+     * poderemos otimizar a consulta por sorteio/data.
+     */
+
+    const snap =
+        await getDocs(
+            collection(db,"apostas")
+        );
+
+    let quantidadePremiados = 0;
+
+
+    for(const item of snap.docs){
+
+        const aposta = {
+            id:item.id,
+            ...item.data()
+        };
+
+
+        /*
+         * Não apurar apostas de outro sorteio.
+         */
+
+        if(
+            aposta.sorteioId !==
+            dadosResultado.sorteioId
+        ){
+
+            continue;
+
+        }
+
+
+        /*
+         * Não apurar apostas de outra data.
+         */
+
+        if(
+            aposta.data !==
+            dadosResultado.data
+        ){
+
+            continue;
+
+        }
+
+
+        /*
+         * Bilhete cancelado nunca pode ser premiado.
+         */
+
+        if(
+            aposta.status === "CANCELADO"
+        ){
+
+            continue;
+
+        }
+
+
+        /*
+         * Já premiado não precisa ser processado novamente.
+         */
+
+        if(
+            aposta.status === "PREMIADO" &&
+            aposta.resultadoId === resultadoId
+        ){
+
+            quantidadePremiados++;
+
+            continue;
+
+        }
+
+
+        const modalidade =
+            String(
+                aposta.modalidade || ""
+            ).toUpperCase();
+
+
+        const numero =
+            normalizarMilhar(
+                aposta.numero
+            );
+
+
+        let premiada = false;
+
+        let descricao = "";
+
+
+        /*
+         * MILHAR
+         */
+
+        if(modalidade === "MILHAR"){
+
+            if(
+                numero ===
+                dadosResultado.milhar
+            ){
+
+                premiada = true;
+
+                descricao =
+                    "Milhar";
+
+            }
+
+        }
+
+
+        /*
+         * CENTENA
+         */
+
+        if(modalidade === "CENTENA"){
+
+            const valorAposta =
+                numero.slice(-3);
+
+            if(
+                valorAposta ===
+                dadosResultado.centena
+            ){
+
+                premiada = true;
+
+                descricao =
+                    "Centena";
+
+            }
+
+        }
+
+
+        /*
+         * DEZENA
+         */
+
+        if(modalidade === "DEZENA"){
+
+            const valorAposta =
+                numero.slice(-2);
+
+            if(
+                valorAposta ===
+                dadosResultado.dezena
+            ){
+
+                premiada = true;
+
+                descricao =
+                    "Dezena";
+
+            }
+
+        }
+
+
+        /*
+         * GRUPO
+         */
+
+        if(modalidade === "GRUPO"){
+
+            const grupoAposta =
+                String(
+                    aposta.grupoNumero || ""
+                );
+
+            if(
+                grupoAposta ===
+                String(
+                    dadosResultado.grupoNumero
+                )
+            ){
+
+                premiada = true;
+
+                descricao =
+                    "Grupo";
+
+            }
+
+        }
+
+
+        if(premiada){
+
+            const valor =
+                Number(
+                    aposta.valor || 0
+                );
+
+            const cotacao =
+                Number(
+                    aposta.cotacao || 0
+                );
+
+            const premio =
+                valor * cotacao;
+
+
+            await updateDoc(
+                doc(
+                    db,
+                    "apostas",
+                    aposta.id
+                ),
+                {
+
+                    status:"PREMIADO",
+
+                    resultadoId,
+
+                    tipoPremiacao:
+                        descricao,
+
+                    premioVirtual:
+                        premio,
+
+                    apuradoEm:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            quantidadePremiados++;
+
+        }else{
+
+            /*
+             * Só muda para NÃO PREMIADO
+             * se ainda estiver pendente.
+             */
+
+            if(
+                !aposta.status ||
+                aposta.status === "PENDENTE"
+            ){
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "apostas",
+                        aposta.id
+                    ),
+                    {
+
+                        status:"NAO_PREMIADO",
+
+                        resultadoId,
+
+                        apuradoEm:
+                            serverTimestamp()
+
+                    }
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /*
+     * Marca o resultado como apurado.
+     */
+
+    await updateDoc(
+        doc(
+            db,
+            "resultados",
+            resultadoId
+        ),
+        {
+
+            apurado:true,
+
+            quantidadePremiados,
+
+            apuradoEm:
+                serverTimestamp()
+
+        }
+    );
+
+
+    return quantidadePremiados;
+
+}
+
+
+/* =========================================================
+   VER APURAÇÃO
+========================================================= */
+
+window.verApuracao = async function(id){
+
+    const resultado =
+        resultados.find(
+            r => r.id === id
+        );
+
+    if(!resultado) return;
+
+
+    const grupo =
+        resultado.grupoNumero
+        ? `${resultado.grupoNumero} - ${resultado.grupoNome}`
+        : "-";
+
+
+    const mensagemTexto =
+
+        `RESULTADO\n\n` +
+
+        `Data: ${formatarData(resultado.data)}\n` +
+
+        `1º prêmio: ${resultado.premio1}\n` +
+
+        `2º prêmio: ${resultado.premio2 || "-"}\n` +
+
+        `3º prêmio: ${resultado.premio3 || "-"}\n` +
+
+        `4º prêmio: ${resultado.premio4 || "-"}\n` +
+
+        `5º prêmio: ${resultado.premio5 || "-"}\n\n` +
+
+        `APURAÇÃO DO 1º PRÊMIO\n\n` +
+
+        `Milhar: ${resultado.milhar}\n` +
+
+        `Centena: ${resultado.centena}\n` +
+
+        `Dezena: ${resultado.dezena}\n` +
+
+        `Grupo: ${grupo}\n\n` +
+
+        `Apostas premiadas: ${
+            resultado.quantidadePremiados || 0
+        }`;
+
+
+    alert(mensagemTexto);
+
+};
+
+
+/* =========================================================
+   LIMPAR FORM RESULTADO
+========================================================= */
+
+document
+.getElementById("btnLimparResultado")
+.addEventListener("click", () => {
+
+    formResultado.reset();
+
+    dataResultado.value =
+        dataHoje();
+
+    document
+        .getElementById("informacaoResultado")
+        .innerHTML =
+            "Digite o 1º prêmio para visualizar a apuração.";
+
+});
+
+
+/* =========================================================
+   APOSTAS
+========================================================= */
+
+async function carregarApostas(){
+
+    const lista =
+        document.getElementById(
+            "listaApostas"
+        );
+
+    try{
+
+        const snap =
+            await getDocs(
+                collection(db,"apostas")
+            );
+
+        if(snap.empty){
+
+            lista.innerHTML = `
+                <tr>
+                    <td colspan="7" class="vazio">
+                        Nenhuma aposta registrada.
+                    </td>
+                </tr>
+            `;
+
+            document
+                .getElementById("totalApostas")
+                .textContent = "0";
+
+            return;
+
+        }
+
+
+        const apostas = [];
+
+        snap.forEach(item => {
+
+            apostas.push({
+                id:item.id,
+                ...item.data()
+            });
+
+        });
+
+
+        apostas.sort((a,b) => {
+
+            const da =
+                a.criadoEm?.seconds ||
+                0;
+
+            const dbb =
+                b.criadoEm?.seconds ||
+                0;
+
+            return dbb - da;
+
+        });
+
+
+        lista.innerHTML =
+            apostas.map(aposta => {
+
+                let classe =
+                    "";
+
+                if(
+                    aposta.status ===
+                    "PREMIADO"
+                ){
+
+                    classe =
+                        "badge-ativo";
+
+                }else if(
+                    aposta.status ===
+                    "CANCELADO"
+                ){
+
+                    classe =
+                        "badge-inativo";
+
+                }else if(
+                    aposta.status ===
+                    "NAO_PREMIADO"
+                ){
+
+                    classe =
+                        "badge-fechado";
+
+                }
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${escapar(
+                                aposta.codigoBilhete ||
+                                aposta.id
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapar(
+                                aposta.vendedorNome ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapar(
+                                aposta.sorteioNome ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapar(
+                                aposta.modalidade ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapar(
+                                aposta.numero ||
+                                aposta.grupoNumero ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            R$
+                            ${Number(
+                                aposta.valor || 0
+                            ).toFixed(2)}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="badge ${classe}"
+                            >
+                                ${escapar(
+                                    aposta.status ||
+                                    "PENDENTE"
+                                )}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }).join("");
+
+
+        document
+            .getElementById("totalApostas")
+            .textContent =
+                String(apostas.length);
+
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar apostas:",
+            erro
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function atualizarDashboard(){
+
+    document
+        .getElementById("totalSorteios")
+        .textContent =
+            sorteios.length;
+
+
+    document
+        .getElementById("sorteiosAtivos")
+        .textContent =
+            sorteios.filter(
+                s => s.ativo === true
+            ).length;
+
+
+    const hoje =
+        dataHoje();
+
+
+    const resultadosHoje =
+        resultados.filter(
+            r => r.data === hoje
+        ).length;
+
+
+    document
+        .getElementById("resultadosHoje")
+        .textContent =
+            resultadosHoje;
+
+}
+
+
+/* =========================================================
+   ATUALIZAÇÃO AUTOMÁTICA DA SITUAÇÃO
+========================================================= */
+
+setInterval(() => {
+
+    if(sorteios.length){
+
+        renderizarSorteios();
+
+    }
+
+},60000);
+
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+</script>
+
+</body>
+</html>
+```
+
 
 <style>
 *{
