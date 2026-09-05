@@ -1,7 +1,6 @@
+```html
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,792 +8,794 @@
 <title>Painel do Vendedor</title>
 
 <style>
-
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f6f9;
-    color:#222;
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
-header{
-    height:65px;
-    background:#111827;
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 25px;
+.topo {
+    height: 65px;
+    background: #111827;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
-header .titulo{
-    font-size:20px;
-    font-weight:bold;
+.logo {
+    font-size: 19px;
+    font-weight: bold;
 }
 
-.usuario-topo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:14px;
+.usuario {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.btn-sair{
-    background:#dc2626;
-    color:white;
-    border:0;
-    padding:9px 15px;
-    border-radius:6px;
-    cursor:pointer;
+.btn-sair {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-.layout{
-    display:flex;
-    min-height:calc(100vh - 65px);
+.menu {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    bottom: 0;
+    width: 225px;
+    background: #1e293b;
+    padding: 18px 10px;
 }
 
-.sidebar{
-    width:230px;
-    background:#1f2937;
-    color:white;
-    padding:20px 10px;
+.menu button {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #cbd5e1;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
 }
 
-.sidebar h3{
-    margin:0 10px 20px;
-    font-size:16px;
+.menu button:hover,
+.menu button.ativo {
+    background: #334155;
+    color: white;
 }
 
-.menu-btn{
-    width:100%;
-    background:transparent;
-    border:0;
-    color:white;
-    text-align:left;
-    padding:13px 15px;
-    margin-bottom:5px;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:14px;
+.conteudo {
+    margin-left: 225px;
+    padding: 90px 25px 30px;
 }
 
-.menu-btn:hover,
-.menu-btn.ativo{
-    background:#374151;
+.secao {
+    display: none;
 }
 
-.conteudo{
-    flex:1;
-    padding:25px;
-    overflow:auto;
+.secao.ativa {
+    display: block;
 }
 
-.pagina{
-    display:none;
+.cabecalho {
+    margin-bottom: 22px;
 }
 
-.pagina.ativa{
-    display:block;
+.cabecalho h2 {
+    margin-bottom: 6px;
 }
 
-h1{
-    margin-top:0;
+.descricao {
+    color: #64748b;
 }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-    gap:18px;
-    margin-bottom:25px;
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
 }
 
-.card{
-    background:white;
-    border-radius:10px;
-    padding:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-.card .titulo-card{
-    font-size:13px;
-    color:#6b7280;
-    margin-bottom:10px;
+.card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
 }
 
-.card .valor{
-    font-size:28px;
-    font-weight:bold;
+.numero {
+    font-size: 28px;
+    font-weight: bold;
 }
 
-.form-box{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-    margin-bottom:20px;
+.painel {
+    background: white;
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:15px;
+.formulario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 15px;
 }
 
-label{
-    display:block;
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:6px;
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-input,
-select{
-    width:100%;
-    padding:11px;
-    border:1px solid #d1d5db;
-    border-radius:6px;
-    font-size:14px;
+.campo label {
+    font-size: 13px;
+    font-weight: bold;
 }
 
-.btn{
-    border:0;
-    padding:11px 16px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
+.campo input,
+.campo select {
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 100%;
 }
 
-.btn-primary{
-    background:#2563eb;
-    color:white;
+.botoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
 }
 
-.btn-danger{
-    background:#dc2626;
-    color:white;
+.btn {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.btn-success{
-    background:#16a34a;
-    color:white;
+.btn-principal {
+    background: #2563eb;
+    color: white;
 }
 
-.btn-warning{
-    background:#d97706;
-    color:white;
+.btn-sucesso {
+    background: #16a34a;
+    color: white;
 }
 
-.btn-secondary{
-    background:#6b7280;
-    color:white;
+.btn-perigo {
+    background: #dc2626;
+    color: white;
 }
 
-.acoes{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:18px;
+.btn-aviso {
+    background: #d97706;
+    color: white;
 }
 
-.tabela-box{
-    background:white;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-    overflow:auto;
+.btn-secundario {
+    background: #64748b;
+    color: white;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:750px;
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.tabela-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
 }
 
 th,
-td{
-    padding:12px;
-    border-bottom:1px solid #e5e7eb;
-    text-align:left;
-    font-size:13px;
+td {
+    padding: 11px 9px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
 }
 
-th{
-    background:#f9fafb;
+th {
+    background: #f8fafc;
+    font-size: 13px;
 }
 
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:11px;
-    font-weight:bold;
+.mensagem {
+    display: none;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
 }
 
-.badge-aberta{
-    background:#dbeafe;
-    color:#1d4ed8;
+.mensagem.sucesso {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
 }
 
-.badge-cancelada{
-    background:#fee2e2;
-    color:#b91c1c;
+.mensagem.erro {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
-.badge-vencedora{
-    background:#dcfce7;
-    color:#15803d;
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
 }
 
-.badge-paga{
-    background:#d1fae5;
-    color:#047857;
+.aberto {
+    background: #dcfce7;
+    color: #166534;
 }
 
-.badge-perdida{
-    background:#f3f4f6;
-    color:#4b5563;
+.fechado {
+    background: #fee2e2;
+    color: #991b1b;
 }
 
-.mensagem{
-    display:none;
-    padding:12px;
-    border-radius:6px;
-    margin-bottom:15px;
+.cancelado {
+    background: #fef3c7;
+    color: #92400e;
 }
 
-.mensagem.sucesso{
-    display:block;
-    background:#dcfce7;
-    color:#166534;
+.sorteio-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 15px;
+    margin-bottom: 12px;
 }
 
-.mensagem.erro{
-    display:block;
-    background:#fee2e2;
-    color:#991b1b;
+.sorteio-card h4 {
+    margin-bottom: 8px;
 }
 
-.lista-vazia{
-    padding:30px;
-    text-align:center;
-    color:#6b7280;
+.sorteio-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: #64748b;
 }
 
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
+.sorteio-selecionado {
+    border: 2px solid #2563eb;
+    background: #eff6ff;
 }
 
-.modal.aberto{
-    display:flex;
+.bilhete {
+    border: 1px dashed #94a3b8;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #fff;
 }
 
-.modal-conteudo{
-    background:white;
-    width:90%;
-    max-width:500px;
-    border-radius:10px;
-    padding:25px;
+.bilhete h4 {
+    margin-bottom: 10px;
 }
 
-.modal-conteudo h2{
-    margin-top:0;
+.linha-bilhete {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 14px;
 }
 
-.detalhes{
-    background:#f9fafb;
-    border-radius:8px;
-    padding:15px;
-    margin:15px 0;
-    line-height:1.8;
+.vazio {
+    color: #64748b;
+    padding: 15px 0;
 }
 
-.bilhete-numero{
-    font-size:22px;
-    font-weight:bold;
-    text-align:center;
-    padding:15px;
-    background:#eff6ff;
-    border-radius:8px;
-    color:#1d4ed8;
+.aviso-fechamento {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    padding: 12px;
+    border-radius: 7px;
+    margin-bottom: 15px;
+    display: none;
 }
 
-@media(max-width:700px){
+.consulta-resultado {
+    margin-top: 15px;
+}
 
-    .sidebar{
-        width:70px;
+@media(max-width:800px) {
+
+    .menu {
+        width: 65px;
     }
 
-    .sidebar h3{
-        display:none;
+    .menu button {
+        font-size: 0;
+        text-align: center;
     }
 
-    .menu-btn{
-        font-size:0;
-        text-align:center;
+    .conteudo {
+        margin-left: 65px;
     }
 
-    .menu-btn::first-letter{
-        font-size:20px;
+    .topo {
+        padding: 0 10px;
     }
 
-    .conteudo{
-        padding:15px;
+    .usuario span {
+        display: none;
     }
-
-    header{
-        padding:0 12px;
-    }
-
-    header .titulo{
-        font-size:16px;
-    }
-
-    .usuario-topo{
-        font-size:12px;
-    }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
-<header>
+<header class="topo">
 
-```
-<div class="titulo">
-    SIMULADOR • VENDEDOR
-</div>
+    <div class="logo">
+        SIMULADOR • VENDEDOR
+    </div>
 
-<div class="usuario-topo">
+    <div class="usuario">
 
-    <span id="nomeTopo">
-        Carregando...
-    </span>
+        <span id="nomeUsuario">
+            Carregando...
+        </span>
 
-    <span id="areaTopo"></span>
+        <button
+            class="btn-sair"
+            id="btnSair"
+        >
+            Sair
+        </button>
 
-    <button
-        class="btn-sair"
-        id="btnSair">
-        Sair
-    </button>
-
-</div>
-```
+    </div>
 
 </header>
 
-<div class="layout">
 
-```
-<aside class="sidebar">
-
-    <h3>MENU</h3>
+<nav class="menu">
 
     <button
-        class="menu-btn ativo"
-        data-pagina="inicio">
+        class="ativo"
+        onclick="abrirSecao('inicio', this)"
+    >
         🏠 Início
     </button>
 
     <button
-        class="menu-btn"
-        data-pagina="novaAposta">
+        onclick="abrirSecao('apostas', this)"
+    >
         🎟️ Nova Aposta
     </button>
 
     <button
-        class="menu-btn"
-        data-pagina="bilhetes">
+        onclick="abrirSecao('bilhetes', this)"
+    >
         📋 Meus Bilhetes
     </button>
 
     <button
-        class="menu-btn"
-        data-pagina="consultar">
+        onclick="abrirSecao('consulta', this)"
+    >
         🔎 Consultar Bilhete
     </button>
 
-</aside>
+    <button
+        onclick="abrirSecao('sorteios', this)"
+    >
+        🎯 Sorteios
+    </button>
+
+</nav>
 
 
 <main class="conteudo">
 
 
-    <!-- INÍCIO -->
+<!-- INÍCIO -->
 
-    <section
-        id="pagina-inicio"
-        class="pagina ativa">
+<section
+    id="inicio"
+    class="secao ativa"
+>
 
-        <h1>
-            Olá, <span id="nomeInicio">Vendedor</span>!
-        </h1>
+    <div class="cabecalho">
 
-        <p>
-            Bem-vindo ao seu painel de apostas fictícias.
+        <h2>Olá!</h2>
+
+        <p class="descricao">
+            Painel do vendedor do simulador.
         </p>
 
-        <div class="cards">
-
-            <div class="card">
-
-                <div class="titulo-card">
-                    Saldo Virtual
-                </div>
-
-                <div
-                    class="valor"
-                    id="saldoDashboard">
-                    R$ 0,00
-                </div>
-
-            </div>
+    </div>
 
 
-            <div class="card">
+    <div class="cards">
 
-                <div class="titulo-card">
-                    Bilhetes Gerados
-                </div>
+        <div class="card">
 
-                <div
-                    class="valor"
-                    id="totalBilhetes">
-                    0
-                </div>
+            <h3>Vendedor</h3>
 
-            </div>
-
-
-            <div class="card">
-
-                <div class="titulo-card">
-                    Bilhetes Ativos
-                </div>
-
-                <div
-                    class="valor"
-                    id="bilhetesAtivos">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="titulo-card">
-                    Vencedores
-                </div>
-
-                <div
-                    class="valor"
-                    id="bilhetesVencedores">
-                    0
-                </div>
-
+            <div
+                class="numero"
+                id="cardNome"
+                style="font-size:18px;"
+            >
+                -
             </div>
 
         </div>
 
-    </section>
+
+        <div class="card">
+
+            <h3>Área</h3>
+
+            <div
+                class="numero"
+                id="cardArea"
+                style="font-size:18px;"
+            >
+                -
+            </div>
+
+        </div>
 
 
-    <!-- NOVA APOSTA -->
+        <div class="card">
 
-    <section
-        id="pagina-novaAposta"
-        class="pagina">
+            <h3>Saldo Virtual</h3>
 
-        <h1>Nova Aposta</h1>
+            <div
+                class="numero"
+                id="saldoVirtual"
+            >
+                0,00
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Bilhetes</h3>
+
+            <div
+                class="numero"
+                id="totalBilhetes"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- NOVA APOSTA -->
+
+<section
+    id="apostas"
+    class="secao"
+>
+
+    <div class="cabecalho">
+
+        <h2>Nova Aposta</h2>
+
+        <p class="descricao">
+            Escolha um sorteio aberto para registrar uma aposta fictícia.
+        </p>
+
+    </div>
+
+
+    <div
+        id="mensagemAposta"
+        class="mensagem"
+    ></div>
+
+
+    <div
+        id="avisoFechamento"
+        class="aviso-fechamento"
+    ></div>
+
+
+    <div class="painel">
+
+        <h3>Sorteio</h3>
+
+        <br>
 
         <div
-            id="mensagemAposta"
-            class="mensagem">
+            id="listaSorteiosAposta"
+        >
+            Carregando sorteios...
         </div>
 
-        <div class="form-box">
-
-            <div class="form-grid">
-
-                <div>
-
-                    <label>
-                        Sorteio
-                    </label>
-
-                    <select id="sorteio">
-                        <option value="">
-                            Carregando sorteios...
-                        </option>
-                    </select>
-
-                </div>
+    </div>
 
 
-                <div>
+    <div class="painel">
 
-                    <label>
-                        Modalidade
-                    </label>
+        <h3>Dados da Aposta</h3>
 
-                    <select id="modalidade">
+        <br>
 
-                        <option value="grupo">
-                            Grupo
-                        </option>
+        <div class="formulario">
 
-                        <option value="dezena">
-                            Dezena
-                        </option>
+            <div class="campo">
 
-                        <option value="centena">
-                            Centena
-                        </option>
+                <label>
+                    Modalidade
+                </label>
 
-                        <option value="milhar">
-                            Milhar
-                        </option>
+                <select id="modalidade">
 
-                    </select>
+                    <option value="">
+                        Selecione
+                    </option>
 
-                </div>
+                    <option value="DEZENA">
+                        Dezena
+                    </option>
 
+                    <option value="CENTENA">
+                        Centena
+                    </option>
 
-                <div>
+                    <option value="MILHAR">
+                        Milhar
+                    </option>
 
-                    <label>
-                        Número
-                    </label>
+                    <option value="GRUPO">
+                        Grupo
+                    </option>
 
-                    <input
-                        type="text"
-                        id="numero"
-                        placeholder="Digite o número">
-
-                </div>
-
-
-                <div>
-
-                    <label>
-                        Valor Virtual
-                    </label>
-
-                    <input
-                        type="number"
-                        id="valor"
-                        min="0.01"
-                        step="0.01"
-                        placeholder="0,00">
-
-                </div>
-
-
-                <div>
-
-                    <label>
-                        Cotação
-                    </label>
-
-                    <input
-                        type="number"
-                        id="cotacao"
-                        min="0"
-                        step="0.01"
-                        placeholder="Ex.: 18">
-
-                </div>
+                </select>
 
             </div>
 
 
-            <div class="acoes">
+            <div class="campo">
 
-                <button
-                    class="btn btn-primary"
-                    id="btnGerarAposta">
+                <label>
+                    Número
+                </label>
 
-                    🎟️ Gerar Bilhete
+                <input
+                    type="text"
+                    id="numeroAposta"
+                    placeholder="Digite o número"
+                >
 
-                </button>
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Valor Virtual
+                </label>
+
+                <input
+                    type="number"
+                    id="valorAposta"
+                    min="0"
+                    step="0.01"
+                    placeholder="0,00"
+                >
 
             </div>
 
         </div>
 
-    </section>
+
+        <div class="botoes">
+
+            <button
+                class="btn btn-principal"
+                id="btnGerarAposta"
+            >
+                🎟️ Gerar Bilhete
+            </button>
+
+            <button
+                class="btn btn-secundario"
+                id="btnLimparAposta"
+            >
+                Limpar
+            </button>
+
+        </div>
+
+    </div>
 
 
-    <!-- MEUS BILHETES -->
+    <div
+        id="bilheteGerado"
+        class="painel"
+        style="display:none;"
+    >
 
-    <section
-        id="pagina-bilhetes"
-        class="pagina">
+        <h3>Bilhete Gerado</h3>
 
-        <h1>Meus Bilhetes</h1>
+        <br>
+
+        <div id="conteudoBilhete"></div>
+
+    </div>
+
+</section>
+
+
+<!-- MEUS BILHETES -->
+
+<section
+    id="bilhetes"
+    class="secao"
+>
+
+    <div class="cabecalho">
+
+        <h2>Meus Bilhetes</h2>
+
+        <p class="descricao">
+            Histórico das apostas registradas por você.
+        </p>
+
+    </div>
+
+
+    <div class="painel">
 
         <div
             id="listaBilhetes"
-            class="tabela-box">
+        >
+            Carregando...
+        </div>
 
-            <div class="lista-vazia">
-                Carregando bilhetes...
+    </div>
+
+</section>
+
+
+<!-- CONSULTA -->
+
+<section
+    id="consulta"
+    class="secao"
+>
+
+    <div class="cabecalho">
+
+        <h2>Consultar Bilhete</h2>
+
+        <p class="descricao">
+            Consulte um bilhete pelo código.
+        </p>
+
+    </div>
+
+
+    <div
+        id="mensagemConsulta"
+        class="mensagem"
+    ></div>
+
+
+    <div class="painel">
+
+        <div class="formulario">
+
+            <div class="campo">
+
+                <label>
+                    Código do Bilhete
+                </label>
+
+                <input
+                    type="text"
+                    id="codigoConsulta"
+                    placeholder="Digite o código"
+                >
+
             </div>
 
         </div>
 
-    </section>
 
+        <div class="botoes">
 
-    <!-- CONSULTAR -->
-
-    <section
-        id="pagina-consultar"
-        class="pagina">
-
-        <h1>Consultar Bilhete</h1>
-
-        <div class="form-box">
-
-            <div class="form-grid">
-
-                <div>
-
-                    <label>
-                        Número do Bilhete
-                    </label>
-
-                    <input
-                        type="text"
-                        id="codigoConsulta"
-                        placeholder="Digite o código">
-
-                </div>
-
-            </div>
-
-            <div class="acoes">
-
-                <button
-                    class="btn btn-primary"
-                    id="btnConsultar">
-
-                    🔎 Consultar
-
-                </button>
-
-            </div>
+            <button
+                class="btn btn-principal"
+                id="btnConsultar"
+            >
+                🔎 Consultar
+            </button>
 
         </div>
 
 
         <div
-            id="resultadoConsulta">
-        </div>
+            id="resultadoConsulta"
+            class="consulta-resultado"
+        ></div>
 
-    </section>
+    </div>
+
+</section>
+
+
+<!-- SORTEIOS -->
+
+<section
+    id="sorteios"
+    class="secao"
+>
+
+    <div class="cabecalho">
+
+        <h2>Sorteios</h2>
+
+        <p class="descricao">
+            Consulte os sorteios disponíveis e seus horários de fechamento.
+        </p>
+
+    </div>
+
+
+    <div class="painel">
+
+        <div id="listaSorteios"></div>
+
+    </div>
+
+</section>
+
 
 </main>
-```
 
-</div>
-
-<!-- MODAL CONFIRMAÇÃO -->
-
-<div
-    id="modalConfirmacao"
-    class="modal">
-
-```
-<div class="modal-conteudo">
-
-    <h2>
-        Confirmar Aposta
-    </h2>
-
-    <div
-        id="resumoAposta"
-        class="detalhes">
-    </div>
-
-    <div class="acoes">
-
-        <button
-            class="btn btn-success"
-            id="btnConfirmarAposta">
-
-            Confirmar
-
-        </button>
-
-        <button
-            class="btn btn-secondary"
-            id="btnFecharModal">
-
-            Cancelar
-
-        </button>
-
-    </div>
-
-</div>
-```
-
-</div>
-
-<!-- MODAL BILHETE -->
-
-<div
-    id="modalBilhete"
-    class="modal">
-
-```
-<div class="modal-conteudo">
-
-    <h2>
-        Bilhete Gerado
-    </h2>
-
-    <div
-        id="numeroBilheteGerado"
-        class="bilhete-numero">
-    </div>
-
-    <div
-        id="detalhesBilheteGerado"
-        class="detalhes">
-    </div>
-
-    <div class="acoes">
-
-        <button
-            class="btn btn-primary"
-            id="btnFecharBilhete">
-
-            Fechar
-
-        </button>
-
-    </div>
-
-</div>
-```
-
-</div>
 
 <script type="module">
 
@@ -802,42 +803,49 @@ import {
     initializeApp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
+
 import {
     getAuth,
     onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
+
 import {
     getFirestore,
     collection,
-    doc,
-    getDoc,
     getDocs,
-    addDoc,
-    updateDoc,
     query,
     where,
-    orderBy,
-    limit,
+    addDoc,
+    doc,
+    getDoc,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
-/* ==============================
-   FIREBASE
-============================== */
+/* =========================================================
+   FIREBASE CONFIG
+========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
-  authDomain: "meuappweb-65522.firebaseapp.com",
-  projectId: "meuappweb-65522",
-  storageBucket: "meuappweb-65522.firebasestorage.app",
-  messagingSenderId: "305368794616",
-  appId: "1:305368794616:web:3199c6836a986d896ac20d",
-  measurementId: "G-QN7GFD99N0"
-};
 
+    apiKey: "AIzaSyC4AAbC8vCFAmlPlur12NmY7BKPjaSjumM",
+
+    authDomain: "meuappweb-65522.firebaseapp.com",
+
+    projectId: "meuappweb-65522",
+
+    storageBucket: "meuappweb-65522.firebasestorage.app",
+
+    messagingSenderId: "305368794616",
+
+    appId: "1:305368794616:web:3199c6836a986d896ac20d",
+
+    measurementId: "G-QN7GFD99N0"
+
+};
 
 
 const app =
@@ -850,148 +858,155 @@ const db =
     getFirestore(app);
 
 
-/* ==============================
-   VARIÁVEIS
-============================== */
-
 let usuarioAtual = null;
-
-let dadosUsuario = null;
-
-let bilhetes = [];
 
 let sorteios = [];
 
-let apostaPendente = null;
-
-let autenticacaoVerificada = false;
+let sorteioSelecionado = null;
 
 
-/* ==============================
-   ELEMENTOS
-============================== */
+/* =========================================================
+   SESSÃO
+========================================================= */
 
-const nomeTopo =
-    document.getElementById("nomeTopo");
+function obterSessao() {
 
-const areaTopo =
-    document.getElementById("areaTopo");
-
-const nomeInicio =
-    document.getElementById("nomeInicio");
-
-const saldoDashboard =
-    document.getElementById("saldoDashboard");
-
-const totalBilhetes =
-    document.getElementById("totalBilhetes");
-
-const bilhetesAtivos =
-    document.getElementById("bilhetesAtivos");
-
-const bilhetesVencedores =
-    document.getElementById("bilhetesVencedores");
-
-
-/* ==============================
-   FORMATAÇÃO
-============================== */
-
-function formatarValor(valor){
-
-    return Number(valor || 0)
-        .toLocaleString("pt-BR", {
-            style:"currency",
-            currency:"BRL"
-        });
-
-}
-
-
-/* ==============================
-   MENSAGEM
-============================== */
-
-function mostrarMensagem(
-    elemento,
-    texto,
-    tipo
-){
-
-    elemento.textContent = texto;
-
-    elemento.className =
-        "mensagem " + tipo;
-
-}
-
-
-/* ==============================
-   SALDO
-============================== */
-
-function atualizarSaldo(){
-
-    const saldo =
-        Number(
-            dadosUsuario?.saldoVirtual || 0
+    const dados =
+        sessionStorage.getItem(
+            "usuarioSessao"
         );
 
-    saldoDashboard.textContent =
-        formatarValor(saldo);
+    if (!dados) return null;
+
+    try {
+
+        return JSON.parse(dados);
+
+    } catch {
+
+        return null;
+
+    }
 
 }
 
 
-/* ==============================
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+window.abrirSecao =
+function(id, botao) {
+
+    document
+        .querySelectorAll(".secao")
+        .forEach(secao => {
+
+            secao.classList.remove(
+                "ativa"
+            );
+
+        });
+
+
+    const secao =
+        document.getElementById(id);
+
+
+    if (secao) {
+
+        secao.classList.add(
+            "ativa"
+        );
+
+    }
+
+
+    document
+        .querySelectorAll(".menu button")
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "ativo"
+            );
+
+        });
+
+
+    if (botao) {
+
+        botao.classList.add(
+            "ativo"
+        );
+
+    }
+
+
+    if (id === "bilhetes") {
+
+        carregarBilhetes();
+
+    }
+
+
+    if (id === "sorteios") {
+
+        carregarSorteios();
+
+    }
+
+
+    if (id === "apostas") {
+
+        carregarSorteios();
+
+    }
+
+};
+
+
+/* =========================================================
+   MENSAGEM
+========================================================= */
+
+function mostrarMensagem(
+    id,
+    texto,
+    tipo
+) {
+
+    const el =
+        document.getElementById(id);
+
+
+    if (!el) return;
+
+
+    el.textContent = texto;
+
+    el.className =
+        "mensagem " + tipo;
+
+
+    setTimeout(() => {
+
+        el.className =
+            "mensagem";
+
+    }, 5000);
+
+}
+
+
+/* =========================================================
    AUTENTICAÇÃO
-============================== */
+========================================================= */
 
 onAuthStateChanged(
     auth,
-    async (user) => {
+    async user => {
 
-        /*
-        Não redirecionamos imediatamente
-        caso o Firebase ainda esteja
-        restaurando a sessão.
-        */
-
-        if(!user){
-
-            const sessaoSalva =
-                sessionStorage.getItem(
-                    "usuario"
-                );
-
-            if(sessaoSalva){
-
-                console.log(
-                    "Aguardando restauração da sessão Firebase..."
-                );
-
-                setTimeout(() => {
-
-                    if(!autenticacaoVerificada){
-
-                        console.warn(
-                            "Sessão Firebase não foi restaurada."
-                        );
-
-                        alert(
-                            "A sessão do vendedor não foi reconhecida pelo Firebase. Faça o login novamente."
-                        );
-
-                        window.location.href =
-                            "login.html";
-
-                    }
-
-                },3000);
-
-                return;
-
-            }
+        if (!user) {
 
             window.location.href =
                 "login.html";
@@ -1001,258 +1016,156 @@ onAuthStateChanged(
         }
 
 
-        autenticacaoVerificada =
-            true;
-
         usuarioAtual =
-            user;
+            obterSessao();
 
 
-        try{
-
-            console.log(
-                "Usuário autenticado:",
-                user.uid
-            );
-
-
-            const refUsuario =
-                doc(
-                    db,
-                    "usuarios",
-                    user.uid
-                );
-
-
-            const snapUsuario =
-                await getDoc(
-                    refUsuario
-                );
-
-
-            if(!snapUsuario.exists()){
-
-                console.error(
-                    "Documento usuarios/" +
-                    user.uid +
-                    " não encontrado."
-                );
-
-                alert(
-                    "A conta foi autenticada, mas o cadastro do vendedor não foi encontrado no Firestore."
-                );
-
-                await signOut(auth);
-
-                sessionStorage.removeItem(
-                    "usuario"
-                );
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
-
-
-            dadosUsuario =
-                snapUsuario.data();
-
-
-            console.log(
-                "Dados do vendedor:",
-                dadosUsuario
-            );
-
-
-            if(
-                String(
-                    dadosUsuario.perfil || ""
-                ).toUpperCase() !==
-                "VENDEDOR"
-            ){
-
-                console.error(
-                    "Perfil encontrado:",
-                    dadosUsuario.perfil
-                );
-
-                alert(
-                    "O usuário autenticado não está cadastrado como VENDEDOR."
-                );
-
-                await signOut(auth);
-
-                sessionStorage.removeItem(
-                    "usuario"
-                );
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
-
-
-            if(
-                dadosUsuario.ativo !== true
-            ){
-
-                alert(
-                    "Este vendedor está desativado."
-                );
-
-                await signOut(auth);
-
-                sessionStorage.removeItem(
-                    "usuario"
-                );
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
-
-
-            nomeTopo.textContent =
-                dadosUsuario.nome ||
-                "Vendedor";
-
-
-            areaTopo.textContent =
-                dadosUsuario.areaNome
-                    ? " • " +
-                      dadosUsuario.areaNome
-                    : "";
-
-
-            nomeInicio.textContent =
-                dadosUsuario.nome ||
-                "Vendedor";
-
-
-            atualizarSaldo();
-
-
-            await carregarSorteios();
-
-            await carregarBilhetes();
-
-
-            console.log(
-                "Painel do vendedor carregado com sucesso."
-            );
-
-
-        }catch(erro){
-
-            console.error(
-                "ERRO AO CARREGAR VENDEDOR:",
-                erro
-            );
+        if (
+            !usuarioAtual ||
+            usuarioAtual.perfil !== "VENDEDOR"
+        ) {
 
             alert(
-                "Erro ao carregar o cadastro do vendedor.\n\n" +
-                "Veja o Console (F12) para identificar o problema."
+                "Acesso permitido somente ao VENDEDOR."
             );
 
+
+            await signOut(auth);
+
+
+            sessionStorage.removeItem(
+                "usuarioSessao"
+            );
+
+
+            window.location.href =
+                "login.html";
+
+
+            return;
+
         }
+
+
+        document.getElementById(
+            "nomeUsuario"
+        ).textContent =
+            usuarioAtual.nome ||
+            "Vendedor";
+
+
+        document.getElementById(
+            "cardNome"
+        ).textContent =
+            usuarioAtual.nome ||
+            "-";
+
+
+        document.getElementById(
+            "cardArea"
+        ).textContent =
+            usuarioAtual.areaNome ||
+            usuarioAtual.areaId ||
+            "-";
+
+
+        await carregarDadosVendedor();
+
+        await carregarSorteios();
+
+        await carregarBilhetes();
 
     }
 );
 
 
-/* ==============================
-   NAVEGAÇÃO
-============================== */
+/* =========================================================
+   SAIR
+========================================================= */
 
 document
-.querySelectorAll(".menu-btn")
-.forEach(botao => {
-
-    botao.addEventListener(
+    .getElementById("btnSair")
+    .addEventListener(
         "click",
-        () => {
+        async () => {
 
-            document
-            .querySelectorAll(".menu-btn")
-            .forEach(btn =>
-                btn.classList.remove("ativo")
+            await signOut(auth);
+
+            sessionStorage.removeItem(
+                "usuarioSessao"
             );
 
-            botao.classList.add("ativo");
-
-
-            document
-            .querySelectorAll(".pagina")
-            .forEach(pagina =>
-                pagina.classList.remove("ativa")
-            );
-
-
-            const pagina =
-                document.getElementById(
-                    "pagina-" +
-                    botao.dataset.pagina
-                );
-
-
-            if(pagina){
-
-                pagina.classList.add(
-                    "ativa"
-                );
-
-            }
+            window.location.href =
+                "login.html";
 
         }
     );
 
-});
+
+/* =========================================================
+   DADOS DO VENDEDOR
+========================================================= */
+
+async function carregarDadosVendedor() {
+
+    try {
+
+        const referencia =
+            doc(
+                db,
+                "usuarios",
+                usuarioAtual.uid
+            );
 
 
-/* ==============================
-   SAIR
-============================== */
+        const snapshot =
+            await getDoc(referencia);
 
-document
-.getElementById("btnSair")
-.addEventListener(
-    "click",
-    async () => {
 
-        sessionStorage.removeItem(
-            "usuario"
+        if (!snapshot.exists()) {
+
+            return;
+
+        }
+
+
+        const dados =
+            snapshot.data();
+
+
+        const saldo =
+            Number(
+                dados.saldoVirtual || 0
+            );
+
+
+        document.getElementById(
+            "saldoVirtual"
+        ).textContent =
+            saldo.toFixed(2)
+                .replace(".", ",");
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar vendedor:",
+            erro
         );
-
-        await signOut(auth);
-
-        window.location.href =
-            "login.html";
 
     }
-);
+
+}
 
 
-/* ==============================
-   CARREGAR SORTEIOS
-============================== */
+/* =========================================================
+   SORTEIOS
+========================================================= */
 
-async function carregarSorteios(){
+async function carregarSorteios() {
 
-    const select =
-        document.getElementById(
-            "sorteio"
-        );
+    try {
 
-
-    try{
-
-        const snap =
+        const snapshot =
             await getDocs(
                 collection(
                     db,
@@ -1264,228 +1177,603 @@ async function carregarSorteios(){
         sorteios = [];
 
 
-        snap.forEach(docSnap => {
+        snapshot.forEach(item => {
+
+            const dados =
+                item.data();
+
 
             sorteios.push({
-                id:docSnap.id,
-                ...docSnap.data()
+
+                id: item.id,
+
+                ...dados
+
             });
 
         });
 
 
-        sorteios.sort(
-            (a,b) => {
+        atualizarStatusLocal();
 
-                const da =
-                    a.dataHora?.toMillis
-                        ? a.dataHora.toMillis()
-                        : 0;
+        renderizarSorteios();
 
-                const dbb =
-                    b.dataHora?.toMillis
-                        ? b.dataHora.toMillis()
-                        : 0;
+        renderizarSorteiosParaAposta();
 
-                return dbb - da;
-
-            }
-        );
-
-
-        select.innerHTML =
-            '<option value="">Selecione o sorteio</option>';
-
-
-        sorteios.forEach(
-            sorteio => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    sorteio.id;
-
-                option.textContent =
-                    sorteio.nome ||
-                    sorteio.titulo ||
-                    "Sorteio " +
-                    sorteio.id;
-
-                select.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-        if(
-            sorteios.length === 0
-        ){
-
-            select.innerHTML =
-                '<option value="">Nenhum sorteio cadastrado</option>';
-
-        }
-
-
-    }catch(erro){
+    } catch (erro) {
 
         console.error(
             "Erro ao carregar sorteios:",
             erro
         );
 
-        select.innerHTML =
-            '<option value="">Erro ao carregar sorteios</option>';
+
+        document.getElementById(
+            "listaSorteios"
+        ).innerHTML =
+            "<p class='vazio'>Erro ao carregar sorteios.</p>";
 
     }
 
 }
 
 
-/* ==============================
-   VALIDAR NÚMERO
-============================== */
+/* =========================================================
+   VERIFICAR FECHAMENTO LOCAL
+========================================================= */
 
-function validarNumero(
-    modalidade,
-    numero
-){
+function sorteioEstaAberto(sorteio) {
 
-    numero =
-        String(numero)
-        .replace(/\D/g,"");
+    if (
+        !sorteio ||
+        sorteio.status === "FECHADO"
+    ) {
+
+        return false;
+
+    }
 
 
-    if(
-        modalidade === "grupo"
-    ){
+    if (
+        sorteio.status === "CANCELADO"
+    ) {
 
-        return (
-            numero.length >= 1 &&
-            numero.length <= 2
+        return false;
+
+    }
+
+
+    if (
+        !sorteio.dataHoraFechamento
+    ) {
+
+        return true;
+
+    }
+
+
+    const fechamento =
+        new Date(
+            sorteio.dataHoraFechamento
         );
 
-    }
 
+    if (
+        isNaN(
+            fechamento.getTime()
+        )
+    ) {
 
-    if(
-        modalidade === "dezena"
-    ){
-
-        return numero.length === 2;
-
-    }
-
-
-    if(
-        modalidade === "centena"
-    ){
-
-        return numero.length === 3;
+        return false;
 
     }
 
 
-    if(
-        modalidade === "milhar"
-    ){
-
-        return numero.length === 4;
-
-    }
-
-
-    return false;
+    return new Date() < fechamento;
 
 }
 
 
-/* ==============================
-   GERAR NÚMERO BILHETE
-============================== */
+/* =========================================================
+   ATUALIZAR STATUS LOCAL
+========================================================= */
 
-function gerarCodigoBilhete(){
+function atualizarStatusLocal() {
 
-    const agora =
-        Date.now()
-        .toString(36)
-        .toUpperCase();
+    sorteios.forEach(sorteio => {
 
-    const aleatorio =
-        Math.random()
-        .toString(36)
-        .substring(2,7)
-        .toUpperCase();
+        if (
+            sorteio.status === "ABERTO" &&
+            sorteio.dataHoraFechamento
+        ) {
 
-    return (
-        "B" +
-        agora +
-        aleatorio
+            const fechamento =
+                new Date(
+                    sorteio.dataHoraFechamento
+                );
+
+
+            if (
+                !isNaN(
+                    fechamento.getTime()
+                ) &&
+                new Date() >= fechamento
+            ) {
+
+                sorteio.status =
+                    "FECHADO";
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   RENDERIZAR SORTEIOS
+========================================================= */
+
+function renderizarSorteios() {
+
+    const lista =
+        document.getElementById(
+            "listaSorteios"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if (sorteios.length === 0) {
+
+        lista.innerHTML =
+            "<p class='vazio'>Nenhum sorteio cadastrado.</p>";
+
+        return;
+
+    }
+
+
+    sorteios.sort(
+        (a, b) =>
+            String(
+                a.dataHoraFechamento || ""
+            ).localeCompare(
+                String(
+                    b.dataHoraFechamento || ""
+                )
+            )
     );
 
+
+    sorteios.forEach(sorteio => {
+
+        const aberto =
+            sorteioEstaAberto(
+                sorteio
+            );
+
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.className =
+            "sorteio-card";
+
+
+        div.innerHTML = `
+
+            <h4>
+                ${escapar(
+                    sorteio.nome || "Sorteio"
+                )}
+            </h4>
+
+            <div class="sorteio-info">
+
+                <span>
+                    📅 ${formatarData(
+                        sorteio.data
+                    )}
+                </span>
+
+                <span>
+                    🕐 Fechamento:
+                    ${
+                        sorteio.horarioFechamento ||
+                        "--:--"
+                    }
+                </span>
+
+                <span>
+                    <span class="status ${
+                        aberto
+                        ? "aberto"
+                        : "fechado"
+                    }">
+                        ${
+                            aberto
+                            ? "ABERTO"
+                            : "FECHADO"
+                        }
+                    </span>
+                </span>
+
+            </div>
+
+        `;
+
+
+        lista.appendChild(div);
+
+    });
+
 }
 
 
-/* ==============================
-   BOTÃO GERAR
-============================== */
+/* =========================================================
+   SORTEIOS PARA NOVA APOSTA
+========================================================= */
+
+function renderizarSorteiosParaAposta() {
+
+    const lista =
+        document.getElementById(
+            "listaSorteiosAposta"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    const abertos =
+        sorteios.filter(
+            sorteio =>
+                sorteioEstaAberto(
+                    sorteio
+                )
+        );
+
+
+    if (abertos.length === 0) {
+
+        lista.innerHTML = `
+            <div class="aviso-fechamento"
+                 style="display:block;">
+                🔒 Não existem sorteios abertos
+                para novas apostas no momento.
+            </div>
+        `;
+
+        sorteioSelecionado = null;
+
+        return;
+
+    }
+
+
+    abertos.forEach(sorteio => {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.className =
+            "sorteio-card";
+
+
+        div.onclick = () => {
+
+            document
+                .querySelectorAll(
+                    "#listaSorteiosAposta .sorteio-card"
+                )
+                .forEach(item => {
+
+                    item.classList.remove(
+                        "sorteio-selecionado"
+                    );
+
+                });
+
+
+            div.classList.add(
+                "sorteio-selecionado"
+            );
+
+
+            sorteioSelecionado =
+                sorteio;
+
+
+            atualizarAvisoFechamento();
+
+        };
+
+
+        div.innerHTML = `
+
+            <h4>
+                ${escapar(
+                    sorteio.nome ||
+                    "Sorteio"
+                )}
+            </h4>
+
+            <div class="sorteio-info">
+
+                <span>
+                    📅 ${formatarData(
+                        sorteio.data
+                    )}
+                </span>
+
+                <span>
+                    🕐 Fecha às
+                    ${
+                        sorteio.horarioFechamento ||
+                        "--:--"
+                    }
+                </span>
+
+                <span>
+                    <span class="status aberto">
+                        ABERTO
+                    </span>
+                </span>
+
+            </div>
+
+        `;
+
+
+        lista.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================================================
+   AVISO DE FECHAMENTO
+========================================================= */
+
+function atualizarAvisoFechamento() {
+
+    const aviso =
+        document.getElementById(
+            "avisoFechamento"
+        );
+
+
+    if (
+        !sorteioSelecionado ||
+        !sorteioSelecionado.dataHoraFechamento
+    ) {
+
+        aviso.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    const fechamento =
+        new Date(
+            sorteioSelecionado
+                .dataHoraFechamento
+        );
+
+
+    if (
+        isNaN(
+            fechamento.getTime()
+        )
+    ) {
+
+        aviso.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    const restante =
+        fechamento.getTime() -
+        Date.now();
+
+
+    if (restante <= 0) {
+
+        aviso.style.display =
+            "block";
+
+        aviso.textContent =
+            "🔒 Este sorteio já está fechado.";
+
+        return;
+
+    }
+
+
+    const minutos =
+        Math.floor(
+            restante / 60000
+        );
+
+
+    const horas =
+        Math.floor(
+            minutos / 60
+        );
+
+
+    const mins =
+        minutos % 60;
+
+
+    aviso.style.display =
+        "block";
+
+
+    if (horas > 0) {
+
+        aviso.textContent =
+            `⏰ Fechamento às ${
+                sorteioSelecionado.horarioFechamento
+            }. Restam aproximadamente ${
+                horas
+            }h ${
+                mins
+            }min.`;
+
+    } else {
+
+        aviso.textContent =
+            `⏰ Fechamento às ${
+                sorteioSelecionado.horarioFechamento
+            }. Restam aproximadamente ${
+                mins
+            } minutos.`;
+
+    }
+
+}
+
+
+/* =========================================================
+   GERAR APOSTA
+========================================================= */
 
 document
-.getElementById("btnGerarAposta")
-.addEventListener(
-    "click",
-    () => {
+    .getElementById(
+        "btnGerarAposta"
+    )
+    .addEventListener(
+        "click",
+        gerarAposta
+    );
 
-        const sorteioId =
+
+async function gerarAposta() {
+
+    /*
+       PRIMEIRA VALIDAÇÃO
+    */
+
+    if (!sorteioSelecionado) {
+
+        mostrarMensagem(
+            "mensagemAposta",
+            "Selecione um sorteio aberto.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    /*
+       SEGUNDA VALIDAÇÃO:
+       verifica o horário novamente
+       imediatamente antes de salvar.
+    */
+
+    if (
+        !sorteioEstaAberto(
+            sorteioSelecionado
+        )
+    ) {
+
+        await carregarSorteios();
+
+
+        mostrarMensagem(
+            "mensagemAposta",
+            "O sorteio foi fechado. A aposta não pode mais ser registrada.",
+            "erro"
+        );
+
+
+        return;
+
+    }
+
+
+    const modalidade =
+        document.getElementById(
+            "modalidade"
+        ).value;
+
+
+    const numero =
+        document.getElementById(
+            "numeroAposta"
+        ).value.trim();
+
+
+    const valor =
+        Number(
             document.getElementById(
-                "sorteio"
-            ).value;
+                "valorAposta"
+            ).value
+        );
 
 
-        const modalidade =
-            document.getElementById(
-                "modalidade"
-            ).value;
+    if (
+        !modalidade ||
+        !numero ||
+        !valor ||
+        valor <= 0
+    ) {
+
+        mostrarMensagem(
+            "mensagemAposta",
+            "Preencha a modalidade, o número e um valor válido.",
+            "erro"
+        );
+
+        return;
+
+    }
 
 
-        const numero =
-            document.getElementById(
-                "numero"
-            ).value.trim();
+    /*
+       VALIDAÇÃO DO SALDO
+    */
 
+    try {
 
-        const valor =
-            Number(
-                document.getElementById(
-                    "valor"
-                ).value
+        const vendedorRef =
+            doc(
+                db,
+                "usuarios",
+                usuarioAtual.uid
             );
 
 
-        const cotacao =
-            Number(
-                document.getElementById(
-                    "cotacao"
-                ).value
+        const vendedorSnap =
+            await getDoc(
+                vendedorRef
             );
 
 
-        const mensagem =
-            document.getElementById(
-                "mensagemAposta"
-            );
-
-
-        if(!sorteioId){
+        if (!vendedorSnap.exists()) {
 
             mostrarMensagem(
-                mensagem,
-                "Selecione um sorteio.",
+                "mensagemAposta",
+                "Vendedor não encontrado.",
                 "erro"
             );
 
@@ -1494,66 +1782,20 @@ document
         }
 
 
-        if(
-            !validarNumero(
-                modalidade,
-                numero
-            )
-        ){
-
-            mostrarMensagem(
-                mensagem,
-                "Número inválido para a modalidade selecionada.",
-                "erro"
-            );
-
-            return;
-
-        }
-
-
-        if(
-            !valor ||
-            valor <= 0
-        ){
-
-            mostrarMensagem(
-                mensagem,
-                "Informe um valor virtual válido.",
-                "erro"
-            );
-
-            return;
-
-        }
-
-
-        if(
-            !cotacao ||
-            cotacao <= 0
-        ){
-
-            mostrarMensagem(
-                mensagem,
-                "Informe uma cotação válida.",
-                "erro"
-            );
-
-            return;
-
-        }
+        const vendedor =
+            vendedorSnap.data();
 
 
         const saldo =
             Number(
-                dadosUsuario?.saldoVirtual || 0
+                vendedor.saldoVirtual || 0
             );
 
 
-        if(valor > saldo){
+        if (valor > saldo) {
 
             mostrarMensagem(
-                mensagem,
+                "mensagemAposta",
                 "Saldo virtual insuficiente.",
                 "erro"
             );
@@ -1563,470 +1805,594 @@ document
         }
 
 
-        const sorteio =
-            sorteios.find(
-                item =>
-                    item.id ===
-                    sorteioId
+        /*
+           TERCEIRA VALIDAÇÃO:
+           busca novamente o sorteio no Firestore
+           antes de registrar a aposta.
+        */
+
+        const sorteioRef =
+            doc(
+                db,
+                "sorteios",
+                sorteioSelecionado.id
             );
 
 
-        apostaPendente = {
-
-            sorteioId,
-
-            sorteioNome:
-                sorteio?.nome ||
-                sorteio?.titulo ||
-                "Sorteio",
-
-            modalidade,
-
-            numero,
-
-            valor,
-
-            cotacao,
-
-            possivelPremio:
-                valor * cotacao
-
-        };
+        const sorteioSnap =
+            await getDoc(
+                sorteioRef
+            );
 
 
-        document.getElementById(
-            "resumoAposta"
-        ).innerHTML = `
+        if (!sorteioSnap.exists()) {
 
-            <strong>Sorteio:</strong>
-            ${apostaPendente.sorteioNome}
-            <br>
+            mostrarMensagem(
+                "mensagemAposta",
+                "O sorteio não existe mais.",
+                "erro"
+            );
 
-            <strong>Modalidade:</strong>
-            ${apostaPendente.modalidade}
-            <br>
-
-            <strong>Número:</strong>
-            ${apostaPendente.numero}
-            <br>
-
-            <strong>Valor virtual:</strong>
-            ${formatarValor(apostaPendente.valor)}
-            <br>
-
-            <strong>Cotação:</strong>
-            ${apostaPendente.cotacao}
-            <br>
-
-            <strong>Possível prêmio:</strong>
-            ${formatarValor(apostaPendente.possivelPremio)}
-
-        `;
-
-
-        document
-        .getElementById(
-            "modalConfirmacao"
-        )
-        .classList.add(
-            "aberto"
-        );
-
-    }
-);
-
-
-/* ==============================
-   FECHAR MODAL
-============================== */
-
-document
-.getElementById(
-    "btnFecharModal"
-)
-.addEventListener(
-    "click",
-    () => {
-
-        document
-        .getElementById(
-            "modalConfirmacao"
-        )
-        .classList.remove(
-            "aberto"
-        );
-
-    }
-);
-
-
-/* ==============================
-   CONFIRMAR APOSTA
-============================== */
-
-document
-.getElementById(
-    "btnConfirmarAposta"
-)
-.addEventListener(
-    "click",
-    async () => {
-
-        if(!apostaPendente){
+            await carregarSorteios();
 
             return;
 
         }
 
 
-        try{
+        const sorteioAtual =
+            sorteioSnap.data();
 
-            const saldoAnterior =
-                Number(
-                    dadosUsuario.saldoVirtual ||
-                    0
+
+        /*
+           Verifica status salvo no Firestore.
+        */
+
+        if (
+            sorteioAtual.status !==
+            "ABERTO"
+        ) {
+
+            await carregarSorteios();
+
+
+            mostrarMensagem(
+                "mensagemAposta",
+                "Este sorteio está fechado.",
+                "erro"
+            );
+
+            return;
+
+        }
+
+
+        /*
+           Verifica o horário diretamente
+           no registro do sorteio.
+        */
+
+        if (
+            sorteioAtual.dataHoraFechamento
+        ) {
+
+            const fechamento =
+                new Date(
+                    sorteioAtual
+                        .dataHoraFechamento
                 );
 
 
-            if(
-                apostaPendente.valor >
-                saldoAnterior
-            ){
+            if (
+                !isNaN(
+                    fechamento.getTime()
+                ) &&
+                new Date() >= fechamento
+            ) {
 
-                alert(
-                    "Saldo virtual insuficiente."
+                /*
+                   Atualiza o sorteio para fechado.
+                */
+
+                await updateDoc(
+                    sorteioRef,
+                    {
+
+                        status: "FECHADO",
+
+                        fechadoEm:
+                            serverTimestamp()
+
+                    }
                 );
+
+
+                await carregarSorteios();
+
+
+                mostrarMensagem(
+                    "mensagemAposta",
+                    "O horário de fechamento foi atingido. A aposta não foi registrada.",
+                    "erro"
+                );
+
 
                 return;
 
             }
 
-
-            const saldoPosterior =
-                saldoAnterior -
-                apostaPendente.valor;
-
-
-            const codigo =
-                gerarCodigoBilhete();
-
-
-            const dadosAposta = {
-
-                bilhete:
-                    codigo,
-
-                vendedorId:
-                    usuarioAtual.uid,
-
-                vendedorNome:
-                    dadosUsuario.nome ||
-                    "",
-
-                areaId:
-                    dadosUsuario.areaId ||
-                    null,
-
-                sorteioId:
-                    apostaPendente.sorteioId,
-
-                sorteioNome:
-                    apostaPendente.sorteioNome,
-
-                modalidade:
-                    apostaPendente.modalidade,
-
-                numero:
-                    apostaPendente.numero,
-
-                valor:
-                    apostaPendente.valor,
-
-                cotacao:
-                    apostaPendente.cotacao,
-
-                possivelPremio:
-                    apostaPendente.possivelPremio,
-
-                status:
-                    "ABERTA",
-
-                pago:
-                    false,
-
-                criadoEm:
-                    serverTimestamp(),
-
-                criadoEmMs:
-                    Date.now()
-
-            };
-
-
-            await addDoc(
-                collection(
-                    db,
-                    "apostas"
-                ),
-                dadosAposta
-            );
-
-
-            await updateDoc(
-                doc(
-                    db,
-                    "usuarios",
-                    usuarioAtual.uid
-                ),
-                {
-                    saldoVirtual:
-                        saldoPosterior
-                }
-            );
-
-
-            dadosUsuario.saldoVirtual =
-                saldoPosterior;
-
-
-            atualizarSaldo();
-
-
-            document
-            .getElementById(
-                "modalConfirmacao"
-            )
-            .classList.remove(
-                "aberto"
-            );
-
-
-            document
-            .getElementById(
-                "numeroBilheteGerado"
-            )
-            .textContent =
-                codigo;
-
-
-            document
-            .getElementById(
-                "detalhesBilheteGerado"
-            )
-            .innerHTML = `
-
-                <strong>Sorteio:</strong>
-                ${apostaPendente.sorteioNome}
-                <br>
-
-                <strong>Modalidade:</strong>
-                ${apostaPendente.modalidade}
-                <br>
-
-                <strong>Número:</strong>
-                ${apostaPendente.numero}
-                <br>
-
-                <strong>Valor:</strong>
-                ${formatarValor(apostaPendente.valor)}
-
-            `;
-
-
-            document
-            .getElementById(
-                "modalBilhete"
-            )
-            .classList.add(
-                "aberto"
-            );
-
-
-            apostaPendente = null;
-
-
-            document
-            .getElementById(
-                "numero"
-            ).value = "";
-
-
-            document
-            .getElementById(
-                "valor"
-            ).value = "";
-
-
-            document
-            .getElementById(
-                "cotacao"
-            ).value = "";
-
-
-            await carregarBilhetes();
-
-
-        }catch(erro){
-
-            console.error(
-                "Erro ao gerar aposta:",
-                erro
-            );
-
-            alert(
-                "Erro ao gerar o bilhete. Veja o Console (F12)."
-            );
-
-        }
-
-    }
-);
-
-
-/* ==============================
-   FECHAR BILHETE
-============================== */
-
-document
-.getElementById(
-    "btnFecharBilhete"
-)
-.addEventListener(
-    "click",
-    () => {
-
-        document
-        .getElementById(
-            "modalBilhete"
-        )
-        .classList.remove(
-            "aberto"
-        );
-
-    }
-);
-
-
-/* ==============================
-   CARREGAR BILHETES
-============================== */
-
-async function carregarBilhetes(){
-
-    if(!usuarioAtual){
-
-        return;
-
-    }
-
-
-    const container =
-        document.getElementById(
-            "listaBilhetes"
-        );
-
-
-    try{
-
-        let snap;
-
-
-        try{
-
-            const q =
-                query(
-                    collection(
-                        db,
-                        "apostas"
-                    ),
-
-                    where(
-                        "vendedorId",
-                        "==",
-                        usuarioAtual.uid
-                    ),
-
-                    orderBy(
-                        "criadoEm",
-                        "desc"
-                    ),
-
-                    limit(100)
-                );
-
-
-            snap =
-                await getDocs(q);
-
-
-        }catch(erroIndice){
-
-            console.warn(
-                "Consulta com índice falhou. Tentando consulta simples.",
-                erroIndice
-            );
-
-
-            const q =
-                query(
-                    collection(
-                        db,
-                        "apostas"
-                    ),
-
-                    where(
-                        "vendedorId",
-                        "==",
-                        usuarioAtual.uid
-                    ),
-
-                    limit(100)
-                );
-
-
-            snap =
-                await getDocs(q);
-
         }
 
 
-        bilhetes = [];
+        /*
+           DESCONTA O VALOR VIRTUAL
+           DO VENDEDOR.
+        */
+
+        const novoSaldo =
+            saldo - valor;
 
 
-        snap.forEach(
-            docSnap => {
+        await updateDoc(
+            vendedorRef,
+            {
 
-                bilhetes.push({
-
-                    id:
-                        docSnap.id,
-
-                    ...docSnap.data()
-
-                });
+                saldoVirtual:
+                    novoSaldo
 
             }
         );
 
 
-        bilhetes.sort(
-            (a,b) =>
-                Number(
-                    b.criadoEmMs || 0
-                ) -
-                Number(
-                    a.criadoEmMs || 0
-                )
+        /*
+           GERA CÓDIGO DO BILHETE
+        */
+
+        const codigo =
+            gerarCodigoBilhete();
+
+
+        /*
+           REGISTRA A APOSTA
+        */
+
+        const apostaRef =
+            await addDoc(
+                collection(
+                    db,
+                    "apostas"
+                ),
+                {
+
+                    codigo: codigo,
+
+                    vendedorId:
+                        usuarioAtual.uid,
+
+                    vendedorNome:
+                        usuarioAtual.nome ||
+                        vendedor.nome ||
+                        "",
+
+                    areaId:
+                        usuarioAtual.areaId ||
+                        vendedor.areaId ||
+                        "",
+
+                    sorteioId:
+                        sorteioSelecionado.id,
+
+                    sorteioNome:
+                        sorteioAtual.nome ||
+                        "",
+
+                    dataSorteio:
+                        sorteioAtual.data ||
+                        "",
+
+                    modalidade:
+                        modalidade,
+
+                    numero:
+                        numero,
+
+                    valor:
+                        valor,
+
+                    status:
+                        "ATIVA",
+
+                    pago:
+                        false,
+
+                    cancelado:
+                        false,
+
+                    criadoEm:
+                        serverTimestamp()
+
+                }
+            );
+
+
+        /*
+           Atualiza a tela.
+        */
+
+        document.getElementById(
+            "saldoVirtual"
+        ).textContent =
+            novoSaldo
+                .toFixed(2)
+                .replace(".", ",");
+
+
+        document.getElementById(
+            "totalBilhetes"
+        ).textContent =
+            Number(
+                document.getElementById(
+                    "totalBilhetes"
+                ).textContent
+            ) + 1;
+
+
+        /*
+           Mostra bilhete.
+        */
+
+        document.getElementById(
+            "bilheteGerado"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "conteudoBilhete"
+        ).innerHTML = `
+
+            <div class="bilhete">
+
+                <h4>
+                    🎟️ BILHETE
+                </h4>
+
+                <div class="linha-bilhete">
+                    <strong>Código:</strong>
+                    <span>
+                        ${escapar(codigo)}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Sorteio:</strong>
+                    <span>
+                        ${escapar(
+                            sorteioAtual.nome || ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Data:</strong>
+                    <span>
+                        ${formatarData(
+                            sorteioAtual.data
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Modalidade:</strong>
+                    <span>
+                        ${escapar(
+                            modalidade
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Número:</strong>
+                    <span>
+                        ${escapar(numero)}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Valor virtual:</strong>
+                    <span>
+                        ${valor
+                            .toFixed(2)
+                            .replace(".", ",")}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Status:</strong>
+                    <span class="status aberto">
+                        ATIVA
+                    </span>
+                </div>
+
+            </div>
+
+        `;
+
+
+        mostrarMensagem(
+            "mensagemAposta",
+            "Bilhete gerado com sucesso.",
+            "sucesso"
         );
 
 
-        atualizarCards();
+        limparFormularioAposta();
 
 
-        renderizarBilhetes();
+        carregarBilhetes();
 
 
-    }catch(erro){
+    } catch (erro) {
+
+        console.error(
+            "Erro ao gerar aposta:",
+            erro
+        );
+
+
+        mostrarMensagem(
+            "mensagemAposta",
+            "Erro ao registrar a aposta. Verifique o console.",
+            "erro"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LIMPAR APOSTA
+========================================================= */
+
+function limparFormularioAposta() {
+
+    document.getElementById(
+        "modalidade"
+    ).value = "";
+
+
+    document.getElementById(
+        "numeroAposta"
+    ).value = "";
+
+
+    document.getElementById(
+        "valorAposta"
+    ).value = "";
+
+}
+
+
+document
+    .getElementById(
+        "btnLimparAposta"
+    )
+    .addEventListener(
+        "click",
+        limparFormularioAposta
+    );
+
+
+/* =========================================================
+   MEUS BILHETES
+========================================================= */
+
+async function carregarBilhetes() {
+
+    if (!usuarioAtual) {
+        return;
+    }
+
+
+    const lista =
+        document.getElementById(
+            "listaBilhetes"
+        );
+
+
+    lista.innerHTML =
+        "Carregando...";
+
+
+    try {
+
+        const consulta =
+            query(
+                collection(
+                    db,
+                    "apostas"
+                ),
+                where(
+                    "vendedorId",
+                    "==",
+                    usuarioAtual.uid
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                consulta
+            );
+
+
+        const dados = [];
+
+
+        snapshot.forEach(item => {
+
+            dados.push({
+
+                id: item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        dados.sort(
+            (a, b) => {
+
+                const ta =
+                    a.criadoEm?.seconds ||
+                    0;
+
+                const tb =
+                    b.criadoEm?.seconds ||
+                    0;
+
+                return tb - ta;
+
+            }
+        );
+
+
+        document.getElementById(
+            "totalBilhetes"
+        ).textContent =
+            dados.length;
+
+
+        lista.innerHTML = "";
+
+
+        if (dados.length === 0) {
+
+            lista.innerHTML =
+                "<p class='vazio'>Nenhum bilhete registrado.</p>";
+
+            return;
+
+        }
+
+
+        dados.forEach(aposta => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "bilhete";
+
+
+            const cancelavel =
+                podeCancelar(
+                    aposta
+                );
+
+
+            div.innerHTML = `
+
+                <h4>
+                    🎟️ ${
+                        escapar(
+                            aposta.codigo ||
+                            aposta.id
+                        )
+                    }
+                </h4>
+
+                <div class="linha-bilhete">
+                    <strong>Sorteio:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.sorteioNome ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Número:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.numero ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Modalidade:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.modalidade ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Valor:</strong>
+                    <span>
+                        ${Number(
+                            aposta.valor || 0
+                        )
+                        .toFixed(2)
+                        .replace(".", ",")}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Status:</strong>
+                    <span class="status ${
+                        aposta.cancelado
+                        ? "cancelado"
+                        : aposta.status === "PAGO"
+                        ? "aberto"
+                        : "fechado"
+                    }">
+                        ${
+                            aposta.cancelado
+                            ? "CANCELADA"
+                            : aposta.status ||
+                              "ATIVA"
+                        }
+                    </span>
+                </div>
+
+                ${
+                    cancelavel
+                    ? `
+                        <div class="botoes">
+
+                            <button
+                                class="btn btn-perigo"
+                                onclick="cancelarAposta('${aposta.id}')"
+                            >
+                                ❌ Cancelar
+                            </button>
+
+                        </div>
+                    `
+                    : ""
+                }
+
+            `;
+
+
+            lista.appendChild(div);
+
+        });
+
+
+    } catch (erro) {
 
         console.error(
             "Erro ao carregar bilhetes:",
@@ -2034,361 +2400,48 @@ async function carregarBilhetes(){
         );
 
 
-        container.innerHTML = `
-
-            <div class="lista-vazia">
-
-                Erro ao carregar bilhetes.
-
-                <br><br>
-
-                Veja o Console (F12).
-
-            </div>
-
-        `;
+        lista.innerHTML =
+            "<p class='vazio'>Erro ao carregar bilhetes.</p>";
 
     }
 
 }
 
 
-/* ==============================
-   ATUALIZAR CARDS
-============================== */
+/* =========================================================
+   CANCELAMENTO
+========================================================= */
 
-function atualizarCards(){
+function podeCancelar(aposta) {
 
-    totalBilhetes.textContent =
-        bilhetes.length;
+    if (
+        aposta.cancelado ||
+        aposta.status === "PAGO"
+    ) {
 
-
-    bilhetesAtivos.textContent =
-        bilhetes.filter(
-            b =>
-                b.status ===
-                "ABERTA"
-        ).length;
-
-
-    bilhetesVencedores.textContent =
-        bilhetes.filter(
-            b =>
-                b.status ===
-                    "VENCEDORA" ||
-                b.status ===
-                    "PAGA"
-        ).length;
-
-}
-
-
-/* ==============================
-   RENDERIZAR BILHETES
-============================== */
-
-function renderizarBilhetes(){
-
-    const container =
-        document.getElementById(
-            "listaBilhetes"
-        );
-
-
-    if(
-        bilhetes.length === 0
-    ){
-
-        container.innerHTML = `
-
-            <div class="lista-vazia">
-
-                Nenhum bilhete encontrado.
-
-            </div>
-
-        `;
-
-        return;
+        return false;
 
     }
 
 
-    let html = `
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>Bilhete</th>
-
-                    <th>Sorteio</th>
-
-                    <th>Modalidade</th>
-
-                    <th>Número</th>
-
-                    <th>Valor</th>
-
-                    <th>Status</th>
-
-                    <th>Ações</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-    `;
-
-
-    bilhetes.forEach(
-        bilhete => {
-
-            const status =
-                bilhete.status ||
-                "ABERTA";
-
-
-            let classe =
-                "badge-aberta";
-
-
-            if(
-                status ===
-                "CANCELADA"
-            ){
-
-                classe =
-                    "badge-cancelada";
-
-            }
-
-            if(
-                status ===
-                "VENCEDORA"
-            ){
-
-                classe =
-                    "badge-vencedora";
-
-            }
-
-            if(
-                status ===
-                "PAGA"
-            ){
-
-                classe =
-                    "badge-paga";
-
-            }
-
-            if(
-                status ===
-                "PERDIDA"
-            ){
-
-                classe =
-                    "badge-perdida";
-
-            }
-
-
-            html += `
-
-                <tr>
-
-                    <td>
-                        <strong>
-                            ${escapar(
-                                bilhete.bilhete
-                            )}
-                        </strong>
-                    </td>
-
-                    <td>
-                        ${escapar(
-                            bilhete.sorteioNome ||
-                            ""
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapar(
-                            bilhete.modalidade ||
-                            ""
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapar(
-                            bilhete.numero ||
-                            ""
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatarValor(
-                            bilhete.valor
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="badge ${classe}">
-
-                            ${escapar(status)}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        ${
-                            status === "ABERTA"
-                            ? `
-                                <button
-                                    class="btn btn-danger"
-                                    onclick="cancelarBilhete('${bilhete.id}')">
-
-                                    Cancelar
-
-                                </button>
-                              `
-                            : ""
-                        }
-
-                        ${
-                            status === "VENCEDORA"
-                            ? `
-                                <button
-                                    class="btn btn-success"
-                                    onclick="pagarBilhete('${bilhete.id}')">
-
-                                    Validar Pagamento
-
-                                </button>
-                              `
-                            : ""
-                        }
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
-    );
-
-
-    html += `
-
-            </tbody>
-
-        </table>
-
-    `;
-
-
-    container.innerHTML =
-        html;
-
-}
-
-
-/* ==============================
-   ESCAPAR HTML
-============================== */
-
-function escapar(valor){
-
-    return String(
-        valor ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
-/* ==============================
-   CANCELAR BILHETE
-============================== */
-
-window.cancelarBilhete =
-async function(id){
-
-    const bilhete =
-        bilhetes.find(
-            b =>
-                b.id === id
-        );
-
-
-    if(!bilhete){
-
-        return;
+    /*
+       serverTimestamp ainda pode não existir
+       imediatamente em documentos recém-criados.
+    */
+
+    if (
+        !aposta.criadoEm ||
+        !aposta.criadoEm.seconds
+    ) {
+
+        return false;
 
     }
 
 
-    if(
-        bilhete.vendedorId !==
-        usuarioAtual.uid
-    ){
-
-        alert(
-            "Este bilhete não pertence a este vendedor."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        bilhete.status !==
-        "ABERTA"
-    ){
-
-        alert(
-            "Este bilhete não pode mais ser cancelado."
-        );
-
-        return;
-
-    }
-
-
-    const criadoEm =
-        Number(
-            bilhete.criadoEmMs || 0
-        );
+    const criado =
+        aposta.criadoEm.seconds *
+        1000;
 
 
     const agora =
@@ -2399,19 +2452,16 @@ async function(id){
         5 * 60 * 1000;
 
 
-    if(
-        agora - criadoEm >
+    return (
+        agora - criado <=
         cincoMinutos
-    ){
+    );
 
-        alert(
-            "O prazo de 5 minutos para cancelamento terminou."
-        );
+}
 
-        return;
 
-    }
-
+window.cancelarAposta =
+async function(id) {
 
     const confirmar =
         confirm(
@@ -2419,86 +2469,159 @@ async function(id){
         );
 
 
-    if(!confirmar){
-
+    if (!confirmar) {
         return;
-
     }
 
 
-    try{
+    try {
 
-        await updateDoc(
+        const apostaRef =
             doc(
                 db,
                 "apostas",
                 id
-            ),
+            );
+
+
+        const apostaSnap =
+            await getDoc(
+                apostaRef
+            );
+
+
+        if (!apostaSnap.exists()) {
+
+            alert(
+                "Bilhete não encontrado."
+            );
+
+            return;
+
+        }
+
+
+        const aposta =
+            apostaSnap.data();
+
+
+        if (
+            aposta.vendedorId !==
+            usuarioAtual.uid
+        ) {
+
+            alert(
+                "Este bilhete não pertence a você."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !podeCancelar(
+                aposta
+            )
+        ) {
+
+            alert(
+                "O prazo de 5 minutos para cancelamento terminou."
+            );
+
+            return;
+
+        }
+
+
+        await updateDoc(
+            apostaRef,
             {
 
                 status:
                     "CANCELADA",
 
-                canceladoEm:
-                    serverTimestamp(),
+                cancelado:
+                    true,
 
-                canceladoEmMs:
-                    Date.now()
+                canceladoEm:
+                    serverTimestamp()
 
             }
         );
 
 
-        const saldoAtual =
-            Number(
-                dadosUsuario.saldoVirtual ||
-                0
-            );
+        /*
+           Devolve o saldo virtual.
+        */
 
-
-        const novoSaldo =
-            saldoAtual +
-            Number(
-                bilhete.valor || 0
-            );
-
-
-        await updateDoc(
+        const vendedorRef =
             doc(
                 db,
                 "usuarios",
                 usuarioAtual.uid
-            ),
-            {
-
-                saldoVirtual:
-                    novoSaldo
-
-            }
-        );
+            );
 
 
-        dadosUsuario.saldoVirtual =
-            novoSaldo;
+        const vendedorSnap =
+            await getDoc(
+                vendedorRef
+            );
 
 
-        atualizarSaldo();
+        if (
+            vendedorSnap.exists()
+        ) {
 
+            const vendedor =
+                vendedorSnap.data();
+
+
+            const saldoAtual =
+                Number(
+                    vendedor.saldoVirtual ||
+                    0
+                );
+
+
+            const valor =
+                Number(
+                    aposta.valor ||
+                    0
+                );
+
+
+            await updateDoc(
+                vendedorRef,
+                {
+
+                    saldoVirtual:
+                        saldoAtual +
+                        valor
+
+                }
+            );
+
+        }
+
+
+        await carregarDadosVendedor();
 
         await carregarBilhetes();
 
 
         alert(
-            "Bilhete cancelado. O valor virtual foi devolvido ao saldo."
+            "Bilhete cancelado e saldo virtual devolvido."
         );
 
 
-    }catch(erro){
+    } catch (erro) {
 
         console.error(
             "Erro ao cancelar:",
             erro
         );
+
 
         alert(
             "Erro ao cancelar o bilhete."
@@ -2509,348 +2632,349 @@ async function(id){
 };
 
 
-/* ==============================
-   PAGAR BILHETE
-============================== */
-
-window.pagarBilhete =
-async function(id){
-
-    const bilhete =
-        bilhetes.find(
-            b =>
-                b.id === id
-        );
-
-
-    if(!bilhete){
-
-        return;
-
-    }
-
-
-    if(
-        bilhete.vendedorId !==
-        usuarioAtual.uid
-    ){
-
-        alert(
-            "Este bilhete não pertence a este vendedor."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        bilhete.status !==
-        "VENCEDORA"
-    ){
-
-        alert(
-            "Somente bilhetes vencedores podem ser pagos."
-        );
-
-        return;
-
-    }
-
-
-    const confirmar =
-        confirm(
-            "Confirmar pagamento fictício deste bilhete?"
-        );
-
-
-    if(!confirmar){
-
-        return;
-
-    }
-
-
-    try{
-
-        await updateDoc(
-            doc(
-                db,
-                "apostas",
-                id
-            ),
-            {
-
-                status:
-                    "PAGA",
-
-                pago:
-                    true,
-
-                pagoEm:
-                    serverTimestamp(),
-
-                pagoEmMs:
-                    Date.now()
-
-            }
-        );
-
-
-        await carregarBilhetes();
-
-
-        alert(
-            "Pagamento fictício validado com sucesso."
-        );
-
-
-    }catch(erro){
-
-        console.error(
-            "Erro ao pagar:",
-            erro
-        );
-
-        alert(
-            "Erro ao validar pagamento."
-        );
-
-    }
-
-};
-
-
-/* ==============================
+/* =========================================================
    CONSULTAR BILHETE
-============================== */
+========================================================= */
 
 document
-.getElementById(
-    "btnConsultar"
-)
-.addEventListener(
-    "click",
-    async () => {
-
-        const codigo =
-            document
-            .getElementById(
-                "codigoConsulta"
-            )
-            .value
-            .trim();
+    .getElementById(
+        "btnConsultar"
+    )
+    .addEventListener(
+        "click",
+        consultarBilhete
+    );
 
 
-        const resultado =
-            document.getElementById(
-                "resultadoConsulta"
+async function consultarBilhete() {
+
+    const codigo =
+        document.getElementById(
+            "codigoConsulta"
+        ).value.trim();
+
+
+    const resultado =
+        document.getElementById(
+            "resultadoConsulta"
+        );
+
+
+    resultado.innerHTML = "";
+
+
+    if (!codigo) {
+
+        mostrarMensagem(
+            "mensagemConsulta",
+            "Digite o código do bilhete.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const consulta =
+            query(
+                collection(
+                    db,
+                    "apostas"
+                ),
+                where(
+                    "codigo",
+                    "==",
+                    codigo
+                )
             );
 
 
-        if(!codigo){
+        const snapshot =
+            await getDocs(
+                consulta
+            );
 
-            resultado.innerHTML = `
 
-                <div class="mensagem erro">
+        if (snapshot.empty) {
 
-                    Informe o número do bilhete.
-
+            resultado.innerHTML =
+                `
+                <div class="mensagem erro"
+                     style="display:block;">
+                    Bilhete não encontrado.
                 </div>
-
-            `;
+                `;
 
             return;
 
         }
 
 
+        let aposta = null;
+
+
+        snapshot.forEach(item => {
+
+            aposta = {
+
+                id: item.id,
+
+                ...item.data()
+
+            };
+
+        });
+
+
         resultado.innerHTML = `
 
-            <div class="lista-vazia">
+            <div class="bilhete">
 
-                Consultando...
+                <h4>
+                    🎟️ Bilhete encontrado
+                </h4>
+
+                <div class="linha-bilhete">
+                    <strong>Código:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.codigo ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Sorteio:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.sorteioNome ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Número:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.numero ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Modalidade:</strong>
+                    <span>
+                        ${escapar(
+                            aposta.modalidade ||
+                            ""
+                        )}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Valor:</strong>
+                    <span>
+                        ${Number(
+                            aposta.valor || 0
+                        )
+                        .toFixed(2)
+                        .replace(".", ",")}
+                    </span>
+                </div>
+
+                <div class="linha-bilhete">
+                    <strong>Status:</strong>
+                    <span class="status ${
+                        aposta.cancelado
+                        ? "cancelado"
+                        : aposta.status === "PAGO"
+                        ? "aberto"
+                        : "fechado"
+                    }">
+                        ${
+                            aposta.cancelado
+                            ? "CANCELADA"
+                            : aposta.status ||
+                              "ATIVA"
+                        }
+                    </span>
+                </div>
 
             </div>
 
         `;
 
 
-        try{
+    } catch (erro) {
 
-            const q =
-                query(
-                    collection(
-                        db,
-                        "apostas"
-                    ),
-
-                    where(
-                        "bilhete",
-                        "==",
-                        codigo
-                    ),
-
-                    limit(1)
-                );
+        console.error(
+            erro
+        );
 
 
-            const snap =
-                await getDocs(q);
-
-
-            if(
-                snap.empty
-            ){
-
-                resultado.innerHTML = `
-
-                    <div class="mensagem erro">
-
-                        Bilhete não encontrado.
-
-                    </div>
-
-                `;
-
-                return;
-
-            }
-
-
-            const docSnap =
-                snap.docs[0];
-
-
-            const b =
-                docSnap.data();
-
-
-            resultado.innerHTML = `
-
-                <div class="form-box">
-
-                    <h2>
-                        Bilhete encontrado
-                    </h2>
-
-                    <div class="detalhes">
-
-                        <strong>Bilhete:</strong>
-                        ${escapar(b.bilhete)}
-                        <br>
-
-                        <strong>Sorteio:</strong>
-                        ${escapar(b.sorteioNome || "")}
-                        <br>
-
-                        <strong>Modalidade:</strong>
-                        ${escapar(b.modalidade || "")}
-                        <br>
-
-                        <strong>Número:</strong>
-                        ${escapar(b.numero || "")}
-                        <br>
-
-                        <strong>Valor virtual:</strong>
-                        ${formatarValor(b.valor)}
-                        <br>
-
-                        <strong>Cotação:</strong>
-                        ${escapar(b.cotacao || "")}
-                        <br>
-
-                        <strong>Possível prêmio:</strong>
-                        ${formatarValor(b.possivelPremio)}
-                        <br>
-
-                        <strong>Status:</strong>
-                        ${escapar(b.status || "")}
-
-                    </div>
-
-                </div>
-
-            `;
-
-
-        }catch(erro){
-
-            console.error(
-                "Erro na consulta:",
-                erro
-            );
-
-
-            resultado.innerHTML = `
-
-                <div class="mensagem erro">
-
-                    Erro ao consultar o bilhete.
-
-                </div>
-
-            `;
-
-        }
+        mostrarMensagem(
+            "mensagemConsulta",
+            "Erro ao consultar o bilhete.",
+            "erro"
+        );
 
     }
-);
+
+}
 
 
-/* ==============================
+/* =========================================================
    ATUALIZAÇÃO AUTOMÁTICA
-============================== */
+========================================================= */
 
 setInterval(
     async () => {
 
-        if(
-            autenticacaoVerificada &&
-            usuarioAtual
-        ){
-
-            try{
-
-                const ref =
-                    doc(
-                        db,
-                        "usuarios",
-                        usuarioAtual.uid
-                    );
-
-
-                const snap =
-                    await getDoc(ref);
-
-
-                if(
-                    snap.exists()
-                ){
-
-                    dadosUsuario =
-                        snap.data();
-
-                    atualizarSaldo();
-
-                }
-
-            }catch(erro){
-
-                console.warn(
-                    "Erro ao atualizar saldo:",
-                    erro
-                );
-
-            }
-
+        if (!usuarioAtual) {
+            return;
         }
 
+
+        /*
+           Atualiza os sorteios localmente
+           a cada segundo.
+        */
+
+        atualizarStatusLocal();
+
+
+        renderizarSorteios();
+
+        renderizarSorteiosParaAposta();
+
+        atualizarAvisoFechamento();
+
+
+        /*
+           A cada 10 segundos buscamos novamente
+           o Firestore.
+        */
+
     },
-    15000
+    1000
 );
+
+
+setInterval(
+    async () => {
+
+        if (!usuarioAtual) {
+            return;
+        }
+
+
+        await carregarSorteios();
+
+    },
+    10000
+);
+
+
+/* =========================================================
+   GERAR CÓDIGO
+========================================================= */
+
+function gerarCodigoBilhete() {
+
+    const agora =
+        Date.now()
+            .toString(36)
+            .toUpperCase();
+
+
+    const aleatorio =
+        Math.random()
+            .toString(36)
+            .substring(2, 7)
+            .toUpperCase();
+
+
+    return `BIL-${agora}-${aleatorio}`;
+
+}
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+function formatarData(data) {
+
+    if (!data) {
+        return "";
+    }
+
+
+    const partes =
+        String(data).split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return data;
+
+    }
+
+
+    return `
+        ${partes[2]}/
+        ${partes[1]}/
+        ${partes[0]}
+    `.replace(/\s/g, "");
+
+}
+
+
+/* =========================================================
+   SEGURANÇA
+========================================================= */
+
+function escapar(valor) {
+
+    return String(valor)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 
 </script>
 
 </body>
 </html>
+```
