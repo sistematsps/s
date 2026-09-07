@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -7,12 +7,15 @@
 <title>Painel do Vendedor</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+    box-sizing:border-box;
+}
 
 body{
+    margin:0;
     font-family:Arial,Helvetica,sans-serif;
-    background:#f3f4f6;
-    color:#1f2937;
+    background:#f4f6f8;
+    color:#222;
 }
 
 header{
@@ -23,198 +26,194 @@ header{
     justify-content:space-between;
     align-items:center;
     gap:15px;
-    flex-wrap:wrap;
 }
 
-header h1{font-size:22px}
+header h1{
+    margin:0;
+    font-size:21px;
+}
 
-.usuario{
-    font-size:14px;
-    color:#d1d5db;
+header small{
+    display:block;
     margin-top:5px;
+    color:#cbd5e1;
+}
+
+button{
+    border:0;
+    border-radius:7px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-sair{
+    background:#dc2626;
+    color:white;
 }
 
 .container{
     max-width:1200px;
-    margin:25px auto;
+    margin:20px auto;
     padding:0 15px;
 }
 
 .menu{
     display:flex;
-    gap:10px;
     flex-wrap:wrap;
+    gap:8px;
     margin-bottom:20px;
 }
 
 .menu button{
-    border:0;
-    padding:12px 18px;
-    border-radius:8px;
-    cursor:pointer;
-    background:#e5e7eb;
-    color:#111827;
-    font-weight:bold;
+    background:white;
+    border:1px solid #d1d5db;
 }
 
 .menu button.ativo{
-    background:#111827;
+    background:#2563eb;
     color:white;
+    border-color:#2563eb;
+}
+
+.secao{
+    display:none;
+}
+
+.secao.ativa{
+    display:block;
 }
 
 .card{
     background:white;
-    border-radius:12px;
-    padding:20px;
-    margin-bottom:20px;
-    box-shadow:0 2px 10px rgba(0,0,0,.07);
+    border-radius:10px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
 
 .card h2{
-    margin-bottom:18px;
-    font-size:20px;
+    margin-top:0;
 }
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:15px;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
 }
 
-.grid4{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
+.info{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:15px;
+    border-radius:8px;
 }
 
-.campo{margin-bottom:15px}
-
-.campo label{
+.info strong{
     display:block;
-    margin-bottom:6px;
-    font-weight:bold;
-    font-size:14px;
+    font-size:22px;
+    margin-top:6px;
 }
 
-.campo input,
-.campo select{
+label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+input,select{
     width:100%;
-    padding:12px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    font-size:16px;
-    background:white;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+    font-size:15px;
 }
 
-.btn{
-    border:0;
-    border-radius:8px;
-    padding:12px 18px;
-    cursor:pointer;
-    font-weight:bold;
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
 }
 
-.btn:disabled{
-    opacity:.6;
-    cursor:not-allowed;
-}
-
-.btn-principal{
-    background:#111827;
+.btn-primary{
+    background:#2563eb;
     color:white;
 }
 
-.btn-secundario{
-    background:#e5e7eb;
-    color:#111827;
-}
-
-.btn-perigo{
-    background:#dc2626;
-    color:white;
-}
-
-.btn-sucesso{
+.btn-success{
     background:#16a34a;
     color:white;
 }
 
-.saldo{
-    font-size:30px;
-    font-weight:bold;
-    margin-top:8px;
+.btn-danger{
+    background:#dc2626;
+    color:white;
 }
 
-.info{
-    color:#6b7280;
-    font-size:14px;
+.btn-warning{
+    background:#d97706;
+    color:white;
 }
 
-.sorteio{
-    border:1px solid #e5e7eb;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:10px;
-    cursor:pointer;
-    transition:.2s;
+.btn-print{
+    background:#111827;
+    color:white;
+    white-space:nowrap;
 }
 
-.sorteio:hover{background:#f9fafb}
-
-.sorteio.selecionado{
-    border:2px solid #111827;
-    background:#f3f4f6;
+.btn-small{
+    padding:7px 9px;
+    font-size:12px;
 }
 
-.sorteio strong{
-    display:block;
-    font-size:17px;
-    margin-bottom:5px;
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
 }
 
-.badge{
+th,td{
+    border-bottom:1px solid #e5e7eb;
+    padding:10px 8px;
+    text-align:left;
+    vertical-align:middle;
+}
+
+th{
+    background:#f8fafc;
+}
+
+.status{
     display:inline-block;
-    padding:5px 9px;
+    padding:5px 8px;
     border-radius:20px;
     font-size:12px;
     font-weight:bold;
-    margin-top:8px;
 }
 
-.badge-aberto{
+.status-pendente{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.status-premiado{
     background:#dcfce7;
     color:#166534;
 }
 
-.badge-fechado{
+.status-nao{
+    background:#e5e7eb;
+    color:#374151;
+}
+
+.status-cancelado{
     background:#fee2e2;
     color:#991b1b;
 }
 
-.resumo{
-    background:#f9fafb;
-    border-radius:10px;
-    padding:15px;
-    margin-top:15px;
-}
-
-.resumo div{
-    display:flex;
-    justify-content:space-between;
-    padding:7px 0;
-    border-bottom:1px solid #e5e7eb;
-}
-
-.resumo div:last-child{border-bottom:0}
-
-.premio{
-    font-size:22px;
-    font-weight:bold;
-}
-
 .mensagem{
-    padding:13px;
-    border-radius:8px;
+    padding:12px;
+    border-radius:7px;
     margin-bottom:15px;
     display:none;
 }
@@ -231,649 +230,339 @@ header h1{font-size:22px}
     color:#991b1b;
 }
 
-.mensagem.info-msg{
-    display:block;
-    background:#dbeafe;
-    color:#1e40af;
-}
-
-.tabela-container{
-    overflow-x:auto;
-}
-
-.tabela{
-    width:100%;
-    border-collapse:collapse;
-}
-
-.tabela th,
-.tabela td{
-    border-bottom:1px solid #e5e7eb;
-    padding:11px 8px;
-    text-align:left;
-    font-size:14px;
-}
-
-.tabela th{
-    background:#f9fafb;
-}
-
-.status{font-weight:bold}
-
-.pendente{color:#92400e}
-.premiado{color:#166534}
-.nao-premiado{color:#991b1b}
-.cancelado{color:#6b7280}
-
-.codigo{
-    font-family:monospace;
+.saldo{
+    font-size:28px;
     font-weight:bold;
+    color:#16a34a;
+}
+
+.sorteio{
+    border:1px solid #dbeafe;
+    border-radius:9px;
+    padding:15px;
+    background:#eff6ff;
+    margin-bottom:10px;
+}
+
+.sorteio.fechado{
+    background:#fef2f2;
+    border-color:#fecaca;
+}
+
+.sorteio h3{
+    margin:0 0 8px;
+}
+
+.resultado-box{
+    background:#f8fafc;
+    border-radius:8px;
+    padding:15px;
+    margin-top:15px;
+}
+
+.numero-grande{
+    font-size:30px;
+    font-weight:bold;
+}
+
+.acoes{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
 }
 
 .vazio{
     text-align:center;
-    padding:30px;
-    color:#6b7280;
+    padding:25px;
+    color:#64748b;
 }
 
-.oculto{display:none!important}
-
-.metrica{
-    background:#f9fafb;
-    border:1px solid #e5e7eb;
-    border-radius:10px;
-    padding:18px;
-}
-
-.metrica .titulo{
-    font-size:13px;
-    color:#6b7280;
-    margin-bottom:8px;
-}
-
-.metrica .valor{
-    font-size:23px;
-    font-weight:bold;
-}
-
-.metrica.destaque{
-    border:2px solid #111827;
-}
-
-.filtros{
-    display:grid;
-    grid-template-columns:1fr 1fr auto;
-    gap:12px;
-    align-items:end;
-}
-
-.resultado-dia{
-    border:1px solid #e5e7eb;
-    border-radius:10px;
-    padding:15px;
-    margin-top:15px;
-    background:#fafafa;
-}
-
-.resultado-premio{
-    color:#166534;
-    font-weight:bold;
-}
-
-.resultado-nao{
-    color:#991b1b;
-    font-weight:bold;
-}
-
-@media(max-width:800px){
-    .grid4{
-        grid-template-columns:repeat(2,1fr);
+@media(max-width:700px){
+    header{
+        align-items:flex-start;
+        flex-direction:column;
     }
 
-    .filtros{
-        grid-template-columns:1fr;
-    }
-}
-
-@media(max-width:600px){
-    .grid{
-        grid-template-columns:1fr;
+    table{
+        font-size:12px;
     }
 
-    .grid4{
-        grid-template-columns:1fr;
+    th,td{
+        padding:7px 5px;
+    }
+
+    .tabela-scroll{
+        overflow-x:auto;
     }
 }
 </style>
+
 </head>
 
 <body>
 
 <header>
-
     <div>
         <h1>SIMULADOR • VENDEDOR</h1>
-        <div class="usuario" id="usuarioInfo">
-            Carregando...
-        </div>
+        <small id="dadosUsuario">Carregando...</small>
     </div>
 
-    <button class="btn btn-secundario" id="btnSair">
-        Sair
-    </button>
+```
+<button class="btn-sair" id="btnSair">Sair</button>
+```
 
 </header>
 
 <div class="container">
 
-    <div id="loading">
-        Carregando painel...
+```
+<div id="mensagem" class="mensagem"></div>
+
+<div class="menu">
+    <button class="ativo" data-secao="inicio">Início</button>
+    <button data-secao="novaAposta">Nova Aposta</button>
+    <button data-secao="movimentacao">Movimentação</button>
+    <button data-secao="bilhetes">Meus Bilhetes</button>
+    <button data-secao="consulta">Consultar Bilhete</button>
+</div>
+
+<!-- INÍCIO -->
+<section id="inicio" class="secao ativa">
+
+    <div class="card">
+        <h2>Resumo</h2>
+
+        <div class="grid">
+
+            <div class="info">
+                Saldo virtual
+                <strong class="saldo" id="saldoInicio">R$ 0,00</strong>
+            </div>
+
+            <div class="info">
+                Bilhetes hoje
+                <strong id="bilhetesHoje">0</strong>
+            </div>
+
+            <div class="info">
+                Total vendido hoje
+                <strong id="vendidoHoje">R$ 0,00</strong>
+            </div>
+
+            <div class="info">
+                Prêmios hoje
+                <strong id="premiosHoje">R$ 0,00</strong>
+            </div>
+
+        </div>
     </div>
 
-    <div id="painel" class="oculto">
+    <div class="card">
+        <h2>Sorteios disponíveis</h2>
+        <div id="listaSorteiosInicio">
+            <div class="vazio">Carregando...</div>
+        </div>
+    </div>
 
-        <div id="mensagem" class="mensagem"></div>
+</section>
 
-        <div class="menu">
+<!-- NOVA APOSTA -->
+<section id="novaAposta" class="secao">
 
-            <button class="ativo" data-tela="inicio">
-                Início
-            </button>
+    <div class="card">
 
-            <button data-tela="aposta">
-                Nova Aposta
-            </button>
+        <h2>Nova Aposta</h2>
 
-            <button data-tela="movimentacao">
-                Movimentação
-            </button>
+        <div class="form-grid">
 
-            <button data-tela="bilhetes">
-                Meus Bilhetes
-            </button>
+            <div>
+                <label>Sorteio</label>
+                <select id="sorteioAposta">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
 
-            <button data-tela="consulta">
-                Consultar Bilhete
-            </button>
+            <div>
+                <label>Modalidade</label>
+                <select id="modalidade">
+                    <option value="">Selecione</option>
+                    <option value="GRUPO">Grupo — 20x</option>
+                    <option value="DEZENA">Dezena — 70x</option>
+                    <option value="CENTENA">Centena — 500x</option>
+                    <option value="MILHAR">Milhar — 5.000x</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Número</label>
+                <input
+                    id="numero"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="4"
+                    placeholder="Ex.: 1234"
+                >
+            </div>
+
+            <div>
+                <label>Valor da aposta</label>
+                <input
+                    id="valorAposta"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Ex.: 1,00"
+                >
+            </div>
 
         </div>
 
+        <div id="previewAposta" class="resultado-box" style="display:none"></div>
 
-        <!-- INÍCIO -->
+        <br>
 
-        <section id="tela-inicio">
-
-            <div class="card">
-
-                <h2>Saldo Virtual</h2>
-
-                <div class="saldo" id="saldoAtual">
-                    R$ 0,00
-                </div>
-
-                <div class="info">
-                    Saldo disponível para registrar apostas fictícias.
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <h2>Resumo</h2>
-
-                <p style="margin-bottom:10px">
-                    Utilize <strong>Movimentação</strong> para consultar
-                    suas vendas, comissões, prêmios e bilhetes por período.
-                </p>
-
-                <p>
-                    O botão <strong>Conferir resultados do dia</strong>
-                    permite verificar os resultados lançados pelo MASTER
-                    e atualizar a situação dos bilhetes.
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- NOVA APOSTA -->
-
-        <section id="tela-aposta" class="oculto">
-
-            <div class="card">
-
-                <h2>1. Escolha o Sorteio</h2>
-
-                <div id="listaSorteios">
-                    Carregando sorteios...
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h2>2. Registrar Aposta</h2>
-
-                <div class="grid">
-
-                    <div class="campo">
-
-                        <label>Sorteio selecionado</label>
-
-                        <input
-                            type="text"
-                            id="sorteioSelecionado"
-                            readonly
-                            placeholder="Selecione um sorteio acima"
-                        >
-
-                    </div>
-
-                    <div class="campo">
-
-                        <label>Modalidade</label>
-
-                        <select id="modalidade">
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="GRUPO">
-                                Grupo — 20x
-                            </option>
-
-                            <option value="DEZENA">
-                                Dezena — 70x
-                            </option>
-
-                            <option value="CENTENA">
-                                Centena — 500x
-                            </option>
-
-                            <option value="MILHAR">
-                                Milhar — 5.000x
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="grid">
-
-                    <div class="campo">
-
-                        <label>Número</label>
-
-                        <input
-                            type="text"
-                            id="numero"
-                            placeholder="Informe o número"
-                            maxlength="4"
-                            inputmode="numeric"
-                        >
-
-                        <div class="info" id="ajudaNumero">
-                            Selecione a modalidade.
-                        </div>
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label>Valor da aposta</label>
-
-                        <input
-                            type="number"
-                            id="valor"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="0,00"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div class="resumo">
-
-                    <div>
-                        <span>Cotação</span>
-                        <strong id="cotacao">-</strong>
-                    </div>
-
-                    <div>
-                        <span>Valor da aposta</span>
-                        <strong id="valorResumo">
-                            R$ 0,00
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>Prêmio virtual possível</span>
-                        <strong class="premio" id="premio">
-                            R$ 0,00
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>Saldo após aposta</span>
-                        <strong id="saldoDepois">
-                            R$ 0,00
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <div style="margin-top:18px">
-
-                    <button
-                        class="btn btn-principal"
-                        id="btnRegistrar"
-                    >
-                        Registrar Aposta
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- MOVIMENTAÇÃO -->
-
-        <section id="tela-movimentacao" class="oculto">
-
-            <div class="card">
-
-                <h2>Movimentação</h2>
-
-                <div class="filtros">
-
-                    <div class="campo">
-
-                        <label>Data inicial</label>
-
-                        <input
-                            type="date"
-                            id="dataInicial"
-                        >
-
-                    </div>
-
-                    <div class="campo">
-
-                        <label>Data final</label>
-
-                        <input
-                            type="date"
-                            id="dataFinal"
-                        >
-
-                    </div>
-
-                    <button
-                        class="btn btn-principal"
-                        id="btnPesquisarMovimentacao"
-                    >
-                        Consultar
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h2>Resumo do Período</h2>
-
-                <div class="grid4">
-
-                    <div class="metrica">
-
-                        <div class="titulo">
-                            SALDO
-                        </div>
-
-                        <div
-                            class="valor"
-                            id="movSaldo"
-                        >
-                            R$ 0,00
-                        </div>
-
-                    </div>
-
-
-                    <div class="metrica">
-
-                        <div class="titulo">
-                            APURADO
-                        </div>
-
-                        <div
-                            class="valor"
-                            id="movApurado"
-                        >
-                            R$ 0,00
-                        </div>
-
-                    </div>
-
-
-                    <div class="metrica">
-
-                        <div class="titulo">
-                            COMISSÃO (15%)
-                        </div>
-
-                        <div
-                            class="valor"
-                            id="movComissao"
-                        >
-                            R$ 0,00
-                        </div>
-
-                    </div>
-
-
-                    <div class="metrica">
-
-                        <div class="titulo">
-                            TOTAL DE PRÊMIOS
-                        </div>
-
-                        <div
-                            class="valor"
-                            id="movPremios"
-                        >
-                            R$ 0,00
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="metrica destaque"
-                    style="margin-top:15px"
-                >
-
-                    <div class="titulo">
-                        SALDO FINAL
-                    </div>
-
-                    <div
-                        class="valor"
-                        id="movSaldoFinal"
-                    >
-                        R$ 0,00
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h2>Bilhetes do Período</h2>
-
-                <div
-                    class="info"
-                    id="periodoSelecionado"
-                    style="margin-bottom:15px"
-                >
-                    Selecione o período.
-                </div>
-
-
-                <div class="tabela-container">
-
-                    <table class="tabela">
-
-                        <thead>
-
-                            <tr>
-                                <th>Bilhete</th>
-                                <th>Data</th>
-                                <th>Sorteio</th>
-                                <th>Modalidade</th>
-                                <th>Número</th>
-                                <th>Valor</th>
-                                <th>Status</th>
-                                <th>Prêmio</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="listaMovimentacao"></tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h2>Conferência dos Resultados</h2>
-
-                <div class="campo">
-
-                    <label>Escolha o dia</label>
-
-                    <input
-                        type="date"
-                        id="dataConferencia"
-                    >
-
-                </div>
-
-                <button
-                    class="btn btn-sucesso"
-                    id="btnConferirResultados"
-                >
-                    Conferir resultados do dia
-                </button>
-
-                <div id="resultadoDia"></div>
-
-            </div>
-
-        </section>
-
-
-        <!-- BILHETES -->
-
-        <section id="tela-bilhetes" class="oculto">
-
-            <div class="card">
-
-                <h2>Meus Bilhetes</h2>
-
-                <div class="tabela-container">
-
-                    <table class="tabela">
-
-                        <thead>
-
-                            <tr>
-                                <th>Bilhete</th>
-                                <th>Data</th>
-                                <th>Sorteio</th>
-                                <th>Modalidade</th>
-                                <th>Número</th>
-                                <th>Valor</th>
-                                <th>Status</th>
-                                <th>Ação</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="listaBilhetes"></tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- CONSULTA -->
-
-        <section id="tela-consulta" class="oculto">
-
-            <div class="card">
-
-                <h2>Consultar Bilhete</h2>
-
-                <div class="campo">
-
-                    <label>Código do Bilhete</label>
-
-                    <input
-                        type="text"
-                        id="codigoConsulta"
-                        placeholder="Ex.: BIL-..."
-                    >
-
-                </div>
-
-                <button
-                    class="btn btn-principal"
-                    id="btnConsultar"
-                >
-                    Consultar
-                </button>
-
-                <div
-                    id="resultadoConsulta"
-                    style="margin-top:20px"
-                ></div>
-
-            </div>
-
-        </section>
+        <button class="btn-primary" id="btnRegistrarAposta">
+            Registrar Aposta
+        </button>
 
     </div>
 
-</div>
+    <div class="card">
+        <h2>Sorteios</h2>
+        <div id="listaSorteiosAposta">
+            <div class="vazio">Carregando...</div>
+        </div>
+    </div>
 
+</section>
+
+<!-- MOVIMENTAÇÃO -->
+<section id="movimentacao" class="secao">
+
+    <div class="card">
+
+        <h2>Movimentação</h2>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Data inicial</label>
+                <input type="date" id="dataInicial">
+            </div>
+
+            <div>
+                <label>Data final</label>
+                <input type="date" id="dataFinal">
+            </div>
+
+        </div>
+
+        <br>
+
+        <button class="btn-primary" id="btnConsultarMovimentacao">
+            Consultar
+        </button>
+
+    </div>
+
+    <div id="resultadoMovimentacao"></div>
+
+</section>
+
+<!-- BILHETES -->
+<section id="bilhetes" class="secao">
+
+    <div class="card">
+
+        <h2>Meus Bilhetes</h2>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Data</label>
+                <input type="date" id="filtroDataBilhete">
+            </div>
+
+            <div>
+                <label>Pesquisar código</label>
+                <input
+                    type="text"
+                    id="filtroCodigo"
+                    placeholder="Código do bilhete"
+                >
+            </div>
+
+        </div>
+
+        <br>
+
+        <button class="btn-primary" id="btnFiltrarBilhetes">
+            Filtrar
+        </button>
+
+        <div class="tabela-scroll">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Bilhete</th>
+                        <th>Data/Hora</th>
+                        <th>Sorteio</th>
+                        <th>Modalidade</th>
+                        <th>Número/Grupo</th>
+                        <th>Valor</th>
+                        <th>Prêmio possível</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabelaBilhetes">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CONSULTA -->
+<section id="consulta" class="secao">
+
+    <div class="card">
+
+        <h2>Consultar Bilhete</h2>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Código do bilhete</label>
+                <input
+                    id="codigoConsulta"
+                    type="text"
+                    placeholder="Digite o código"
+                >
+            </div>
+
+        </div>
+
+        <br>
+
+        <button class="btn-primary" id="btnConsultarBilhete">
+            Consultar
+        </button>
+
+        <div id="resultadoConsulta"></div>
+
+    </div>
+
+</section>
+```
+
+</div>
 
 <script type="module">
 
@@ -894,17 +583,15 @@ import {
     doc,
     getDoc,
     collection,
+    getDocs,
     query,
     where,
-    getDocs,
+    orderBy,
     runTransaction,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-
-/* =====================================================
-   FIREBASE
-===================================================== */
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4AAbC8vCFAmlPlur12Nm7YBKPjaSjumM",
@@ -916,39 +603,15 @@ const firebaseConfig = {
   measurementId: "G-QN7GFD99N0"
 };
 
-const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig);
 
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/* =====================================================
-   ESTADO
-===================================================== */
-
-let usuarioAtual = null;
-let sorteios = [];
-let sorteioSelecionado = null;
-let bilhetes = [];
-
-
-/* =====================================================
-   COTAÇÕES
-===================================================== */
-
-const COTACOES = {
-    GRUPO:20,
-    DEZENA:70,
-    CENTENA:500,
-    MILHAR:5000
-};
-
-
-/* =====================================================
+/* =========================
    GRUPOS
-===================================================== */
+========================= */
 
 const GRUPOS = [
     {numero:1,nome:"Avestruz",dezenas:["01","02","03","04"]},
@@ -979,92 +642,84 @@ const GRUPOS = [
 ];
 
 
-/* =====================================================
+const COTACOES = {
+    GRUPO:20,
+    DEZENA:70,
+    CENTENA:500,
+    MILHAR:5000
+};
+
+
+let usuarioAtual = null;
+let bilhetes = [];
+let sorteios = [];
+
+
+/* =========================
    ELEMENTOS
-===================================================== */
+========================= */
 
-const loading = document.getElementById("loading");
-const painel = document.getElementById("painel");
-const usuarioInfo = document.getElementById("usuarioInfo");
-const saldoAtual = document.getElementById("saldoAtual");
 const mensagem = document.getElementById("mensagem");
-
-const listaSorteios =
-    document.getElementById("listaSorteios");
-
-const sorteioSelecionadoInput =
-    document.getElementById("sorteioSelecionado");
-
-const modalidade =
-    document.getElementById("modalidade");
-
-const numero =
-    document.getElementById("numero");
-
-const valor =
-    document.getElementById("valor");
-
-const cotacao =
-    document.getElementById("cotacao");
-
-const valorResumo =
-    document.getElementById("valorResumo");
-
-const premio =
-    document.getElementById("premio");
-
-const saldoDepois =
-    document.getElementById("saldoDepois");
-
-const listaBilhetes =
-    document.getElementById("listaBilhetes");
-
-const codigoConsulta =
-    document.getElementById("codigoConsulta");
-
-const resultadoConsulta =
-    document.getElementById("resultadoConsulta");
+const dadosUsuario = document.getElementById("dadosUsuario");
+const saldoInicio = document.getElementById("saldoInicio");
 
 
-/* =====================================================
+/* =========================
    UTILITÁRIOS
-===================================================== */
+========================= */
 
-function moeda(v){
+function mostrarMensagem(texto,tipo="sucesso"){
 
-    return Number(v || 0).toLocaleString(
-        "pt-BR",
-        {
-            style:"currency",
-            currency:"BRL"
-        }
-    );
+    mensagem.textContent = texto;
+    mensagem.className = "mensagem " + tipo;
 
+    setTimeout(()=>{
+        mensagem.className = "mensagem";
+    },5000);
 }
 
 
-function escapar(v){
+function dinheiro(valor){
 
-    return String(v ?? "")
+    return Number(valor || 0).toLocaleString("pt-BR",{
+        style:"currency",
+        currency:"BRL"
+    });
+}
+
+
+function hoje(){
+
+    const d = new Date();
+
+    return [
+        d.getFullYear(),
+        String(d.getMonth()+1).padStart(2,"0"),
+        String(d.getDate()).padStart(2,"0")
+    ].join("-");
+}
+
+
+function formatarData(data){
+
+    if(!data) return "-";
+
+    const partes = String(data).split("-");
+
+    if(partes.length !== 3) return data;
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+function escapar(valor){
+
+    return String(valor ?? "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
-
-}
-
-
-function dataHoje(){
-
-    const d = new Date();
-
-    return `${d.getFullYear()}-${
-        String(d.getMonth()+1).padStart(2,"0")
-    }-${
-        String(d.getDate()).padStart(2,"0")
-    }`;
-
 }
 
 
@@ -1072,84 +727,130 @@ function horaAtual(){
 
     const d = new Date();
 
-    return d.getHours()*60+d.getMinutes();
-
+    return String(d.getHours()).padStart(2,"0")
+        + ":" +
+        String(d.getMinutes()).padStart(2,"0");
 }
 
 
-function horaParaMinutos(hora){
+function sorteioAberto(sorteio){
 
-    if(!hora || !hora.includes(":")){
-        return 99999;
+    if(!sorteio.ativo) return false;
+
+    if(!sorteio.horarioFechamento) return true;
+
+    return horaAtual() < sorteio.horarioFechamento;
+}
+
+
+function nomeGrupo(numero){
+
+    const grupo = GRUPOS.find(g => g.numero === Number(numero));
+
+    return grupo ? grupo.nome : "-";
+}
+
+
+function grupoDaDezena(dezena){
+
+    const texto = String(dezena).padStart(2,"0");
+
+    return GRUPOS.find(g => g.dezenas.includes(texto)) || null;
+}
+
+
+function obterDataHora(timestamp){
+
+    if(timestamp && typeof timestamp.toDate === "function"){
+
+        return timestamp.toDate().toLocaleString("pt-BR");
+
     }
 
-    const p = hora.split(":");
-
-    return Number(p[0])*60+Number(p[1]);
-
+    return new Date().toLocaleString("pt-BR");
 }
 
 
-function gerarCodigo(){
+function numeroFormatado(aposta){
 
-    return `BIL-${Date.now()}-${
-        Math.floor(1000+Math.random()*9000)
-    }`;
+    if(aposta.modalidade === "GRUPO"){
 
+        return `Grupo ${aposta.grupoNumero} — ${nomeGrupo(aposta.grupoNumero)}`;
+
+    }
+
+    if(aposta.modalidade === "DEZENA"){
+
+        return String(aposta.numeroTexto ?? aposta.numero ?? "")
+            .padStart(2,"0");
+
+    }
+
+    if(aposta.modalidade === "CENTENA"){
+
+        return String(aposta.numeroTexto ?? aposta.numero ?? "")
+            .padStart(3,"0");
+
+    }
+
+    if(aposta.modalidade === "MILHAR"){
+
+        return String(aposta.numeroTexto ?? aposta.numero ?? "")
+            .padStart(4,"0");
+
+    }
+
+    return "-";
 }
 
 
-function mostrarMensagem(texto,tipo="info-msg"){
+/* =========================
+   MENU
+========================= */
 
-    mensagem.textContent = texto;
-    mensagem.className = "mensagem "+tipo;
+document.querySelectorAll(".menu button").forEach(botao=>{
 
-    setTimeout(()=>{
-        mensagem.className="mensagem";
-    },5000);
+    botao.addEventListener("click",()=>{
 
-}
+        document.querySelectorAll(".menu button")
+            .forEach(b=>b.classList.remove("ativo"));
+
+        botao.classList.add("ativo");
+
+        document.querySelectorAll(".secao")
+            .forEach(s=>s.classList.remove("ativa"));
+
+        document
+            .getElementById(botao.dataset.secao)
+            .classList.add("ativa");
+
+    });
+
+});
 
 
-function atualizarSaldo(){
+/* =========================
+   AUTH
+========================= */
 
-    const saldo =
-        Number(usuarioAtual?.saldoVirtual || 0);
-
-    saldoAtual.textContent = moeda(saldo);
-
-    atualizarResumoAposta();
-
-}
-
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
-onAuthStateChanged(auth,async user=>{
+onAuthStateChanged(auth, async user=>{
 
     if(!user){
 
         window.location.replace("login.html");
         return;
-
     }
 
     try{
 
-        const ref =
-            doc(db,"usuarios",user.uid);
-
-        const snap =
-            await getDoc(ref);
+        const ref = doc(db,"usuarios",user.uid);
+        const snap = await getDoc(ref);
 
         if(!snap.exists()){
 
             await signOut(auth);
             window.location.replace("login.html");
             return;
-
         }
 
         const dados = snap.data();
@@ -1159,14 +860,9 @@ onAuthStateChanged(auth,async user=>{
             dados.ativo !== true
         ){
 
-            alert(
-                "Acesso permitido somente para vendedores ativos."
-            );
-
             await signOut(auth);
             window.location.replace("login.html");
             return;
-
         }
 
         usuarioAtual = {
@@ -1174,1875 +870,1485 @@ onAuthStateChanged(auth,async user=>{
             ...dados
         };
 
-        usuarioInfo.textContent =
-            `${dados.nome || dados.email} • ${
-                dados.areaNome || "Sem área"
-            }`;
+        dadosUsuario.textContent =
+            `${dados.nome || dados.email} • ${dados.areaNome || "Sem área"}`;
 
-        atualizarSaldo();
-
-        loading.classList.add("oculto");
-        painel.classList.remove("oculto");
-
-        definirDatasPadrao();
+        atualizarSaldo(dados.saldoVirtual || 0);
 
         await carregarSorteios();
+        await carregarBilhetes();
 
     }catch(erro){
 
         console.error(erro);
 
-        alert("Erro ao carregar o painel.");
-
-        window.location.replace("login.html");
+        mostrarMensagem(
+            "Erro ao carregar o vendedor.",
+            "erro"
+        );
 
     }
 
 });
 
 
-/* =====================================================
-   MENU
-===================================================== */
+function atualizarSaldo(valor){
 
-document
-.querySelectorAll(".menu button")
-.forEach(botao=>{
-
-    botao.addEventListener("click",async()=>{
-
-        document
-        .querySelectorAll(".menu button")
-        .forEach(b=>b.classList.remove("ativo"));
-
-        botao.classList.add("ativo");
-
-        document
-        .querySelectorAll('[id^="tela-"]')
-        .forEach(t=>t.classList.add("oculto"));
-
-        const tela =
-            document.getElementById(
-                "tela-"+botao.dataset.tela
-            );
-
-        tela.classList.remove("oculto");
-
-        if(botao.dataset.tela==="bilhetes"){
-            await carregarBilhetes();
-        }
-
-        if(botao.dataset.tela==="movimentacao"){
-            await carregarMovimentacao();
-        }
-
-    });
-
-});
-
-
-/* =====================================================
-   DATAS PADRÃO
-===================================================== */
-
-function definirDatasPadrao(){
-
-    const hoje = dataHoje();
-
-    document.getElementById(
-        "dataInicial"
-    ).value = hoje;
-
-    document.getElementById(
-        "dataFinal"
-    ).value = hoje;
-
-    document.getElementById(
-        "dataConferencia"
-    ).value = hoje;
+    saldoInicio.textContent = dinheiro(valor);
 
 }
 
 
-/* =====================================================
+/* =========================
+   SAIR
+========================= */
+
+document.getElementById("btnSair")
+.addEventListener("click",async()=>{
+
+    await signOut(auth);
+
+    window.location.replace("login.html");
+
+});
+
+
+/* =========================
    SORTEIOS
-===================================================== */
+========================= */
 
 async function carregarSorteios(){
 
-    try{
+    const snap = await getDocs(
+        query(
+            collection(db,"sorteios"),
+            where("ativo","==",true)
+        )
+    );
 
-        const q =
-            query(
-                collection(db,"sorteios"),
-                where("ativo","==",true)
-            );
+    sorteios = [];
 
-        const snap =
-            await getDocs(q);
+    snap.forEach(item=>{
 
-        sorteios=[];
-
-        snap.forEach(d=>{
-
-            sorteios.push({
-                id:d.id,
-                ...d.data()
-            });
-
+        sorteios.push({
+            id:item.id,
+            ...item.data()
         });
 
-        sorteios.sort((a,b)=>
-            String(a.horarioFechamento||"")
-            .localeCompare(
-                String(b.horarioFechamento||"")
-            )
-        );
+    });
 
-        renderizarSorteios();
+    sorteios.sort((a,b)=>
+        String(a.horarioFechamento || "")
+        .localeCompare(String(b.horarioFechamento || ""))
+    );
 
-    }catch(e){
-
-        console.error(e);
-
-        listaSorteios.innerHTML =
-            `<div class="mensagem erro">
-                Erro ao carregar sorteios.
-            </div>`;
-
-    }
-
-}
-
-
-function sorteioEstaAberto(sorteio){
-
-    if(!sorteio.ativo){
-        return false;
-    }
-
-    return horaAtual() <
-        horaParaMinutos(
-            sorteio.horarioFechamento
-        );
+    renderizarSorteios();
 
 }
 
 
 function renderizarSorteios(){
 
+    const inicio =
+        document.getElementById("listaSorteiosInicio");
+
+    const aposta =
+        document.getElementById("listaSorteiosAposta");
+
+    const select =
+        document.getElementById("sorteioAposta");
+
+
+    inicio.innerHTML = "";
+    aposta.innerHTML = "";
+
+    select.innerHTML =
+        `<option value="">Selecione</option>`;
+
+
     if(!sorteios.length){
 
-        listaSorteios.innerHTML =
-            `<div class="vazio">
-                Nenhum sorteio ativo cadastrado.
-            </div>`;
+        inicio.innerHTML =
+            `<div class="vazio">Nenhum sorteio ativo.</div>`;
+
+        aposta.innerHTML =
+            `<div class="vazio">Nenhum sorteio ativo.</div>`;
 
         return;
-
     }
 
-    listaSorteios.innerHTML =
-        sorteios.map(s=>{
 
-            const aberto =
-                sorteioEstaAberto(s);
+    sorteios.forEach(sorteio=>{
 
-            const selecionado =
-                sorteioSelecionado?.id===s.id;
+        const aberto = sorteioAberto(sorteio);
 
-            return `
-                <div
-                    class="sorteio ${
-                        selecionado
-                        ?"selecionado":""
-                    }"
-                    data-id="${escapar(s.id)}"
-                >
+        const html = `
+            <div class="sorteio ${aberto ? "" : "fechado"}">
 
+                <h3>${escapar(sorteio.nome)}</h3>
+
+                <div>
+                    Fechamento:
                     <strong>
-                        ${escapar(s.nome||"Sorteio")}
+                        ${escapar(sorteio.horarioFechamento || "--:--")}
                     </strong>
-
-                    <div class="info">
-                        Fechamento diário:
-                        <strong>
-                            ${escapar(
-                                s.horarioFechamento||"--:--"
-                            )}
-                        </strong>
-                    </div>
-
-                    <span class="badge ${
-                        aberto
-                        ?"badge-aberto"
-                        :"badge-fechado"
-                    }">
-                        ${aberto?"ABERTO":"FECHADO"}
-                    </span>
-
                 </div>
-            `;
 
-        }).join("");
+                <div>
+                    Situação:
+                    <strong>
+                        ${aberto ? "ABERTO" : "FECHADO"}
+                    </strong>
+                </div>
 
-    document
-    .querySelectorAll(".sorteio")
-    .forEach(el=>{
+            </div>
+        `;
 
-        el.addEventListener("click",()=>{
+        inicio.innerHTML += html;
+        aposta.innerHTML += html;
 
-            const s =
-                sorteios.find(
-                    x=>x.id===el.dataset.id
-                );
+        const option = document.createElement("option");
 
-            if(!s)return;
+        option.value = sorteio.id;
+        option.textContent =
+            `${sorteio.nome} — fecha ${sorteio.horarioFechamento || "--:--"}`;
 
-            if(!sorteioEstaAberto(s)){
+        if(!aberto){
+            option.disabled = true;
+        }
 
-                mostrarMensagem(
-                    "Este sorteio já está fechado para hoje.",
-                    "erro"
-                );
-
-                return;
-
-            }
-
-            sorteioSelecionado=s;
-
-            sorteioSelecionadoInput.value =
-                `${s.nome} — fechamento ${
-                    s.horarioFechamento
-                }`;
-
-            renderizarSorteios();
-
-            atualizarResumoAposta();
-
-        });
+        select.appendChild(option);
 
     });
 
 }
 
 
-/* =====================================================
-   APOSTA
-===================================================== */
+/* =========================
+   PREVIEW APOSTA
+========================= */
 
-modalidade.addEventListener("change",()=>{
+document.getElementById("modalidade")
+.addEventListener("change",atualizarPreview);
 
-    const tipo=modalidade.value;
+document.getElementById("numero")
+.addEventListener("input",atualizarPreview);
 
-    const ajuda =
-        document.getElementById("ajudaNumero");
+document.getElementById("valorAposta")
+.addEventListener("input",atualizarPreview);
 
-    numero.value="";
 
-    if(tipo==="GRUPO"){
+function atualizarPreview(){
 
-        ajuda.textContent =
-            "Informe o grupo de 1 a 25.";
+    const modalidade =
+        document.getElementById("modalidade").value;
 
-        numero.placeholder="Ex.: 9";
-        numero.maxLength=2;
+    const numero =
+        document.getElementById("numero").value.trim();
 
-    }else if(tipo==="DEZENA"){
+    const valor =
+        Number(document.getElementById("valorAposta").value || 0);
 
-        ajuda.textContent =
-            "Informe uma dezena de 00 a 99.";
+    const box =
+        document.getElementById("previewAposta");
 
-        numero.placeholder="Ex.: 34";
-        numero.maxLength=2;
 
-    }else if(tipo==="CENTENA"){
+    if(!modalidade){
 
-        ajuda.textContent =
-            "Informe uma centena de 000 a 999.";
-
-        numero.placeholder="Ex.: 234";
-        numero.maxLength=3;
-
-    }else if(tipo==="MILHAR"){
-
-        ajuda.textContent =
-            "Informe uma milhar de 0000 a 9999.";
-
-        numero.placeholder="Ex.: 1234";
-        numero.maxLength=4;
-
-    }else{
-
-        ajuda.textContent =
-            "Selecione a modalidade.";
-
-        numero.placeholder="Informe o número";
-
-    }
-
-    atualizarResumoAposta();
-
-});
-
-
-numero.addEventListener("input",()=>{
-
-    let v =
-        numero.value.replace(/\D/g,"");
-
-    const tipo=modalidade.value;
-
-    if(tipo==="GRUPO"){
-
-        if(Number(v)>25){
-            v="25";
-        }
-
-    }
-
-    if(tipo==="DEZENA"){
-        v=v.slice(0,2);
-    }
-
-    if(tipo==="CENTENA"){
-        v=v.slice(0,3);
-    }
-
-    if(tipo==="MILHAR"){
-        v=v.slice(0,4);
-    }
-
-    numero.value=v;
-
-    atualizarResumoAposta();
-
-});
-
-
-valor.addEventListener(
-    "input",
-    atualizarResumoAposta
-);
-
-
-function atualizarResumoAposta(){
-
-    const tipo=modalidade.value;
-
-    const valorAposta =
-        Number(valor.value||0);
-
-    const c =
-        COTACOES[tipo]||0;
-
-    const saldo =
-        Number(usuarioAtual?.saldoVirtual||0);
-
-    cotacao.textContent =
-        c ? `${c}x` : "-";
-
-    valorResumo.textContent =
-        moeda(valorAposta);
-
-    premio.textContent =
-        moeda(valorAposta*c);
-
-    saldoDepois.textContent =
-        moeda(saldo-valorAposta);
-
-}
-
-
-/* =====================================================
-   REGISTRAR APOSTA
-===================================================== */
-
-function validarAposta(){
-
-    if(!sorteioSelecionado){
-
-        return {
-            ok:false,
-            mensagem:"Selecione um sorteio."
-        };
-
-    }
-
-    if(!sorteioEstaAberto(sorteioSelecionado)){
-
-        return {
-            ok:false,
-            mensagem:
-                "O sorteio está fechado para apostas hoje."
-        };
-
-    }
-
-    const tipo=modalidade.value;
-
-    if(!COTACOES[tipo]){
-
-        return {
-            ok:false,
-            mensagem:
-                "Selecione uma modalidade válida."
-        };
-
-    }
-
-    const n =
-        numero.value.replace(/\D/g,"");
-
-    if(tipo==="GRUPO"){
-
-        if(!n || Number(n)<1 || Number(n)>25){
-
-            return {
-                ok:false,
-                mensagem:
-                    "Informe um grupo entre 1 e 25."
-            };
-
-        }
-
-    }
-
-    if(tipo==="DEZENA" && n.length!==2){
-
-        return {
-            ok:false,
-            mensagem:
-                "A dezena deve possuir 2 dígitos."
-        };
-
-    }
-
-    if(tipo==="CENTENA" && n.length!==3){
-
-        return {
-            ok:false,
-            mensagem:
-                "A centena deve possuir 3 dígitos."
-        };
-
-    }
-
-    if(tipo==="MILHAR" && n.length!==4){
-
-        return {
-            ok:false,
-            mensagem:
-                "A milhar deve possuir 4 dígitos."
-        };
-
-    }
-
-    const v=Number(valor.value);
-
-    if(!Number.isFinite(v)||v<=0){
-
-        return {
-            ok:false,
-            mensagem:
-                "Informe um valor válido."
-        };
-
-    }
-
-    if(
-        v >
-        Number(usuarioAtual.saldoVirtual||0)
-    ){
-
-        return {
-            ok:false,
-            mensagem:
-                "Saldo virtual insuficiente."
-        };
-
-    }
-
-    return {ok:true};
-
-}
-
-
-document
-.getElementById("btnRegistrar")
-.addEventListener("click",async()=>{
-
-    const validacao=validarAposta();
-
-    if(!validacao.ok){
-
-        mostrarMensagem(
-            validacao.mensagem,
-            "erro"
-        );
-
+        box.style.display = "none";
         return;
 
     }
 
-    const btn =
-        document.getElementById(
-            "btnRegistrar"
+
+    const cotacao = COTACOES[modalidade];
+
+    let descricao = numero || "-";
+
+
+    if(modalidade === "GRUPO" && numero){
+
+        const grupo = GRUPOS.find(
+            g => g.numero === Number(numero)
         );
 
-    btn.disabled=true;
-    btn.textContent="Registrando...";
+        if(grupo){
 
-    const tipo=modalidade.value;
+            descricao =
+                `Grupo ${grupo.numero} — ${grupo.nome}`;
 
-    const valorAposta=Number(valor.value);
-
-    let numeroFinal =
-        numero.value.replace(/\D/g,"");
-
-    if(tipo==="GRUPO"){
-
-        numeroFinal =
-            String(Number(numeroFinal));
-
-    }else{
-
-        numeroFinal =
-            numeroFinal.padStart(
-                tipo==="DEZENA"?2:
-                tipo==="CENTENA"?3:4,
-                "0"
-            );
+        }
 
     }
 
-    const codigo=gerarCodigo();
-    const hoje=dataHoje();
+
+    const premio =
+        valor > 0
+        ? valor * cotacao
+        : 0;
+
+
+    box.style.display = "block";
+
+    box.innerHTML = `
+        <strong>Resumo da aposta</strong>
+        <p>Modalidade: ${modalidade}</p>
+        <p>Número: ${escapar(descricao)}</p>
+        <p>Cotação: ${cotacao}x</p>
+        <p>Valor: ${dinheiro(valor)}</p>
+        <p>
+            <strong>
+                Prêmio possível: ${dinheiro(premio)}
+            </strong>
+        </p>
+    `;
+
+}
+
+
+/* =========================
+   REGISTRAR APOSTA
+========================= */
+
+document.getElementById("btnRegistrarAposta")
+.addEventListener("click",registrarAposta);
+
+
+async function registrarAposta(){
+
+    if(!usuarioAtual) return;
+
+
+    const sorteioId =
+        document.getElementById("sorteioAposta").value;
+
+    const modalidade =
+        document.getElementById("modalidade").value;
+
+    let numero =
+        document.getElementById("numero").value.trim();
+
+    const valor =
+        Number(document.getElementById("valorAposta").value);
+
+
+    if(!sorteioId){
+
+        mostrarMensagem(
+            "Selecione um sorteio.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(!modalidade){
+
+        mostrarMensagem(
+            "Selecione a modalidade.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(!valor || valor <= 0){
+
+        mostrarMensagem(
+            "Informe um valor válido.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const sorteio =
+        sorteios.find(s => s.id === sorteioId);
+
+
+    if(!sorteio){
+
+        mostrarMensagem(
+            "Sorteio não encontrado.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(!sorteioAberto(sorteio)){
+
+        mostrarMensagem(
+            "Este sorteio já está fechado para apostas.",
+            "erro"
+        );
+
+        await carregarSorteios();
+        return;
+    }
+
+
+    let grupoNumero = null;
+    let numeroTexto = "";
+
+
+    if(modalidade === "GRUPO"){
+
+        if(!/^\d{1,2}$/.test(numero)){
+
+            mostrarMensagem(
+                "Informe um grupo válido de 1 a 25.",
+                "erro"
+            );
+
+            return;
+        }
+
+        grupoNumero = Number(numero);
+
+        if(grupoNumero < 1 || grupoNumero > 25){
+
+            mostrarMensagem(
+                "O grupo deve estar entre 1 e 25.",
+                "erro"
+            );
+
+            return;
+        }
+
+        numeroTexto =
+            String(grupoNumero);
+
+    }
+
+
+    if(modalidade === "DEZENA"){
+
+        if(!/^\d{1,2}$/.test(numero)){
+
+            mostrarMensagem(
+                "Informe uma dezena válida.",
+                "erro"
+            );
+
+            return;
+        }
+
+        const n = Number(numero);
+
+        if(n < 0 || n > 99){
+
+            mostrarMensagem(
+                "A dezena deve estar entre 00 e 99.",
+                "erro"
+            );
+
+            return;
+        }
+
+        numeroTexto =
+            String(n).padStart(2,"0");
+
+        numero = n;
+
+    }
+
+
+    if(modalidade === "CENTENA"){
+
+        if(!/^\d{1,3}$/.test(numero)){
+
+            mostrarMensagem(
+                "Informe uma centena válida.",
+                "erro"
+            );
+
+            return;
+        }
+
+        const n = Number(numero);
+
+        if(n < 0 || n > 999){
+
+            mostrarMensagem(
+                "A centena deve estar entre 000 e 999.",
+                "erro"
+            );
+
+            return;
+        }
+
+        numeroTexto =
+            String(n).padStart(3,"0");
+
+        numero = n;
+
+    }
+
+
+    if(modalidade === "MILHAR"){
+
+        if(!/^\d{1,4}$/.test(numero)){
+
+            mostrarMensagem(
+                "Informe uma milhar válida.",
+                "erro"
+            );
+
+            return;
+        }
+
+        const n = Number(numero);
+
+        if(n < 0 || n > 9999){
+
+            mostrarMensagem(
+                "A milhar deve estar entre 0000 e 9999.",
+                "erro"
+            );
+
+            return;
+        }
+
+        numeroTexto =
+            String(n).padStart(4,"0");
+
+        numero = n;
+
+    }
+
+
+    const cotacao = COTACOES[modalidade];
+
+    const premioVirtual =
+        valor * cotacao;
+
+
+    const codigoBilhete =
+        "BIL-" +
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2,8)
+            .toUpperCase();
+
+
+    const data = hoje();
+
 
     try{
 
-        const usuarioRef =
-            doc(
-                db,
-                "usuarios",
-                usuarioAtual.uid
-            );
+        let bilheteId = null;
 
-        const apostaRef =
-            doc(collection(db,"apostas"));
 
-        let saldoFinal=0;
+        await runTransaction(db,async transaction=>{
 
-        await runTransaction(
-            db,
-            async transaction=>{
+            const vendedorRef =
+                doc(db,"usuarios",usuarioAtual.uid);
 
-                const userSnap =
-                    await transaction.get(
-                        usuarioRef
-                    );
+            const vendedorSnap =
+                await transaction.get(vendedorRef);
 
-                if(!userSnap.exists()){
 
-                    throw new Error(
-                        "Vendedor não encontrado."
-                    );
+            if(!vendedorSnap.exists()){
 
-                }
-
-                const dados =
-                    userSnap.data();
-
-                if(
-                    dados.ativo!==true ||
-                    dados.perfil!=="VENDEDOR"
-                ){
-
-                    throw new Error(
-                        "Vendedor inativo."
-                    );
-
-                }
-
-                const saldo =
-                    Number(
-                        dados.saldoVirtual||0
-                    );
-
-                if(valorAposta>saldo){
-
-                    throw new Error(
-                        "Saldo virtual insuficiente."
-                    );
-
-                }
-
-                saldoFinal =
-                    saldo-valorAposta;
-
-                transaction.update(
-                    usuarioRef,
-                    {
-                        saldoVirtual:saldoFinal
-                    }
-                );
-
-                transaction.set(
-                    apostaRef,
-                    {
-                        codigoBilhete:codigo,
-
-                        vendedorId:
-                            usuarioAtual.uid,
-
-                        vendedorNome:
-                            dados.nome||
-                            dados.email||
-                            "",
-
-                        areaId:
-                            dados.areaId||null,
-
-                        areaNome:
-                            dados.areaNome||"",
-
-                        sorteioId:
-                            sorteioSelecionado.id,
-
-                        sorteioNome:
-                            sorteioSelecionado.nome||"",
-
-                        data:hoje,
-
-                        modalidade:tipo,
-
-                        numero:
-                            tipo==="GRUPO"
-                            ?null
-                            :Number(numeroFinal),
-
-                        numeroTexto:
-                            tipo==="GRUPO"
-                            ?null
-                            :numeroFinal,
-
-                        grupoNumero:
-                            tipo==="GRUPO"
-                            ?Number(numeroFinal)
-                            :null,
-
-                        valor:valorAposta,
-
-                        cotacao:COTACOES[tipo],
-
-                        status:"PENDENTE",
-
-                        criadoEm:
-                            serverTimestamp()
-                    }
+                throw new Error(
+                    "Vendedor não encontrado."
                 );
 
             }
+
+
+            const vendedor =
+                vendedorSnap.data();
+
+
+            if(
+                vendedor.perfil !== "VENDEDOR" ||
+                vendedor.ativo !== true
+            ){
+
+                throw new Error(
+                    "Vendedor inativo."
+                );
+
+            }
+
+
+            const sorteioRef =
+                doc(db,"sorteios",sorteioId);
+
+            const sorteioSnap =
+                await transaction.get(sorteioRef);
+
+
+            if(!sorteioSnap.exists()){
+
+                throw new Error(
+                    "Sorteio não encontrado."
+                );
+
+            }
+
+
+            const sorteioAtual =
+                sorteioSnap.data();
+
+
+            if(!sorteioAtual.ativo){
+
+                throw new Error(
+                    "Sorteio desativado."
+                );
+
+            }
+
+
+            const agora =
+                new Date();
+
+
+            if(
+                sorteioAtual.horarioFechamento
+            ){
+
+                const [h,m] =
+                    sorteioAtual
+                    .horarioFechamento
+                    .split(":")
+                    .map(Number);
+
+
+                const fechamento =
+                    new Date(agora);
+
+                fechamento.setHours(h,m,0,0);
+
+
+                if(agora >= fechamento){
+
+                    throw new Error(
+                        "O sorteio já está fechado."
+                    );
+
+                }
+
+            }
+
+
+            const saldoAtual =
+                Number(vendedor.saldoVirtual || 0);
+
+
+            if(saldoAtual < valor){
+
+                throw new Error(
+                    "Saldo virtual insuficiente."
+                );
+
+            }
+
+
+            const novoSaldo =
+                saldoAtual - valor;
+
+
+            const apostaRef =
+                doc(collection(db,"apostas"));
+
+
+            transaction.set(apostaRef,{
+
+                codigoBilhete,
+
+                vendedorId:
+                    usuarioAtual.uid,
+
+                vendedorNome:
+                    vendedor.nome || "",
+
+                sorteioId,
+
+                sorteioNome:
+                    sorteioAtual.nome || "",
+
+                data,
+
+                modalidade,
+
+                numero:
+                    modalidade === "GRUPO"
+                    ? null
+                    : numero,
+
+                numeroTexto,
+
+                grupoNumero,
+
+                valor,
+
+                cotacao,
+
+                premioVirtual,
+
+                status:"PENDENTE",
+
+                criadoEm:
+                    serverTimestamp()
+
+            });
+
+
+            transaction.update(
+                vendedorRef,
+                {
+                    saldoVirtual:novoSaldo
+                }
+            );
+
+
+            bilheteId =
+                apostaRef.id;
+
+        });
+
+
+        usuarioAtual.saldoVirtual =
+            Number(usuarioAtual.saldoVirtual || 0)
+            - valor;
+
+
+        atualizarSaldo(
+            usuarioAtual.saldoVirtual
         );
 
-        usuarioAtual.saldoVirtual=
-            saldoFinal;
-
-        atualizarSaldo();
 
         mostrarMensagem(
-            "Aposta registrada com sucesso!",
+            `Aposta registrada! Bilhete: ${codigoBilhete}`,
             "sucesso"
         );
 
-        numero.value="";
-        valor.value="";
 
-        atualizarResumoAposta();
+        document.getElementById("numero").value = "";
+        document.getElementById("valorAposta").value = "";
+        document.getElementById("modalidade").value = "";
+        document.getElementById("sorteioAposta").value = "";
 
-    }catch(e){
-
-        console.error(e);
-
-        mostrarMensagem(
-            e.message||
-            "Erro ao registrar aposta.",
-            "erro"
-        );
-
-    }finally{
-
-        btn.disabled=false;
-        btn.textContent="Registrar Aposta";
-
-    }
-
-});
+        document.getElementById("previewAposta")
+            .style.display = "none";
 
 
-/* =====================================================
-   MOVIMENTAÇÃO
-===================================================== */
-
-document
-.getElementById("btnPesquisarMovimentacao")
-.addEventListener(
-    "click",
-    carregarMovimentacao
-);
+        await carregarBilhetes();
 
 
-async function carregarMovimentacao(){
+        /*
+         * Abre automaticamente a impressão
+         * depois de registrar a aposta.
+         */
+        setTimeout(()=>{
 
-    const inicial =
-        document.getElementById(
-            "dataInicial"
-        ).value;
-
-    const final =
-        document.getElementById(
-            "dataFinal"
-        ).value;
-
-    if(!inicial||!final){
-
-        mostrarMensagem(
-            "Informe a data inicial e final.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-    if(inicial>final){
-
-        mostrarMensagem(
-            "A data inicial não pode ser maior que a data final.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-    document.getElementById(
-        "periodoSelecionado"
-    ).textContent =
-        `Período: ${inicial} até ${final}`;
-
-    document.getElementById(
-        "listaMovimentacao"
-    ).innerHTML = `
-        <tr>
-            <td colspan="8" class="vazio">
-                Carregando...
-            </td>
-        </tr>
-    `;
-
-    try{
-
-        const q =
-            query(
-                collection(db,"apostas"),
-                where(
-                    "vendedorId",
-                    "==",
-                    usuarioAtual.uid
-                )
-            );
-
-        const snap =
-            await getDocs(q);
-
-        const lista=[];
-
-        snap.forEach(d=>{
-
-            const a={
-                id:d.id,
-                ...d.data()
-            };
-
-            if(
-                a.data>=inicial &&
-                a.data<=final
-            ){
-
-                lista.push(a);
-
-            }
-
-        });
-
-        lista.sort((a,b)=>{
-
-            if(a.data!==b.data){
-                return b.data.localeCompare(a.data);
-            }
-
-            const ta =
-                a.criadoEm?.toMillis
-                ? a.criadoEm.toMillis()
-                : 0;
-
-            const tb =
-                b.criadoEm?.toMillis
-                ? b.criadoEm.toMillis()
-                : 0;
-
-            return tb-ta;
-
-        });
-
-        calcularResumoMovimentacao(lista);
-
-        renderizarMovimentacao(lista);
-
-    }catch(e){
-
-        console.error(e);
-
-        document.getElementById(
-            "listaMovimentacao"
-        ).innerHTML=`
-            <tr>
-                <td colspan="8" class="vazio">
-                    Erro ao carregar movimentação.
-                </td>
-            </tr>
-        `;
-
-    }
-
-}
-
-
-/* =====================================================
-   CÁLCULO DO RESUMO
-===================================================== */
-
-function calcularResumoMovimentacao(lista){
-
-    /*
-       CANCELADOS NÃO ENTRAM NO APURADO.
-
-       APURADO =
-       soma dos valores das apostas válidas.
-
-       COMISSÃO =
-       15% do apurado.
-
-       PRÊMIOS =
-       soma de premioVirtual somente
-       dos bilhetes premiados.
-
-       SALDO FINAL =
-       apurado - comissão - prêmios.
-    */
-
-    let apurado=0;
-    let totalPremios=0;
-
-    lista.forEach(a=>{
-
-        if(a.status==="CANCELADO"){
-            return;
-        }
-
-        apurado += Number(a.valor||0);
-
-        if(a.status==="PREMIADO"){
-
-            totalPremios +=
-                Number(
-                    a.premioVirtual||0
+            const bilhete =
+                bilhetes.find(
+                    b => b.id === bilheteId
                 );
 
-        }
+            if(bilhete){
 
-    });
-
-    const comissao =
-        apurado*0.15;
-
-    const saldoFinal =
-        apurado-comissao-totalPremios;
-
-    document.getElementById(
-        "movSaldo"
-    ).textContent =
-        moeda(
-            usuarioAtual.saldoVirtual||0
-        );
-
-    document.getElementById(
-        "movApurado"
-    ).textContent =
-        moeda(apurado);
-
-    document.getElementById(
-        "movComissao"
-    ).textContent =
-        moeda(comissao);
-
-    document.getElementById(
-        "movPremios"
-    ).textContent =
-        moeda(totalPremios);
-
-    document.getElementById(
-        "movSaldoFinal"
-    ).textContent =
-        moeda(saldoFinal);
-
-}
-
-
-/* =====================================================
-   RENDERIZAR MOVIMENTAÇÃO
-===================================================== */
-
-function renderizarMovimentacao(lista){
-
-    const tbody =
-        document.getElementById(
-            "listaMovimentacao"
-        );
-
-    if(!lista.length){
-
-        tbody.innerHTML=`
-            <tr>
-                <td colspan="8" class="vazio">
-                    Nenhum bilhete encontrado no período.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-    tbody.innerHTML =
-        lista.map(a=>{
-
-            const numeroExibicao =
-                a.modalidade==="GRUPO"
-                ?`Grupo ${a.grupoNumero??"-"}`
-                :(a.numeroTexto||
-                  a.numero||
-                  "-");
-
-            const premio =
-                a.status==="PREMIADO"
-                ?moeda(a.premioVirtual||0)
-                :"—";
-
-            return `
-                <tr>
-
-                    <td class="codigo">
-                        ${escapar(a.codigoBilhete)}
-                    </td>
-
-                    <td>
-                        ${escapar(a.data)}
-                    </td>
-
-                    <td>
-                        ${escapar(a.sorteioNome)}
-                    </td>
-
-                    <td>
-                        ${escapar(a.modalidade)}
-                    </td>
-
-                    <td>
-                        ${escapar(numeroExibicao)}
-                    </td>
-
-                    <td>
-                        ${moeda(a.valor)}
-                    </td>
-
-                    <td class="status ${
-                        classeStatus(a.status)
-                    }">
-                        ${textoStatus(a.status)}
-                    </td>
-
-                    <td class="${
-                        a.status==="PREMIADO"
-                        ?"resultado-premio":""
-                    }">
-                        ${premio}
-                    </td>
-
-                </tr>
-            `;
-
-        }).join("");
-
-}
-
-
-/* =====================================================
-   CONFERIR RESULTADOS DO DIA
-===================================================== */
-
-document
-.getElementById("btnConferirResultados")
-.addEventListener(
-    "click",
-    conferirResultadosDoDia
-);
-
-
-async function conferirResultadosDoDia(){
-
-    const data =
-        document.getElementById(
-            "dataConferencia"
-        ).value;
-
-    if(!data){
-
-        mostrarMensagem(
-            "Escolha o dia para conferir.",
-            "erro"
-        );
-
-        return;
-
-    }
-
-    const area =
-        document.getElementById(
-            "resultadoDia"
-        );
-
-    area.innerHTML =
-        `<div class="resultado-dia">
-            Consultando resultados...
-        </div>`;
-
-    try{
-
-        /*
-           Busca os bilhetes do vendedor
-           daquele dia.
-        */
-
-        const qApostas =
-            query(
-                collection(db,"apostas"),
-                where(
-                    "vendedorId",
-                    "==",
-                    usuarioAtual.uid
-                ),
-                where(
-                    "data",
-                    "==",
-                    data
-                )
-            );
-
-        const snapApostas =
-            await getDocs(qApostas);
-
-        const apostas=[];
-
-        snapApostas.forEach(d=>{
-
-            apostas.push({
-                id:d.id,
-                ...d.data()
-            });
-
-        });
-
-        if(!apostas.length){
-
-            area.innerHTML=`
-                <div class="resultado-dia">
-                    Nenhum bilhete encontrado neste dia.
-                </div>
-            `;
-
-            return;
-
-        }
-
-        /*
-           Busca os resultados de cada sorteio
-           daquele dia.
-
-           O ID usado pelo MASTER é:
-           sorteioId_data
-        */
-
-        const resultados={};
-
-        for(const aposta of apostas){
-
-            if(!resultados[aposta.sorteioId]){
-
-                const resultadoRef =
-                    doc(
-                        db,
-                        "resultados",
-                        `${aposta.sorteioId}_${data}`
-                    );
-
-                const resultadoSnap =
-                    await getDoc(
-                        resultadoRef
-                    );
-
-                resultados[aposta.sorteioId] =
-                    resultadoSnap.exists()
-                    ?resultadoSnap.data()
-                    :null;
+                imprimirBilhete(bilhete);
 
             }
 
-        }
+        },300);
 
-        renderizarConferencia(
-            apostas,
-            resultados,
-            data
+
+    }catch(erro){
+
+        console.error(erro);
+
+        mostrarMensagem(
+            erro.message ||
+            "Não foi possível registrar a aposta.",
+            "erro"
         );
 
-    }catch(e){
-
-        console.error(e);
-
-        area.innerHTML=`
-            <div class="mensagem erro">
-                Erro ao consultar os resultados.
-            </div>
-        `;
-
     }
 
 }
 
 
-/* =====================================================
-   APURAÇÃO VISUAL DOS BILHETES
-===================================================== */
-
-function renderizarConferencia(
-    apostas,
-    resultados,
-    data
-){
-
-    const area =
-        document.getElementById(
-            "resultadoDia"
-        );
-
-    let html="";
-
-    html += `
-        <div class="resultado-dia">
-
-            <h3 style="margin-bottom:15px">
-                Resultados de ${escapar(data)}
-            </h3>
-    `;
-
-    const gruposPorSorteio={};
-
-    apostas.forEach(a=>{
-
-        if(!gruposPorSorteio[a.sorteioId]){
-            gruposPorSorteio[a.sorteioId]=[];
-        }
-
-        gruposPorSorteio[a.sorteioId].push(a);
-
-    });
-
-
-    for(const sorteioId in gruposPorSorteio){
-
-        const lista =
-            gruposPorSorteio[sorteioId];
-
-        const primeiro =
-            resultados[sorteioId];
-
-        html += `
-            <div style="
-                margin-top:15px;
-                padding-top:15px;
-                border-top:1px solid #ddd;
-            ">
-
-                <strong>
-                    ${escapar(
-                        lista[0].sorteioNome||
-                        "Sorteio"
-                    )}
-                </strong>
-        `;
-
-        if(!primeiro){
-
-            html += `
-                <p class="info" style="margin-top:8px">
-                    Resultado ainda não lançado pelo MASTER.
-                </p>
-            `;
-
-        }else{
-
-            const premios = [
-                primeiro.premio1,
-                primeiro.premio2,
-                primeiro.premio3,
-                primeiro.premio4,
-                primeiro.premio5
-            ].filter(Boolean);
-
-            html += `
-                <div style="margin-top:10px">
-
-                    <strong>
-                        Resultado:
-                    </strong>
-
-                    ${premios.map(
-                        (p,i)=>
-                        `<span style="
-                            display:inline-block;
-                            margin:4px;
-                            padding:7px 10px;
-                            background:#e5e7eb;
-                            border-radius:6px;
-                        ">
-                            ${i+1}º:
-                            ${escapar(formatarMilhar(p))}
-                        </span>`
-                    ).join("")}
-
-                </div>
-            `;
-
-        }
-
-        html += `</div>`;
-
-    }
-
-
-    html += `
-        </div>
-
-        <div class="resultado-dia">
-
-            <h3 style="margin-bottom:15px">
-                Bilhetes
-            </h3>
-
-            <div class="tabela-container">
-
-                <table class="tabela">
-
-                    <thead>
-                        <tr>
-                            <th>Bilhete</th>
-                            <th>Sorteio</th>
-                            <th>Modalidade</th>
-                            <th>Número</th>
-                            <th>Valor</th>
-                            <th>Status</th>
-                            <th>Prêmio</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-    `;
-
-
-    apostas.forEach(a=>{
-
-        const resultado =
-            resultados[a.sorteioId];
-
-        const statusCalculado =
-            determinarStatus(
-                a,
-                resultado
-            );
-
-        const numeroExibicao =
-            a.modalidade==="GRUPO"
-            ?`Grupo ${a.grupoNumero??"-"}`
-            :(a.numeroTexto||
-              a.numero||
-              "-");
-
-        let premioBilhete=0;
-
-        if(
-            statusCalculado==="PREMIADO"
-        ){
-
-            premioBilhete =
-                Number(a.valor||0) *
-                Number(a.cotacao||0);
-
-        }
-
-        html += `
-            <tr>
-
-                <td class="codigo">
-                    ${escapar(a.codigoBilhete)}
-                </td>
-
-                <td>
-                    ${escapar(a.sorteioNome)}
-                </td>
-
-                <td>
-                    ${escapar(a.modalidade)}
-                </td>
-
-                <td>
-                    ${escapar(numeroExibicao)}
-                </td>
-
-                <td>
-                    ${moeda(a.valor)}
-                </td>
-
-                <td class="status ${
-                    classeStatus(statusCalculado)
-                }">
-                    ${textoStatus(statusCalculado)}
-                </td>
-
-                <td>
-                    ${
-                        premioBilhete
-                        ?moeda(premioBilhete)
-                        :"—"
-                    }
-                </td>
-
-            </tr>
-        `;
-
-    });
-
-
-    html += `
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-    `;
-
-    area.innerHTML=html;
-
-}
-
-
-/* =====================================================
-   FORMATAR MILHAR
-===================================================== */
-
-function formatarMilhar(valor){
-
-    if(valor===null||
-       valor===undefined||
-       valor===""){
-        return "";
-    }
-
-    return String(valor)
-        .replace(/\D/g,"")
-        .padStart(4,"0")
-        .slice(-4);
-
-}
-
-
-/* =====================================================
-   DETERMINAR STATUS
-===================================================== */
-
-function determinarStatus(
-    aposta,
-    resultado
-){
-
-    if(aposta.status==="CANCELADO"){
-        return "CANCELADO";
-    }
-
-    if(aposta.status==="PREMIADO"){
-        return "PREMIADO";
-    }
-
-    if(aposta.status==="NAO_PREMIADO"){
-        return "NAO_PREMIADO";
-    }
-
-    if(!resultado){
-        return "PENDENTE";
-    }
-
-    /*
-       Somente o 1º prêmio participa
-       da apuração.
-    */
-
-    const primeiro =
-        resultado.premio1;
-
-    if(
-        primeiro===null||
-        primeiro===undefined||
-        primeiro===""
-    ){
-
-        return "PENDENTE";
-
-    }
-
-    const milhar =
-        formatarMilhar(primeiro);
-
-    const centena =
-        milhar.slice(-3);
-
-    const dezena =
-        milhar.slice(-2);
-
-    const grupoEncontrado =
-        encontrarGrupo(dezena);
-
-
-    if(
-        aposta.modalidade==="MILHAR" &&
-        aposta.numeroTexto===milhar
-    ){
-        return "PREMIADO";
-    }
-
-
-    if(
-        aposta.modalidade==="CENTENA" &&
-        aposta.numeroTexto===centena
-    ){
-        return "PREMIADO";
-    }
-
-
-    if(
-        aposta.modalidade==="DEZENA" &&
-        aposta.numeroTexto===dezena
-    ){
-        return "PREMIADO";
-    }
-
-
-    if(
-        aposta.modalidade==="GRUPO" &&
-        Number(aposta.grupoNumero)===
-        Number(grupoEncontrado?.numero)
-    ){
-        return "PREMIADO";
-    }
-
-
-    return "NAO_PREMIADO";
-
-}
-
-
-function encontrarGrupo(dezena){
-
-    const grupo =
-        GRUPOS.find(g=>
-            g.dezenas.includes(dezena)
-        );
-
-    return grupo||null;
-
-}
-
-
-/* =====================================================
-   STATUS
-===================================================== */
-
-function classeStatus(status){
-
-    if(status==="PREMIADO"){
-        return "premiado";
-    }
-
-    if(status==="NAO_PREMIADO"){
-        return "nao-premiado";
-    }
-
-    if(status==="CANCELADO"){
-        return "cancelado";
-    }
-
-    return "pendente";
-
-}
-
-
-function textoStatus(status){
-
-    const mapa={
-        PENDENTE:"PENDENTE",
-        CANCELADO:"CANCELADO",
-        PREMIADO:"PREMIADO",
-        NAO_PREMIADO:"NÃO PREMIADO"
-    };
-
-    return mapa[status]||status;
-
-}
-
-
-/* =====================================================
-   BILHETES
-===================================================== */
+/* =========================
+   CARREGAR BILHETES
+========================= */
 
 async function carregarBilhetes(){
 
-    listaBilhetes.innerHTML=`
-        <tr>
-            <td colspan="8" class="vazio">
-                Carregando...
-            </td>
-        </tr>
-    `;
+    if(!usuarioAtual) return;
 
-    try{
 
-        const q =
-            query(
-                collection(db,"apostas"),
-                where(
-                    "vendedorId",
-                    "==",
-                    usuarioAtual.uid
-                )
-            );
+    const snap = await getDocs(
+        query(
+            collection(db,"apostas"),
+            where(
+                "vendedorId",
+                "==",
+                usuarioAtual.uid
+            )
+        )
+    );
 
-        const snap =
-            await getDocs(q);
 
-        bilhetes=[];
+    bilhetes = [];
 
-        snap.forEach(d=>{
+    snap.forEach(item=>{
 
-            bilhetes.push({
-                id:d.id,
-                ...d.data()
-            });
-
+        bilhetes.push({
+            id:item.id,
+            ...item.data()
         });
 
-        bilhetes.sort((a,b)=>{
+    });
 
-            const ta =
-                a.criadoEm?.toMillis
-                ?a.criadoEm.toMillis()
-                :0;
 
-            const tb =
-                b.criadoEm?.toMillis
-                ?b.criadoEm.toMillis()
-                :0;
+    bilhetes.sort((a,b)=>{
 
-            return tb-ta;
+        const da =
+            a.criadoEm?.toMillis
+            ? a.criadoEm.toMillis()
+            : 0;
 
-        });
+        const db =
+            b.criadoEm?.toMillis
+            ? b.criadoEm.toMillis()
+            : 0;
 
-        renderizarBilhetes();
+        return db - da;
 
-    }catch(e){
+    });
 
-        console.error(e);
 
-        listaBilhetes.innerHTML=`
-            <tr>
-                <td colspan="8" class="vazio">
-                    Erro ao carregar bilhetes.
-                </td>
-            </tr>
-        `;
-
-    }
+    renderizarBilhetes();
+    atualizarResumoHoje();
 
 }
 
 
-function podeCancelar(a){
+/* =========================
+   STATUS
+========================= */
 
-    if(a.status!=="PENDENTE"){
-        return false;
-    }
+function classeStatus(status){
 
-    if(!a.criadoEm){
-        return false;
-    }
+    if(status === "PENDENTE")
+        return "status-pendente";
 
-    return Date.now()-
-        a.criadoEm.toMillis()
-        <=5*60*1000;
+    if(status === "PREMIADO")
+        return "status-premiado";
+
+    if(status === "CANCELADO")
+        return "status-cancelado";
+
+    return "status-nao";
 
 }
 
+
+/* =========================
+   RENDERIZAR BILHETES
+========================= */
 
 function renderizarBilhetes(){
 
-    if(!bilhetes.length){
+    const tbody =
+        document.getElementById("tabelaBilhetes");
 
-        listaBilhetes.innerHTML=`
+    const filtroData =
+        document.getElementById("filtroDataBilhete").value;
+
+    const filtroCodigo =
+        document.getElementById("filtroCodigo")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    let lista = [...bilhetes];
+
+
+    if(filtroData){
+
+        lista =
+            lista.filter(
+                b => b.data === filtroData
+            );
+
+    }
+
+
+    if(filtroCodigo){
+
+        lista =
+            lista.filter(
+                b =>
+                    String(b.codigoBilhete || "")
+                    .toLowerCase()
+                    .includes(filtroCodigo)
+            );
+
+    }
+
+
+    tbody.innerHTML = "";
+
+
+    if(!lista.length){
+
+        tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="vazio">
+                <td colspan="9" class="vazio">
                     Nenhum bilhete encontrado.
                 </td>
             </tr>
         `;
 
         return;
-
     }
 
-    listaBilhetes.innerHTML =
-        bilhetes.map(a=>{
 
-            const numeroExibicao =
-                a.modalidade==="GRUPO"
-                ?`Grupo ${a.grupoNumero??"-"}`
-                :(a.numeroTexto||
-                  a.numero||
-                  "-");
+    lista.forEach(bilhete=>{
 
-            return `
-                <tr>
+        const tr =
+            document.createElement("tr");
 
-                    <td class="codigo">
-                        ${escapar(a.codigoBilhete)}
-                    </td>
 
-                    <td>
-                        ${escapar(a.data)}
-                    </td>
+        tr.innerHTML = `
 
-                    <td>
-                        ${escapar(a.sorteioNome)}
-                    </td>
+            <td>
+                <strong>
+                    ${escapar(bilhete.codigoBilhete)}
+                </strong>
+            </td>
 
-                    <td>
-                        ${escapar(a.modalidade)}
-                    </td>
+            <td>
+                ${obterDataHora(bilhete.criadoEm)}
+            </td>
 
-                    <td>
-                        ${escapar(numeroExibicao)}
-                    </td>
+            <td>
+                ${escapar(bilhete.sorteioNome)}
+            </td>
 
-                    <td>
-                        ${moeda(a.valor)}
-                    </td>
+            <td>
+                ${escapar(bilhete.modalidade)}
+            </td>
 
-                    <td class="status ${
-                        classeStatus(a.status)
-                    }">
-                        ${textoStatus(a.status)}
-                    </td>
+            <td>
+                ${escapar(numeroFormatado(bilhete))}
+            </td>
 
-                    <td>
-                        ${
-                            podeCancelar(a)
-                            ?`
-                                <button
-                                    class="btn btn-perigo"
-                                    style="padding:7px 10px"
-                                    onclick="cancelarAposta('${a.id}')"
-                                >
-                                    Cancelar
-                                </button>
-                            `
-                            :"—"
-                        }
-                    </td>
+            <td>
+                ${dinheiro(bilhete.valor)}
+            </td>
 
-                </tr>
-            `;
+            <td>
+                ${dinheiro(
+                    Number(bilhete.valor || 0) *
+                    Number(bilhete.cotacao || 0)
+                )}
+            </td>
 
-        }).join("");
+            <td>
+                <span class="status ${classeStatus(bilhete.status)}">
+                    ${escapar(
+                        bilhete.status || "PENDENTE"
+                    )}
+                </span>
+            </td>
+
+            <td>
+                <div class="acoes">
+
+                    <button
+                        class="btn-print btn-small"
+                        onclick="imprimirPorId('${bilhete.id}')"
+                    >
+                        🖨️ Imprimir
+                    </button>
+
+                    ${
+                        bilhete.status === "PENDENTE"
+                        ? `
+                            <button
+                                class="btn-danger btn-small"
+                                onclick="cancelarPorId('${bilhete.id}')"
+                            >
+                                Cancelar
+                            </button>
+                        `
+                        : ""
+                    }
+
+                </div>
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
 
 }
 
 
-/* =====================================================
-   CANCELAMENTO
-===================================================== */
+/* =========================
+   FILTRO
+========================= */
 
-window.cancelarAposta=async function(id){
+document.getElementById("btnFiltrarBilhetes")
+.addEventListener("click",renderizarBilhetes);
 
-    if(!confirm(
-        "Deseja realmente cancelar este bilhete?\n\n"+
-        "O valor será devolvido ao saldo virtual."
-    )){
+
+/* =========================
+   IMPRIMIR BILHETE
+========================= */
+
+window.imprimirPorId = function(id){
+
+    const bilhete =
+        bilhetes.find(b => b.id === id);
+
+    if(!bilhete){
+
+        mostrarMensagem(
+            "Bilhete não encontrado.",
+            "erro"
+        );
+
         return;
     }
 
+    imprimirBilhete(bilhete);
+
+};
+
+
+window.imprimirBilhete = function(bilhete){
+
+    const premio =
+        Number(bilhete.valor || 0) *
+        Number(bilhete.cotacao || 0);
+
+
+    const numero =
+        numeroFormatado(bilhete);
+
+
+    const dataHora =
+        obterDataHora(bilhete.criadoEm);
+
+
+    const status =
+        bilhete.status || "PENDENTE";
+
+
+    const janela =
+        window.open(
+            "",
+            "_blank",
+            "width=450,height=700"
+        );
+
+
+    if(!janela){
+
+        mostrarMensagem(
+            "O navegador bloqueou a janela de impressão. Permita pop-ups para este site.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Bilhete ${escapar(bilhete.codigoBilhete)}</title>
+
+<style>
+
+@page{
+    size:90mm auto;
+    margin:0;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:90mm;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    color:#000;
+    background:#fff;
+    font-size:12px;
+    padding:4mm;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+.cupom{
+    width:82mm;
+    margin:0 auto;
+}
+
+.centro{
+    text-align:center;
+}
+
+.titulo{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:3px;
+}
+
+.subtitulo{
+    font-size:11px;
+    margin-bottom:8px;
+}
+
+.linha{
+    border-top:1px dashed #000;
+    margin:7px 0;
+}
+
+.codigo{
+    font-size:17px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-align:center;
+    margin:8px 0;
+}
+
+.item{
+    margin:5px 0;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.valor{
+    font-size:15px;
+    font-weight:bold;
+}
+
+.premio{
+    border:1px solid #000;
+    padding:7px;
+    text-align:center;
+    margin-top:8px;
+}
+
+.premio .numero{
+    font-size:17px;
+    font-weight:bold;
+}
+
+.status{
+    text-align:center;
+    font-weight:bold;
+    font-size:14px;
+    margin-top:8px;
+}
+
+.rodape{
+    text-align:center;
+    margin-top:12px;
+    font-size:10px;
+    line-height:1.4;
+}
+
+.conferencia{
+    margin-top:12px;
+    border-top:1px dashed #000;
+    padding-top:8px;
+}
+
+.assinatura{
+    height:20mm;
+}
+
+@media print{
+
+    body{
+        width:90mm;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="cupom">
+
+```
+<div class="centro">
+
+    <div class="titulo">
+        SIMULADOR
+    </div>
+
+    <div class="subtitulo">
+        COMPROVANTE DE APOSTA
+    </div>
+
+</div>
+
+
+<div class="linha"></div>
+
+
+<div class="codigo">
+    ${escapar(bilhete.codigoBilhete)}
+</div>
+
+
+<div class="linha"></div>
+
+
+<div class="item">
+    <span class="label">Data/Hora:</span><br>
+    ${escapar(dataHora)}
+</div>
+
+
+<div class="item">
+    <span class="label">Vendedor:</span><br>
+    ${escapar(bilhete.vendedorNome || usuarioAtual?.nome || "")}
+</div>
+
+
+<div class="item">
+    <span class="label">Sorteio:</span><br>
+    ${escapar(bilhete.sorteioNome)}
+</div>
+
+
+<div class="item">
+    <span class="label">Modalidade:</span><br>
+    ${escapar(bilhete.modalidade)}
+</div>
+
+
+<div class="item">
+    <span class="label">Aposta:</span><br>
+    ${escapar(numero)}
+</div>
+
+
+<div class="item">
+    <span class="label">Valor apostado:</span><br>
+
+    <span class="valor">
+        ${dinheiro(bilhete.valor)}
+    </span>
+
+</div>
+
+
+<div class="item">
+    <span class="label">Cotação:</span><br>
+    ${Number(bilhete.cotacao || 0).toLocaleString("pt-BR")}x
+</div>
+
+
+<div class="premio">
+
+    <div>
+        PRÊMIO POSSÍVEL
+    </div>
+
+    <div class="numero">
+        ${dinheiro(premio)}
+    </div>
+
+</div>
+
+
+<div class="status">
+    STATUS: ${escapar(status)}
+</div>
+
+
+<div class="conferencia">
+
+    <strong>CONFERÊNCIA DO RESULTADO</strong>
+
+    <br><br>
+
+    1º Prêmio: __________________
+
+    <br><br>
+
+    Conferido em: _______________
+
+</div>
+
+
+<div class="assinatura"></div>
+
+
+<div class="linha"></div>
+
+
+<div class="rodape">
+
+    Bilhete fictício para fins de simulação e estudo.<br>
+    Este sistema não realiza apostas ou pagamentos reais.
+
+</div>
+```
+
+</div>
+
+<script>
+
+window.onload = function(){
+
+    setTimeout(function(){
+
+        window.focus();
+        window.print();
+
+    },300);
+
+};
+
+
+window.onafterprint = function(){
+
+    setTimeout(function(){
+
+        window.close();
+
+    },500);
+
+};
+
+<\/script>
+
+</body>
+
+</html>
+
+    `;
+
+
+    janela.document.open();
+    janela.document.write(html);
+    janela.document.close();
+
+};
+
+
+/* =========================
+   CANCELAMENTO
+========================= */
+
+window.cancelarPorId = async function(id){
+
+    const bilhete =
+        bilhetes.find(b => b.id === id);
+
+
+    if(!bilhete){
+
+        mostrarMensagem(
+            "Bilhete não encontrado.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(bilhete.status !== "PENDENTE"){
+
+        mostrarMensagem(
+            "Este bilhete não pode mais ser cancelado.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(!bilhete.criadoEm){
+
+        mostrarMensagem(
+            "Não foi possível verificar o horário da aposta.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const criado =
+        bilhete.criadoEm.toDate
+        ? bilhete.criadoEm.toDate()
+        : null;
+
+
+    if(!criado){
+
+        mostrarMensagem(
+            "Horário do bilhete inválido.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const diferenca =
+        Date.now() - criado.getTime();
+
+
+    if(diferenca > 5 * 60 * 1000){
+
+        mostrarMensagem(
+            "O prazo de 5 minutos para cancelamento terminou.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    if(!confirm(
+        "Deseja realmente cancelar este bilhete?"
+    )){
+
+        return;
+    }
+
+
     try{
 
-        const apostaRef =
-            doc(db,"apostas",id);
+        await runTransaction(db,async transaction=>{
 
-        const usuarioRef =
-            doc(
-                db,
-                "usuarios",
-                usuarioAtual.uid
-            );
+            const apostaRef =
+                doc(db,"apostas",id);
 
-        let novoSaldo=0;
+            const vendedorRef =
+                doc(db,"usuarios",usuarioAtual.uid);
 
-        await runTransaction(
-            db,
-            async transaction=>{
 
-                const apostaSnap =
-                    await transaction.get(
-                        apostaRef
-                    );
+            const apostaSnap =
+                await transaction.get(apostaRef);
 
-                if(!apostaSnap.exists()){
+            const vendedorSnap =
+                await transaction.get(vendedorRef);
 
-                    throw new Error(
-                        "Bilhete não encontrado."
-                    );
 
-                }
+            if(!apostaSnap.exists()){
 
-                const aposta =
-                    apostaSnap.data();
-
-                if(
-                    aposta.vendedorId !==
-                    usuarioAtual.uid
-                ){
-
-                    throw new Error(
-                        "Este bilhete não pertence a você."
-                    );
-
-                }
-
-                if(
-                    aposta.status!=="PENDENTE"
-                ){
-
-                    throw new Error(
-                        "Este bilhete não pode mais ser cancelado."
-                    );
-
-                }
-
-                if(
-                    !aposta.criadoEm ||
-                    Date.now()-
-                    aposta.criadoEm.toMillis()
-                    >5*60*1000
-                ){
-
-                    throw new Error(
-                        "O prazo de 5 minutos terminou."
-                    );
-
-                }
-
-                const userSnap =
-                    await transaction.get(
-                        usuarioRef
-                    );
-
-                if(!userSnap.exists()){
-
-                    throw new Error(
-                        "Vendedor não encontrado."
-                    );
-
-                }
-
-                const dados =
-                    userSnap.data();
-
-                const saldo =
-                    Number(
-                        dados.saldoVirtual||0
-                    );
-
-                novoSaldo =
-                    saldo+
-                    Number(aposta.valor||0);
-
-                transaction.update(
-                    usuarioRef,
-                    {
-                        saldoVirtual:novoSaldo
-                    }
-                );
-
-                transaction.update(
-                    apostaRef,
-                    {
-                        status:"CANCELADO",
-                        canceladoEm:
-                            serverTimestamp(),
-                        canceladoPor:
-                            usuarioAtual.uid
-                    }
+                throw new Error(
+                    "Bilhete não encontrado."
                 );
 
             }
+
+
+            const aposta =
+                apostaSnap.data();
+
+
+            if(aposta.status !== "PENDENTE"){
+
+                throw new Error(
+                    "Este bilhete já foi processado."
+                );
+
+            }
+
+
+            const vendedor =
+                vendedorSnap.data();
+
+
+            const saldoAtual =
+                Number(vendedor.saldoVirtual || 0);
+
+
+            const valor =
+                Number(aposta.valor || 0);
+
+
+            transaction.update(
+                apostaRef,
+                {
+                    status:"CANCELADO",
+                    canceladoEm:serverTimestamp()
+                }
+            );
+
+
+            transaction.update(
+                vendedorRef,
+                {
+                    saldoVirtual:
+                        saldoAtual + valor
+                }
+            );
+
+        });
+
+
+        usuarioAtual.saldoVirtual =
+            Number(usuarioAtual.saldoVirtual || 0)
+            + Number(bilhete.valor || 0);
+
+
+        atualizarSaldo(
+            usuarioAtual.saldoVirtual
         );
 
-        usuarioAtual.saldoVirtual=
-            novoSaldo;
-
-        atualizarSaldo();
 
         mostrarMensagem(
             "Bilhete cancelado e saldo devolvido.",
             "sucesso"
         );
 
+
         await carregarBilhetes();
 
-    }catch(e){
 
-        console.error(e);
+    }catch(erro){
+
+        console.error(erro);
 
         mostrarMensagem(
-            e.message||
+            erro.message ||
             "Erro ao cancelar bilhete.",
             "erro"
         );
@@ -3052,242 +2358,585 @@ window.cancelarAposta=async function(id){
 };
 
 
-/* =====================================================
+/* =========================
    CONSULTA DE BILHETE
-===================================================== */
+========================= */
 
-document
-.getElementById("btnConsultar")
-.addEventListener(
-    "click",
-    async()=>{
+document.getElementById("btnConsultarBilhete")
+.addEventListener("click",async()=>{
 
-        const codigo =
-            codigoConsulta.value
-            .trim()
-            .toUpperCase();
+    const codigo =
+        document.getElementById("codigoConsulta")
+        .value
+        .trim();
 
-        if(!codigo){
 
-            mostrarMensagem(
-                "Informe o código do bilhete.",
-                "erro"
-            );
+    const resultado =
+        document.getElementById("resultadoConsulta");
 
-            return;
 
-        }
+    if(!codigo){
 
-        resultadoConsulta.innerHTML=
-            "Consultando...";
+        resultado.innerHTML =
+            `<div class="mensagem erro">
+                Informe o código do bilhete.
+            </div>`;
 
-        try{
+        return;
+    }
 
-            const q =
-                query(
-                    collection(db,"apostas"),
-                    where(
-                        "codigoBilhete",
-                        "==",
-                        codigo
-                    )
-                );
 
-            const snap =
-                await getDocs(q);
+    const encontrado =
+        bilhetes.find(
+            b =>
+                String(b.codigoBilhete)
+                .toLowerCase() ===
+                codigo.toLowerCase()
+        );
 
-            if(snap.empty){
 
-                resultadoConsulta.innerHTML=`
-                    <div class="mensagem erro">
-                        Bilhete não encontrado.
-                    </div>
-                `;
+    if(!encontrado){
 
-                return;
+        resultado.innerHTML =
+            `<div class="mensagem erro" style="display:block">
+                Bilhete não encontrado.
+            </div>`;
 
-            }
+        return;
+    }
 
-            const d=snap.docs[0];
 
-            mostrarResultadoConsulta({
-                id:d.id,
-                ...d.data()
-            });
+    resultado.innerHTML = `
 
-        }catch(e){
+        <div class="resultado-box">
 
-            console.error(e);
+            <h3>
+                ${escapar(encontrado.codigoBilhete)}
+            </h3>
 
-            resultadoConsulta.innerHTML=`
-                <div class="mensagem erro">
-                    Erro ao consultar bilhete.
-                </div>
-            `;
+            <p>
+                <strong>Sorteio:</strong>
+                ${escapar(encontrado.sorteioNome)}
+            </p>
 
-        }
+            <p>
+                <strong>Data:</strong>
+                ${formatarData(encontrado.data)}
+            </p>
+
+            <p>
+                <strong>Modalidade:</strong>
+                ${escapar(encontrado.modalidade)}
+            </p>
+
+            <p>
+                <strong>Aposta:</strong>
+                ${escapar(numeroFormatado(encontrado))}
+            </p>
+
+            <p>
+                <strong>Valor:</strong>
+                ${dinheiro(encontrado.valor)}
+            </p>
+
+            <p>
+                <strong>Prêmio possível:</strong>
+                ${dinheiro(
+                    Number(encontrado.valor || 0) *
+                    Number(encontrado.cotacao || 0)
+                )}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                ${escapar(encontrado.status)}
+            </p>
+
+            <br>
+
+            <button
+                class="btn-print"
+                onclick="imprimirPorId('${encontrado.id}')"
+            >
+                🖨️ Imprimir Bilhete
+            </button>
+
+        </div>
+
+    `;
+
+});
+
+
+/* =========================
+   RESUMO DO DIA
+========================= */
+
+function atualizarResumoHoje(){
+
+    const dataHoje = hoje();
+
+
+    const lista =
+        bilhetes.filter(
+            b => b.data === dataHoje
+        );
+
+
+    const validos =
+        lista.filter(
+            b => b.status !== "CANCELADO"
+        );
+
+
+    const totalVendido =
+        validos.reduce(
+            (s,b) =>
+                s + Number(b.valor || 0),
+            0
+        );
+
+
+    const totalPremios =
+        lista
+        .filter(
+            b => b.status === "PREMIADO"
+        )
+        .reduce(
+            (s,b)=>
+                s + Number(b.premioVirtual || 0),
+            0
+        );
+
+
+    document.getElementById("bilhetesHoje")
+        .textContent = validos.length;
+
+
+    document.getElementById("vendidoHoje")
+        .textContent = dinheiro(totalVendido);
+
+
+    document.getElementById("premiosHoje")
+        .textContent = dinheiro(totalPremios);
+
+}
+
+
+/* =========================
+   MOVIMENTAÇÃO
+========================= */
+
+document.getElementById("btnConsultarMovimentacao")
+.addEventListener("click",consultarMovimentacao);
+
+
+async function consultarMovimentacao(){
+
+    let inicio =
+        document.getElementById("dataInicial").value;
+
+    let fim =
+        document.getElementById("dataFinal").value;
+
+
+    if(!inicio){
+
+        inicio = hoje();
+
+        document.getElementById("dataInicial")
+            .value = inicio;
 
     }
-);
 
 
-function mostrarResultadoConsulta(a){
+    if(!fim){
 
-    const numeroExibicao =
-        a.modalidade==="GRUPO"
-        ?`Grupo ${a.grupoNumero??"-"}`
-        :(a.numeroTexto||
-          a.numero||
-          "-");
+        fim = hoje();
 
-    resultadoConsulta.innerHTML=`
+        document.getElementById("dataFinal")
+            .value = fim;
+
+    }
+
+
+    if(inicio > fim){
+
+        mostrarMensagem(
+            "A data inicial não pode ser maior que a data final.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const lista =
+        bilhetes.filter(b => {
+
+            if(!b.data) return false;
+
+            return b.data >= inicio &&
+                   b.data <= fim;
+
+        });
+
+
+    const validos =
+        lista.filter(
+            b => b.status !== "CANCELADO"
+        );
+
+
+    const apurado =
+        validos.reduce(
+            (s,b)=>
+                s + Number(b.valor || 0),
+            0
+        );
+
+
+    const comissao =
+        apurado * 0.15;
+
+
+    const premios =
+        lista
+        .filter(
+            b => b.status === "PREMIADO"
+        )
+        .reduce(
+            (s,b)=>
+                s + Number(b.premioVirtual || 0),
+            0
+        );
+
+
+    const saldoFinal =
+        apurado -
+        comissao -
+        premios;
+
+
+    const div =
+        document.getElementById("resultadoMovimentacao");
+
+
+    div.innerHTML = `
 
         <div class="card">
 
-            <h2>Resultado do Bilhete</h2>
+            <h2>Resumo do período</h2>
 
-            <div class="resumo">
+            <div class="grid">
 
-                <div>
-                    <span>Código</span>
-                    <strong class="codigo">
-                        ${escapar(a.codigoBilhete)}
+                <div class="info">
+                    Período
+                    <strong style="font-size:18px">
+                        ${formatarData(inicio)}
+                        até
+                        ${formatarData(fim)}
                     </strong>
                 </div>
 
-                <div>
-                    <span>Vendedor</span>
+                <div class="info">
+                    Total apurado
                     <strong>
-                        ${escapar(a.vendedorNome)}
+                        ${dinheiro(apurado)}
                     </strong>
                 </div>
 
-                <div>
-                    <span>Sorteio</span>
+                <div class="info">
+                    Comissão (15%)
                     <strong>
-                        ${escapar(a.sorteioNome)}
+                        ${dinheiro(comissao)}
                     </strong>
                 </div>
 
-                <div>
-                    <span>Data</span>
+                <div class="info">
+                    Prêmios
                     <strong>
-                        ${escapar(a.data)}
+                        ${dinheiro(premios)}
                     </strong>
                 </div>
 
-                <div>
-                    <span>Modalidade</span>
+                <div class="info">
+                    Saldo final
                     <strong>
-                        ${escapar(a.modalidade)}
+                        ${dinheiro(saldoFinal)}
                     </strong>
                 </div>
 
-                <div>
-                    <span>Número</span>
-                    <strong>
-                        ${escapar(numeroExibicao)}
-                    </strong>
-                </div>
+            </div>
 
-                <div>
-                    <span>Valor</span>
-                    <strong>
-                        ${moeda(a.valor)}
-                    </strong>
-                </div>
+            <br>
 
-                <div>
-                    <span>Status</span>
-                    <strong class="status ${
-                        classeStatus(a.status)
-                    }">
-                        ${textoStatus(a.status)}
-                    </strong>
-                </div>
+            <button
+                class="btn-primary"
+                onclick="conferirResultadosPeriodo('${inicio}','${fim}')"
+            >
+                Conferir resultados do dia
+            </button>
 
-                ${
-                    a.status==="PREMIADO"
-                    ?`
-                        <div>
-                            <span>Prêmio virtual</span>
-                            <strong class="premio">
-                                ${moeda(a.premioVirtual||0)}
-                            </strong>
-                        </div>
-                    `
-                    :""
-                }
+        </div>
+
+
+        <div class="card">
+
+            <h2>Bilhetes do período</h2>
+
+            <div class="tabela-scroll">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Bilhete</th>
+                            <th>Data</th>
+                            <th>Sorteio</th>
+                            <th>Aposta</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Prêmio</th>
+                            <th>Ação</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${
+                            lista.length
+                            ? lista.map(b=>`
+
+                                <tr>
+
+                                    <td>
+                                        ${escapar(b.codigoBilhete)}
+                                    </td>
+
+                                    <td>
+                                        ${formatarData(b.data)}
+                                    </td>
+
+                                    <td>
+                                        ${escapar(b.sorteioNome)}
+                                    </td>
+
+                                    <td>
+                                        ${escapar(numeroFormatado(b))}
+                                    </td>
+
+                                    <td>
+                                        ${dinheiro(b.valor)}
+                                    </td>
+
+                                    <td>
+                                        ${escapar(b.status)}
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            b.status === "PREMIADO"
+                                            ? dinheiro(b.premioVirtual)
+                                            : "-"
+                                        }
+                                    </td>
+
+                                    <td>
+
+                                        <button
+                                            class="btn-print btn-small"
+                                            onclick="imprimirPorId('${b.id}')"
+                                        >
+                                            🖨️
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            `).join("")
+                            : `
+                                <tr>
+                                    <td colspan="8" class="vazio">
+                                        Nenhum bilhete no período.
+                                    </td>
+                                </tr>
+                            `
+                        }
+
+                    </tbody>
+
+                </table>
 
             </div>
 
         </div>
+
     `;
 
 }
 
 
-/* =====================================================
-   SAIR
-===================================================== */
+/* =========================
+   CONFERÊNCIA DE RESULTADOS
+========================= */
 
-document
-.getElementById("btnSair")
-.addEventListener("click",async()=>{
+window.conferirResultadosPeriodo =
+async function(inicio,fim){
 
-    try{
-
-        sessionStorage.removeItem("usuario");
-
-        await signOut(auth);
-
-        window.location.replace("login.html");
-
-    }catch(e){
-
-        console.error(e);
-
-    }
-
-});
+    const resultados = [];
 
 
-/* =====================================================
-   ATUALIZAÇÕES
-===================================================== */
+    for(const sorteio of sorteios){
 
-setInterval(()=>{
+        for(
+            let d = new Date(inicio + "T00:00:00");
+            d <= new Date(fim + "T00:00:00");
+            d.setDate(d.getDate()+1)
+        ){
 
-    if(
-        !painel.classList.contains("oculto")
-    ){
-
-        renderizarSorteios();
-
-    }
-
-},30000);
+            const data =
+                d.toISOString().slice(0,10);
 
 
-setInterval(()=>{
+            const id =
+                `${sorteio.id}_${data}`;
 
-    const telaBilhetes =
-        document.getElementById(
-            "tela-bilhetes"
-        );
 
-    if(
-        !telaBilhetes.classList.contains("oculto")
-    ){
+            const ref =
+                doc(db,"resultados",id);
 
-        renderizarBilhetes();
+
+            const snap =
+                await getDoc(ref);
+
+
+            if(snap.exists()){
+
+                resultados.push({
+                    id:snap.id,
+                    sorteioNome:sorteio.nome,
+                    data,
+                    ...snap.data()
+                });
+
+            }
+
+        }
 
     }
 
-},10000);
+
+    let html = `
+
+        <div class="card">
+
+            <h2>Resultados do período</h2>
+
+    `;
+
+
+    if(!resultados.length){
+
+        html += `
+            <div class="vazio">
+                Nenhum resultado lançado no período.
+            </div>
+        `;
+
+    }else{
+
+        resultados.forEach(r=>{
+
+            const primeiro =
+                String(r.premio1 ?? "")
+                .padStart(4,"0");
+
+
+            const dezena =
+                primeiro.slice(-2);
+
+
+            const centena =
+                primeiro.slice(-3);
+
+
+            const grupo =
+                grupoDaDezena(dezena);
+
+
+            html += `
+
+                <div class="resultado-box">
+
+                    <strong>
+                        ${escapar(r.sorteioNome)}
+                    </strong>
+
+                    <br>
+
+                    ${formatarData(r.data)}
+
+                    <p class="numero-grande">
+                        ${escapar(primeiro)}
+                    </p>
+
+                    <p>
+                        Centena:
+                        <strong>${escapar(centena)}</strong>
+                    </p>
+
+                    <p>
+                        Dezena:
+                        <strong>${escapar(dezena)}</strong>
+                    </p>
+
+                    <p>
+                        Grupo:
+                        <strong>
+                            ${
+                                grupo
+                                ? `${grupo.numero} — ${grupo.nome}`
+                                : "-"
+                            }
+                        </strong>
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    html += `</div>`;
+
+
+    document.getElementById("resultadoMovimentacao")
+        .insertAdjacentHTML("beforeend",html);
+
+};
+
+
+/* =========================
+   DATAS PADRÃO
+========================= */
+
+document.getElementById("dataInicial")
+    .value = hoje();
+
+document.getElementById("dataFinal")
+    .value = hoje();
+
+document.getElementById("filtroDataBilhete")
+    .value = hoje();
 
 </script>
 
 </body>
 </html>
-```
