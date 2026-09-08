@@ -18,8 +18,6 @@
 </head>
 <body>
 
-<!-- Slide 0: Painel Inicial -->
-<div id="slide0" class="slide active">
   <h1>Painel Administrativo</h1>
   <div class="buttons">
     <button onclick="window.location.href='https://sistematsps.github.io/1/painel.html'">GRUPO DA SORTE</button>
@@ -32,71 +30,8 @@
     <button onclick="window.location.href='https://sistematsps.github.io/s/login.html'">SAIR</button>
 </div>
 </div>
-
-<!-- Slide 1: PITIMBU DA SORTE -->
-<div id="slide1" class="slide">
-  <h2>PITIMBU DA SORTE</h2>
-  <div class="cards">
-    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
-    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
-    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
-    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
-    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
-    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
-    <div class="card" onclick="goToSlide(0)">Sair</div>
-  </div>
-</div>
-
-<!-- Slide 2: TIMONHA DA SORTE -->
-<div id="slide2" class="slide">
-  <h2>TIMONHA DA SORTE</h2>
-  <div class="cards">
-    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
-    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
-    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
-    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
-    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
-    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
-    <div class="card" onclick="goToSlide(0)">Sair</div>
-  </div>
-</div>
-
-<!-- Slide 3: DEZENA DA SORTE -->
-<div id="slide3" class="slide">
-  <h2>DEZENA DA SORTE</h2>
-  <div class="cards">
-    <div class="card" onclick="window.location.href='vendedor.html'">Cadastro de Vendedor</div>
-    <div class="card" onclick="window.location.href='caixa.html'">Caixa</div>
-    <div class="card" onclick="window.location.href='despesas.html'">Despesas</div>
-    <div class="card" onclick="window.location.href='lancamentos.html'">Lançamentos</div>
-    <div class="card" onclick="window.location.href='relatorio.html'">Relatório Diário</div>
-    <div class="card" onclick="window.location.href='relatoriofinal.html'">Relatório Final</div>
-    <div class="card" onclick="goToSlide(0)">Sair</div>
-  </div>
-</div>
-
-<script>
-function goToSlide(n) {
-  const slides = document.querySelectorAll('.slide');
-  slides.forEach(s => s.classList.remove('active'));
-  document.getElementById('slide' + n).classList.add('active');
-}
-</script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
