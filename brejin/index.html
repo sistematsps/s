@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login com Código e Senha Interna</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-box {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    width: 320px;
+    text-align: center;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 25px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: #007bff;
+  }
+
+  button {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  .msg {
+    margin-top: 15px;
+    font-size: 14px;
+    color: red;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>Login com Código</h2>
+    <input type="text" id="codigo" placeholder="Código do aluno">
+    <input type="password" id="senha" placeholder="Senha interna">
+    <button onclick="verificarLogin()">Entrar</button>
+    <p class="msg" id="msgErro"></p>
+  </div>
+
+<script>
+  // 🔐 Códigos e senhas internas pré-definidas
+  const usuarios = [
+    { codigo: "benedito", senha: "155200", nome: "BENEDITO JUNIOR" },
+    { codigo: "A002", senha: "abcde", nome: "Maria Souza" },
+    { codigo: "A003", senha: "senha2025", nome: "Carlos Lima" }
+  ];
+
+  function verificarLogin() {
+    const codigo = document.getElementById("codigo").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    const msgErro = document.getElementById("msgErro");
+
+    if (codigo === "" || senha === "") {
+      msgErro.innerText = "Preencha todos os campos.";
+      msgErro.style.display = "block";
+      return;
+    }
+
+    // Procura se o código e a senha existem
+    const usuario = usuarios.find(u => u.codigo === codigo && u.senha === senha);
+
+    if (usuario) {
+      msgErro.style.display = "none";
+      // Salva nome e código do aluno na sessão
+      sessionStorage.setItem("alunoNome", usuario.nome);
+      sessionStorage.setItem("alunoCodigo", usuario.codigo);
+      alert(`Bem-vindo, ${usuario.nome}!`);
+      window.location.href = "painel.html"; // Redireciona para o painel
+    } else {
+      msgErro.innerText = "Código ou senha incorretos!";
+      msgErro.style.display = "block";
+    }
+  }
+</script>
+
+</body>
+</html>
