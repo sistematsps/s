@@ -85,7 +85,6 @@ button { cursor:pointer; }
 <h2>Partilha de Recursos</h2>
 <div class="total-box">
 <p>NOVINHO: R$ <span id="benedito">0.00</span></p>
-<p> <span id="jose"></span></p>
 <p>PEDRO CARVALHO: R$ <span id="pedro">0.00</span></p>
 </div>
 
@@ -195,7 +194,6 @@ async function carregarCaixa(inicio='0000-00-00', fim='9999-12-31') {
 
   // ===== Partilha =====
   document.getElementById('benedito').textContent=formatar(saldoFinal*0.50);
-  document.getElementById('jose').textContent=formatar(saldoFinal*0.0);
   document.getElementById('pedro').textContent=formatar(saldoFinal*0.5);
 }
 
