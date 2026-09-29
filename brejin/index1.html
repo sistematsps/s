@@ -3,114 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login com Código e Senha Interna</title>
+
+<title>Login</title>
+
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #007bff, #00c6ff);
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  .login-box {
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    width: 320px;
-    text-align: center;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-  h2 {
-    color: #333;
-    margin-bottom: 25px;
-  }
+.login-box {
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
 
-  input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    outline: none;
-  }
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
 
-  input:focus {
-    border-color: #007bff;
-  }
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
 
-  button {
-    width: 100%;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
 
-  button:hover {
-    background: #0056b3;
-  }
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 25px;
+  border: none;
+  border-radius: 6px;
+  background: #d32f2f;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-  .msg {
-    margin-top: 15px;
-    font-size: 14px;
-    color: red;
-    display: none;
-  }
+button:hover {
+  background: #b71c1c;
+}
+
+#mensagem {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
 </style>
 </head>
+
 <body>
 
-  <div class="login-box">
-    <h2>Login com Código</h2>
-    <input type="text" id="codigo" placeholder="Código do aluno">
-    <input type="password" id="senha" placeholder="Senha interna">
-    <button onclick="verificarLogin()">Entrar</button>
-    <p class="msg" id="msgErro"></p>
-  </div>
+<div class="login-box">
 
-<script>
-  // 🔐 Códigos e senhas internas pré-definidas
-  const usuarios = [
-    { codigo: "benedito", senha: "155200", nome: "BENEDITO JUNIOR" },
-    { codigo: "A002", senha: "abcde", nome: "Maria Souza" },
-    { codigo: "A003", senha: "senha2025", nome: "Carlos Lima" }
-  ];
+  <h2>Login com Código e Senha Interna</h2>
 
-  function verificarLogin() {
-    const codigo = document.getElementById("codigo").value.trim();
-    const senha = document.getElementById("senha").value.trim();
-    const msgErro = document.getElementById("msgErro");
+  <label for="codigo">Código</label>
+  <input
+    type="text"
+    id="codigo"
+    autocomplete="username"
+    placeholder="Digite seu código"
+  >
 
-    if (codigo === "" || senha === "") {
-      msgErro.innerText = "Preencha todos os campos.";
-      msgErro.style.display = "block";
-      return;
-    }
+  <label for="senha">Senha</label>
+  <input
+    type="password"
+    id="senha"
+    autocomplete="current-password"
+    placeholder="Digite sua senha"
+  >
 
-    // Procura se o código e a senha existem
-    const usuario = usuarios.find(u => u.codigo === codigo && u.senha === senha);
+  <button id="btnEntrar">
+    ENTRAR
+  </button>
 
-    if (usuario) {
-      msgErro.style.display = "none";
-      // Salva nome e código do aluno na sessão
-      sessionStorage.setItem("alunoNome", usuario.nome);
-      sessionStorage.setItem("alunoCodigo", usuario.codigo);
-      alert(`Bem-vindo, ${usuario.nome}!`);
-      window.location.href = "painel.html"; // Redireciona para o painel
-    } else {
-      msgErro.innerText = "Código ou senha incorretos!";
-      msgErro.style.display = "block";
-    }
+  <div id="mensagem"></div>
+
+</div>
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
+  authDomain: "brejin-3229a.firebaseapp.com",
+  projectId: "brejin-3229a",
+  storageBucket: "brejin-3229a.firebasestorage.app",
+  messagingSenderId: "745284665425",
+  appId: "1:745284665425:web:f3f813361c73346400b870"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+const codigoInput = document.getElementById("codigo");
+const senhaInput = document.getElementById("senha");
+const btnEntrar = document.getElementById("btnEntrar");
+const mensagem = document.getElementById("mensagem");
+
+
+async function fazerLogin() {
+
+  const codigo = codigoInput.value.trim();
+  const senha = senhaInput.value;
+
+  mensagem.textContent = "";
+  mensagem.style.color = "red";
+
+  if (!codigo || !senha) {
+
+    mensagem.textContent =
+      "Digite o código e a senha.";
+
+    return;
   }
+
+  btnEntrar.disabled = true;
+  btnEntrar.textContent = "ENTRANDO...";
+
+  try {
+
+    /*
+     * Primeiro localizamos o usuário pelo código.
+     *
+     * A senha NÃO é buscada no Firestore.
+     * Ela será validada pelo Firebase Authentication.
+     */
+
+    const usuariosRef = collection(db, "usuarios");
+
+    const consulta = query(
+      usuariosRef,
+      where("codigo", "==", codigo)
+    );
+
+    const resultado = await getDocs(consulta);
+
+    if (resultado.empty) {
+
+      throw new Error(
+        "Código ou senha inválidos."
+      );
+    }
+
+
+    const documento = resultado.docs[0];
+
+    const dadosUsuario = documento.data();
+
+    const email = dadosUsuario.email;
+
+    if (!email) {
+
+      throw new Error(
+        "Este usuário ainda não está configurado para autenticação."
+      );
+    }
+
+
+    if (dadosUsuario.ativo !== true) {
+
+      throw new Error(
+        "Este usuário está desativado."
+      );
+    }
+
+
+    /*
+     * Firebase Authentication valida a senha.
+     */
+
+    const credencial =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        senha
+      );
+
+
+    const uid = credencial.user.uid;
+
+
+    /*
+     * Segurança extra:
+     * garantimos que o documento utilizado
+     * corresponde ao UID autenticado.
+     */
+
+    if (uid !== documento.id) {
+
+      await auth.signOut();
+
+      throw new Error(
+        "Usuário não corresponde à conta autenticada."
+      );
+    }
+
+
+    /*
+     * A partir daqui não precisamos guardar
+     * empresaId ou papel no localStorage.
+     *
+     * O Firebase Authentication mantém a sessão.
+     * As páginas poderão consultar usuarios/{uid}.
+     */
+
+
+    mensagem.style.color = "green";
+    mensagem.textContent =
+      "Login realizado. Entrando...";
+
+
+    setTimeout(() => {
+
+      window.location.href = "painel.html";
+
+    }, 500);
+
+
+  } catch (erro) {
+
+    console.error("Erro no login:", erro);
+
+    mensagem.style.color = "red";
+
+    if (
+      erro.code === "auth/invalid-credential" ||
+      erro.code === "auth/wrong-password" ||
+      erro.code === "auth/user-not-found"
+    ) {
+
+      mensagem.textContent =
+        "Código ou senha inválidos.";
+
+    } else {
+
+      mensagem.textContent =
+        erro.message || "Não foi possível entrar.";
+    }
+
+  } finally {
+
+    btnEntrar.disabled = false;
+    btnEntrar.textContent = "ENTRAR";
+  }
+}
+
+
+btnEntrar.addEventListener(
+  "click",
+  fazerLogin
+);
+
+
+senhaInput.addEventListener(
+  "keydown",
+  (evento) => {
+
+    if (evento.key === "Enter") {
+      fazerLogin();
+    }
+
+  }
+);
+
 </script>
 
 </body>
