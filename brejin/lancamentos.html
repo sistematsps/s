@@ -1,12 +1,29 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
-  <title>DEVEDORES</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DEVEDORES PITIMBU DA SORTE</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f8f8; }
-    h1 { text-align: center; }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
     .vendedor {
       background: #fff;
       padding: 15px;
@@ -14,148 +31,833 @@
       border-radius: 8px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
+
     .vendedor h3 {
       margin: 0 0 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     input[type="number"] {
       padding: 5px;
       width: 100px;
       margin-right: 10px;
     }
+
     button {
       padding: 6px 12px;
-      background-color: green;
+      background-color: red;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    button:hover { background-color: #45a049; }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
     #msg {
       margin-top: 15px;
       font-weight: bold;
       color: green;
       text-align: center;
     }
+
+    #areaEmpresa {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    #selectEmpresa {
+      padding: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #empresaSelecionadaInfo {
+      display: block;
+      margin-top: 8px;
+      font-weight: bold;
+      color: green;
+    }
+
   </style>
+
 </head>
+
+
 <body>
+
   <h1>DEVEDORES</h1>
 
+
+  <!-- ==================================================
+       EMPRESA
+  =================================================== -->
+
+  <div
+    id="areaEmpresa"
+    style="display:none;"
+  >
+
+    <label>
+      <strong>Empresa:</strong>
+    </label>
+
+    <select id="selectEmpresa">
+
+      <option value="">
+        Selecione uma empresa
+      </option>
+
+    </select>
+
+    <span id="empresaSelecionadaInfo"></span>
+
+  </div>
+
+
+  <!-- ==================================================
+       VENDEDORES
+  =================================================== -->
+
   <div id="container"></div>
+
   <div id="msg"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ===== CONFIGURAÇÃO FIREBASE =====
-const firebaseConfig = {
-  apiKey: "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
-  authDomain: "brejin-3229a.firebaseapp.com",
-  projectId: "brejin-3229a",
-  storageBucket: "brejin-3229a.firebasestorage.app",
-  messagingSenderId: "745284665425",
-  appId: "1:745284665425:web:f3f813361c73346400b870"
-};
+  <!-- ==================================================
+       SESSÃO
+  =================================================== -->
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  <script
+    type="module"
+    src="./js/sessao.js"
+  ></script>
 
-// ===== CARREGAR VENDEDORES E VENDAS DO FIRESTORE =====
-async function carregarVendedores() {
-  const container = document.getElementById('container');
-  container.innerHTML = '';
 
-  const vendedoresSnap = await getDocs(collection(db, `vendedores`));
-  if (vendedoresSnap.empty) {
-    container.innerHTML = '<p>Nenhum vendedor cadastrado.</p>';
-    return;
-  }
+  <!-- ==================================================
+       FIREBASE
+  =================================================== -->
 
-  const vendedores = [];
-  vendedoresSnap.forEach(doc => vendedores.push(doc.data()));
+  <script type="module">
 
-  for (const v of vendedores) {
-    const vendasSnap = await getDocs(collection(db, `vendas_${v.nome}`));
-    const lista = [];
-    vendasSnap.forEach(docSnap => {
-      const data = docSnap.data();
-      lista.push({id: docSnap.id, ...data});
-    });
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 
-    let totalDeve = 0;
-    lista.forEach(linha => {
-      const apurou = parseFloat(linha.apurou) || 0;
-      const pagou = parseFloat(linha.pagou) || 0;
-      totalDeve += (apurou - pagou);
-    });
 
-    const div = document.createElement('div');
-    div.className = 'vendedor';
-    div.innerHTML = `
-      <h3>
-        ${v.nome}
-        <span style="font-size: 14px; color: #c00;">Débito: R$ ${totalDeve.toFixed(2)}</span>
-      </h3>
-      <input type="number" step="0.01" id="debito_${v.nome.replace(/\s+/g, '_')}" placeholder="Valor do débito" />
-      <button onclick="lancarDebito('${v.nome}')">Lançar</button>
-    `;
-    container.appendChild(div);
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      updateDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-    div.dataset.vendas = JSON.stringify(lista);
-  }
-}
 
-// ===== FUNÇÃO DE LANÇAR DÉBITO =====
-window.lancarDebito = async function(nome) {
-  const inputId = `debito_${nome.replace(/\s+/g,'_')}`;
-  const valorInput = document.getElementById(inputId);
-  const valor = parseFloat(valorInput.value);
+    /* ==================================================
+       CONFIGURAÇÃO FIREBASE
+    =================================================== */
 
-  if (isNaN(valor) || valor <= 0) {
-    alert('Informe um valor válido maior que zero para o débito.');
-    return;
-  }
+    const firebaseConfig = {
 
-  const vendasSnap = await getDocs(collection(db, `vendas_${nome}`));
-  const lista = [];
-  vendasSnap.forEach(docSnap => lista.push({id: docSnap.id, ...docSnap.data()}));
+      apiKey:
+        "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
 
-  for (let i = lista.length - 1; i >= 0; i--) {
-    const linha = lista[i];
-    const apurou = parseFloat(linha.apurou) || 0;
-    const pagou = parseFloat(linha.pagou) || 0;
-    const deve = apurou - pagou;
+      authDomain:
+        "brejin-3229a.firebaseapp.com",
 
-    if (deve > 0) {
-      const novoPagou = pagou + valor;
-      const novoDeve = apurou - novoPagou;
+      projectId:
+        "brejin-3229a",
 
-      await updateDoc(doc(db, `vendas_${nome}`, linha.id), {
-        pagou: novoPagou,
-        deve: novoDeve
+      storageBucket:
+        "brejin-3229a.firebasestorage.app",
+
+      messagingSenderId:
+        "745284665425",
+
+      appId:
+        "1:745284665425:web:f3f813361c73346400b870"
+
+    };
+
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const db =
+      getFirestore(app);
+
+
+    /* ==================================================
+       VARIÁVEIS
+    =================================================== */
+
+    let empresaAtualId = null;
+
+    let empresasDisponiveis = [];
+
+
+    /* ==================================================
+       AGUARDAR SESSÃO
+    =================================================== */
+
+    await window.sessaoPronta;
+
+    const sessao =
+      window.obterSessao();
+
+    console.log(
+      "Devedores carregado:",
+      sessao
+    );
+
+
+    /* ==================================================
+       CAMINHOS FIRESTORE
+    =================================================== */
+
+    function caminhoVendedores() {
+
+      return collection(
+        db,
+        "empresa",
+        empresaAtualId,
+        "vendedores"
+      );
+
+    }
+
+
+    function caminhoVendas() {
+
+      return collection(
+        db,
+        "empresa",
+        empresaAtualId,
+        "vendas"
+      );
+
+    }
+
+
+    /* ==================================================
+       CARREGAR EMPRESAS — MASTER
+    =================================================== */
+
+    async function carregarEmpresasMaster() {
+
+      const snap =
+        await getDocs(
+          collection(db, "empresa")
+        );
+
+
+      empresasDisponiveis = [];
+
+
+      const select =
+        document.getElementById(
+          "selectEmpresa"
+        );
+
+
+      select.innerHTML =
+        '<option value="">Selecione uma empresa</option>';
+
+
+      snap.forEach(docSnap => {
+
+        const dados =
+          docSnap.data();
+
+
+        const empresa = {
+
+          id: docSnap.id,
+
+          ...dados
+
+        };
+
+
+        empresasDisponiveis.push(
+          empresa
+        );
+
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          empresa.id;
+
+
+        option.textContent =
+          empresa.nome ||
+          empresa.razaoSocial ||
+          `Empresa ${empresa.id}`;
+
+
+        select.appendChild(
+          option
+        );
+
       });
 
-      valorInput.value = '';
-      document.getElementById('msg').textContent = `Débito de R$ ${valor.toFixed(2)} lançado para ${nome}.`;
 
-      setTimeout(() => carregarVendedores(), 1500);
-      return;
+      document.getElementById(
+        "areaEmpresa"
+      ).style.display = "block";
+
+
+      if (
+        empresasDisponiveis.length > 0
+      ) {
+
+        empresaAtualId =
+          empresasDisponiveis[0].id;
+
+
+        select.value =
+          empresaAtualId;
+
+
+        atualizarNomeEmpresa();
+
+
+        await carregarVendedores();
+
+      }
+
     }
-  }
 
-  alert(`Nenhuma linha com débito encontrada para ${nome}.`);
-}
 
-// ===== INICIALIZAÇÃO =====
-carregarVendedores();
+    /* ==================================================
+       EMPRESA DO USUÁRIO
+    =================================================== */
 
-</script>
+    function carregarEmpresaUsuario() {
+
+      empresaAtualId =
+        window.obterEmpresaId();
+
+
+      if (!empresaAtualId) {
+
+        alert(
+          "Este usuário não possui uma empresa vinculada."
+        );
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "empresaSelecionadaInfo"
+      ).textContent =
+        `Empresa: ${empresaAtualId}`;
+
+    }
+
+
+    /* ==================================================
+       MOSTRAR EMPRESA
+    =================================================== */
+
+    function atualizarNomeEmpresa() {
+
+      const empresa =
+        empresasDisponiveis.find(
+          e =>
+            e.id === empresaAtualId
+        );
+
+
+      const info =
+        document.getElementById(
+          "empresaSelecionadaInfo"
+        );
+
+
+      if (empresa) {
+
+        info.textContent =
+          `Empresa selecionada: ${
+            empresa.nome ||
+            empresa.razaoSocial ||
+            empresa.id
+          }`;
+
+      }
+
+    }
+
+
+    /* ==================================================
+       TROCAR EMPRESA
+    =================================================== */
+
+    document
+      .getElementById("selectEmpresa")
+      .addEventListener(
+        "change",
+        async function() {
+
+          empresaAtualId =
+            this.value;
+
+
+          if (!empresaAtualId) {
+
+            document.getElementById(
+              "container"
+            ).innerHTML = "";
+
+            return;
+
+          }
+
+
+          atualizarNomeEmpresa();
+
+          await carregarVendedores();
+
+        }
+      );
+
+
+    /* ==================================================
+       CARREGAR VENDEDORES
+    =================================================== */
+
+    async function carregarVendedores() {
+
+      const container =
+        document.getElementById(
+          "container"
+        );
+
+
+      container.innerHTML = "";
+
+
+      if (!empresaAtualId) {
+
+        return;
+
+      }
+
+
+      try {
+
+        const vendedoresSnap =
+          await getDocs(
+            caminhoVendedores()
+          );
+
+
+        if (vendedoresSnap.empty) {
+
+          container.innerHTML =
+            "<p>Nenhum vendedor cadastrado.</p>";
+
+          return;
+
+        }
+
+
+        const vendedores = [];
+
+
+        vendedoresSnap.forEach(
+          docSnap => {
+
+            vendedores.push({
+
+              id: docSnap.id,
+
+              ...docSnap.data()
+
+            });
+
+          }
+        );
+
+
+        /* ============================================
+           CADA VENDEDOR
+        ============================================ */
+
+        for (
+          const vendedor of vendedores
+        ) {
+
+          const vendasSnap =
+            await getDocs(
+              caminhoVendas()
+            );
+
+
+          const lista = [];
+
+
+          vendasSnap.forEach(
+            docSnap => {
+
+              const venda =
+                docSnap.data();
+
+
+              /*
+               * Somente as vendas
+               * deste vendedor.
+               */
+
+              if (
+                venda.vendedorId ===
+                vendedor.id
+              ) {
+
+                lista.push({
+
+                  id: docSnap.id,
+
+                  ...venda
+
+                });
+
+              }
+
+            }
+          );
+
+
+          /* ==========================================
+             CALCULAR DÉBITO
+          =========================================== */
+
+          let totalDeve = 0;
+
+
+          lista.forEach(
+            linha => {
+
+              const apurou =
+                parseFloat(
+                  linha.apurou || 0
+                );
+
+
+              const pagou =
+                parseFloat(
+                  linha.pagou || 0
+                );
+
+
+              totalDeve +=
+                apurou - pagou;
+
+            }
+          );
+
+
+          /* ==========================================
+             CRIAR CARD
+          =========================================== */
+
+          const div =
+            document.createElement(
+              "div"
+            );
+
+
+          div.className =
+            "vendedor";
+
+
+          div.innerHTML = `
+
+            <h3>
+
+              ${vendedor.nome}
+
+              <span
+                style="
+                  font-size:14px;
+                  color:#c00;
+                "
+              >
+                Débito:
+                R$ ${totalDeve.toFixed(2)}
+              </span>
+
+            </h3>
+
+
+            <input
+              type="number"
+              step="0.01"
+              id="debito_${vendedor.id}"
+              placeholder="Valor do débito"
+            />
+
+
+            <button
+              onclick="lancarDebito('${vendedor.id}')"
+            >
+              Lançar
+            </button>
+
+          `;
+
+
+          container.appendChild(
+            div
+          );
+
+        }
+
+
+      } catch (err) {
+
+        console.error(
+          "Erro ao carregar vendedores:",
+          err
+        );
+
+
+        container.innerHTML =
+          "<p>Erro ao carregar os vendedores.</p>";
+
+      }
+
+    }
+
+
+    /* ==================================================
+       LANÇAR DÉBITO
+    =================================================== */
+
+    window.lancarDebito =
+      async function(vendedorId) {
+
+        if (!empresaAtualId) {
+
+          alert(
+            "Nenhuma empresa selecionada."
+          );
+
+          return;
+
+        }
+
+
+        const inputId =
+          `debito_${vendedorId}`;
+
+
+        const valorInput =
+          document.getElementById(
+            inputId
+          );
+
+
+        const valor =
+          parseFloat(
+            valorInput.value
+          );
+
+
+        if (
+          isNaN(valor) ||
+          valor <= 0
+        ) {
+
+          alert(
+            "Informe um valor válido maior que zero para o débito."
+          );
+
+          return;
+
+        }
+
+
+        try {
+
+          /* =========================================
+             BUSCAR VENDAS DA EMPRESA
+          ========================================== */
+
+          const vendasSnap =
+            await getDocs(
+              caminhoVendas()
+            );
+
+
+          const lista = [];
+
+
+          vendasSnap.forEach(
+            docSnap => {
+
+              const venda =
+                docSnap.data();
+
+
+              if (
+                venda.vendedorId ===
+                vendedorId
+              ) {
+
+                lista.push({
+
+                  id: docSnap.id,
+
+                  ...venda
+
+                });
+
+              }
+
+            }
+          );
+
+
+          /* =========================================
+             ABATER DA ÚLTIMA VENDA PENDENTE
+          ========================================== */
+
+          for (
+            let i = lista.length - 1;
+            i >= 0;
+            i--
+          ) {
+
+            const linha =
+              lista[i];
+
+
+            const apurou =
+              parseFloat(
+                linha.apurou || 0
+              );
+
+
+            const pagou =
+              parseFloat(
+                linha.pagou || 0
+              );
+
+
+            const deve =
+              apurou - pagou;
+
+
+            if (deve > 0) {
+
+              const novoPagou =
+                pagou + valor;
+
+
+              const novoDeve =
+                apurou - novoPagou;
+
+
+              await updateDoc(
+
+                doc(
+                  db,
+                  "empresa",
+                  empresaAtualId,
+                  "vendas",
+                  linha.id
+                ),
+
+                {
+
+                  pagou:
+                    novoPagou,
+
+                  deve:
+                    novoDeve
+
+                }
+
+              );
+
+
+              valorInput.value = "";
+
+
+              document.getElementById(
+                "msg"
+              ).textContent =
+                `Débito de R$ ${valor.toFixed(2)} lançado para ${linha.vendedorNome || "vendedor"}.`;
+
+
+              await carregarVendedores();
+
+
+              return;
+
+            }
+
+          }
+
+
+          alert(
+            `Nenhuma linha com débito encontrada para este vendedor.`
+          );
+
+
+        } catch (err) {
+
+          console.error(
+            "Erro ao lançar débito:",
+            err
+          );
+
+
+          alert(
+            "Erro ao lançar o débito."
+          );
+
+        }
+
+      };
+
+
+    /* ==================================================
+       INICIALIZAÇÃO
+    =================================================== */
+
+    if (
+      sessao.papel === "master"
+    ) {
+
+      await carregarEmpresasMaster();
+
+    } else {
+
+      carregarEmpresaUsuario();
+
+      await carregarVendedores();
+
+    }
+
+  </script>
+
 </body>
+
 </html>
-
-
