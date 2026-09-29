@@ -1,169 +1,974 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Despesas</title>
+<title>Despesas - Pitimbu da Sorte</title>
+
 <style>
-* { box-sizing: border-box; font-family: Arial, sans-serif; }
-body { padding: 20px; background: #f5f5f5; }
-h1 { color: green; }
-label { display: block; margin: 10px 0 5px; font-weight: bold; }
-input[type="text"], input[type="number"], input[type="date"] {
-  width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
+
+body {
+  padding: 20px;
+  background: #f5f5f5;
+}
+
+h1 {
+  color: red;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 button {
-  background-color: green; color: white; padding: 10px 20px; border: none;
-  border-radius: 4px; cursor: pointer; margin-top: 10px;
+  background-color: red;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
 }
-button:hover { background-color: #900000; }
+
+button:hover {
+  background-color: #900000;
+}
+
 table {
-  width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
 }
-th, td {
-  border: 1px solid #ccc; padding: 8px; text-align: center;
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
 }
-th { background: #ffcccc; }
-.acoes button { margin: 0 3px; padding: 5px 10px; font-size: 14px; }
+
+th {
+  background: #ffcccc;
+}
+
+.acoes button {
+  margin: 0 3px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+#areaEmpresa {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+#areaEmpresa select {
+  padding: 8px;
+  min-width: 250px;
+}
+
+#empresaSelecionadaInfo {
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+  color: green;
+}
+
 @media (max-width: 600px) {
-  button { width: 100%; margin-bottom: 8px; }
-  .acoes button { width: 48%; margin-bottom: 5px; }
+
+  button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .acoes button {
+    width: 48%;
+    margin-bottom: 5px;
+  }
+
+  #areaEmpresa select {
+    width: 100%;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <h1>DESPESAS</h1>
 
-<label for="valorDespesa">Despesa (R$):</label>
-<input type="number" id="valorDespesa" min="0" step="0.01" />
+<!-- =====================================================
+     EMPRESA
+===================================================== -->
 
-<label for="descricaoDespesa">Descrição da Despesa:</label>
-<input type="text" id="descricaoDespesa" />
+<div id="areaEmpresa" style="display:none;">
 
-<label for="dataDespesa">Data da Despesa:</label>
-<input type="date" id="dataDespesa" />
+  <label for="selectEmpresa">
+    Empresa:
+  </label>
 
-<button id="btnSalvar">Salvar Despesa</button>
+  <select id="selectEmpresa">
+    <option value="">
+      Selecione uma empresa
+    </option>
+  </select>
+
+  <span id="empresaSelecionadaInfo"></span>
+
+</div>
+
+
+<!-- =====================================================
+     FORMULÁRIO
+===================================================== -->
+
+<label for="valorDespesa">
+  Despesa (R$):
+</label>
+
+<input
+  type="number"
+  id="valorDespesa"
+  min="0"
+  step="0.01"
+/>
+
+
+<label for="descricaoDespesa">
+  Descrição da Despesa:
+</label>
+
+<input
+  type="text"
+  id="descricaoDespesa"
+/>
+
+
+<label for="dataDespesa">
+  Data da Despesa:
+</label>
+
+<input
+  type="date"
+  id="dataDespesa"
+/>
+
+
+<button id="btnSalvar">
+  Salvar Despesa
+</button>
+
+
+<!-- =====================================================
+     TABELA
+===================================================== -->
 
 <table id="tabelaDespesas">
+
 <thead>
 <tr>
-<th>Data</th>
-<th>Descrição</th>
-<th>Valor (R$)</th>
-<th>Ações</th>
+  <th>Data</th>
+  <th>Descrição</th>
+  <th>Valor (R$)</th>
+  <th>Ações</th>
 </tr>
 </thead>
+
 <tbody></tbody>
+
 </table>
 
-<button id="btnExportar" style="margin-top:20px;">Exportar Despesas</button>
+
+<button
+  id="btnExportar"
+  style="margin-top:20px;"
+>
+  Exportar Despesas
+</button>
+
+
+<!-- =====================================================
+     SESSÃO
+===================================================== -->
+
+<script type="module" src="./js/sessao.js"></script>
+
+
+<!-- =====================================================
+     FIREBASE
+===================================================== -->
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-// Config Firebase
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+
+/* =====================================================
+   CONFIGURAÇÃO FIREBASE
+===================================================== */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
-  authDomain: "brejin-3229a.firebaseapp.com",
-  projectId: "brejin-3229a",
-  storageBucket: "brejin-3229a.firebasestorage.app",
-  messagingSenderId: "745284665425",
-  appId: "1:745284665425:web:f3f813361c73346400b870"
+
+  apiKey:
+    "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
+
+  authDomain:
+    "brejin-3229a.firebaseapp.com",
+
+  projectId:
+    "brejin-3229a",
+
+  storageBucket:
+    "brejin-3229a.firebasestorage.app",
+
+  messagingSenderId:
+    "745284665425",
+
+  appId:
+    "1:745284665425:web:f3f813361c73346400b870"
+
 };
 
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app =
+  initializeApp(firebaseConfig);
 
-let despesas = [], editarIndex = null, editarId = null;
+const db =
+  getFirestore(app);
 
-// Coleção única de despesas
-const colecaoDespesas = collection(db, 'despesas');
 
-async function carregarDespesas(){
-  despesas = [];
-  const snapshot = await getDocs(colecaoDespesas);
-  snapshot.forEach(docSnap => {
-    despesas.push({ ...docSnap.data(), id: docSnap.id });
-  });
-  listarDespesas();
-}
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
 
-function listarDespesas(){
-  const tbody = document.querySelector('#tabelaDespesas tbody');
-  tbody.innerHTML = '';
-  despesas.forEach((d,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${d.data||''}</td><td>${d.descricao||''}</td><td>${Number(d.valor).toFixed(2)}</td>
-    <td class="acoes">
-      <button onclick="editarDespesa(${i})">Editar</button>
-      <button onclick="excluirDespesa(${i})">Excluir</button>
-    </td>`;
-    tbody.appendChild(tr);
-  });
-}
+let despesas = [];
 
-document.getElementById('btnSalvar').addEventListener('click', salvarDespesa);
+let editarIndex = null;
 
-async function salvarDespesa(){
-  const valor = parseFloat(document.getElementById('valorDespesa').value);
-  const descricao = document.getElementById('descricaoDespesa').value.trim();
-  const data = document.getElementById('dataDespesa').value;
+let editarId = null;
 
-  if(isNaN(valor)||valor<=0){ alert('Informe um valor válido.'); return; }
-  if(!descricao){ alert('Informe a descrição.'); return; }
-  if(!data){ alert('Informe a data.'); return; }
+let empresaAtualId = null;
 
-  const despesa = { valor, descricao, data };
+let empresasDisponiveis = [];
 
-  if(editarIndex !== null){
-    // Atualizar Firestore
-    await updateDoc(doc(db, 'despesas', editarId), despesa);
-    editarIndex = null; editarId = null;
-  } else {
-    const docRef = await addDoc(colecaoDespesas, despesa);
-    despesa.id = docRef.id;
+
+/* =====================================================
+   AGUARDAR SESSÃO
+===================================================== */
+
+await window.sessaoPronta;
+
+const sessao =
+  window.obterSessao();
+
+console.log(
+  "Despesas carregado:",
+  sessao
+);
+
+
+/* =====================================================
+   CAMINHO DA COLEÇÃO
+===================================================== */
+
+function colecaoDespesas() {
+
+  if (!empresaAtualId) {
+    return null;
   }
 
-  carregarDespesas();
-  limparFormulario();
+  return collection(
+    db,
+    "empresa",
+    empresaAtualId,
+    "despesas"
+  );
+
 }
 
-window.editarDespesa = function(i){
-  const d = despesas[i];
-  document.getElementById('valorDespesa').value = d.valor;
-  document.getElementById('descricaoDespesa').value = d.descricao;
-  document.getElementById('dataDespesa').value = d.data;
-  editarIndex = i;
-  editarId = d.id;
+
+/* =====================================================
+   CARREGAR EMPRESAS — MASTER
+===================================================== */
+
+async function carregarEmpresasMaster() {
+
+  const snapshot =
+    await getDocs(
+      collection(db, "empresa")
+    );
+
+  empresasDisponiveis = [];
+
+  const select =
+    document.getElementById(
+      "selectEmpresa"
+    );
+
+  select.innerHTML =
+    '<option value="">Selecione uma empresa</option>';
+
+
+  snapshot.forEach(docSnap => {
+
+    const dados =
+      docSnap.data();
+
+    const empresa = {
+
+      id: docSnap.id,
+
+      ...dados
+
+    };
+
+    empresasDisponiveis.push(
+      empresa
+    );
+
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+    option.value =
+      empresa.id;
+
+    option.textContent =
+      empresa.nome ||
+      empresa.razaoSocial ||
+      `Empresa ${empresa.id}`;
+
+    select.appendChild(
+      option
+    );
+
+  });
+
+
+  document.getElementById(
+    "areaEmpresa"
+  ).style.display = "block";
+
+
+  if (
+    empresasDisponiveis.length > 0
+  ) {
+
+    empresaAtualId =
+      empresasDisponiveis[0].id;
+
+    select.value =
+      empresaAtualId;
+
+    atualizarNomeEmpresa();
+
+    await carregarDespesas();
+
+  }
+
 }
 
-window.excluirDespesa = async function(i){
-  if(!confirm('Confirma a exclusão desta despesa?')) return;
-  const d = despesas[i];
-  if(d.id) await deleteDoc(doc(db,'despesas',d.id));
-  despesas.splice(i,1);
-  listarDespesas();
-  limparFormulario();
+
+/* =====================================================
+   EMPRESA DO USUÁRIO
+===================================================== */
+
+function carregarEmpresaUsuario() {
+
+  empresaAtualId =
+    window.obterEmpresaId();
+
+
+  if (!empresaAtualId) {
+
+    alert(
+      "Este usuário não possui uma empresa vinculada."
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "empresaSelecionadaInfo"
+  ).textContent =
+    `Empresa: ${empresaAtualId}`;
+
 }
 
-function limparFormulario(){
-  document.getElementById('valorDespesa').value = '';
-  document.getElementById('descricaoDespesa').value = '';
-  document.getElementById('dataDespesa').value = '';
-  editarIndex = null; editarId = null;
+
+/* =====================================================
+   MOSTRAR EMPRESA
+===================================================== */
+
+function atualizarNomeEmpresa() {
+
+  const empresa =
+    empresasDisponiveis.find(
+      e =>
+        e.id === empresaAtualId
+    );
+
+
+  const info =
+    document.getElementById(
+      "empresaSelecionadaInfo"
+    );
+
+
+  if (empresa) {
+
+    info.textContent =
+      `Empresa selecionada: ${
+        empresa.nome ||
+        empresa.razaoSocial ||
+        empresa.id
+      }`;
+
+  }
+
 }
 
-document.getElementById('btnExportar').addEventListener('click',()=>window.print());
 
-window.onload = () => { carregarDespesas(); }
+/* =====================================================
+   TROCAR EMPRESA
+===================================================== */
+
+document
+  .getElementById("selectEmpresa")
+  .addEventListener(
+    "change",
+    async function() {
+
+      empresaAtualId =
+        this.value;
+
+
+      if (!empresaAtualId) {
+
+        despesas = [];
+
+        listarDespesas();
+
+        return;
+
+      }
+
+
+      atualizarNomeEmpresa();
+
+      await carregarDespesas();
+
+    }
+  );
+
+
+/* =====================================================
+   CARREGAR DESPESAS
+===================================================== */
+
+async function carregarDespesas() {
+
+  if (!empresaAtualId) {
+
+    despesas = [];
+
+    listarDespesas();
+
+    return;
+
+  }
+
+
+  try {
+
+    despesas = [];
+
+
+    const snapshot =
+      await getDocs(
+        colecaoDespesas()
+      );
+
+
+    snapshot.forEach(
+      docSnap => {
+
+        despesas.push({
+
+          ...docSnap.data(),
+
+          id: docSnap.id
+
+        });
+
+      }
+    );
+
+
+    listarDespesas();
+
+
+  } catch (err) {
+
+    console.error(
+      "Erro ao carregar despesas:",
+      err
+    );
+
+    alert(
+      "Erro ao carregar as despesas."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LISTAR DESPESAS
+===================================================== */
+
+function listarDespesas() {
+
+  const tbody =
+    document.querySelector(
+      "#tabelaDespesas tbody"
+    );
+
+
+  tbody.innerHTML = "";
+
+
+  despesas.forEach(
+    (d, i) => {
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${d.data || ""}
+        </td>
+
+        <td>
+          ${d.descricao || ""}
+        </td>
+
+        <td>
+          ${Number(
+            d.valor || 0
+          ).toFixed(2)}
+        </td>
+
+        <td class="acoes">
+
+          <button
+            onclick="editarDespesa(${i})"
+          >
+            Editar
+          </button>
+
+          <button
+            onclick="excluirDespesa(${i})"
+          >
+            Excluir
+          </button>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SALVAR
+===================================================== */
+
+document
+  .getElementById("btnSalvar")
+  .addEventListener(
+    "click",
+    salvarDespesa
+  );
+
+
+async function salvarDespesa() {
+
+  if (!empresaAtualId) {
+
+    alert(
+      "Nenhuma empresa selecionada."
+    );
+
+    return;
+
+  }
+
+
+  const valor =
+    parseFloat(
+      document.getElementById(
+        "valorDespesa"
+      ).value
+    );
+
+
+  const descricao =
+    document.getElementById(
+      "descricaoDespesa"
+    ).value.trim();
+
+
+  const data =
+    document.getElementById(
+      "dataDespesa"
+    ).value;
+
+
+  if (
+    isNaN(valor) ||
+    valor <= 0
+  ) {
+
+    alert(
+      "Informe um valor válido."
+    );
+
+    return;
+
+  }
+
+
+  if (!descricao) {
+
+    alert(
+      "Informe a descrição."
+    );
+
+    return;
+
+  }
+
+
+  if (!data) {
+
+    alert(
+      "Informe a data."
+    );
+
+    return;
+
+  }
+
+
+  const despesa = {
+
+    valor,
+
+    descricao,
+
+    data,
+
+    empresaId:
+      empresaAtualId,
+
+    criadoEm:
+      new Date()
+
+  };
+
+
+  try {
+
+    /* =============================================
+       EDITAR
+    ============================================= */
+
+    if (
+      editarIndex !== null &&
+      editarId
+    ) {
+
+      await updateDoc(
+
+        doc(
+          db,
+          "empresa",
+          empresaAtualId,
+          "despesas",
+          editarId
+        ),
+
+        {
+
+          valor,
+
+          descricao,
+
+          data,
+
+          empresaId:
+            empresaAtualId
+
+        }
+
+      );
+
+
+      editarIndex = null;
+
+      editarId = null;
+
+    }
+
+    /* =============================================
+       NOVA DESPESA
+    ============================================= */
+
+    else {
+
+      await addDoc(
+        colecaoDespesas(),
+        despesa
+      );
+
+    }
+
+
+    await carregarDespesas();
+
+    limparFormulario();
+
+
+  } catch (err) {
+
+    console.error(
+      "Erro ao salvar despesa:",
+      err
+    );
+
+    alert(
+      "Erro ao salvar a despesa."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   EDITAR
+===================================================== */
+
+window.editarDespesa =
+  function(i) {
+
+    const d =
+      despesas[i];
+
+
+    if (!d) {
+      return;
+    }
+
+
+    document.getElementById(
+      "valorDespesa"
+    ).value =
+      d.valor;
+
+
+    document.getElementById(
+      "descricaoDespesa"
+    ).value =
+      d.descricao;
+
+
+    document.getElementById(
+      "dataDespesa"
+    ).value =
+      d.data;
+
+
+    editarIndex =
+      i;
+
+    editarId =
+      d.id;
+
+  };
+
+
+/* =====================================================
+   EXCLUIR
+===================================================== */
+
+window.excluirDespesa =
+  async function(i) {
+
+    if (
+      !confirm(
+        "Confirma a exclusão desta despesa?"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    const d =
+      despesas[i];
+
+
+    if (!d || !d.id) {
+      return;
+    }
+
+
+    try {
+
+      await deleteDoc(
+
+        doc(
+          db,
+          "empresa",
+          empresaAtualId,
+          "despesas",
+          d.id
+        )
+
+      );
+
+
+      await carregarDespesas();
+
+      limparFormulario();
+
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao excluir despesa:",
+        err
+      );
+
+      alert(
+        "Erro ao excluir a despesa."
+      );
+
+    }
+
+  };
+
+
+/* =====================================================
+   LIMPAR FORMULÁRIO
+===================================================== */
+
+function limparFormulario() {
+
+  document.getElementById(
+    "valorDespesa"
+  ).value = "";
+
+
+  document.getElementById(
+    "descricaoDespesa"
+  ).value = "";
+
+
+  document.getElementById(
+    "dataDespesa"
+  ).value = "";
+
+
+  editarIndex =
+    null;
+
+  editarId =
+    null;
+
+}
+
+
+/* =====================================================
+   EXPORTAR
+===================================================== */
+
+document
+  .getElementById("btnExportar")
+  .addEventListener(
+    "click",
+    () => window.print()
+  );
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+if (
+  sessao.papel === "master"
+) {
+
+  await carregarEmpresasMaster();
+
+} else {
+
+  carregarEmpresaUsuario();
+
+  await carregarDespesas();
+
+}
+
 </script>
 
 </body>
 </html>
-
-
-
