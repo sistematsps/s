@@ -1,86 +1,1141 @@
-﻿
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadastro de Usuário</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+<title>Cadastro de Empresas e Usuários</title>
+
 <style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #ffe6e6, #ffcccc);
-    margin: 0;
-    font-family: Arial, sans-serif;
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #f4f4f4;
+  color: #222;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.header {
+  background: #222;
+  color: white;
+  padding: 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.header p {
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #222;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 12px;
+  margin-bottom: 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+button {
+  border: none;
+  border-radius: 6px;
+  padding: 11px 18px;
+  margin-top: 18px;
+  cursor: pointer;
+  color: white;
+  background: #2196f3;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #0b7dda;
+}
+
+.btn-verde {
+  background: #198754;
+}
+
+.btn-verde:hover {
+  background: #146c43;
+}
+
+.lista {
+  margin-top: 20px;
+}
+
+.item {
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 7px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+.item strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  background: #198754;
+  color: white;
+}
+
+.badge.inativo {
+  background: #dc3545;
+}
+
+.mensagem {
+  display: none;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.sucesso {
+  display: block;
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.erro {
+  display: block;
+  background: #f8d7da;
+  color: #842029;
+}
+
+.empresa-selecionada {
+  margin-top: 10px;
+  padding: 10px;
+  background: #e7f1ff;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+@media (max-width: 800px) {
+
+  .grid {
+    grid-template-columns: 1fr;
   }
-  .container {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-  }
-  h2 { margin-bottom: 20px; color: #b30000; }
-  input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; }
-  button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #b30000; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-  button:hover { background: #900000; }
-  .mensagem { margin-top: 10px; font-weight: bold; }
+
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div class="container">
-  <h2>Cadastrar Usuário</h2>
-  <input type="text" id="usuarioCadastro" placeholder="Usuário">
-  <input type="password" id="senhaCadastro" placeholder="Senha">
-  <select id="papelCadastro">
-    <option value="admin">Administrador</option>
-    <option value="gerente">Gerente</option>
-  </select>
-  <button onclick="cadastrarUsuario()">Cadastrar</button>
-  <p id="mensagemCadastro" class="mensagem"></p>
+
+  <div class="header">
+
+    <h1>Cadastro Administrativo</h1>
+
+    <p>
+      Usuário logado:
+      <strong id="usuarioLogado">---</strong>
+    </p>
+
+  </div>
+
+
+  <div id="mensagem" class="mensagem"></div>
+
+
+  <div class="grid">
+
+
+    <!-- =====================================================
+         CADASTRO DA EMPRESA
+    ====================================================== -->
+
+    <div class="card">
+
+      <h2>🏢 Cadastrar Empresa</h2>
+
+      <form id="formEmpresa">
+
+        <label for="nomeEmpresa">
+          Nome da empresa
+        </label>
+
+        <input
+          type="text"
+          id="nomeEmpresa"
+          required
+          placeholder="Nome da empresa">
+
+
+        <label for="documentoEmpresa">
+          CNPJ / CPF
+        </label>
+
+        <input
+          type="text"
+          id="documentoEmpresa"
+          placeholder="Opcional">
+
+
+        <label for="telefoneEmpresa">
+          Telefone
+        </label>
+
+        <input
+          type="text"
+          id="telefoneEmpresa"
+          placeholder="Opcional">
+
+
+        <label for="statusEmpresa">
+          Status
+        </label>
+
+        <select id="statusEmpresa">
+
+          <option value="true">
+            Ativa
+          </option>
+
+          <option value="false">
+            Inativa
+          </option>
+
+        </select>
+
+
+        <button
+          type="submit"
+          class="btn-verde">
+
+          Cadastrar Empresa
+
+        </button>
+
+      </form>
+
+
+      <div class="lista">
+
+        <h3>Empresas cadastradas</h3>
+
+        <div id="listaEmpresas">
+
+          Carregando...
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CADASTRO DO USUARIO
+    ====================================================== -->
+
+    <div class="card">
+
+      <h2>👤 Cadastrar Usuário</h2>
+
+      <form id="formUsuario">
+
+
+        <label for="empresaUsuario">
+          Empresa
+        </label>
+
+        <select
+          id="empresaUsuario"
+          required>
+
+          <option value="">
+            Selecione a empresa
+          </option>
+
+        </select>
+
+
+        <label for="nomeUsuario">
+          Nome do usuário
+        </label>
+
+        <input
+          type="text"
+          id="nomeUsuario"
+          required
+          placeholder="Nome completo">
+
+
+        <label for="codigoUsuario">
+          Código de acesso
+        </label>
+
+        <input
+          type="text"
+          id="codigoUsuario"
+          required
+          placeholder="Ex.: A001">
+
+
+        <label for="emailUsuario">
+          E-mail
+        </label>
+
+        <input
+          type="email"
+          id="emailUsuario"
+          required
+          placeholder="usuario@email.com">
+
+
+        <label for="senhaUsuario">
+          Senha
+        </label>
+
+        <input
+          type="password"
+          id="senhaUsuario"
+          required
+          minlength="6"
+          placeholder="Mínimo de 6 caracteres">
+
+
+        <label for="papelUsuario">
+          Papel
+        </label>
+
+        <select id="papelUsuario">
+
+          <option value="usuario">
+            Usuário
+          </option>
+
+        </select>
+
+
+        <button
+          type="submit">
+
+          Cadastrar Usuário
+
+        </button>
+
+      </form>
+
+
+      <div
+        id="empresaSelecionada"
+        class="empresa-selecionada">
+
+        Nenhuma empresa selecionada.
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
-<script>
+
+<script
+  type="module"
+  src="./js/sessao.js">
+</script>
+
+
+<script type="module">
+
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
-  authDomain: "brejin-3229a.firebaseapp.com",
-  projectId: "brejin-3229a",
-  storageBucket: "brejin-3229a.firebasestorage.app",
-  messagingSenderId: "745284665425",
-  appId: "1:745284665425:web:f3f813361c73346400b870"
+
+  apiKey:
+    "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
+
+  authDomain:
+    "brejin-3229a.firebaseapp.com",
+
+  projectId:
+    "brejin-3229a",
+
+  storageBucket:
+    "brejin-3229a.firebasestorage.app",
+
+  messagingSenderId:
+    "745284665425",
+
+  appId:
+    "1:745284665425:web:f3f813361c73346400b870"
+
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-// Função de cadastro
-async function cadastrarUsuario() {
-  const usuario = document.getElementById("usuarioCadastro").value.trim();
-  const senha = document.getElementById("senhaCadastro").value.trim();
-  const papel = document.getElementById("papelCadastro").value;
-  const msg = document.getElementById("mensagemCadastro");
 
-  if(!usuario || !senha){ msg.textContent = "Preencha todos os campos"; msg.style.color="red"; return; }
+/* =========================================================
+   APP PRINCIPAL
+========================================================= */
+
+const appPrincipal =
+  getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(appPrincipal);
+
+
+/* =========================================================
+   SEGUNDA APP PARA CRIAR USUARIOS
+========================================================= */
+
+const appCadastro =
+  initializeApp(
+    firebaseConfig,
+    "appCadastroUsuario"
+  );
+
+const authCadastro =
+  getAuth(appCadastro);
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const formEmpresa =
+  document.getElementById("formEmpresa");
+
+const formUsuario =
+  document.getElementById("formUsuario");
+
+const listaEmpresas =
+  document.getElementById("listaEmpresas");
+
+const empresaUsuario =
+  document.getElementById("empresaUsuario");
+
+const empresaSelecionada =
+  document.getElementById("empresaSelecionada");
+
+const mensagem =
+  document.getElementById("mensagem");
+
+const usuarioLogado =
+  document.getElementById("usuarioLogado");
+
+
+/* =========================================================
+   SESSÃO
+========================================================= */
+
+async function verificarMaster() {
+
+  await window.sessaoPronta;
+
+  const sessao =
+    window.obterSessao();
+
+  if (
+    !sessao ||
+    !sessao.autenticado
+  ) {
+
+    return;
+
+  }
+
+
+  usuarioLogado.textContent =
+    sessao.nome ||
+    sessao.codigo ||
+    sessao.email ||
+    "---";
+
+
+  if (sessao.papel !== "master") {
+
+    alert(
+      "Acesso permitido somente ao Master."
+    );
+
+    window.location.href =
+      "painel.html";
+
+    return;
+
+  }
+
+
+  carregarEmpresas();
+
+}
+
+
+/* =========================================================
+   MENSAGEM
+========================================================= */
+
+function mostrarMensagem(
+  texto,
+  tipo = "sucesso"
+) {
+
+  mensagem.textContent = texto;
+
+  mensagem.className =
+    "mensagem " + tipo;
+
+
+  setTimeout(() => {
+
+    mensagem.className =
+      "mensagem";
+
+  }, 5000);
+
+}
+
+
+/* =========================================================
+   CADASTRAR EMPRESA
+========================================================= */
+
+formEmpresa.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const nome =
+      document
+        .getElementById("nomeEmpresa")
+        .value
+        .trim();
+
+
+    const documento =
+      document
+        .getElementById("documentoEmpresa")
+        .value
+        .trim();
+
+
+    const telefone =
+      document
+        .getElementById("telefoneEmpresa")
+        .value
+        .trim();
+
+
+    const ativo =
+      document
+        .getElementById("statusEmpresa")
+        .value === "true";
+
+
+    if (!nome) {
+
+      mostrarMensagem(
+        "Informe o nome da empresa.",
+        "erro"
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      const empresaRef =
+        await addDoc(
+          collection(
+            db,
+            "empresa"
+          ),
+          {
+
+            nome,
+
+            documento,
+
+            telefone,
+
+            ativo,
+
+            criadoEm:
+              serverTimestamp(),
+
+            /*
+             * Preparação para o sistema
+             * de teste/licenciamento.
+             */
+
+            primeiroUsoEm:
+              null,
+
+            trialDias:
+              7,
+
+            licencaAtiva:
+              false,
+
+            plano:
+              null,
+
+            licencaInicio:
+              null,
+
+            licencaFim:
+              null
+
+          }
+        );
+
+
+      mostrarMensagem(
+        "Empresa cadastrada com sucesso.",
+        "sucesso"
+      );
+
+
+      formEmpresa.reset();
+
+
+      document
+        .getElementById("statusEmpresa")
+        .value = "true";
+
+
+      await carregarEmpresas();
+
+
+      empresaUsuario.value =
+        empresaRef.id;
+
+
+      atualizarEmpresaSelecionada();
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao cadastrar empresa:",
+        erro
+      );
+
+
+      mostrarMensagem(
+        "Erro ao cadastrar empresa: " +
+        erro.message,
+        "erro"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CARREGAR EMPRESAS
+========================================================= */
+
+async function carregarEmpresas() {
 
   try {
-    await db.collection("usuarios").doc(usuario).set({ senha: senha, papel: papel });
-    msg.textContent = "Usuário cadastrado com sucesso!";
-    msg.style.color = "green";
-    document.getElementById("usuarioCadastro").value="";
-    document.getElementById("senhaCadastro").value="";
-  } catch(error) {
-    msg.textContent = "Erro: " + error.message;
-    msg.style.color = "red";
+
+    const snap =
+      await getDocs(
+        collection(
+          db,
+          "empresa"
+        )
+      );
+
+
+    listaEmpresas.innerHTML = "";
+
+    empresaUsuario.innerHTML =
+      `<option value="">
+        Selecione a empresa
+       </option>`;
+
+
+    if (snap.empty) {
+
+      listaEmpresas.innerHTML =
+        "<p>Nenhuma empresa cadastrada.</p>";
+
+      return;
+
+    }
+
+
+    snap.forEach(docSnap => {
+
+      const empresa =
+        docSnap.data();
+
+
+      /* LISTA VISUAL */
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "item";
+
+
+      const status =
+        empresa.ativo === true;
+
+
+      div.innerHTML = `
+
+        <strong>
+          ${empresa.nome || "Sem nome"}
+        </strong>
+
+        <span class="badge ${status ? "" : "inativo"}">
+
+          ${status ? "ATIVA" : "INATIVA"}
+
+        </span>
+
+        <div style="margin-top:6px;font-size:13px;">
+
+          ID:
+          ${docSnap.id}
+
+        </div>
+
+      `;
+
+
+      listaEmpresas.appendChild(div);
+
+
+      /* SELECT DE EMPRESA */
+
+      const option =
+        document.createElement("option");
+
+
+      option.value =
+        docSnap.id;
+
+
+      option.textContent =
+        empresa.nome ||
+        `Empresa ${docSnap.id}`;
+
+
+      empresaUsuario.appendChild(
+        option
+      );
+
+    });
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar empresas:",
+      erro
+    );
+
+
+    listaEmpresas.innerHTML =
+      "<p>Erro ao carregar empresas.</p>";
+
   }
+
 }
+
+
+/* =========================================================
+   EMPRESA SELECIONADA
+========================================================= */
+
+empresaUsuario.addEventListener(
+  "change",
+  atualizarEmpresaSelecionada
+);
+
+
+function atualizarEmpresaSelecionada() {
+
+  const id =
+    empresaUsuario.value;
+
+
+  if (!id) {
+
+    empresaSelecionada.textContent =
+      "Nenhuma empresa selecionada.";
+
+    return;
+
+  }
+
+
+  const nome =
+    empresaUsuario.options[
+      empresaUsuario.selectedIndex
+    ].textContent;
+
+
+  empresaSelecionada.innerHTML =
+    `
+      Empresa selecionada:
+      <strong>${nome}</strong>
+      <br>
+      ID:
+      ${id}
+    `;
+
+}
+
+
+/* =========================================================
+   CADASTRAR USUARIO
+========================================================= */
+
+formUsuario.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const empresaId =
+      empresaUsuario.value;
+
+
+    const nome =
+      document
+        .getElementById("nomeUsuario")
+        .value
+        .trim();
+
+
+    const codigo =
+      document
+        .getElementById("codigoUsuario")
+        .value
+        .trim();
+
+
+    const email =
+      document
+        .getElementById("emailUsuario")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const senha =
+      document
+        .getElementById("senhaUsuario")
+        .value;
+
+
+    const papel =
+      document
+        .getElementById("papelUsuario")
+        .value;
+
+
+    if (!empresaId) {
+
+      mostrarMensagem(
+        "Selecione a empresa do usuário.",
+        "erro"
+      );
+
+      return;
+
+    }
+
+
+    if (!nome || !codigo || !email || !senha) {
+
+      mostrarMensagem(
+        "Preencha todos os campos do usuário.",
+        "erro"
+      );
+
+      return;
+
+    }
+
+
+    if (senha.length < 6) {
+
+      mostrarMensagem(
+        "A senha precisa ter pelo menos 6 caracteres.",
+        "erro"
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      /* =====================================================
+         VERIFICA SE O CÓDIGO JÁ EXISTE
+      ====================================================== */
+
+      const consultaCodigo =
+        query(
+          collection(
+            db,
+            "usuarios"
+          ),
+          where(
+            "codigo",
+            "==",
+            codigo
+          )
+        );
+
+
+      const resultadoCodigo =
+        await getDocs(
+          consultaCodigo
+        );
+
+
+      if (!resultadoCodigo.empty) {
+
+        mostrarMensagem(
+          "Este código de acesso já está cadastrado.",
+          "erro"
+        );
+
+        return;
+
+      }
+
+
+      /* =====================================================
+         CRIA CONTA NO FIREBASE AUTH
+      ====================================================== */
+
+      const credencial =
+        await createUserWithEmailAndPassword(
+          authCadastro,
+          email,
+          senha
+        );
+
+
+      const uid =
+        credencial.user.uid;
+
+
+      /* =====================================================
+         CRIA DOCUMENTO DO USUARIO
+      ====================================================== */
+
+      await setDoc(
+        doc(
+          db,
+          "usuarios",
+          uid
+        ),
+        {
+
+          uid,
+
+          nome,
+
+          codigo,
+
+          email,
+
+          papel,
+
+          empresaId,
+
+          ativo: true,
+
+          criadoEm:
+            serverTimestamp()
+
+        }
+      );
+
+
+      /*
+       * Desloga a segunda instância.
+       *
+       * A sessão principal do Master
+       * continua intacta.
+       */
+
+      await signOut(
+        authCadastro
+      );
+
+
+      mostrarMensagem(
+        "Usuário cadastrado com sucesso.",
+        "sucesso"
+      );
+
+
+      formUsuario.reset();
+
+      empresaSelecionada.textContent =
+        "Nenhuma empresa selecionada.";
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao cadastrar usuário:",
+        erro
+      );
+
+
+      let texto =
+        "Erro ao cadastrar usuário.";
+
+
+      if (
+        erro.code ===
+        "auth/email-already-in-use"
+      ) {
+
+        texto =
+          "Este e-mail já está cadastrado no Firebase Authentication.";
+
+      }
+
+
+      if (
+        erro.code ===
+        "auth/invalid-email"
+      ) {
+
+        texto =
+          "O e-mail informado é inválido.";
+
+      }
+
+
+      if (
+        erro.code ===
+        "auth/weak-password"
+      ) {
+
+        texto =
+          "A senha informada é muito fraca.";
+
+      }
+
+
+      mostrarMensagem(
+        texto,
+        "erro"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+verificarMaster();
+
 </script>
 
 </body>
 </html>
-
