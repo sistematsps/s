@@ -1,48 +1,172 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Relatório Final</title>
+
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .clock { font-weight: bold; }
-  h2, h3 { text-align: center; margin-top: 20px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  th { background: #eee; }
-  hr { margin: 20px 0; }
-  button { display: inline-block; margin: 10px 6px; padding: 10px 16px; background-color: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
-  button:hover { background-color: #0b7dda; }
-  .totais { text-align: center; font-weight: bold; margin-top: 15px; }
-  .filtro-dados { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin: 10px 0 15px; }
-  .filtro-dados input, .filtro-dados select { padding:6px; }
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f9f9f9;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .clock {
+    font-weight: bold;
+  }
+
+  h2, h3 {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+
+  th {
+    background: #eee;
+  }
+
+  hr {
+    margin: 20px 0;
+  }
+
+  button {
+    display: inline-block;
+    margin: 10px 6px;
+    padding: 10px 16px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0b7dda;
+  }
+
+  .totais {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+  }
+
+  .filtro-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0 15px;
+  }
+
+  .filtro-dados input,
+  .filtro-dados select {
+    padding: 6px;
+  }
+
+  .empresa-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 15px;
+  }
+
+  .empresa-area select {
+    padding: 8px;
+    min-width: 240px;
+  }
+
+  .empresa-area label {
+    font-weight: bold;
+  }
+
+  @media print {
+    .filtro-dados,
+    .empresa-area,
+    button {
+      display: none !important;
+    }
+
+    body {
+      padding: 0;
+      background: white;
+    }
+  }
 </style>
 </head>
+
 <body>
 
 <div class="header">
-  <div>Usuário logado: <strong id="usuarioLogado">---</strong></div>
+  <div>
+    Usuário logado:
+    <strong id="usuarioLogado">---</strong>
+  </div>
+
   <div class="clock" id="relogio"></div>
 </div>
 
+<!-- SELEÇÃO DE EMPRESA SOMENTE PARA O MASTER -->
+<div id="areaEmpresa" class="empresa-area" style="display:none;">
+  <label for="empresaSelect">Empresa:</label>
+  <select id="empresaSelect">
+    <option value="">Selecione a empresa</option>
+  </select>
+</div>
+
 <div class="filtro-dados">
-  <label>Início:</label><input type="date" id="dataInicioFiltro">
-  <label>Fim:</label><input type="date" id="dataFimFiltro">
+
+  <label>Início:</label>
+  <input type="date" id="dataInicioFiltro">
+
+  <label>Fim:</label>
+  <input type="date" id="dataFimFiltro">
+
   <label>Vendedor:</label>
+
   <select id="vendedorFiltro">
     <option value="">Todos</option>
   </select>
-  <button id="btnAplicar">Aplicar Filtro</button>
-  <button id="btnLimpar" type="button">Limpar</button>
+
+  <button id="btnAplicar">
+    Aplicar Filtro
+  </button>
+
+  <button id="btnLimpar" type="button">
+    Limpar
+  </button>
+
 </div>
 
 <hr>
+
 <h2>RELATÓRIO FINAL PITIMBU DA SORTE</h2>
+
 <hr>
 
 <table id="tabelaVendas">
+
   <thead>
     <tr>
       <th>Nome</th>
@@ -55,18 +179,24 @@
       <th>Deve</th>
     </tr>
   </thead>
+
   <tbody></tbody>
+
 </table>
 
 <div class="totais">
-  TOTAL APURADO: <span id="totalApurado">R$ 0,00</span>
+  TOTAL APURADO:
+  <span id="totalApurado">R$ 0,00</span>
 </div>
 
 <hr>
+
 <h3>RELATÓRIO DE DESPESAS PITIMBU DA SORTE</h3>
+
 <hr>
 
 <table id="tabelaDespesas">
+
   <thead>
     <tr>
       <th>Data</th>
@@ -74,27 +204,64 @@
       <th>Descrição</th>
     </tr>
   </thead>
+
   <tbody></tbody>
+
 </table>
 
 <div class="totais">
-  TOTAL DAS DESPESAS: <span id="totalDespesas">R$ 0,00</span>
+  TOTAL DAS DESPESAS:
+  <span id="totalDespesas">R$ 0,00</span>
 </div>
 
 <hr>
+
 <div class="totais">
-  TOTAL DAS RECEITAS: <span id="totalReceitas">R$ 0,00</span><br>
-  TOTAL DAS DESPESAS: <span id="totalGastos">R$ 0,00</span><br>
-  TOTAL FINAL: <span id="totalFinal">R$ 0,00</span>
+
+  TOTAL DAS RECEITAS:
+  <span id="totalReceitas">R$ 0,00</span>
+
+  <br>
+
+  TOTAL DAS DESPESAS:
+  <span id="totalGastos">R$ 0,00</span>
+
+  <br>
+
+  TOTAL FINAL:
+  <span id="totalFinal">R$ 0,00</span>
+
 </div>
 
 <div style="text-align:center; margin-top:10px;">
-  <button onclick="imprimirRelatorio()">Imprimir Relatório</button>
+
+  <button onclick="imprimirRelatorio()">
+    Imprimir Relatório
+  </button>
+
 </div>
 
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+
+/* =========================================================
+   FIREBASE
+========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrEImfnBQvS-kyiXW9a6wgt9IHyPTaQqE",
@@ -105,191 +272,910 @@ const firebaseConfig = {
   appId: "1:745284665425:web:f3f813361c73346400b870"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// UI refs
-const vendedorSelectFiltro = document.getElementById('vendedorFiltro');
-const dataInicioEl = document.getElementById('dataInicioFiltro');
-const dataFimEl = document.getElementById('dataFimFiltro');
 
-document.getElementById("usuarioLogado").textContent = localStorage.getItem("usuarioLogado") || "Desconhecido";
+/* =========================================================
+   ELEMENTOS
+========================================================= */
 
-function atualizarRelogio() {
-  const agora = new Date();
-  document.getElementById('relogio').textContent = agora.toLocaleDateString() + ' ' + agora.toLocaleTimeString();
-}
-setInterval(atualizarRelogio, 1000);
-atualizarRelogio();
+const usuarioLogadoEl =
+  document.getElementById("usuarioLogado");
 
-// ---- Estado em memória ----
+const vendedorSelectFiltro =
+  document.getElementById("vendedorFiltro");
+
+const dataInicioEl =
+  document.getElementById("dataInicioFiltro");
+
+const dataFimEl =
+  document.getElementById("dataFimFiltro");
+
+const empresaArea =
+  document.getElementById("areaEmpresa");
+
+const empresaSelect =
+  document.getElementById("empresaSelect");
+
+
+/* =========================================================
+   ESTADO
+========================================================= */
+
+let sessao = null;
+
+let empresaAtualId = null;
+
 let vendedores = [];
-let vendasPorVendedor = new Map();
+
+let vendas = [];
+
 let despesas = [];
 
-// Subscrições
 let unsubVendedores = null;
-let unsubDespesas = null;
-let unsubPorVendedor = [];
 
-// ---- Helpers ----
-function toISODate(anyDate) {
-  if (!anyDate) return '';
-  if (typeof anyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(anyDate)) return anyDate;
-  const d = new Date(anyDate);
-  if (!isNaN(d.getTime())) return d.toISOString().slice(0,10);
-  return '';
+let unsubVendas = null;
+
+let unsubDespesas = null;
+
+let empresasCarregadas = false;
+
+
+/* =========================================================
+   RELÓGIO
+========================================================= */
+
+function atualizarRelogio() {
+
+  const agora = new Date();
+
+  document.getElementById("relogio").textContent =
+    agora.toLocaleDateString() +
+    " " +
+    agora.toLocaleTimeString();
+
 }
+
+setInterval(atualizarRelogio, 1000);
+
+atualizarRelogio();
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function toISODate(anyDate) {
+
+  if (!anyDate) return "";
+
+  if (
+    typeof anyDate === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(anyDate)
+  ) {
+    return anyDate;
+  }
+
+  if (
+    anyDate &&
+    typeof anyDate.toDate === "function"
+  ) {
+    const d = anyDate.toDate();
+
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().slice(0, 10);
+    }
+  }
+
+  const d = new Date(anyDate);
+
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().slice(0, 10);
+  }
+
+  return "";
+}
+
+
 function passaFiltroData(iso, ini, fim) {
+
   if (ini && iso < ini) return false;
+
   if (fim && iso > fim) return false;
+
   return true;
 }
-function moeda(n){ return `R$ ${Number(n||0).toFixed(2)}`; }
 
-// ---- Renderizações ----
+
+function moeda(n) {
+
+  return `R$ ${Number(n || 0).toFixed(2)}`;
+
+}
+
+
+/* =========================================================
+   CAMINHOS FIRESTORE
+========================================================= */
+
+function caminhoEmpresa() {
+
+  return collection(
+    db,
+    "empresa",
+    empresaAtualId,
+    "vendedores"
+  );
+
+}
+
+
+function caminhoVendas() {
+
+  return collection(
+    db,
+    "empresa",
+    empresaAtualId,
+    "vendas"
+  );
+
+}
+
+
+function caminhoDespesas() {
+
+  return collection(
+    db,
+    "empresa",
+    empresaAtualId,
+    "despesas"
+  );
+
+}
+
+
+/* =========================================================
+   RENDER VENDEDORES
+========================================================= */
+
+function renderFiltroVendedores() {
+
+  vendedorSelectFiltro.innerHTML =
+    '<option value="">Todos</option>';
+
+  vendedores.forEach(v => {
+
+    const opt = document.createElement("option");
+
+    opt.value = v.id;
+
+    opt.textContent = v.nome || "Sem nome";
+
+    vendedorSelectFiltro.appendChild(opt);
+
+  });
+
+}
+
+
+/* =========================================================
+   RENDER VENDAS
+========================================================= */
+
 function renderVendas() {
-  const tbody = document.querySelector("#tabelaVendas tbody");
-  tbody.innerHTML = '';
+
+  const tbody =
+    document.querySelector("#tabelaVendas tbody");
+
+  tbody.innerHTML = "";
+
   let totalApurado = 0;
 
-  const ini = dataInicioEl.value || '';
-  const fim = dataFimEl.value || '';
-  const filtroVend = vendedorSelectFiltro.value || '';
+  const ini =
+    dataInicioEl.value || "";
 
-  const todas = [];
-  vendasPorVendedor.forEach(arr => todas.push(...arr));
-  todas.sort((a,b) => (toISODate(a.data)||'').localeCompare(toISODate(b.data)||''));
+  const fim =
+    dataFimEl.value || "";
+
+  const filtroVend =
+    vendedorSelectFiltro.value || "";
+
+
+  const todas = [...vendas];
+
+
+  todas.sort((a, b) => {
+
+    return (
+      toISODate(a.data) || ""
+    ).localeCompare(
+      toISODate(b.data) || ""
+    );
+
+  });
+
 
   for (const venda of todas) {
-    const iso = toISODate(venda.data);
-    if (!passaFiltroData(iso, ini, fim)) continue;
-    if (filtroVend && venda._vendedor?.nome !== filtroVend) continue;
 
-    const v = venda._vendedor || { nome: venda.vendedor || '—', cotacao: venda.cotacao || 1 };
-    const recebeu = parseFloat(venda.recebeu || 0);
-    const devolveu = parseFloat(venda.devolveu || 0);
-    const pagou = parseFloat(venda.pagou || 0);
-    const vendeu = recebeu - devolveu;
-    const apurou = vendeu * Number(v.cotacao || 1);
-    const deve = apurou - pagou;
+    const iso =
+      toISODate(venda.data);
+
+
+    if (!passaFiltroData(iso, ini, fim)) {
+      continue;
+    }
+
+
+    if (
+      filtroVend &&
+      venda.vendedorId !== filtroVend
+    ) {
+      continue;
+    }
+
+
+    const vendedor =
+      vendedores.find(
+        v => v.id === venda.vendedorId
+      );
+
+
+    const nomeVendedor =
+      vendedor?.nome ||
+      venda.vendedorNome ||
+      "—";
+
+
+    const cotacao =
+      Number(
+        vendedor?.cotacao ??
+        venda.cotacao ??
+        1
+      );
+
+
+    const recebeu =
+      parseFloat(venda.recebeu || 0);
+
+
+    const devolveu =
+      parseFloat(venda.devolveu || 0);
+
+
+    const pagou =
+      parseFloat(venda.pagou || 0);
+
+
+    const vendeu =
+      recebeu - devolveu;
+
+
+    const apurou =
+      vendeu * cotacao;
+
+
+    const deve =
+      apurou - pagou;
+
+
     totalApurado += apurou;
 
-    const tr = document.createElement('tr');
+
+    const tr =
+      document.createElement("tr");
+
+
     tr.innerHTML = `
-      <td>${v.nome}</td>
+
+      <td>${nomeVendedor}</td>
+
       <td>${iso}</td>
+
       <td>${recebeu}</td>
+
       <td>${devolveu}</td>
+
       <td>${vendeu}</td>
+
       <td>${moeda(apurou)}</td>
+
       <td>${moeda(pagou)}</td>
+
       <td>${moeda(deve)}</td>
+
     `;
+
+
     tbody.appendChild(tr);
+
   }
 
-  document.getElementById("totalApurado").textContent = moeda(totalApurado);
-  document.getElementById("totalReceitas").textContent = moeda(totalApurado);
+
+  document.getElementById(
+    "totalApurado"
+  ).textContent = moeda(totalApurado);
+
+
+  document.getElementById(
+    "totalReceitas"
+  ).textContent = moeda(totalApurado);
+
+
   renderTotaisFinais();
+
 }
+
+
+/* =========================================================
+   RENDER DESPESAS
+========================================================= */
 
 function renderDespesas() {
-  const tbody = document.querySelector("#tabelaDespesas tbody");
-  tbody.innerHTML = '';
+
+  const tbody =
+    document.querySelector("#tabelaDespesas tbody");
+
+  tbody.innerHTML = "";
+
   let totalDespesas = 0;
 
-  const ini = dataInicioEl.value || '';
-  const fim = dataFimEl.value || '';
 
-  const arr = [...despesas].sort((a,b)=> (toISODate(a.data)||'').localeCompare(toISODate(b.data)||'') );
+  const ini =
+    dataInicioEl.value || "";
+
+  const fim =
+    dataFimEl.value || "";
+
+
+  const arr =
+    [...despesas].sort((a, b) => {
+
+      return (
+        toISODate(a.data) || ""
+      ).localeCompare(
+        toISODate(b.data) || ""
+      );
+
+    });
+
 
   for (const d of arr) {
-    const iso = toISODate(d.data);
-    if (!passaFiltroData(iso, ini, fim)) continue;
-    const valor = parseFloat(d.valor || 0);
+
+    const iso =
+      toISODate(d.data);
+
+
+    if (!passaFiltroData(iso, ini, fim)) {
+      continue;
+    }
+
+
+    const valor =
+      parseFloat(d.valor || 0);
+
+
     totalDespesas += valor;
 
-    const tr = document.createElement('tr');
+
+    const tr =
+      document.createElement("tr");
+
+
     tr.innerHTML = `
+
       <td>${iso}</td>
+
       <td>${moeda(valor)}</td>
-      <td>${d.descricao || ''}</td>
+
+      <td>${d.descricao || ""}</td>
+
     `;
+
+
     tbody.appendChild(tr);
+
   }
 
-  document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
-  document.getElementById("totalGastos").textContent = moeda(totalDespesas);
+
+  document.getElementById(
+    "totalDespesas"
+  ).textContent =
+    moeda(totalDespesas);
+
+
+  document.getElementById(
+    "totalGastos"
+  ).textContent =
+    moeda(totalDespesas);
+
+
   renderTotaisFinais();
+
 }
+
+
+/* =========================================================
+   TOTAIS FINAIS
+========================================================= */
 
 function renderTotaisFinais() {
-  const receitas = parseFloat((document.getElementById("totalReceitas").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
-  const gastos = parseFloat((document.getElementById("totalGastos").textContent || '0').replace(/[^\d,.-]/g,'').replace(',', '.')) || 0;
-  document.getElementById("totalFinal").textContent = moeda(receitas - gastos);
+
+  const receitas =
+    parseFloat(
+      (
+        document.getElementById(
+          "totalReceitas"
+        ).textContent || "0"
+      )
+        .replace(/[^\d,.-]/g, "")
+        .replace(",", ".")
+    ) || 0;
+
+
+  const gastos =
+    parseFloat(
+      (
+        document.getElementById(
+          "totalGastos"
+        ).textContent || "0"
+      )
+        .replace(/[^\d,.-]/g, "")
+        .replace(",", ".")
+    ) || 0;
+
+
+  document.getElementById(
+    "totalFinal"
+  ).textContent =
+    moeda(receitas - gastos);
+
 }
 
-// ---- Subscrições ----
-function limparSubscricoesVendas() {
-  unsubPorVendedor.forEach(u => { try{u();}catch{} });
-  unsubPorVendedor = [];
-  vendasPorVendedor.clear();
+
+/* =========================================================
+   LIMPAR SUBSCRIÇÕES
+========================================================= */
+
+function limparSubscricoes() {
+
+  if (unsubVendedores) {
+
+    try {
+      unsubVendedores();
+    } catch {}
+
+    unsubVendedores = null;
+
+  }
+
+
+  if (unsubVendas) {
+
+    try {
+      unsubVendas();
+    } catch {}
+
+    unsubVendas = null;
+
+  }
+
+
+  if (unsubDespesas) {
+
+    try {
+      unsubDespesas();
+    } catch {}
+
+    unsubDespesas = null;
+
+  }
+
+
+  vendedores = [];
+
+  vendas = [];
+
+  despesas = [];
+
 }
 
-function iniciarSubscricoes() {
-  if (unsubVendedores) { try{unsubVendedores();}catch{} unsubVendedores=null; }
-  if (unsubDespesas) { try{unsubDespesas();}catch{} unsubDespesas=null; }
-  limparSubscricoesVendas();
 
-  // Vendedores
-  unsubVendedores = onSnapshot(collection(db, `vendedores`), snap => {
-    vendedores = snap.docs.map(d => d.data());
-    vendedorSelectFiltro.innerHTML = '<option value="">Todos</option>';
-    vendedores.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v.nome;
-      opt.textContent = v.nome;
-      vendedorSelectFiltro.appendChild(opt);
-    });
+/* =========================================================
+   CARREGAR DADOS DA EMPRESA
+========================================================= */
 
-    limparSubscricoesVendas();
-    vendedores.forEach(v => {
-      const unsub = onSnapshot(collection(db, `vendas_${v.nome}`), snapV => {
-        const arr = snapV.docs.map(doc => ({ ...doc.data(), _vendedor: { nome: v.nome, cotacao: Number(v.cotacao||1) } }));
-        vendasPorVendedor.set(v.nome, arr);
-        renderVendas();
-      });
-      unsubPorVendedor.push(unsub);
-    });
-  });
+function iniciarSubscricoesEmpresa() {
 
-  // Despesas
-  unsubDespesas = onSnapshot(collection(db, `despesas`), snap => {
-    despesas = snap.docs.map(d => d.data());
+  limparSubscricoes();
+
+
+  if (!empresaAtualId) {
+
+    vendedorSelectFiltro.innerHTML =
+      '<option value="">Todos</option>';
+
+    renderVendas();
+
     renderDespesas();
-  });
+
+    return;
+
+  }
+
+
+  /* ================================
+     VENDEDORES
+  ================================= */
+
+  unsubVendedores =
+    onSnapshot(
+      caminhoEmpresa(),
+
+      snap => {
+
+        vendedores =
+          snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+
+        renderFiltroVendedores();
+
+        renderVendas();
+
+      },
+
+      erro => {
+
+        console.error(
+          "Erro ao carregar vendedores:",
+          erro
+        );
+
+      }
+    );
+
+
+  /* ================================
+     VENDAS
+  ================================= */
+
+  unsubVendas =
+    onSnapshot(
+      caminhoVendas(),
+
+      snap => {
+
+        vendas =
+          snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+
+        renderVendas();
+
+      },
+
+      erro => {
+
+        console.error(
+          "Erro ao carregar vendas:",
+          erro
+        );
+
+      }
+    );
+
+
+  /* ================================
+     DESPESAS
+  ================================= */
+
+  unsubDespesas =
+    onSnapshot(
+      caminhoDespesas(),
+
+      snap => {
+
+        despesas =
+          snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+
+        renderDespesas();
+
+      },
+
+      erro => {
+
+        console.error(
+          "Erro ao carregar despesas:",
+          erro
+        );
+
+      }
+    );
+
 }
 
-// ---- Eventos UI ----
-document.getElementById('btnAplicar').addEventListener('click', () => { renderVendas(); renderDespesas(); });
-document.getElementById('btnLimpar').addEventListener('click', () => {
-  dataInicioEl.value = '';
-  dataFimEl.value = '';
-  vendedorSelectFiltro.value = '';
-  renderVendas();
-  renderDespesas();
+
+/* =========================================================
+   EMPRESAS PARA O MASTER
+========================================================= */
+
+async function carregarEmpresasMaster() {
+
+  if (!sessao || sessao.papel !== "master") {
+    return;
+  }
+
+
+  empresaArea.style.display = "flex";
+
+
+  const empresasRef =
+    collection(db, "empresa");
+
+
+  onSnapshot(
+    empresasRef,
+
+    snap => {
+
+      empresaSelect.innerHTML =
+        '<option value="">Selecione a empresa</option>';
+
+
+      snap.forEach(docSnap => {
+
+        const dados =
+          docSnap.data();
+
+
+        const option =
+          document.createElement("option");
+
+
+        option.value =
+          docSnap.id;
+
+
+        option.textContent =
+          dados.nome ||
+          dados.razaoSocial ||
+          dados.nomeEmpresa ||
+          `Empresa ${docSnap.id}`;
+
+
+        empresaSelect.appendChild(option);
+
+      });
+
+
+      empresasCarregadas = true;
+
+
+      /*
+       * Se ainda não houver empresa selecionada,
+       * não inicia o relatório.
+       */
+
+      if (
+        !empresaAtualId &&
+        empresaSelect.value
+      ) {
+
+        empresaAtualId =
+          empresaSelect.value;
+
+        iniciarSubscricoesEmpresa();
+
+      }
+
+    },
+
+    erro => {
+
+      console.error(
+        "Erro ao carregar empresas:",
+        erro
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   TROCA DE EMPRESA PELO MASTER
+========================================================= */
+
+empresaSelect.addEventListener(
+  "change",
+  () => {
+
+    if (
+      !sessao ||
+      sessao.papel !== "master"
+    ) {
+      return;
+    }
+
+
+    empresaAtualId =
+      empresaSelect.value || null;
+
+
+    iniciarSubscricoesEmpresa();
+
+  }
+);
+
+
+/* =========================================================
+   FILTROS
+========================================================= */
+
+document
+  .getElementById("btnAplicar")
+  .addEventListener(
+    "click",
+    () => {
+
+      renderVendas();
+
+      renderDespesas();
+
+    }
+  );
+
+
+document
+  .getElementById("btnLimpar")
+  .addEventListener(
+    "click",
+    () => {
+
+      dataInicioEl.value = "";
+
+      dataFimEl.value = "";
+
+      vendedorSelectFiltro.value = "";
+
+      renderVendas();
+
+      renderDespesas();
+
+    }
+  );
+
+
+[
+  dataInicioEl,
+  dataFimEl,
+  vendedorSelectFiltro
+].forEach(el => {
+
+  el.addEventListener(
+    "change",
+    () => {
+
+      renderVendas();
+
+      renderDespesas();
+
+    }
+  );
+
 });
-[dataInicioEl, dataFimEl, vendedorSelectFiltro].forEach(el => el.addEventListener('change', () => { renderVendas(); renderDespesas(); }));
 
-window.imprimirRelatorio = function imprimirRelatorio() { window.print(); };
 
-// ---- Start ----
-iniciarSubscricoes();
+/* =========================================================
+   IMPRESSÃO
+========================================================= */
+
+window.imprimirRelatorio =
+  function imprimirRelatorio() {
+
+    window.print();
+
+  };
+
+
+/* =========================================================
+   SESSÃO DO SISTEMA
+========================================================= */
+
+async function iniciarSistema() {
+
+  await window.sessaoPronta;
+
+
+  sessao =
+    window.obterSessao();
+
+
+  if (!sessao || !sessao.autenticado) {
+
+    return;
+
+  }
+
+
+  usuarioLogadoEl.textContent =
+    sessao.nome ||
+    sessao.codigo ||
+    sessao.email ||
+    "Usuário";
+
+
+  console.log(
+    "Relatório Final carregado.",
+    {
+      usuario: sessao.nome,
+      papel: sessao.papel,
+      empresaId: sessao.empresaId
+    }
+  );
+
+
+  /* ================================
+     MASTER
+  ================================= */
+
+  if (sessao.papel === "master") {
+
+    await carregarEmpresasMaster();
+
+    return;
+
+  }
+
+
+  /* ================================
+     USUÁRIO NORMAL
+  ================================= */
+
+  if (!sessao.empresaId) {
+
+    alert(
+      "Este usuário não possui uma empresa vinculada."
+    );
+
+    return;
+
+  }
+
+
+  empresaAtualId =
+    sessao.empresaId;
+
+
+  iniciarSubscricoesEmpresa();
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+iniciarSistema();
+
+</script>
+
+<!-- SESSÃO DO SISTEMA -->
+<script
+  type="module"
+  src="./js/sessao.js">
 </script>
 
 </body>
 </html>
-
-
