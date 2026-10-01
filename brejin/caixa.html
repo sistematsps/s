@@ -267,8 +267,12 @@ button {
 <div class="total-box">
 
     <p>
-        NOVINHO:
+        BENEDITO:
         R$ <span id="benedito">0.00</span>
+    </p>
+<p>
+        JOSE ROBERTO:
+        R$ <span id="jose">0.00</span>
     </p>
 
     <p>
@@ -599,6 +603,10 @@ function limparTela() {
 
     document.getElementById(
         "benedito"
+    ).textContent = "0.00";
+    
+document.getElementById(
+     "joee"
     ).textContent = "0.00";
 
     document.getElementById(
@@ -1001,9 +1009,13 @@ async function carregarCaixa(
         document.getElementById(
             "benedito"
         ).textContent =
-            formatar(saldoFinal * 0.50);
+            formatar(saldoFinal * 0.25);
 
-
+document.getElementById(
+            "jose"
+        ).textContent =
+            formatar(saldoFinal * 0.25);
+        
         document.getElementById(
             "pedro"
         ).textContent =
